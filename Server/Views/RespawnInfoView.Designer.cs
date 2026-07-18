@@ -49,6 +49,8 @@
             gridColumn7 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn8 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn9 = new DevExpress.XtraGrid.Columns.GridColumn();
+            ribbonPageGroup2 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            InsertRowButton = new DevExpress.XtraBars.BarButtonItem();
             ((System.ComponentModel.ISupportInitialize)ribbon).BeginInit();
             ((System.ComponentModel.ISupportInitialize)RespawnInfoGridControl).BeginInit();
             ((System.ComponentModel.ISupportInitialize)RespawnInfoGridView).BeginInit();
@@ -59,12 +61,12 @@
             // ribbon
             // 
             ribbon.ExpandCollapseItem.Id = 0;
-            ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] { ribbon.ExpandCollapseItem, ribbon.SearchEditItem, SaveButton, ImportButton, ExportButton });
+            ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] { ribbon.ExpandCollapseItem, SaveButton, ImportButton, ExportButton, InsertRowButton });
             ribbon.Location = new System.Drawing.Point(0, 0);
-            ribbon.MaxItemId = 4;
+            ribbon.MaxItemId = 5;
             ribbon.Name = "ribbon";
             ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] { ribbonPage1 });
-            ribbon.Size = new System.Drawing.Size(879, 144);
+            ribbon.Size = new System.Drawing.Size(879, 158);
             // 
             // SaveButton
             // 
@@ -96,7 +98,7 @@
             // 
             // ribbonPage1
             // 
-            ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] { ribbonPageGroup1, JsonImportExport });
+            ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] { ribbonPageGroup1, JsonImportExport, ribbonPageGroup2 });
             ribbonPage1.Name = "ribbonPage1";
             ribbonPage1.Text = "Home";
             // 
@@ -118,12 +120,12 @@
             // RespawnInfoGridControl
             // 
             RespawnInfoGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            RespawnInfoGridControl.Location = new System.Drawing.Point(0, 144);
+            RespawnInfoGridControl.Location = new System.Drawing.Point(0, 158);
             RespawnInfoGridControl.MainView = RespawnInfoGridView;
             RespawnInfoGridControl.MenuManager = ribbon;
             RespawnInfoGridControl.Name = "RespawnInfoGridControl";
             RespawnInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { MonsterLookUpEdit, RegionLookUpEdit });
-            RespawnInfoGridControl.Size = new System.Drawing.Size(879, 400);
+            RespawnInfoGridControl.Size = new System.Drawing.Size(879, 386);
             RespawnInfoGridControl.TabIndex = 2;
             RespawnInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { RespawnInfoGridView });
             // 
@@ -227,6 +229,21 @@
             gridColumn9.Visible = true;
             gridColumn9.VisibleIndex = 8;
             // 
+            // ribbonPageGroup2
+            // 
+            ribbonPageGroup2.ItemLinks.Add(InsertRowButton);
+            ribbonPageGroup2.Name = "ribbonPageGroup2";
+            ribbonPageGroup2.Text = "Edit";
+            // 
+            // InsertRowButton
+            // 
+            InsertRowButton.Caption = "Insert Row";
+            InsertRowButton.Id = 4;
+            InsertRowButton.ImageOptions.Image = (System.Drawing.Image)resources.GetObject("InsertRowButton.ImageOptions.Image");
+            InsertRowButton.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("InsertRowButton.ImageOptions.LargeImage");
+            InsertRowButton.Name = "InsertRowButton";
+            InsertRowButton.ItemClick += InsertRowButton_ItemClick;
+            // 
             // RespawnInfoView
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -268,5 +285,7 @@
         private DevExpress.XtraBars.BarButtonItem ExportButton;
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup JsonImportExport;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn9;
+        private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroup2;
+        private DevExpress.XtraBars.BarButtonItem InsertRowButton;
     }
 }

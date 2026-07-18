@@ -2234,20 +2234,6 @@ namespace Server.Envir
                 case ItemType.LootBox:
                     UpgradeLootBox(item);
                     break;
-                case ItemType.SocketGem:
-                    switch (item.Info.Rarity)
-                    {
-                        case Rarity.Common:
-                            item.MaxDurability = item.Info.Durability / 5 * 3;
-                            break;
-                        case Rarity.Superior:
-                            item.MaxDurability = item.Info.Durability / 5 * 4;
-                            break;
-                        case Rarity.Elite:
-                            item.MaxDurability = item.Info.Durability;
-                            break;
-                    }
-                    break;
             }
         }
 

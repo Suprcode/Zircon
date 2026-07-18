@@ -1175,6 +1175,13 @@ namespace Server.Models
             RoamTime = SEnvir.Now + RoamDelay;
 
 
+            if (Target == null && TryGetRoamingReturnLocation(out Point returnLocation))
+            {
+                MoveTo(returnLocation);
+                return;
+            }
+
+
             foreach (MapObject ob in CurrentCell.Objects)
             {
                 if (ob == this || !ob.Blocking) continue;
@@ -1198,6 +1205,39 @@ namespace Server.Models
             else
                 Turn((MirDirection)SEnvir.Random.Next(8));
         }
+        private bool TryGetRoamingReturnLocation(out Point returnLocation)
+        {
+            returnLocation = Point.Empty;
+
+            int roamingDistance = Stats[Stat.RoamDistance];
+            MapRegion region = SpawnInfo?.Info.Region;
+
+            if (roamingDistance <= 0 || region?.PointList == null || region.PointList.Count == 0)
+                return false;
+
+            if (CurrentCell.Regions.Contains(region))
+                return false;
+
+            if (region.EdgePointList == null)
+                region.CreateEdgePoints();
+
+            int closestDistance = int.MaxValue;
+
+            foreach (Point point in region.EdgePointList)
+            {
+                int distance = Functions.Distance(CurrentLocation, point);
+
+                if (distance >= closestDistance) continue;
+
+                closestDistance = distance;
+                returnLocation = point;
+
+                if (closestDistance == 0) break;
+            }
+
+            return closestDistance > roamingDistance;
+        }
+
         public virtual void ProcessTarget()
         {
             if (Target == null) return;

@@ -304,6 +304,7 @@ namespace Server.Envir.Translations
         public override string NPCSocketUnlockSuccess { get; set; } = "镶嵌孔解锁成功。";
         public override string NPCSocketUnlockFailed { get; set; } = "镶嵌孔解锁失败。";
         public override string NPCSocketInsertSuccess { get; set; } = "宝石镶嵌成功。";
+        public override string NPCSocketInsertFailed { get; set; } = "宝石镶嵌失败。";
         public override string NPCSocketInsertCursed { get; set; } = "镶嵌孔受到了诅咒。";
         public override string NPCSocketResetSuccess { get; set; } = "所有已镶嵌宝石均已清除。";
         public override string NPCSocketResetFailed { get; set; } = "镶嵌重置失败。";

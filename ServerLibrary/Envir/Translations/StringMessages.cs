@@ -304,6 +304,7 @@ namespace Server.Envir
         public abstract string NPCSocketUnlockSuccess { get; set; }
         public abstract string NPCSocketUnlockFailed { get; set; }
         public abstract string NPCSocketInsertSuccess { get; set; }
+        public abstract string NPCSocketInsertFailed { get; set; }
         public abstract string NPCSocketInsertCursed { get; set; }
         public abstract string NPCSocketResetSuccess { get; set; }
         public abstract string NPCSocketResetFailed { get; set; }

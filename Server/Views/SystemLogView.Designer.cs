@@ -28,87 +28,81 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SystemLogView));
-            this.ribbon = new DevExpress.XtraBars.Ribbon.RibbonControl();
-            this.ClearLogsButton = new DevExpress.XtraBars.BarButtonItem();
-            this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
-            this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
-            this.LogListBoxControl = new DevExpress.XtraEditors.ListBoxControl();
-            this.InterfaceTimer = new System.Windows.Forms.Timer(this.components);
-            ((System.ComponentModel.ISupportInitialize)(this.ribbon)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.LogListBoxControl)).BeginInit();
-            this.SuspendLayout();
+            ribbon = new DevExpress.XtraBars.Ribbon.RibbonControl();
+            ClearLogsButton = new DevExpress.XtraBars.BarButtonItem();
+            ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
+            ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            LogListBoxControl = new DevExpress.XtraEditors.ListBoxControl();
+            InterfaceTimer = new System.Windows.Forms.Timer(components);
+            ((System.ComponentModel.ISupportInitialize)ribbon).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)LogListBoxControl).BeginInit();
+            SuspendLayout();
             // 
             // ribbon
             // 
-            this.ribbon.ExpandCollapseItem.Id = 0;
-            this.ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] {
-            this.ribbon.ExpandCollapseItem,
-            this.ClearLogsButton});
-            this.ribbon.Location = new System.Drawing.Point(0, 0);
-            this.ribbon.MaxItemId = 2;
-            this.ribbon.MdiMergeStyle = DevExpress.XtraBars.Ribbon.RibbonMdiMergeStyle.Always;
-            this.ribbon.Name = "ribbon";
-            this.ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
-            this.ribbonPage1});
-            this.ribbon.Size = new System.Drawing.Size(717, 144);
+            ribbon.ExpandCollapseItem.Id = 0;
+            ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] { ribbon.ExpandCollapseItem, ClearLogsButton });
+            ribbon.Location = new System.Drawing.Point(0, 0);
+            ribbon.MaxItemId = 2;
+            ribbon.MdiMergeStyle = DevExpress.XtraBars.Ribbon.RibbonMdiMergeStyle.Always;
+            ribbon.Name = "ribbon";
+            ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] { ribbonPage1 });
+            ribbon.Size = new System.Drawing.Size(675, 158);
             // 
             // ClearLogsButton
             // 
-            this.ClearLogsButton.Caption = "Clear Logs";
-            this.ClearLogsButton.Glyph = ((System.Drawing.Image)(resources.GetObject("ClearLogsButton.Glyph")));
-            this.ClearLogsButton.Id = 1;
-            this.ClearLogsButton.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("ClearLogsButton.LargeGlyph")));
-            this.ClearLogsButton.LargeWidth = 50;
-            this.ClearLogsButton.Name = "ClearLogsButton";
-            this.ClearLogsButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.ClearLogsButton_ItemClick);
+            ClearLogsButton.Caption = "Clear Logs";
+            ClearLogsButton.Id = 1;
+            ClearLogsButton.ImageOptions.Image = (System.Drawing.Image)resources.GetObject("ClearLogsButton.ImageOptions.Image");
+            ClearLogsButton.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("ClearLogsButton.ImageOptions.LargeImage");
+            ClearLogsButton.Name = "ClearLogsButton";
+            ClearLogsButton.ItemClick += ClearLogsButton_ItemClick;
             // 
             // ribbonPage1
             // 
-            this.ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
-            this.ribbonPageGroup1});
-            this.ribbonPage1.Name = "ribbonPage1";
-            this.ribbonPage1.Text = "Home";
+            ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] { ribbonPageGroup1 });
+            ribbonPage1.Name = "ribbonPage1";
+            ribbonPage1.Text = "Home";
             // 
             // ribbonPageGroup1
             // 
-            this.ribbonPageGroup1.AllowTextClipping = false;
-            this.ribbonPageGroup1.ItemLinks.Add(this.ClearLogsButton);
-            this.ribbonPageGroup1.Name = "ribbonPageGroup1";
-            this.ribbonPageGroup1.ShowCaptionButton = false;
-            this.ribbonPageGroup1.Text = "Actions";
+            ribbonPageGroup1.AllowTextClipping = false;
+            ribbonPageGroup1.CaptionButtonVisible = DevExpress.Utils.DefaultBoolean.False;
+            ribbonPageGroup1.ItemLinks.Add(ClearLogsButton);
+            ribbonPageGroup1.Name = "ribbonPageGroup1";
+            ribbonPageGroup1.Text = "Actions";
             // 
             // LogListBoxControl
             // 
-            this.LogListBoxControl.Cursor = System.Windows.Forms.Cursors.Default;
-            this.LogListBoxControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.LogListBoxControl.ItemAutoHeight = true;
-            this.LogListBoxControl.Location = new System.Drawing.Point(0, 144);
-            this.LogListBoxControl.Name = "LogListBoxControl";
-            this.LogListBoxControl.Size = new System.Drawing.Size(717, 339);
-            this.LogListBoxControl.TabIndex = 1;
+            LogListBoxControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            LogListBoxControl.ItemAutoHeight = true;
+            LogListBoxControl.Location = new System.Drawing.Point(0, 158);
+            LogListBoxControl.Name = "LogListBoxControl";
+            LogListBoxControl.Size = new System.Drawing.Size(675, 304);
+            LogListBoxControl.TabIndex = 1;
             // 
             // InterfaceTimer
             // 
-            this.InterfaceTimer.Enabled = true;
-            this.InterfaceTimer.Interval = 1000;
-            this.InterfaceTimer.Tick += new System.EventHandler(this.InterfaceTimer_Tick);
+            InterfaceTimer.Enabled = true;
+            InterfaceTimer.Interval = 1000;
+            InterfaceTimer.Tick += InterfaceTimer_Tick;
             // 
             // SystemLogView
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(717, 483);
-            this.Controls.Add(this.LogListBoxControl);
-            this.Controls.Add(this.ribbon);
-            this.Name = "SystemLogView";
-            this.Ribbon = this.ribbon;
-            this.Text = "System Logs";
-            ((System.ComponentModel.ISupportInitialize)(this.ribbon)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.LogListBoxControl)).EndInit();
-            this.ResumeLayout(false);
-            this.PerformLayout();
+            AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            ClientSize = new System.Drawing.Size(675, 462);
+            Controls.Add(LogListBoxControl);
+            Controls.Add(ribbon);
+            Name = "SystemLogView";
+            Ribbon = ribbon;
+            Text = "System Logs";
+            ((System.ComponentModel.ISupportInitialize)ribbon).EndInit();
+            ((System.ComponentModel.ISupportInitialize)LogListBoxControl).EndInit();
+            ResumeLayout(false);
+            PerformLayout();
 
         }
 

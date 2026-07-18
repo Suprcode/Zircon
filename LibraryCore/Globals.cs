@@ -135,6 +135,9 @@ namespace Library
             PhysicalPoisonRate = 200,
             MagicalPoisonRate = 100;
 
+        public static int
+            MaxGemPurity = 100;
+
         public static List<string> Languages = new List<string>
         {
             "English",
@@ -433,6 +436,7 @@ namespace Library
         //Server settings
         public bool StruckEnabled { get; set; }
         public bool HermitEnabled { get; set; }
+        public int MaxGemPurity { get; set; }
 
         [CompleteObject]
         public void OnComplete()

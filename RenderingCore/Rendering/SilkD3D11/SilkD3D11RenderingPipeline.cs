@@ -68,6 +68,7 @@ namespace Shared.Rendering.SilkD3D11
         private readonly List<SilkD3D11TextureResource> _textures = new();
         private readonly List<SilkD3D11RenderTarget> _renderTargets = new();
         private readonly List<SpriteBatchItem> _spriteBatch = new(MaxSprites);
+        private readonly object _spriteBatchLock = new();
         private readonly List<LineBatchItem> _lineBatch = new(1024);
         private readonly SpriteVertex[] _vertexUpload = new SpriteVertex[MaxVertices];
         private readonly List<SilkD3D11TextureResource> _batchTextureSlots = new(MaxBatchTextures);
@@ -395,28 +396,37 @@ namespace Shared.Rendering.SilkD3D11
         {
             FlushLinesIfNeeded();
 
-            if (_spriteBatch.Count >= MaxSprites)
-                EndSpriteBatch();
-
             if (TryGetTexture(texture, out SilkD3D11TextureResource resource))
-                _spriteBatch.Add(CreateSpriteBatchItem(resource, sourceRectangle, destinationRectangle, Matrix3x2.Identity, colour, _opacity, null));
+            {
+                lock (_spriteBatchLock)
+                {
+                    if (_spriteBatch.Count >= MaxSprites)
+                        EndSpriteBatch();
+
+                    _spriteBatch.Add(CreateSpriteBatchItem(resource, sourceRectangle, destinationRectangle, Matrix3x2.Identity, colour, _opacity, null));
+                }
+            }
         }
 
         public void EndSpriteBatch()
         {
-            if (_spriteBatch.Count == 0)
-                return;
-
-            SetD3DRenderTarget(_currentTarget);
-            for (int i = 0; i < _spriteBatch.Count;)
+            lock (_spriteBatchLock)
             {
-                int count = GetCompatibleSpriteBatchCount(i);
+                if (_spriteBatch.Count == 0)
+                    return;
 
-                DrawSprites(_spriteBatch, i, count);
-                i += count;
+                SpriteBatchItem[] items = _spriteBatch.ToArray();
+                _spriteBatch.Clear();
+
+                SetD3DRenderTarget(_currentTarget);
+                for (int i = 0; i < items.Length;)
+                {
+                    int count = GetCompatibleSpriteBatchCount(items, i);
+
+                    DrawSprites(items, i, count);
+                    i += count;
+                }
             }
-
-            _spriteBatch.Clear();
         }
 
         public RenderSurface GetCurrentSurface() => RenderSurface.From(_currentTarget);
@@ -714,10 +724,13 @@ namespace Shared.Rendering.SilkD3D11
                 }
             }
 
-            if (_spriteBatch.Count >= MaxSprites)
-                EndSpriteBatch();
+            lock (_spriteBatchLock)
+            {
+                if (_spriteBatch.Count >= MaxSprites)
+                    EndSpriteBatch();
 
-            _spriteBatch.Add(CreateSpriteBatchItem(resource, source, destination, transform, colour, _opacity, effect));
+                _spriteBatch.Add(CreateSpriteBatchItem(resource, source, destination, transform, colour, _opacity, effect));
+            }
         }
 
         private void DrawSprite(SpriteBatchItem item)
@@ -774,16 +787,16 @@ namespace Shared.Rendering.SilkD3D11
             return _batchTextureSlots.Count - 1;
         }
 
-        private int GetCompatibleSpriteBatchCount(int start)
+        private int GetCompatibleSpriteBatchCount(IReadOnlyList<SpriteBatchItem> items, int start)
         {
-            SpriteBatchItem first = _spriteBatch[start];
+            SpriteBatchItem first = items[start];
             _batchTextureSlots.Clear();
             _batchTextureSlots.Add(first.Texture);
 
             int count = 1;
-            while (start + count < _spriteBatch.Count && count < MaxSprites)
+            while (start + count < items.Count && count < MaxSprites)
             {
-                SpriteBatchItem next = _spriteBatch[start + count];
+                SpriteBatchItem next = items[start + count];
                 if (next.Texture.ShaderResourceView.Handle == null || !CanBatchTogether(first, next))
                     break;
 
@@ -1016,6 +1029,7 @@ namespace Shared.Rendering.SilkD3D11
         {
             EndSpriteBatch();
             FlushLines();
+            InvalidateTextureCaches();
             DisposeTargets();
 
             if (IsSwapChainFullscreen())
