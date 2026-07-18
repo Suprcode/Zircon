@@ -4151,8 +4151,8 @@ namespace Server.Models
             result.Count = info.Item?.Count ?? 0;
             result.Success = true;
 
-            LogMilestone(MilestoneType.MarketPurchase, result.Count, item: info.Item.Info);
-            SEnvir.LogMilestone(info.Character, MilestoneType.MarketSell, result.Count, item: info.Item.Info);
+            LogMilestone(MilestoneType.MarketPurchase, p.Count, item: itemInfo);
+            SEnvir.LogMilestone(info.Character, MilestoneType.MarketSell, p.Count, item: itemInfo);
 
             AuctionHistoryInfo history = SEnvir.AuctionHistoryInfoList.Binding.FirstOrDefault(x => x.Info == itemInfo.Index && x.PartIndex == partIndex) ?? SEnvir.AuctionHistoryInfoList.CreateNewObject();
 
