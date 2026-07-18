@@ -863,6 +863,9 @@ namespace Library
         [StatDescription(Title = "Elemental Swords", Format = "{0}", Mode = StatType.Text, UsageHint = "Used in Elemental Swords to track remaining swords")]
         ElementalSwords,
 
+        [StatDescription(Mode = StatType.None, ServerOnly = true)]
+        RoamDistance,
+
         [StatDescription(Title = "Throw Distance", Format = "{0}", Mode = StatType.Default, UsageHint = "1 to 4")]
         ThrowDistance = 200,
         [StatDescription(Title = "Auto Cast", Mode = StatType.Text)]
