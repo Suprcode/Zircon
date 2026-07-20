@@ -336,7 +336,10 @@ namespace Client.Controls
         public virtual void OnDeactivated()
         {
             if (TextBox.Visible)
+            {
                 TextureValid = false;
+                InvalidateParentChildCache();
+            }
 
             TextBox.Visible = false;
             CEnvir.Target.ActiveControl = null;
@@ -695,6 +698,7 @@ namespace Client.Controls
                 if (Owner == null) return;
 
                 Owner.TextureValid = false;
+                Owner.InvalidateParentChildCache();
             }
             protected override void OnSizeChanged(EventArgs e)
             {
