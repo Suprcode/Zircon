@@ -1,6 +1,7 @@
 ﻿using DevExpress.XtraBars;
 using Library;
 using Library.SystemModels;
+using PluginCore;
 using System;
 
 namespace Server.Views
@@ -18,6 +19,8 @@ namespace Server.Views
 
             MonsterImageComboBox.Items.AddEnum<MonsterImage>();
             StatComboBox.Items.AddEnum<Stat>();
+
+            PluginGridActionBinder.Attach(MonsterInfoGridControl, MonsterInfoGridView, typeof(MonsterInfo), this);
         }
 
         protected override void OnLoad(EventArgs e)
