@@ -103,7 +103,7 @@ namespace Library.SystemModels
 
         [JsonIgnore]
         [IgnoreProperty]
-        public string ServerDescription => $"{Map?.Description} - {Description}";
+        public string ServerDescription => $"{Map?.Description} ({Map?.FileName}) - {Description}";
 
         public RegionType RegionType
         {

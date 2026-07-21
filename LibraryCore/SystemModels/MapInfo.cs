@@ -455,6 +455,28 @@ namespace Library.SystemModels
         }
         private InstanceInfo _Instance;
 
+        [JsonIgnore]
+        [IgnoreProperty]
+        [Association("DungeonMap")]
+        public DungeonMapInfo DungeonMap
+        {
+            get => _DungeonMap;
+            set
+            {
+                if (_DungeonMap == value) return;
+
+                DungeonMapInfo oldValue = _DungeonMap;
+                _DungeonMap = value;
+
+                OnChanged(oldValue, value, nameof(DungeonMap));
+            }
+        }
+        private DungeonMapInfo _DungeonMap;
+
+        [JsonIgnore]
+        [IgnoreProperty]
+        public DungeonInfo Dungeon => DungeonMap?.Dungeon;
+
         public RequiredClass RequiredClass
         {
             get => _requiredClass;

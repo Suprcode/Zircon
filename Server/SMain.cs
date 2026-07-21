@@ -285,6 +285,10 @@ namespace Server
         {
             ShowView(typeof(InstanceInfoView));
         }
+        private void DungeonInfoButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
+        {
+            ShowView(typeof(DungeonInfoView));
+        }
         private void MonsterInfoButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
         {
             ShowView(typeof(MonsterInfoView));

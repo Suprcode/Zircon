@@ -372,6 +372,18 @@ namespace Library
         Castle = 3
     }
 
+    public enum DungeonMapRole : byte
+    {
+        Entrance = 0,
+        Lobby = 1,
+        Floor = 2,
+        SideRoom = 3,
+        Transition = 4,
+        Hub = 5,
+        Maze = 6,
+        BossFloor = 7
+    }
+
     public enum RegionType : byte
     {
         None = 0,

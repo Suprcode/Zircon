@@ -56,6 +56,7 @@
             navBarGroup5 = new DevExpress.XtraNavBar.NavBarGroup();
             MapInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             InstanceInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            DungeonInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             MapRegionButton = new DevExpress.XtraNavBar.NavBarItem();
             MovementInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             SafeZoneInfoButton = new DevExpress.XtraNavBar.NavBarItem();
@@ -201,11 +202,11 @@
             navBarControl1.ActiveGroup = navBarGroup1;
             navBarControl1.Dock = System.Windows.Forms.DockStyle.Left;
             navBarControl1.Groups.AddRange(new DevExpress.XtraNavBar.NavBarGroup[] { navBarGroup1, navBarGroup4, navBarGroup5, navBarGroup8, navBarGroup7, navBarGroup6, navBarGroup3 });
-            navBarControl1.Items.AddRange(new DevExpress.XtraNavBar.NavBarItem[] { LogNavButton, ChatLogButton, ConfigButton, MapInfoButton, MonsterInfoButton, ItemInfoButton, InstanceInfoButton, NPCInfoButton, NPCPageButton, MagicInfoButton, AccountInfoButton, CharacterInfoButton, MovementInfoButton, ItemInfoStatButton, MonsterInfoStatButton, SetInfoButton, StoreInfoButton, BaseStatButton, SafeZoneInfoButton, RespawnInfoButton, MapRegionButton, DropInfoButton, UserDropButton, QuestInfoButton, MilestoneInfoButton, CompanionInfoButton, EventInfoButton, CastleInfoButton, PaymentButton, StoreSalesButton, DiagnosticButton, OrphanDiagnosticsButton, ConquestStatsButton, UserMailButton, WeaponCraftInfoButton, CurrencyInfoButton, FishingInfoButton, FameInfoButton, DisciplineInfoButton, NPCDataButton, BundleInfoButton, LootBoxInfoButton, HelpInfoButton });
+            navBarControl1.Items.AddRange(new DevExpress.XtraNavBar.NavBarItem[] { LogNavButton, ChatLogButton, ConfigButton, MapInfoButton, MonsterInfoButton, ItemInfoButton, InstanceInfoButton, DungeonInfoButton, NPCInfoButton, NPCPageButton, MagicInfoButton, AccountInfoButton, CharacterInfoButton, MovementInfoButton, ItemInfoStatButton, MonsterInfoStatButton, SetInfoButton, StoreInfoButton, BaseStatButton, SafeZoneInfoButton, RespawnInfoButton, MapRegionButton, DropInfoButton, UserDropButton, QuestInfoButton, MilestoneInfoButton, CompanionInfoButton, EventInfoButton, CastleInfoButton, PaymentButton, StoreSalesButton, DiagnosticButton, OrphanDiagnosticsButton, ConquestStatsButton, UserMailButton, WeaponCraftInfoButton, CurrencyInfoButton, FishingInfoButton, FameInfoButton, DisciplineInfoButton, NPCDataButton, BundleInfoButton, LootBoxInfoButton, HelpInfoButton });
             navBarControl1.Location = new System.Drawing.Point(0, 144);
             navBarControl1.Name = "navBarControl1";
             navBarControl1.OptionsNavPane.ExpandedWidth = 144;
-            navBarControl1.Size = new System.Drawing.Size(144, 690);
+            navBarControl1.Size = new System.Drawing.Size(144, 688);
             navBarControl1.TabIndex = 1;
             navBarControl1.Text = "navBarControl1";
             // 
@@ -303,7 +304,7 @@
             navBarGroup5.Caption = "Map";
             navBarGroup5.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("navBarGroup5.ImageOptions.LargeImage");
             navBarGroup5.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("navBarGroup5.ImageOptions.SmallImage");
-            navBarGroup5.ItemLinks.AddRange(new DevExpress.XtraNavBar.NavBarItemLink[] { new DevExpress.XtraNavBar.NavBarItemLink(MapInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(InstanceInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(MapRegionButton), new DevExpress.XtraNavBar.NavBarItemLink(MovementInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(SafeZoneInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(FishingInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(CastleInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(EventInfoButton) });
+            navBarGroup5.ItemLinks.AddRange(new DevExpress.XtraNavBar.NavBarItemLink[] { new DevExpress.XtraNavBar.NavBarItemLink(MapInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(InstanceInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(DungeonInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(MapRegionButton), new DevExpress.XtraNavBar.NavBarItemLink(MovementInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(SafeZoneInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(FishingInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(CastleInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(EventInfoButton) });
             navBarGroup5.Name = "navBarGroup5";
             // 
             // MapInfoButton
@@ -319,6 +320,14 @@
             InstanceInfoButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("InstanceInfoButton.ImageOptions.SmallImage");
             InstanceInfoButton.Name = "InstanceInfoButton";
             InstanceInfoButton.LinkClicked += InstanceInfoButton_LinkClicked;
+            // 
+            // DungeonInfoButton
+            // 
+            DungeonInfoButton.Caption = "Dungeon Info";
+            DungeonInfoButton.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("DungeonInfoButton.ImageOptions.LargeImage");
+            DungeonInfoButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("DungeonInfoButton.ImageOptions.SmallImage");
+            DungeonInfoButton.Name = "DungeonInfoButton";
+            DungeonInfoButton.LinkClicked += DungeonInfoButton_LinkClicked;
             // 
             // MapRegionButton
             // 
@@ -687,9 +696,9 @@
             // 
             barDockControlBottom.CausesValidation = false;
             barDockControlBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
-            barDockControlBottom.Location = new System.Drawing.Point(0, 834);
+            barDockControlBottom.Location = new System.Drawing.Point(0, 832);
             barDockControlBottom.Manager = BManager;
-            barDockControlBottom.Size = new System.Drawing.Size(1294, 25);
+            barDockControlBottom.Size = new System.Drawing.Size(1294, 27);
             // 
             // barDockControlLeft
             // 
@@ -697,7 +706,7 @@
             barDockControlLeft.Dock = System.Windows.Forms.DockStyle.Left;
             barDockControlLeft.Location = new System.Drawing.Point(0, 0);
             barDockControlLeft.Manager = BManager;
-            barDockControlLeft.Size = new System.Drawing.Size(0, 834);
+            barDockControlLeft.Size = new System.Drawing.Size(0, 832);
             // 
             // barDockControlRight
             // 
@@ -705,7 +714,7 @@
             barDockControlRight.Dock = System.Windows.Forms.DockStyle.Right;
             barDockControlRight.Location = new System.Drawing.Point(1294, 0);
             barDockControlRight.Manager = BManager;
-            barDockControlRight.Size = new System.Drawing.Size(0, 834);
+            barDockControlRight.Size = new System.Drawing.Size(0, 832);
             // 
             // InterfaceTimer
             // 
@@ -774,6 +783,7 @@
         private DevExpress.XtraBars.BarStaticItem EMailsSentLabel;
         private DevExpress.XtraNavBar.NavBarItem MapInfoButton;
         private DevExpress.XtraNavBar.NavBarItem InstanceInfoButton;
+        private DevExpress.XtraNavBar.NavBarItem DungeonInfoButton;
         private DevExpress.XtraNavBar.NavBarItem MonsterInfoButton;
         private DevExpress.XtraNavBar.NavBarItem ItemInfoButton;
         private DevExpress.XtraNavBar.NavBarItem NPCInfoButton;
