@@ -158,10 +158,10 @@ namespace Server.Views
             // 
             SpawnMultiplierSpinEdit.AutoHeight = false;
             SpawnMultiplierSpinEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton() });
-            SpawnMultiplierSpinEdit.IsFloatValue = false;
-            SpawnMultiplierSpinEdit.MaskSettings.Set("mask", "N0");
+            SpawnMultiplierSpinEdit.IsFloatValue = true;
+            SpawnMultiplierSpinEdit.MaskSettings.Set("mask", "0.####");
             SpawnMultiplierSpinEdit.MaxValue = new decimal(new int[] { int.MaxValue, 0, 0, 0 });
-            SpawnMultiplierSpinEdit.MinValue = new decimal(new int[] { 1, 0, 0, 0 });
+            SpawnMultiplierSpinEdit.MinValue = 0.0001M;
             SpawnMultiplierSpinEdit.Name = "SpawnMultiplierSpinEdit";
             // 
             // ribbon

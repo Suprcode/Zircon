@@ -35,22 +35,23 @@ namespace Library.SystemModels
         }
         private string _Description;
 
-        public int SpawnMultiplier
+        public decimal SpawnMultiplier
         {
             get => _SpawnMultiplier;
             set
             {
-                value = System.Math.Max(1, value);
+                if (value <= 0)
+                    value = 1;
 
                 if (_SpawnMultiplier == value) return;
 
-                int oldValue = _SpawnMultiplier;
+                decimal oldValue = _SpawnMultiplier;
                 _SpawnMultiplier = value;
 
                 OnChanged(oldValue, value, nameof(SpawnMultiplier));
             }
         }
-        private int _SpawnMultiplier;
+        private decimal _SpawnMultiplier;
 
         [Association("DungeonMaps", true)]
         public DBBindingList<DungeonMapInfo> Maps { get; set; }
@@ -66,7 +67,7 @@ namespace Library.SystemModels
         {
             base.OnLoaded();
 
-            if (SpawnMultiplier < 1)
+            if (SpawnMultiplier <= 0)
                 SpawnMultiplier = 1;
         }
 
