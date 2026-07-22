@@ -969,7 +969,7 @@ namespace Library
         Shinsu = 99, //Small
 
         Shinsu1 = 100, //Large
-        UmaMaceInfidel = 101,
+        //NF_SandGuard = 101,
         AquaLizard = 102,
         CorrosivePoisonSpitter = 103,
         SandShark = 104,
@@ -1152,7 +1152,7 @@ namespace Library
         EnshrinementBox = 275,
         //NF_AssassinMale = 276,
         //NF_AssassinFemale = 277,
-        //NF_UmaMaceInfidel = 278,
+        UmaMaceInfidel = 278,
         //NF_Blank279 = 279,
 
         Salamander = 280,

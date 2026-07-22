@@ -418,8 +418,13 @@ namespace Server.Models
                 }
             }
 
-            decimal spawnMultiplier = CurrentMap.Info.Dungeon?.SpawnMultiplier ?? 1M;
-            int spawnCount = (int)Math.Ceiling(Math.Clamp(Info.Count * spawnMultiplier, 0M, int.MaxValue));
+            int spawnCount = Info.Count;
+
+            if (!Info.Monster.IsBoss && CurrentMap.Info.Dungeon != null)
+            {
+                decimal spawnMultiplier = CurrentMap.Info.Dungeon.SpawnMultiplier;
+                spawnCount = (int)Math.Ceiling(Math.Clamp(Info.Count * spawnMultiplier, 0M, int.MaxValue));
+            }
 
             for (int i = AliveCount; i < spawnCount; i++)
             {

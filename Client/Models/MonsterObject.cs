@@ -605,13 +605,6 @@ namespace Client.Models
                     StruckSound = SoundIndex.UmaFlameThrowerStruck;
                     DieSound = SoundIndex.UmaFlameThrowerDie;
                     break;
-                case MonsterImage.UmaMaceInfidel:
-                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_10, out BodyLibrary);
-                    BodyShape = 1;
-                    AttackSound = SoundIndex.UmaInfidelAttack; //TODO
-                    StruckSound = SoundIndex.UmaInfidelStruck;
-                    DieSound = SoundIndex.UmaInfidelDie;
-                    break;
                 case MonsterImage.UmaTridentInfidel:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_28, out BodyLibrary);
                     BodyShape = 7;
@@ -1810,6 +1803,13 @@ namespace Client.Models
                         Frames[frame.Key] = frame.Value;
                     break;
 
+                case MonsterImage.UmaMaceInfidel:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_27, out BodyLibrary);
+                    BodyShape = 8;
+                    AttackSound = SoundIndex.UmaInfidelAttack; //TODO
+                    StruckSound = SoundIndex.UmaInfidelStruck;
+                    DieSound = SoundIndex.UmaInfidelDie;
+                    break;
                 case MonsterImage.OrangeTiger:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_35, out BodyLibrary);
                     BodyShape = 0;

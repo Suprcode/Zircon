@@ -29,6 +29,7 @@ namespace Server.Views
             NameColumn = new DevExpress.XtraGrid.Columns.GridColumn();
             DescriptionColumn = new DevExpress.XtraGrid.Columns.GridColumn();
             SpawnMultiplierColumn = new DevExpress.XtraGrid.Columns.GridColumn();
+            AverageMonsterLevelColumn = new DevExpress.XtraGrid.Columns.GridColumn();
             SpawnMultiplierSpinEdit = new DevExpress.XtraEditors.Repository.RepositoryItemSpinEdit();
             ribbon = new DevExpress.XtraBars.Ribbon.RibbonControl();
             SaveDatabaseButton = new DevExpress.XtraBars.BarButtonItem();
@@ -119,7 +120,7 @@ namespace Server.Views
             // 
             // DungeonInfoGridView
             // 
-            DungeonInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { NameColumn, DescriptionColumn, SpawnMultiplierColumn });
+            DungeonInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { NameColumn, DescriptionColumn, SpawnMultiplierColumn, AverageMonsterLevelColumn });
             DungeonInfoGridView.GridControl = DungeonInfoGridControl;
             DungeonInfoGridView.Name = "DungeonInfoGridView";
             DungeonInfoGridView.OptionsDetail.AllowExpandEmptyDetails = true;
@@ -153,6 +154,16 @@ namespace Server.Views
             SpawnMultiplierColumn.Name = "SpawnMultiplierColumn";
             SpawnMultiplierColumn.Visible = true;
             SpawnMultiplierColumn.VisibleIndex = 2;
+            // 
+            // AverageMonsterLevelColumn
+            // 
+            AverageMonsterLevelColumn.Caption = "Average Monster Level";
+            AverageMonsterLevelColumn.FieldName = "AverageMonsterLevel";
+            AverageMonsterLevelColumn.Name = "AverageMonsterLevelColumn";
+            AverageMonsterLevelColumn.OptionsColumn.AllowEdit = false;
+            AverageMonsterLevelColumn.OptionsColumn.ReadOnly = true;
+            AverageMonsterLevelColumn.Visible = true;
+            AverageMonsterLevelColumn.VisibleIndex = 3;
             // 
             // SpawnMultiplierSpinEdit
             // 
@@ -259,6 +270,7 @@ namespace Server.Views
         private DevExpress.XtraGrid.Columns.GridColumn NameColumn;
         private DevExpress.XtraGrid.Columns.GridColumn DescriptionColumn;
         private DevExpress.XtraGrid.Columns.GridColumn SpawnMultiplierColumn;
+        private DevExpress.XtraGrid.Columns.GridColumn AverageMonsterLevelColumn;
         private DevExpress.XtraGrid.Columns.GridColumn FloorColumn;
         private DevExpress.XtraGrid.Columns.GridColumn RoleColumn;
         private DevExpress.XtraGrid.Columns.GridColumn MapColumn;
