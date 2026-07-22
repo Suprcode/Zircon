@@ -30,6 +30,7 @@ namespace Server.Views
             DescriptionColumn = new DevExpress.XtraGrid.Columns.GridColumn();
             SpawnMultiplierColumn = new DevExpress.XtraGrid.Columns.GridColumn();
             AverageMonsterLevelColumn = new DevExpress.XtraGrid.Columns.GridColumn();
+            AverageMonsterExperienceColumn = new DevExpress.XtraGrid.Columns.GridColumn();
             SpawnMultiplierSpinEdit = new DevExpress.XtraEditors.Repository.RepositoryItemSpinEdit();
             ribbon = new DevExpress.XtraBars.Ribbon.RibbonControl();
             SaveDatabaseButton = new DevExpress.XtraBars.BarButtonItem();
@@ -120,7 +121,7 @@ namespace Server.Views
             // 
             // DungeonInfoGridView
             // 
-            DungeonInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { NameColumn, DescriptionColumn, SpawnMultiplierColumn, AverageMonsterLevelColumn });
+            DungeonInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { NameColumn, DescriptionColumn, SpawnMultiplierColumn, AverageMonsterLevelColumn, AverageMonsterExperienceColumn });
             DungeonInfoGridView.GridControl = DungeonInfoGridControl;
             DungeonInfoGridView.Name = "DungeonInfoGridView";
             DungeonInfoGridView.OptionsDetail.AllowExpandEmptyDetails = true;
@@ -164,6 +165,16 @@ namespace Server.Views
             AverageMonsterLevelColumn.OptionsColumn.ReadOnly = true;
             AverageMonsterLevelColumn.Visible = true;
             AverageMonsterLevelColumn.VisibleIndex = 3;
+            // 
+            // AverageMonsterExperienceColumn
+            // 
+            AverageMonsterExperienceColumn.Caption = "Average Monster Experience";
+            AverageMonsterExperienceColumn.FieldName = "AverageMonsterExperience";
+            AverageMonsterExperienceColumn.Name = "AverageMonsterExperienceColumn";
+            AverageMonsterExperienceColumn.OptionsColumn.AllowEdit = false;
+            AverageMonsterExperienceColumn.OptionsColumn.ReadOnly = true;
+            AverageMonsterExperienceColumn.Visible = true;
+            AverageMonsterExperienceColumn.VisibleIndex = 4;
             // 
             // SpawnMultiplierSpinEdit
             // 
@@ -271,6 +282,7 @@ namespace Server.Views
         private DevExpress.XtraGrid.Columns.GridColumn DescriptionColumn;
         private DevExpress.XtraGrid.Columns.GridColumn SpawnMultiplierColumn;
         private DevExpress.XtraGrid.Columns.GridColumn AverageMonsterLevelColumn;
+        private DevExpress.XtraGrid.Columns.GridColumn AverageMonsterExperienceColumn;
         private DevExpress.XtraGrid.Columns.GridColumn FloorColumn;
         private DevExpress.XtraGrid.Columns.GridColumn RoleColumn;
         private DevExpress.XtraGrid.Columns.GridColumn MapColumn;

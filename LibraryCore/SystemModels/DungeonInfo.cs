@@ -61,15 +61,25 @@ namespace Library.SystemModels
 
         [JsonIgnore]
         [IgnoreProperty]
-        public double AverageMonsterLevel => Math.Round(Maps
+        public int AverageMonsterLevel => (int)Math.Round(Maps
                 .Where(dungeonMap => dungeonMap.Map != null)
                 .SelectMany(dungeonMap => dungeonMap.Map.Regions)
                 .SelectMany(region => region.Respawns)
                 .Where(respawn => respawn.Monster != null && !respawn.Monster.IsBoss)
                 .Select(respawn => (double)respawn.Monster.Level)
                 .DefaultIfEmpty()
-                .Average(),
-            1);
+                .Average());
+
+        [JsonIgnore]
+        [IgnoreProperty]
+        public int AverageMonsterExperience => (int)Math.Round(Maps
+                .Where(dungeonMap => dungeonMap.Map != null)
+                .SelectMany(dungeonMap => dungeonMap.Map.Regions)
+                .SelectMany(region => region.Respawns)
+                .Where(respawn => respawn.Monster != null && !respawn.Monster.IsBoss)
+                .Select(respawn => respawn.Monster.Experience)
+                .DefaultIfEmpty()
+                .Average());
 
         protected internal override void OnCreated()
         {
