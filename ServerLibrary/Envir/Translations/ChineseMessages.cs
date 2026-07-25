@@ -324,6 +324,8 @@ namespace Server.Envir.Translations
         public override string HorseDead { get; set; } = "你处于死亡状态无法骑马";
         public override string HorseOwner { get; set; } = "你没有马可以骑";
         public override string HorseMap { get; set; } = "你所在的地图无法骑马";
+        public override string HorseTameInvalidTarget { get; set; } = "该目标无法驯服。";
+        public override string HorseTameSuccess { get; set; } = "{0} 已被驯服。";
         public override string InstanceNoAction { get; set; } = "Cannot perform this action whilst on an instance.";
         public override string InstanceInvalid { get; set; } = "You cannot move to instance.";
         public override string InstanceInsufficientLevel { get; set; } = "You must be between level {0} and {1} to join instance.";

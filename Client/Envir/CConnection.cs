@@ -1110,40 +1110,47 @@ namespace Client.Envir
 
         public void Process(S.ObjectTaming p)
         {
-            foreach (MapObject ob in GameScene.Game.MapControl.Objects)
+            MapObject actor = null;
+            MapObject target = null;
+            bool findTarget = p.State == TamingState.Cast;
+
+            foreach (MapObject mapObject in GameScene.Game.MapControl.Objects)
             {
-                if (ob.ObjectID != p.ObjectID) continue;
+                if (mapObject.ObjectID == p.ObjectID)
+                    actor = mapObject;
 
-                ob.TamingObject = null;
+                if (findTarget && mapObject.ObjectID == p.TamingObjectID)
+                    target = mapObject;
 
-                foreach (MapObject tamingOb in GameScene.Game.MapControl.Objects)
-                {
-                    if (tamingOb.ObjectID != p.TamingObjectID) continue;
+                if (actor != null && (!findTarget || target != null))
+                    break;
+            }
 
-                    ob.TamingObject = tamingOb;
-                }
+            if (actor == null)
+                return;
 
-                if (ob == MapObject.User)
-                {
-                    MapObject.User.ServerTime = DateTime.MinValue;
+            actor.TamingObject = target;
 
-                    GameScene.Game.MapControl.TamingState = p.State;
+            if (actor == MapObject.User)
+            {
+                MapObject.User.ServerTime = DateTime.MinValue;
 
-                    MapObject.User.TamingState = p.State;
+                GameScene.Game.MapControl.TamingState =
+                    p.State == TamingState.Cancel ? TamingState.None : p.State;
 
-                    if (p.State == TamingState.Cancel)
-                        GameScene.Game.MapControl.TamingState = TamingState.None;
+                MapObject.User.TamingState = p.State;
 
-
-                    //MapObject.User.TamingObject = tamingOb;
-
-                    //GameScene.Game.FishingCatchBox.Visible = p.State == FishingState.Cast;
-                }
-                else
-                {
-                    ob.ActionQueue.Add(new ObjectAction(MirAction.Taming, p.Direction, ob.CurrentLocation, p.State, p.TamingObjectID));
-                }
-                break;
+                GameScene.Game.HorseTameBox?.SetTarget(
+                    p.State == TamingState.Cast ? target as MonsterObject : null);
+            }
+            else
+            {
+                actor.ActionQueue.Add(new ObjectAction(
+                    MirAction.Taming,
+                    p.Direction,
+                    actor.CurrentLocation,
+                    p.State,
+                    p.TamingObjectID));
             }
         }
 

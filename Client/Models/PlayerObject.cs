@@ -949,6 +949,10 @@ namespace Client.Models
                     {
                         case MirAnimation.TamingCast:
                             if (FrameIndex != 5) return;
+
+                            if (TamingObject == null)
+                                return;
+
                             var rope = new MirRopeEffect(this, TamingObject)
                             {
                                 Blend = false,

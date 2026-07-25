@@ -938,11 +938,16 @@ namespace Client.Scenes.Views
                                     break;
                                 }
                             }
-                            else if (MapObject.TargetObject is MonsterObject target && !target.Dead && target.MonsterInfo.AI == 135)
+                            else if (weap?.Info.ItemEffect == ItemEffect.TamingLasso && MapObject.TargetObject is MonsterObject target && !target.Dead && target.MonsterInfo.AI == 135)
                             {
-                                TamingObject = target;
-                                TamingState = TamingState.Cast;
-                                break;
+                                var distance = Functions.Distance(MapObject.User.CurrentLocation, target.CurrentLocation);
+
+                                if (distance <= Globals.TamingDistance)
+                                {
+                                    TamingObject = target;
+                                    TamingState = TamingState.Cast;
+                                    break;
+                                }
                             }
                             else
                             {

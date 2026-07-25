@@ -788,6 +788,49 @@ namespace Shared.Rendering
             image.ExpireTime = GetNow() + GetCacheDuration();
         }
 
+        public void DrawScaled(int index, float scaleX, float scaleY, Color colour, float x, float y, float angle, float opacity, ImageType type, bool useOffSet = false, byte shadow = 0)
+        {
+            if (!CheckImage(index)) return;
+
+            MirImage image = Images[index];
+
+            if (type == ImageType.Shadow) return;
+
+            RenderTexture texture = GetRenderTexture(image, type, out Rectangle? sourceRectangle);
+            if (!texture.IsValid) return;
+
+            if (useOffSet)
+            {
+                x += image.OffSetX;
+                y += image.OffSetY;
+            }
+
+            float cx = image.Width / 2F;
+            float cy = image.Height / 2F;
+
+            Matrix3x2 transform =
+                Matrix3x2.CreateTranslation(-cx, -cy) *
+                Matrix3x2.CreateScale(scaleX, scaleY) *
+                Matrix3x2.CreateRotation(angle) *
+                Matrix3x2.CreateTranslation(x + cx, y + cy);
+
+            float oldOpacity = RenderingPipelineManager.GetOpacity();
+            RenderingPipelineManager.SetOpacity(opacity);
+
+            try
+            {
+                RenderingPipelineManager.DrawTexture(texture, sourceRectangle, transform, Vector3.Zero, Vector3.Zero, colour);
+            }
+            finally
+            {
+                RenderingPipelineManager.SetOpacity(oldOpacity);
+            }
+
+            DrawCounted?.Invoke();
+
+            image.ExpireTime = GetNow() + GetCacheDuration();
+        }
+
         public void DrawBlend(int index, float size, Color colour, float x, float y, float angle, float opacity, ImageType type, bool useOffSet = false, byte shadow = 0)
         {
             if (!CheckImage(index)) return;

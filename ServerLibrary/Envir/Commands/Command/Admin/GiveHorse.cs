@@ -23,16 +23,10 @@ namespace Server.Envir.Commands.Command.Admin
             if (!Enum.TryParse(vals[2], true, out HorseType type))
                 throw new UserCommandException(string.Format("Could not find horse: {0}.", vals[2]));
 
-            character.Account.Horse = type;
-
             if (character.Player != null)
-            {
-                character.Player.RemoveMount();
-
-                character.Player.RefreshStats();
-
-                if (character.Player.Character.Account.Horse != HorseType.None) character.Player.Mount();
-            }
+                character.Player.GiveHorse(type);
+            else
+                character.Account.Horse = type;
 
             player.Connection.ReceiveChat(string.Format("[GIVE HORSE] {0} Type: {1}", character.CharacterName, type.ToString()), MessageType.System);
         }

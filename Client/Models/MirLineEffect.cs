@@ -26,25 +26,24 @@ namespace Client.Models
         private int _linkCount = 6;     // Starts with a default value; adjusts dynamically
         private bool _initialized;
 
-        public MirLineEffect(MapObject source, MapObject target, LibraryFile library, int startIndex)
+        public float ImageScale { get; }
+        protected int LinkCount => _linkCount;
+
+        public MirLineEffect(MapObject source, MapObject target, LibraryFile library, int startIndex, float imageScale = 1F)
             : base(startIndex, 1, TimeSpan.FromMilliseconds(100), library, 0, 0, Color.White)
         {
             _source = source;
             _target = target;
+            ImageScale = Math.Max(0.01F, imageScale);
 
             // Initialize chain links between source and target
             Point startLoc = _source.CurrentLocation;
             Point endLoc = _target.CurrentLocation;
 
-            for (int i = 0; i < _linkCount; i++)
-            {
-                float t = i / (float)(_linkCount - 1);
-                _positions.Add(new Vector2(
-                    Lerp(startLoc.X, endLoc.X, t),
-                    Lerp(startLoc.Y, endLoc.Y, t)
-                ));
-                _velocities.Add(Vector2.Zero);
-            }
+            RebuildPositions(
+                new Vector2(startLoc.X, startLoc.Y),
+                new Vector2(endLoc.X, endLoc.Y),
+                _linkCount);
         }
 
         public void SetOwner(MirEffect owner) => _owner = owner;
@@ -117,14 +116,15 @@ namespace Client.Models
                 Vector2 p2 = _positions[i + 1];
                 Vector2 mid = (p1 + p2) * 0.5f;
 
-                float angle = (float)Math.Atan2(p2.Y - p1.Y, p2.X - p1.X) + MathF.PI / 2;
+                Vector2 delta = p2 - p1;
+                float angle = MathF.Atan2(delta.Y, delta.X) + MathF.PI / 2;
 
                 // Use actual distance to compute scale
-                float dist = MathF.Sqrt(MathF.Pow(p2.X - p1.X, 2) + MathF.Pow(p2.Y - p1.Y, 2));
-                float stretchY = dist / LinkLength; // vertical stretch
-                float stretchX = 1f;                // no horizontal stretch
+                float dist = MathF.Sqrt(delta.X * delta.X + delta.Y * delta.Y);
+                float stretchY = dist / LinkLength;
+                float stretchX = ImageScale;
 
-                // DrawBlendScaled positions an image by its unscaled top-left corner.
+                // Scaled drawing positions an image by its unscaled top-left corner.
                 // Convert the desired segment centre to that coordinate space.
                 float drawX = mid.X - originX;
                 float drawY = mid.Y - originY;
@@ -135,7 +135,7 @@ namespace Client.Models
                 }
                 else
                 {
-                    Library.DrawBlendScaled(StartIndex, stretchX, stretchY, DrawColour, drawX, drawY, angle, Opacity, ImageType.Image, false, 0);
+                    Library.DrawScaled(StartIndex, stretchX, stretchY, DrawColour, drawX, drawY, angle, Opacity, ImageType.Image, false, 0);
                 }
             }
         }
@@ -150,10 +150,15 @@ namespace Client.Models
             float dy = end.Y - start.Y;
             float distance = MathF.Sqrt(dx * dx + dy * dy);
 
-            int desiredLinks = Math.Max(2, (int)MathF.Ceiling(distance / LinkLength));
+            int desiredLinks = Math.Max(2, (int)MathF.Ceiling(distance / (LinkLength * ImageScale)) + 1);
             if (desiredLinks == _linkCount) return;
 
-            _linkCount = desiredLinks;
+            RebuildPositions(start, end, desiredLinks);
+        }
+
+        private void RebuildPositions(Vector2 start, Vector2 end, int linkCount)
+        {
+            _linkCount = linkCount;
             _positions.Clear();
             _velocities.Clear();
 
@@ -166,6 +171,21 @@ namespace Client.Models
                 ));
                 _velocities.Add(Vector2.Zero);
             }
+        }
+
+        protected void CollapsePositions(Vector2 position)
+        {
+            for (int i = 0; i < _linkCount; i++)
+            {
+                _positions[i] = position;
+                _velocities[i] = Vector2.Zero;
+            }
+        }
+
+        protected void SetPosition(int index, Vector2 position)
+        {
+            if ((uint)index < (uint)_positions.Count)
+                _positions[index] = position;
         }
 
         /// <summary>
@@ -233,13 +253,11 @@ namespace Client.Models
         private bool _launchComplete;
 
         public MirRopeEffect(MapObject source, MapObject target)
-            : base(source, target, LibraryFile.MagicEx7, 81)
+            : base(source, target, LibraryFile.MagicEx7, 81, 0.5F)
         {
             // Start all rope points collapsed at source
             var startPos = ToWorld(source);
-
-            for (int i = 0; i < 6; i++)
-                SetInitialPosition(startPos);
+            CollapsePositions(startPos);
 
             _launchStartTime = CEnvir.Now.Ticks;
             _launchProgress = 0f;
@@ -266,9 +284,9 @@ namespace Client.Models
                 Vector2 flyingTarget = ComputeThrownTarget(startPos, endPos, _launchProgress);
 
                 // Stretch rope links between source and flying target
-                for (int i = 0; i < 6; i++)
+                for (int i = 0; i < LinkCount; i++)
                 {
-                    float segment = i / 5f;
+                    float segment = i / (float)(LinkCount - 1);
                     Vector2 pos = new(
                         Lerp(startPos.X, flyingTarget.X, segment),
                         Lerp(startPos.Y, flyingTarget.Y, segment)
@@ -320,7 +338,8 @@ namespace Client.Models
         private static float EaseOutCubic(float t)
         {
             t = Math.Clamp(t, 0f, 1f);
-            return 1f - MathF.Pow(1f - t, 3);
+            float inverse = 1f - t;
+            return 1f - inverse * inverse * inverse;
         }
 
         /// <summary>
@@ -329,93 +348,44 @@ namespace Client.Models
         private static float EaseOutQuad(float t)
         {
             t = Math.Clamp(t, 0f, 1f);
-            return 1f - (1f - t) * (1f - t);
-        }
-
-        private void SetInitialPosition(Vector2 pos)
-        {
-            var positionsField = typeof(MirLineEffect)
-                .GetField("_positions", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            var velocitiesField = typeof(MirLineEffect)
-                .GetField("_velocities", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-
-            var positions = (List<Vector2>)positionsField.GetValue(this);
-            var velocities = (List<Vector2>)velocitiesField.GetValue(this);
-
-            positions.Add(pos);
-            velocities.Add(Vector2.Zero);
-        }
-
-        private void SetPosition(int index, Vector2 pos)
-        {
-            var positionsField = typeof(MirLineEffect)
-                .GetField("_positions", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            var positions = (List<Vector2>)positionsField.GetValue(this);
-
-            if (index >= 0 && index < positions.Count)
-                positions[index] = pos;
+            float inverse = 1f - t;
+            return 1f - inverse * inverse;
         }
 
         protected override Point SourceOffset()
         {
-            switch (_source.Direction)
+            Point delta = _source.Direction switch
             {
-                case MirDirection.Up:
-                    return new Point(0, -50);
-                case MirDirection.UpRight:
-                    return new Point(40, -35);
-                case MirDirection.Right:
-                    return new Point(35, -15);
-                case MirDirection.DownRight:
-                    return new Point(27, -7);
-                case MirDirection.Down:
-                    return new Point(0, 0);
-                case MirDirection.DownLeft:
-                    return new Point(-17, -10);
-                case MirDirection.Left:
-                    return new Point(-25, -20);
-                case MirDirection.UpLeft:
-                    return new Point(-15, -40);
-                default:
-                    break;
-            }
+                MirDirection.Up => new Point(0, -50),
+                MirDirection.UpRight => new Point(40, -35),
+                MirDirection.Right => new Point(35, -15),
+                MirDirection.DownRight => new Point(27, -7),
+                MirDirection.Down => Point.Empty,
+                MirDirection.DownLeft => new Point(-17, -10),
+                MirDirection.Left => new Point(-25, -20),
+                MirDirection.UpLeft => new Point(-15, -40),
+                _ => Point.Empty,
+            };
 
-            return new Point(0, 0);
+            return new Point(-10 + delta.X, 20 + delta.Y);
         }
 
         protected override Point TargetOffset()
         {
-            // Neutral “neck center” relative to the target’s sprite center
-            var baseOffset = new Point(8, -25);
+            Point delta = _target.Direction switch
+            {
+                MirDirection.Up => new Point(0, -50),
+                MirDirection.UpRight => new Point(25, -45),
+                MirDirection.UpLeft => new Point(-25, -45),
+                MirDirection.Right => new Point(40, -30),
+                MirDirection.Left => new Point(-40, -30),
+                MirDirection.DownRight => new Point(25, -10),
+                MirDirection.Down => new Point(-10, 10),
+                MirDirection.DownLeft => new Point(-25, -10),
+                _ => Point.Empty,
+            };
 
-            // Optional quick global scaling for all deltas (e.g., if sprite size changes).
-            const float deltaScale = 1f;
-
-            // Fetch the per-direction delta; fall back to (0,0) if unmapped.
-            var delta = NeckDirDelta.TryGetValue(_target.Direction, out var d) ? d : Point.Empty;
-
-            // Apply base + scaled delta.
-            int x = baseOffset.X + (int)(delta.X * deltaScale);
-            int y = baseOffset.Y + (int)(delta.Y * deltaScale);
-
-            return new Point(x, y);
+            return new Point(8 + delta.X, 10 + delta.Y);
         }
-
-        private static readonly Dictionary<MirDirection, Point> NeckDirDelta = new()
-        {
-            // Up directions
-            [MirDirection.Up] = new Point(0, -50),
-            [MirDirection.UpRight] = new Point(25, -45),
-            [MirDirection.UpLeft] = new Point(-25, -45),
-
-            // Horizontal
-            [MirDirection.Right] = new Point(40, -30),
-            [MirDirection.Left] = new Point(-40, -30),
-
-            // Down directions
-            [MirDirection.DownRight] = new Point(25, -10),
-            [MirDirection.Down] = new Point(0, 10),
-            [MirDirection.DownLeft] = new Point(-25, -10),
-        };
     }
 }

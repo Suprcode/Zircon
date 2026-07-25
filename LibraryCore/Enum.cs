@@ -1788,6 +1788,7 @@ namespace Library
 
         FishingRod = 82,
         FishingRobe = 83,
+        TamingLasso = 84,
 
         StatExtractor = 90,
         SpiritBlade = 91,

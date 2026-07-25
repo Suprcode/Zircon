@@ -119,6 +119,11 @@ namespace Library.Network.ClientPackets
         public MirDirection Direction { get; set; }
     }
 
+    public sealed class TamingSuccess : Packet
+    {
+        public uint ObjectID { get; set; }
+    }
+
     public sealed class Attack : Packet
     {
         public MirDirection Direction { get; set; }

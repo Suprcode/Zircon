@@ -458,6 +458,13 @@ namespace Server.Envir
             Player.Taming(p.State, p.Direction, p.ObjectID);
         }
 
+        public void Process(C.TamingSuccess p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.TamingSuccess(p.ObjectID);
+        }
+
         public void Process(C.Attack p)
         {
             if (Stage != GameStage.Game) return;
