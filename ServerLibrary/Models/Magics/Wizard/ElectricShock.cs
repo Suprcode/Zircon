@@ -127,6 +127,8 @@ namespace Server.Models.Magics
             ob.SummonLevel = Magic.Level;
             ob.RefreshStats();
 
+            Player.LogMilestone(MilestoneType.PetTame, 1, monster: ob.MonsterInfo);
+
             ob.Broadcast(new S.ObjectPetOwnerChanged { ObjectID = ob.ObjectID, PetOwner = Player.Name });
         }
     }

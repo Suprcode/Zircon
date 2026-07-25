@@ -1,13 +1,13 @@
 ﻿using Client.Envir;
 using Client.Models.Player;
+using Shared.Rendering;
 using Client.Scenes;
 using Library;
-using SlimDX;
-using SlimDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using Frame = Library.Frame;
 using S = Library.Network.ServerPackets;
 
@@ -16,6 +16,11 @@ namespace Client.Models
     public class PlayerObject : MapObject
     {
         public override ObjectType Race => ObjectType.Player;
+
+        protected override void OnStatsChanged()
+        {
+            SetScale(Stats?[Stat.SizePercent] ?? 0);
+        }
 
         public const int FemaleOffSet = 5000, AssassinOffSet = 50000, RightHandOffSet = 50;
 
@@ -39,13 +44,13 @@ namespace Client.Models
             [4] = LibraryFile.M_Weapon5,
             [5] = LibraryFile.M_Weapon6,
             [6] = LibraryFile.M_Weapon7,
-            [10] = LibraryFile.M_Weapon10,
-            [11] = LibraryFile.M_Weapon11,
-            [12] = LibraryFile.M_Weapon12,
-            [13] = LibraryFile.M_Weapon13,
-            [14] = LibraryFile.M_Weapon14,
-            [15] = LibraryFile.M_Weapon15,
-            [16] = LibraryFile.M_Weapon16,
+            [9] = LibraryFile.M_Weapon10,
+            [10] = LibraryFile.M_Weapon11,
+            [11] = LibraryFile.M_Weapon12,
+            [12] = LibraryFile.M_Weapon13,
+            [13] = LibraryFile.M_Weapon14,
+            [14] = LibraryFile.M_Weapon15,
+            [15] = LibraryFile.M_Weapon16,
 
             [0 + FemaleOffSet] = LibraryFile.WM_Weapon1,
             [1 + FemaleOffSet] = LibraryFile.WM_Weapon2,
@@ -54,43 +59,41 @@ namespace Client.Models
             [4 + FemaleOffSet] = LibraryFile.WM_Weapon5,
             [5 + FemaleOffSet] = LibraryFile.WM_Weapon6,
             [6 + FemaleOffSet] = LibraryFile.WM_Weapon7,
-            [10 + FemaleOffSet] = LibraryFile.WM_Weapon10,
-            [11 + FemaleOffSet] = LibraryFile.WM_Weapon11,
-            [12 + FemaleOffSet] = LibraryFile.WM_Weapon12,
-            [13 + FemaleOffSet] = LibraryFile.WM_Weapon13,
-            [14 + FemaleOffSet] = LibraryFile.WM_Weapon14,
-            [15 + FemaleOffSet] = LibraryFile.WM_Weapon15,
-            [16 + FemaleOffSet] = LibraryFile.WM_Weapon16,
+            [9 + FemaleOffSet] = LibraryFile.WM_Weapon10,
+            [10 + FemaleOffSet] = LibraryFile.WM_Weapon11,
+            [11 + FemaleOffSet] = LibraryFile.WM_Weapon12,
+            [12 + FemaleOffSet] = LibraryFile.WM_Weapon13,
+            [13 + FemaleOffSet] = LibraryFile.WM_Weapon14,
+            [14 + FemaleOffSet] = LibraryFile.WM_Weapon15,
+            [15 + FemaleOffSet] = LibraryFile.WM_Weapon16,
 
             [110] = LibraryFile.M_WeaponAOH1,
             [111] = LibraryFile.M_WeaponAOH2,
             [112] = LibraryFile.M_WeaponAOH3,
-            [113] = LibraryFile.M_WeaponAOH3,
-            [114] = LibraryFile.M_WeaponAOH4,
-            [115] = LibraryFile.M_WeaponAOH5,
-            [116] = LibraryFile.M_WeaponAOH6,
+            [113] = LibraryFile.M_WeaponAOH4,
+            [114] = LibraryFile.M_WeaponAOH5,
+            [115] = LibraryFile.M_WeaponAOH6,
 
             [110 + FemaleOffSet] = LibraryFile.WM_WeaponAOH1,
             [111 + FemaleOffSet] = LibraryFile.WM_WeaponAOH2,
             [112 + FemaleOffSet] = LibraryFile.WM_WeaponAOH3,
-            [113 + FemaleOffSet] = LibraryFile.WM_WeaponAOH3,
-            [114 + FemaleOffSet] = LibraryFile.WM_WeaponAOH4,
-            [115 + FemaleOffSet] = LibraryFile.WM_WeaponAOH5,
-            [116 + FemaleOffSet] = LibraryFile.WM_WeaponAOH6,
+            [113 + FemaleOffSet] = LibraryFile.WM_WeaponAOH4,
+            [114 + FemaleOffSet] = LibraryFile.WM_WeaponAOH5,
+            [115 + FemaleOffSet] = LibraryFile.WM_WeaponAOH6,
 
             [120] = LibraryFile.M_WeaponADL1,
-            [122] = LibraryFile.M_WeaponADL2,
-            [126] = LibraryFile.M_WeaponADL6,
+            [121] = LibraryFile.M_WeaponADL2,
+            [125] = LibraryFile.M_WeaponADL6,
             [120 + RightHandOffSet] = LibraryFile.M_WeaponADR1,
-            [122 + RightHandOffSet] = LibraryFile.M_WeaponADR2,
-            [126 + RightHandOffSet] = LibraryFile.M_WeaponADR6,
+            [121 + RightHandOffSet] = LibraryFile.M_WeaponADR2,
+            [125 + RightHandOffSet] = LibraryFile.M_WeaponADR6,
 
             [120 + FemaleOffSet] = LibraryFile.WM_WeaponADL1,
-            [122 + FemaleOffSet] = LibraryFile.WM_WeaponADL2,
-            [126 + FemaleOffSet] = LibraryFile.WM_WeaponADL6,
+            [121 + FemaleOffSet] = LibraryFile.WM_WeaponADL2,
+            [125 + FemaleOffSet] = LibraryFile.WM_WeaponADL6,
             [120 + FemaleOffSet + RightHandOffSet] = LibraryFile.WM_WeaponADR1,
-            [122 + FemaleOffSet + RightHandOffSet] = LibraryFile.WM_WeaponADR2,
-            [126 + FemaleOffSet + RightHandOffSet] = LibraryFile.WM_WeaponADR6,
+            [121 + FemaleOffSet + RightHandOffSet] = LibraryFile.WM_WeaponADR2,
+            [125 + FemaleOffSet + RightHandOffSet] = LibraryFile.WM_WeaponADR6,
 
         };
         #endregion
@@ -197,9 +200,9 @@ namespace Client.Models
             [0 + AssassinOffSet + FemaleOffSet] = LibraryFile.WM_CostumeA,
         };
 
-        public static readonly List<int> CostumeShapeHideBody = new()
+        public static readonly List<int> CostumeShapeHideWeapon = new()
         {
-            6, 7, 8, 9, 10, 11, 12, 13
+            6, 7, 8, 9, 10, 11, 12, 13, 16, 17, 18
         };
 
         #endregion
@@ -276,6 +279,7 @@ namespace Client.Models
 
             Name = info.Name;
             Caption = info.Caption;
+            CaptionOutlineColour = info.CaptionOutlineColour;
             NameColour = info.NameColour;
 
             Class = info.Class;
@@ -283,10 +287,12 @@ namespace Client.Models
 
             Poison = info.Poison;
 
-            foreach (BuffType type in info.Buffs)
+            foreach (BuffType type in info.Buffs.Keys)
             {
-                if (!VisibleBuffs.Contains(type))
-                    VisibleBuffs.Add(type);
+                if (!VisibleBuffs.ContainsKey(type))
+                    VisibleBuffs[type] = 0;
+
+                VisibleBuffs[type] = info.Buffs[type];
             }
 
             Title = info.GuildName;
@@ -318,6 +324,7 @@ namespace Client.Models
             ShieldEffect = info.ShieldEffect;
 
             Light = info.Light;
+            SetScale(info.SizePercent);
 
             Dead = info.Dead;
             Horse = info.Horse;
@@ -330,6 +337,11 @@ namespace Client.Models
             SetFrame(new ObjectAction(!Dead ? MirAction.Standing : MirAction.Dead, MirDirection.Up, CurrentLocation));
 
             GameScene.Game.MapControl.AddObject(this);
+        }
+
+        public void ApplySizePercent(int sizePercent)
+        {
+            SetScale(sizePercent);
         }
 
         public void UpdateLibraries()
@@ -398,6 +410,7 @@ namespace Client.Models
                                 file = LibraryFile.M_Hum;
                                 ArmourShape = 0;
                             }
+
                             if (CostumeShape >= 0)
                             {
                                 if (!CostumeList.TryGetValue(CostumeShape / 10, out file))
@@ -575,18 +588,18 @@ namespace Client.Models
                     if (CEnvir.Now < StanceTime)
                         animation = MirAnimation.Stance;
 
-                    if (VisibleBuffs.Contains(BuffType.Cloak))
+                    if (VisibleBuffs.ContainsKey(BuffType.Cloak))
                         animation = MirAnimation.CreepStanding;
 
                     if (Horse != HorseType.None)
                         animation = MirAnimation.HorseStanding;
 
-                    if (VisibleBuffs.Contains(BuffType.DragonRepulse))
+                    if (VisibleBuffs.ContainsKey(BuffType.DragonRepulse))
                         animation = MirAnimation.DragonRepulseMiddle;
                     else if (CurrentAnimation == MirAnimation.DragonRepulseMiddle)
                         animation = MirAnimation.DragonRepulseEnd;
 
-                    if (VisibleBuffs.Contains(BuffType.ElementalHurricane))
+                    if (VisibleBuffs.ContainsKey(BuffType.ElementalHurricane))
                         animation = MirAnimation.ChannellingMiddle;
 
                     break;
@@ -600,8 +613,8 @@ namespace Client.Models
 
                     if ((MagicType)action.Extra[1] == MagicType.ShoulderDash || (MagicType)action.Extra[1] == MagicType.Assault)
                         animation = MirAnimation.Combat8;
-                    else if (VisibleBuffs.Contains(BuffType.Cloak))
-                        animation = VisibleBuffs.Contains(BuffType.GhostWalk) ? MirAnimation.CreepWalkFast : MirAnimation.CreepWalkSlow;
+                    else if (VisibleBuffs.ContainsKey(BuffType.Cloak))
+                        animation = VisibleBuffs.ContainsKey(BuffType.GhostWalk) ? MirAnimation.CreepWalkFast : MirAnimation.CreepWalkSlow;
                     else if ((int)action.Extra[0] >= 2)
                     {
                         animation = MirAnimation.Running;
@@ -644,7 +657,7 @@ namespace Client.Models
                     if (type == MagicType.PoisonousCloud)
                         DrawWeapon = false;
 
-                    if (VisibleBuffs.Contains(BuffType.ElementalHurricane))
+                    if (VisibleBuffs.ContainsKey(BuffType.ElementalHurricane))
                         animation = MirAnimation.ChannellingEnd;
 
                     break;
@@ -973,14 +986,14 @@ namespace Client.Models
         public override void Draw()
         {
             if (BodyLibrary == null) return;
-            DrawPlayer(true);
+            DrawPlayer(true, MouseObject == this && MouseObject != User);
         }
 
-        public void DrawPlayer(bool shadow = false)
+        public void DrawPlayer(bool shadow = false, bool allowOutline = false)
         {
             ExteriorEffectManager.DrawExteriorEffects(this, true);
 
-            DrawBody(shadow);
+            DrawBody(shadow, allowOutline);
 
             ExteriorEffectManager.DrawExteriorEffects(this, false);
         }
@@ -994,12 +1007,12 @@ namespace Client.Models
             //DXManager.SetBlend(false);
         }
 
-        public void DrawBody(bool shadow)
+        public void DrawBody(bool shadow, bool allowOutline)
         {
-            Surface oldSurface = DXManager.CurrentSurface;
-            DXManager.SetSurface(DXManager.ScratchSurface);
-            DXManager.Device.Clear(ClearFlags.Target, 0, 0, 0);
-            DXManager.Sprite.Flush();
+            RenderSurface oldSurface = RenderingPipelineManager.GetCurrentSurface();
+            RenderingPipelineManager.SetSurface(RenderingPipelineManager.GetScratchSurface());
+            RenderingPipelineManager.Clear(RenderClearFlags.Target, Color.FromArgb(0), 0, 0);
+            RenderingPipelineManager.FlushSprite();
 
             int l = int.MaxValue, t = int.MaxValue, r = int.MinValue, b = int.MinValue;
 
@@ -1057,9 +1070,9 @@ namespace Client.Models
                     break;
             }
 
-            bool hideBody = CostumeShapeHideBody.Contains(CostumeShape);
+            bool hideWeapon = CostumeShapeHideWeapon.Contains(CostumeShape);
 
-            if (!hideBody)
+            if (!hideWeapon)
             {
                 switch (Direction)
                 {
@@ -1153,7 +1166,7 @@ namespace Client.Models
                 }
             }
 
-            if (!hideBody)
+            if (!hideWeapon)
             {
                 switch (Direction)
                 {
@@ -1207,8 +1220,8 @@ namespace Client.Models
                 }
             }
 
-            DXManager.SetSurface(oldSurface);
-            float oldOpacity = DXManager.Opacity;
+            RenderingPipelineManager.SetSurface(oldSurface);
+            float oldOpacity = RenderingPipelineManager.GetOpacity();
 
             if (shadow)
             {
@@ -1221,11 +1234,11 @@ namespace Client.Models
                         switch (HorseShape)
                         {
                             default:
-                                HorseLibrary?.Draw(HorseFrame, DrawX, DrawY, Color.Black, true, 0.5F, ImageType.Shadow);
+                                DrawHorseShadow(HorseLibrary, HorseFrame);
                                 break;
                             case 6:
                             case 7:
-                                HorseShapeLibrary?.Draw(DrawFrame, DrawX, DrawY, Color.Black, true, 0.5F, ImageType.Shadow);
+                                DrawHorseShadow(HorseShapeLibrary, DrawFrame);
                                 break;
                         }
                         break;
@@ -1235,7 +1248,10 @@ namespace Client.Models
                 }
             }
 
-            if (oldOpacity != Opacity && !DXManager.Blending) DXManager.SetOpacity(Opacity);
+            if (oldOpacity != Opacity && !RenderingPipelineManager.IsBlending())
+            {
+                RenderingPipelineManager.SetOpacity(Opacity);
+            }
 
             switch (CurrentAnimation)
             {
@@ -1249,7 +1265,7 @@ namespace Client.Models
                         case 5://dark
                         case 6://royal
                             if (shadow)
-                                HorseShapeLibrary2?.DrawBlend(DrawFrame, DrawX, DrawY, Color.White, true, Opacity, ImageType.Image);
+                                DrawHorseOverlay(HorseShapeLibrary2, DrawFrame);
                             break;
                         case 7://bluedragon
                             //if (shadow)
@@ -1260,10 +1276,31 @@ namespace Client.Models
                     break;
             }
 
-            DXManager.Sprite.Draw(DXManager.ScratchTexture, Rectangle.FromLTRB(l, t, r, b), Vector3.Zero, new Vector3(l, t, 0), DrawColour);
+            bool outlineEnabled = false;
+
+            if (allowOutline && Config.ShowTargetOutline)
+            {
+                var isFriendly = GameScene.Game.GroupBox.Members.Any(x => x.ObjectID == ObjectID);
+                RenderingPipelineManager.EnableOutlineEffect(isFriendly ? Config.TargetPlayerFriendlyColour : Config.TargetPlayerEnemyColour, 2f);
+                outlineEnabled = true;
+            }
+
+            Rectangle scratchSource = Rectangle.FromLTRB(l, t, r, b);
+            RectangleF scratchDestination = GetScaledRectangle(new RectangleF(l, t, r - l, b - t));
+            RenderTexture scratchTexture = RenderingPipelineManager.GetScratchTexture();
+
+            RenderingPipelineManager.DrawTexture(scratchTexture, scratchSource, scratchDestination, DrawColour);
             CEnvir.DPSCounter++;
 
-            if (oldOpacity != Opacity && !DXManager.Blending) DXManager.SetOpacity(oldOpacity);
+            if (outlineEnabled)
+            {
+                RenderingPipelineManager.DisableOutlineEffect();
+            }
+
+            if (oldOpacity != Opacity && !RenderingPipelineManager.IsBlending())
+            {
+                RenderingPipelineManager.SetOpacity(oldOpacity);
+            }
         }
 
         public void DrawShadow2(int l, int t, int r, int b)
@@ -1275,21 +1312,46 @@ namespace Client.Models
             int w = (DrawX + image.OffSetX) - l;
             int h = (DrawY + image.OffSetY) - t;
 
-            Matrix m = Matrix.Scaling(1F, 0.5f, 0);
+            float translateX = DrawX + image.ShadowOffSetX - w + image.Height / 2F + h / 2F;
+            float translateY = DrawY + image.ShadowOffSetY - h / 2F;
 
-            m.M21 = -0.50F;
-            DXManager.Sprite.Transform = m * Matrix.Translation(DrawX + image.ShadowOffSetX - w + (image.Height) / 2 + h / 2, DrawY + image.ShadowOffSetY - h / 2, 0);
+            Rectangle scratchSource = Rectangle.FromLTRB(l, t, r, b);
+            Matrix3x2 transform = GetScaledTransform(new Matrix3x2(1F, 0F, -0.5F, 0.5F, translateX, translateY));
+            RenderTexture scratchTexture = RenderingPipelineManager.GetScratchTexture();
 
-            DXManager.Device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.None);
+            RenderingPipelineManager.SetTextureFilter(TextureFilterMode.None);
 
-            float oldOpacity = DXManager.Opacity;
-            if (oldOpacity != 0.5F) DXManager.SetOpacity(0.5F);
-            DXManager.Sprite.Draw(DXManager.ScratchTexture, Rectangle.FromLTRB(l, t, r, b), Vector3.Zero, Vector3.Zero, Color.Black);
+            float oldOpacity = RenderingPipelineManager.GetOpacity();
+            if (oldOpacity != 0.5F)
+            {
+                RenderingPipelineManager.SetOpacity(0.5F);
+            }
 
-            DXManager.Sprite.Transform = Matrix.Identity;
-            DXManager.Device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.Point);
+            RenderingPipelineManager.DrawTexture(scratchTexture, scratchSource, transform, System.Numerics.Vector3.Zero, System.Numerics.Vector3.Zero, Color.Black);
 
-            if (0.5F != oldOpacity) DXManager.SetOpacity(oldOpacity);
+            RenderingPipelineManager.SetTextureFilter(TextureFilterMode.Point);
+
+            if (0.5F != oldOpacity)
+            {
+                RenderingPipelineManager.SetOpacity(oldOpacity);
+            }
+        }
+
+        private void DrawHorseOverlay(MirLibrary library, int frame)
+        {
+            MirImage image = library?.GetImage(frame);
+            if (image == null) return;
+
+            PointF location = GetScaledLibraryDrawLocation(image, ImageType.Image, DrawX, DrawY);
+            library.DrawBlend(frame, Scale, Color.White, location.X, location.Y, 0F, Opacity, ImageType.Image, true);
+        }
+
+        private void DrawHorseShadow(MirLibrary library, int frame)
+        {
+            if (library == null) return;
+
+            library.DrawShadow(frame, DrawX, DrawY, Color.Black, true, 0.5F, Scale,
+                DrawX + CellWidth / 2F, DrawY + CellHeight / 2F);
         }
 
         public override void DrawHealth()
@@ -1351,36 +1413,141 @@ namespace Client.Models
 
         public override bool MouseOver(Point p)
         {
-            if (BodyLibrary != null && BodyLibrary.VisiblePixel(ArmourFrame, new Point(p.X - DrawX, p.Y - DrawY), false, true))
+            Point local = new Point(p.X - DrawX, p.Y - DrawY);
+
+            if (MouseOverVisiblePixel(local))
                 return true;
 
-            if (HairType >= 0 && HairLibrary != null && HairLibrary.VisiblePixel(HairFrame, new Point(p.X - DrawX, p.Y - DrawY), false, true))
+            return MouseOverVisibleBounds(local);
+        }
+
+        private bool MouseOverVisiblePixel(Point local)
+        {
+            bool hideWeapon = CostumeShapeHideWeapon.Contains(CostumeShape);
+
+            if (IsHorseAnimation())
+            {
+                switch (HorseShape)
+                {
+                    case 0:
+                        if (HorseLibrary != null && HorseLibrary.VisiblePixel(HorseFrame, local, false, true))
+                            return true;
+                        break;
+                    case 1:
+                    case 2:
+                    case 3:
+                        if (HorseShapeLibrary != null && HorseShapeLibrary.VisiblePixel(HorseFrame, local, false, true))
+                            return true;
+                        break;
+                    default:
+                        if (HorseShapeLibrary != null && HorseShapeLibrary.VisiblePixel(DrawFrame, local, false, true))
+                            return true;
+                        break;
+                }
+            }
+
+            if (!hideWeapon && DrawWeapon && WeaponLibrary1 != null && WeaponLibrary1.VisiblePixel(WeaponFrame, local, false, true))
                 return true;
 
-            if (HelmetShape >= 0 && HelmetLibrary != null && HelmetLibrary.VisiblePixel(HelmetFrame, new Point(p.X - DrawX, p.Y - DrawY), false, true))
+            if (!hideWeapon && DrawWeapon && WeaponLibrary2 != null && WeaponLibrary2.VisiblePixel(WeaponFrame, local, false, true))
                 return true;
 
-            if (LibraryWeaponShape >= 0 && WeaponLibrary1 != null && WeaponLibrary1.VisiblePixel(WeaponFrame, new Point(p.X - DrawX, p.Y - DrawY), false, true))
+            if (!hideWeapon && ShieldShape >= 0 && ShieldLibrary != null && ShieldLibrary.VisiblePixel(ShieldFrame, local, false, true))
                 return true;
 
-            if (LibraryWeaponShape >= 0 && WeaponLibrary2 != null && WeaponLibrary2.VisiblePixel(WeaponFrame, new Point(p.X - DrawX, p.Y - DrawY), false, true))
+            if (BodyLibrary != null && BodyLibrary.VisiblePixel(ArmourFrame, local, false, true))
                 return true;
 
-            if (ShieldShape >= 0 && ShieldLibrary != null && ShieldLibrary.VisiblePixel(ShieldFrame, new Point(p.X - DrawX, p.Y - DrawY), false, true))
+            if (!HideHead)
+            {
+                if (HelmetShape > 0)
+                {
+                    if (HelmetLibrary != null && HelmetLibrary.VisiblePixel(HelmetFrame, local, false, true))
+                        return true;
+                }
+                else if (HairType > 0 && HairLibrary != null && HairLibrary.VisiblePixel(HairFrame, local, false, true))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool MouseOverVisibleBounds(Point local)
+        {
+            bool hideWeapon = CostumeShapeHideWeapon.Contains(CostumeShape);
+
+            if (IsHorseAnimation())
+            {
+                switch (HorseShape)
+                {
+                    case 0:
+                        if (PointOverImageBounds(HorseLibrary, HorseFrame, local))
+                            return true;
+                        break;
+                    case 1:
+                    case 2:
+                    case 3:
+                        if (PointOverImageBounds(HorseShapeLibrary, HorseFrame, local))
+                            return true;
+                        break;
+                    default:
+                        if (PointOverImageBounds(HorseShapeLibrary, DrawFrame, local))
+                            return true;
+                        break;
+                }
+            }
+
+            if (!hideWeapon && DrawWeapon && PointOverImageBounds(WeaponLibrary1, WeaponFrame, local))
                 return true;
 
+            if (!hideWeapon && DrawWeapon && PointOverImageBounds(WeaponLibrary2, WeaponFrame, local))
+                return true;
+
+            if (!hideWeapon && ShieldShape >= 0 && PointOverImageBounds(ShieldLibrary, ShieldFrame, local))
+                return true;
+
+            if (PointOverImageBounds(BodyLibrary, ArmourFrame, local))
+                return true;
+
+            if (!HideHead)
+            {
+                if (HelmetShape > 0)
+                    return PointOverImageBounds(HelmetLibrary, HelmetFrame, local);
+
+                if (HairType > 0)
+                    return PointOverImageBounds(HairLibrary, HairFrame, local);
+            }
+
+            return false;
+        }
+
+        private bool IsHorseAnimation()
+        {
             switch (CurrentAnimation)
             {
                 case MirAnimation.HorseStanding:
                 case MirAnimation.HorseWalking:
                 case MirAnimation.HorseRunning:
                 case MirAnimation.HorseStruck:
-                    if (HorseLibrary != null && HorseLibrary.VisiblePixel(HorseFrame, new Point(p.X - DrawX, p.Y - DrawY), false, true))
-                        return true;
-                    break;
+                    return true;
+                default:
+                    return false;
             }
+        }
 
-            return false;
+        private static bool PointOverImageBounds(MirLibrary library, int frame, Point local)
+        {
+            MirImage image = library?.GetImage(frame);
+            if (image == null) return false;
+
+            Rectangle bounds = image.GetVisibleBounds();
+            if (bounds.Width <= 0 || bounds.Height <= 0) return false;
+
+            bounds.Offset(image.OffSetX, image.OffSetY);
+
+            return bounds.Contains(local);
         }
 
         public override void PlayStruckSound()

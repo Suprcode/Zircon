@@ -1,4 +1,4 @@
-﻿using Client.Controls;
+using Client.Controls;
 using Client.Envir;
 using Client.Models;
 using Client.UserModels;
@@ -15,14 +15,11 @@ using C = Library.Network.ClientPackets;
 
 namespace Client.Scenes.Views
 {
-    public sealed class MagicDialog : DXControl
+    public sealed class MagicDialog : DXWindow
     {
         #region Properties
 
         private DXImageControl HeaderImage, BackgroundImage;
-
-        private DXLabel TitleLabel;
-        private DXButton CloseButton;
 
         private DXTabControl TabControl;
         public SortedDictionary<MagicSchool, MagicTab> SchoolTabs = new SortedDictionary<MagicSchool, MagicTab>();
@@ -69,45 +66,21 @@ namespace Client.Scenes.Views
 
         #region Settings
 
-        public WindowSetting Settings;
-        public WindowType Type => WindowType.MagicBox;
+        public override WindowType Type => WindowType.MagicBox;
 
-        public void LoadSettings()
-        {
-            if (Type == WindowType.None || !CEnvir.Loaded) return;
+        public override bool CustomSize => false;
 
-            Settings = CEnvir.WindowSettings.Binding.FirstOrDefault(x => x.Resolution == Config.GameSize && x.Window == Type);
-
-            if (Settings != null)
-            {
-                ApplySettings();
-                return;
-            }
-
-            Settings = CEnvir.WindowSettings.CreateNewObject();
-            Settings.Resolution = Config.GameSize;
-            Settings.Window = Type;
-            Settings.Size = Size;
-            Settings.Visible = Visible;
-            Settings.Location = Location;
-        }
-
-        public void ApplySettings()
-        {
-            if (Settings == null) return;
-
-            Location = Settings.Location;
-
-            Visible = Settings.Visible;
-        }
-
+        public override bool AutomaticVisibility => false;
+        
         #endregion
 
         public MagicDialog()
         {
-            Size = new Size(420, 516);
+            Size = new Size(419, 511);
             Movable = true;
             Sort = true;
+            HasFooter = false;
+            DropShadow = true;
 
             HeaderImage = new DXImageControl
             {
@@ -142,7 +115,7 @@ namespace Client.Scenes.Views
                 Text = CEnvir.Language.MagicDialogTitle,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -170,6 +143,7 @@ namespace Client.Scenes.Views
                 pair.Value.Dispose();
 
             SchoolTabs.Clear();
+            Magics.Clear();
 
             List<MagicInfo> magics = Globals.MagicInfoList.Binding.ToList();
             magics.Sort((x1, x2) => x1.NeedLevel1.CompareTo(x2.NeedLevel1));
@@ -205,6 +179,8 @@ namespace Client.Scenes.Views
 
                 if (!SchoolTabs.TryGetValue(magic.School, out MagicTab tab))
                 {
+                    if (magic.School == MagicSchool.Discipline) continue;
+
                     SchoolTabs[magic.School] = tab = new MagicTab(magic.School);
                     tab.MouseWheel += tab.ScrollBar.DoMouseWheel;
                     tab.PassThrough = false;
@@ -450,12 +426,14 @@ namespace Client.Scenes.Views
                 Border = false,
                 UpButton = { Index = 61, LibraryFile = LibraryFile.Interface },
                 DownButton = { Index = 62, LibraryFile = LibraryFile.Interface },
-                PositionBar = { Index = 60, LibraryFile = LibraryFile.Interface }
+                PositionBar = { Index = 60, LibraryFile = LibraryFile.Interface },
+                ShowBackgroundSlider = true,
             };
             ScrollBar.ValueChanged += (o, e) => UpdateLocations();
         }
 
         #region Methods
+
         public void UpdateLocations()
         {
             int y = -ScrollBar.Value + 7;
@@ -821,9 +799,7 @@ namespace Client.Scenes.Views
             if (!MapObject.User.Magics.TryGetValue(Info, out magic)) return;
 
             //Get percent.
-            MirImage image = ExperienceBar.Library.CreateImage(812, ImageType.Image);
-
-            if (image == null) return;
+            if (!ExperienceBar.Library.TryGetTexture(812, ImageType.Image, out MirImage image, out var texture, out var sourceRectangle)) return;
 
             int x = (ExperienceBar.Size.Width - image.Width) / 2;
             int y = (ExperienceBar.Size.Height - image.Height) / 2;
@@ -855,7 +831,7 @@ namespace Client.Scenes.Views
 
             if (percent == 0) return;
 
-            PresentTexture(image.Image, this, new Rectangle(ExperienceBar.DisplayArea.X + x, ExperienceBar.DisplayArea.Y + y, (int)(image.Width * percent), image.Height), Color.White, ExperienceBar);
+            PresentTexture(texture, sourceRectangle, this, new Rectangle(ExperienceBar.DisplayArea.X + x, ExperienceBar.DisplayArea.Y + y, (int)(image.Width * percent), image.Height), Color.White, ExperienceBar);
         }
 
         public void Refresh()
@@ -875,7 +851,7 @@ namespace Client.Scenes.Views
 
                 Image.IsEnabled = true;
                 LevelLabel.Text = $"Level: {magic.Level}";
-                LevelLabel.ForeColour = Color.FromArgb(198, 166, 99);
+                LevelLabel.ForeColour = Constants.PrimaryColour;
                 LevelLabel.Location = new Point(57, 30);
 
                 SpellKey key = SpellKey.None;
@@ -934,7 +910,7 @@ namespace Client.Scenes.Views
                     {
                         ExperienceLabel.Text = $"Experience: Max Level";
                     }
-                    ExperienceLabel.ForeColour = Color.FromArgb(198, 166, 99);
+                    ExperienceLabel.ForeColour = Constants.PrimaryColour;
                 }
             }
             else
@@ -1085,5 +1061,4 @@ namespace Client.Scenes.Views
 
         #endregion
     }
-
 }

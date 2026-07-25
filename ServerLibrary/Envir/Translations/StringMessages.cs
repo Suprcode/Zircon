@@ -94,6 +94,8 @@ namespace Server.Envir
         public abstract string CompanionNoRoom { get; set; }
         public abstract string StorageLimit { get; set; }
         public abstract string NotEnoughBagSpaceAvailable { get; set; }
+        public abstract string CannotUseItemWithSafeZone { get; set; }
+        public abstract string NoEmptyInventorySlot { get; set; }
 
         [ConfigSection("Marriage")]
         public abstract string MarryAlreadyMarried { get; set; }
@@ -108,6 +110,8 @@ namespace Server.Envir
         public abstract string MarryComplete { get; set; }
         public abstract string MarryDivorce { get; set; }
         public abstract string MarryDivorced { get; set; }
+        public abstract string NotMarried { get; set; }
+        public abstract string MarryNotRing { get; set; }
         public abstract string MarryTeleportDead { get; set; }
         public abstract string MarryTeleportPK { get; set; }
         public abstract string MarryTeleportDelay { get; set; }
@@ -119,12 +123,15 @@ namespace Server.Envir
         [ConfigSection("Companion")]
         public abstract string CompanionAppearanceAlready { get; set; }
         public abstract string CompanionNeedTicket { get; set; }
+        public abstract string CompanionNeedItem { get; set; }
         public abstract string CompanionSkillEnabled { get; set; }
         public abstract string CompanionSkillDisabled { get; set; }
         public abstract string CompanionAppearanceLocked { get; set; }
-        public abstract string CompanionNeedGold { get; set; }
+        public abstract string CompanionNeedCurrency { get; set; }
         public abstract string CompanionBadName { get; set; }
+        public abstract string CompanionFiltersUpdated { get; set; }
         public abstract string CompanionRetrieveFailed { get; set; }
+        public abstract string CompanionReleaseFailed { get; set; }
 
         [ConfigSection("Quest")]
         public abstract string QuestSelectReward { get; set; }
@@ -176,6 +183,8 @@ namespace Server.Envir
         public abstract string GuildKicked { get; set; }
         public abstract string GuildManagePermission { get; set; }
         public abstract string GuildCastleRepairPermission { get; set; }
+        public abstract string GuildGateClosed { get; set; }
+        public abstract string GuildGateOpened { get; set; }
         public abstract string GuildMemberLimit { get; set; }
         public abstract string GuildMemberCost { get; set; }
         public abstract string GuildStorageLimit { get; set; }
@@ -229,6 +238,9 @@ namespace Server.Envir
         public abstract string GroupRecallMemberNotAllowed { get; set; }
         public abstract string GroupRecallFromMap { get; set; }
         public abstract string GroupRecallMemberFromMap { get; set; }
+        public abstract string GroupLFGEnabled { get; set; }
+        public abstract string GroupLFGExpired { get; set; }
+        public abstract string GroupRequestDeclined { get; set; }
 
         [ConfigSection("Trade")]
         public abstract string TradeAlreadyTrading { get; set; }
@@ -289,6 +301,16 @@ namespace Server.Envir
         public abstract string NPCMasterRefineChance { get; set; }
         public abstract string AccessoryRefineSuccess { get; set; }
         public abstract string AccessoryRefineFailed { get; set; }
+        public abstract string NPCSocketUnlockSuccess { get; set; }
+        public abstract string NPCSocketUnlockFailed { get; set; }
+        public abstract string NPCSocketInsertSuccess { get; set; }
+        public abstract string NPCSocketInsertFailed { get; set; }
+        public abstract string NPCSocketInsertCursed { get; set; }
+        public abstract string NPCSocketResetSuccess { get; set; }
+        public abstract string NPCSocketResetFailed { get; set; }
+        public abstract string NPCSocketCombineNoSpace { get; set; }
+        public abstract string NPCSocketCombineFailed { get; set; }
+        public abstract string NPCSocketCombineSuccess { get; set; }
 
         [ConfigSection("Skills")]
         public abstract string ChargeExpire { get; set; }

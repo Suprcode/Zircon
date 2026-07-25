@@ -1,0 +1,71 @@
+﻿using Library;
+using Library.Network.ClientPackets;
+using Library.SystemModels;
+using Server.DBModels;
+using Server.Envir.Commands.Exceptions;
+using Server.Models;
+using System;
+
+namespace Server.Envir.Commands.Command.Admin
+{
+    class Make : AbstractParameterizedCommand<IAdminCommand>
+    {
+        public override string VALUE => "MAKE";
+        public override int PARAMS_LENGTH => 2;
+
+        public override void Action(PlayerObject player, string[] vals)
+        {
+            if (vals.Length < PARAMS_LENGTH)
+                ThrowNewInvalidParametersException();
+
+            if (vals.Length > 3)
+            {
+                player = SEnvir.GetPlayerByCharacter(vals[3]);
+                if (player == null)
+                    throw new UserCommandException(string.Format("Could not find player: {0}", vals[3]));
+            }
+
+            ItemInfo item = SEnvir.GetItemInfo(vals[1]);
+            if (item == null)
+                throw new UserCommandException(string.Format("Could not find item: {0}", vals[1]));
+
+            int value;
+            if (vals.Length < 3 || !int.TryParse(vals[2], out value) || value == 0)
+                value = 1;
+
+            if (SEnvir.IsCurrencyItem(item))
+            {
+                var currency = player.GetCurrency(item);
+
+                // Store the original amount before modification
+                long originalAmount = currency.Amount;
+
+                // Apply the increase with overflow protection
+                if (currency.Amount > long.MaxValue - value)
+                    currency.Amount = long.MaxValue;
+                else
+                    currency.Amount += value;
+
+                long actualIncrease = currency.Amount - originalAmount;
+
+                player.LogMilestone(MilestoneType.CurrencyGain, actualIncrease, currency: player.Character.Account.HuntGold.Info);
+                player.CurrencyChanged(currency);
+                return;
+            }
+
+            while (value > 0)
+            {
+                int count = Math.Min(value, item.StackSize);
+                if (!player.CanGainItems(false, new ItemCheck(item, count, UserItemFlags.None, TimeSpan.Zero)))
+                    throw new UserCommandException(string.Format("Can not hold anymore {0}.", vals[1]));
+
+                UserItem userItem = SEnvir.CreateDropItem(item, 0);
+                userItem.Count = count;
+                userItem.Flags = UserItemFlags.GameMaster;
+
+                value -= count;
+                player.GainItem(userItem);
+            }
+        }
+    }
+}

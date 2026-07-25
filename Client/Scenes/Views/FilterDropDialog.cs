@@ -1,4 +1,4 @@
-﻿using Client.Controls;
+using Client.Controls;
 using Client.Envir;
 using Client.UserModels;
 using Library;
@@ -35,7 +35,7 @@ namespace Client.Scenes.Views
                 {
                     Parent = this,
                     Border = true,
-                    BorderColour = Color.FromArgb(198, 166, 99),
+                    BorderColour = Constants.PrimaryColour,
                     Location = new Point(90, filterLabel.Location.Y),
                     Size = new Size(150, 18)
                 };
@@ -70,6 +70,29 @@ namespace Client.Scenes.Views
                 {
                     DropFiltersMap[i].TextBox.Text = items[i];
                 }
+            }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (!disposing) return;
+
+            if (DropFiltersMap != null)
+            {
+                foreach (KeyValuePair<int, DXTextBox> pair in DropFiltersMap)
+                {
+                    DXTextBox textBox = pair.Value;
+
+                    if (textBox == null) continue;
+                    if (textBox.IsDisposed) continue;
+
+                    textBox.Dispose();
+                }
+
+                DropFiltersMap.Clear();
+                DropFiltersMap = null;
             }
         }
 

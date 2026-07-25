@@ -1,5 +1,6 @@
 ﻿using Client.Controls;
 using Client.Envir;
+using Shared.Rendering;
 using Client.Scenes;
 using Library;
 using Library.SystemModels;
@@ -166,18 +167,36 @@ namespace Client.Models
         {
             BodyLibrary.Draw(BodyFrame, DrawX, DrawY, Color.White, true, 0.5f, ImageType.Shadow);
         }
-        private void DrawBody()
+        private void DrawBody(bool mouseOver = false)
         {
+            bool outlineEnabled = false;
+
+            if (mouseOver && Config.ShowTargetOutline)
+            {
+                var result = Config.TargetNPCColour;
+
+                if (result != Color.FromArgb(0, 0, 0, 0))
+                {
+                    RenderingPipelineManager.EnableOutlineEffect(result, 2f);
+                    outlineEnabled = true;
+                }
+            }
+
             BodyLibrary.Draw(BodyFrame, DrawX, DrawY, DrawColour, true, 1F, ImageType.Image);
+
+            if (outlineEnabled)
+            {
+                RenderingPipelineManager.DisableOutlineEffect();
+            }
         }
 
         public override void DrawBlend()
         {
             if (BodyLibrary == null) return;
 
-            DXManager.SetBlend(true, 0.20F, BlendMode.HIGHLIGHT);//0.60F
-            DrawBody();
-            DXManager.SetBlend(false);
+            RenderingPipelineManager.SetBlend(true, 0.20F, BlendMode.HIGHLIGHT);//0.60F
+            DrawBody(true);
+            RenderingPipelineManager.SetBlend(false);
         }
 
         public override bool MouseOver(Point p)

@@ -84,9 +84,11 @@ namespace Server.Views
             SaveButton = new DevExpress.XtraBars.BarButtonItem();
             ExportButton = new DevExpress.XtraBars.BarButtonItem();
             ImportButton = new DevExpress.XtraBars.BarButtonItem();
+            InsertRowButton = new DevExpress.XtraBars.BarButtonItem();
             ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             JsonImportExport = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            EditGroup = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             ((System.ComponentModel.ISupportInitialize)ItemStatsGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)StatImageComboBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)ItemInfoGridControl).BeginInit();
@@ -493,9 +495,9 @@ namespace Server.Views
             // ribbon
             // 
             ribbon.ExpandCollapseItem.Id = 0;
-            ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] { ribbon.ExpandCollapseItem, ribbon.SearchEditItem, SaveButton, ExportButton, ImportButton });
+            ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] { ribbon.ExpandCollapseItem, ribbon.SearchEditItem, SaveButton, ExportButton, ImportButton, InsertRowButton });
             ribbon.Location = new System.Drawing.Point(0, 0);
-            ribbon.MaxItemId = 5;
+            ribbon.MaxItemId = 6;
             ribbon.Name = "ribbon";
             ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] { ribbonPage1 });
             ribbon.Size = new System.Drawing.Size(747, 144);
@@ -528,9 +530,18 @@ namespace Server.Views
             ImportButton.Name = "ImportButton";
             ImportButton.ItemClick += ImportButton_Click;
             // 
+            // InsertRowButton
+            // 
+            InsertRowButton.Caption = "Insert Row";
+            InsertRowButton.Id = 5;
+            InsertRowButton.ImageOptions.Image = (System.Drawing.Image)resources.GetObject("InsertRowButton.ImageOptions.Image");
+            InsertRowButton.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("InsertRowButton.ImageOptions.LargeImage");
+            InsertRowButton.Name = "InsertRowButton";
+            InsertRowButton.ItemClick += InsertRowButton_ItemClick;
+            // 
             // ribbonPage1
             // 
-            ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] { ribbonPageGroup1, JsonImportExport });
+            ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] { ribbonPageGroup1, JsonImportExport, EditGroup });
             ribbonPage1.Name = "ribbonPage1";
             ribbonPage1.Text = "Home";
             // 
@@ -549,6 +560,12 @@ namespace Server.Views
             JsonImportExport.ItemLinks.Add(ExportButton);
             JsonImportExport.Name = "JsonImportExport";
             JsonImportExport.Text = "Json";
+            // 
+            // EditGroup
+            // 
+            EditGroup.ItemLinks.Add(InsertRowButton);
+            EditGroup.Name = "EditGroup";
+            EditGroup.Text = "Edit";
             // 
             // ItemInfoView
             // 
@@ -632,5 +649,7 @@ namespace Server.Views
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup JsonImportExport;
         private DevExpress.XtraBars.BarButtonItem ExportButton;
         private DevExpress.XtraBars.BarButtonItem ImportButton;
+        private DevExpress.XtraBars.BarButtonItem InsertRowButton;
+        private DevExpress.XtraBars.Ribbon.RibbonPageGroup EditGroup;
     }
 }

@@ -23,6 +23,35 @@ namespace Library.SystemModels
                 OnChanged(oldValue, value, "Map");
             }
         }
+
+        [JsonIgnore]
+        [Association("SourceMovements", true)]
+        public DBBindingList<MovementInfo> SourceMovements { get; set; }
+
+        [JsonIgnore]
+        [Association("DestinationMovements", true)]
+        public DBBindingList<MovementInfo> DestinationMovements { get; set; }
+
+        [JsonIgnore]
+        [Association("RegionNPCs", true)]
+        public DBBindingList<NPCInfo> NPCs { get; set; }
+
+        [JsonIgnore]
+        [Association("RegionRespawns", true)]
+        public DBBindingList<RespawnInfo> Respawns { get; set; }
+
+        [JsonIgnore]
+        [Association("SafeZoneRegions", true)]
+        public DBBindingList<SafeZoneInfo> SafeZones { get; set; }
+
+        [JsonIgnore]
+        [Association("SafeZoneBindRegions", true)]
+        public DBBindingList<SafeZoneInfo> BindSafeZones { get; set; }
+
+        [JsonIgnore]
+        [Association("RegionQuestTasks", true)]
+        public DBBindingList<QuestTask> QuestTasks { get; set; }
+
         private MapInfo _Map;
 
         [IsIdentity]
@@ -74,7 +103,7 @@ namespace Library.SystemModels
 
         [JsonIgnore]
         [IgnoreProperty]
-        public string ServerDescription => $"{Map?.Description} - {Description}";
+        public string ServerDescription => $"{Map?.Description} ({Map?.FileName}) - {Description}";
 
         public RegionType RegionType
         {
@@ -109,6 +138,9 @@ namespace Library.SystemModels
         [JsonIgnore]
         public List<Point> PointList;
 
+        [JsonIgnore]
+        public List<Point> EdgePointList;
+
         public HashSet<Point> GetPoints(int width)
         {
             HashSet<Point> points = new HashSet<Point>();
@@ -132,6 +164,7 @@ namespace Library.SystemModels
         public void CreatePoints(int width)
         {
             PointList = new List<Point>();
+            EdgePointList = new List<Point>();
 
             if (BitRegion != null)
             {
@@ -149,6 +182,40 @@ namespace Library.SystemModels
                     PointList.Add(p);
             }
 
+            CreateEdgePoints();
+        }
+        public void CreateEdgePoints()
+        {
+            EdgePointList = new List<Point>();
+
+            if (PointList == null || PointList.Count == 0) return;
+
+            HashSet<Point> points = new HashSet<Point>(PointList);
+
+            foreach (Point point in PointList)
+            {
+                bool edge = false;
+
+                for (int y = -1; y <= 1 && !edge; y++)
+                {
+                    for (int x = -1; x <= 1; x++)
+                    {
+                        if (x == 0 && y == 0) continue;
+                        if (points.Contains(new Point(point.X + x, point.Y + y))) continue;
+
+                        edge = true;
+                        break;
+                    }
+                }
+
+                if (edge)
+                    EdgePointList.Add(point);
+            }
+        }
+
+        public override string ToString()
+        {
+            return $"{Map?.Description} - {Description}";
         }
     }
 }

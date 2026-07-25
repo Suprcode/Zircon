@@ -7,6 +7,7 @@ namespace Library.SystemModels
     public sealed class SafeZoneInfo : DBObject
     {
         [IsIdentity]
+        [Association("SafeZoneRegions")]
         public MapRegion Region
         {
             get { return _Region; }
@@ -22,6 +23,7 @@ namespace Library.SystemModels
         }
         private MapRegion _Region;
 
+        [Association("SafeZoneBindRegions")]
         public MapRegion BindRegion
         {
             get { return _BindRegion; }
@@ -83,5 +85,10 @@ namespace Library.SystemModels
         private bool _Border;
 
         public List<Point> ValidBindPoints = new List<Point>();
+
+        public override string ToString()
+        {
+            return BindRegion?.Map?.Description;
+        }
     }
 }

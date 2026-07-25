@@ -1,5 +1,6 @@
 ﻿using Client.Controls;
 using Client.Envir;
+using Client.Extensions;
 using Client.UserModels;
 using Library;
 using System;
@@ -28,6 +29,7 @@ namespace Client.Scenes.Views
 
         public List<DXLabel> ItemLabels = new List<DXLabel>();
         public List<ChatHistory> History = new List<ChatHistory>();
+        private int _historyHeight;
 
         #region HideChat
 
@@ -85,6 +87,8 @@ namespace Client.Scenes.Views
             ScrollBar.VisibleSize = TextPanel.Size.Height;
             ScrollBar.Location = new Point(Size.Width - ScrollBar.Size.Width - ResizeBuffer, ResizeBuffer);
             ScrollBar.Size = new Size(14, Size.Height - ResizeBuffer * 2);
+            TextureValid = false;
+            DisposeTexture();
 
             if (!IsResizing)
                 ResizeChat();
@@ -263,6 +267,7 @@ namespace Client.Scenes.Views
 
                 UpdateItems();
                 UpdateScrollBar();
+                ProcessLinkedItems();
             }
         }
 
@@ -281,6 +286,7 @@ namespace Client.Scenes.Views
                         var label = History[i].Label;
                         y -= label.Size.Height;
                         label.Location = new Point(0, y);
+                        label.Visible = IsLabelInView(label);
                     }
                 }
 
@@ -296,14 +302,10 @@ namespace Client.Scenes.Views
                     {
                         var label = History[i].Label;
                         label.Location = new Point(0, y);
+                        label.Visible = IsLabelInView(label);
                         y += label.Size.Height;
                     }
                 }
-            }
-
-            if (updated)
-            {
-                ProcessLinkedItems();
             }
         }
 
@@ -311,12 +313,12 @@ namespace Client.Scenes.Views
         {
             ScrollBar.VisibleSize = TextPanel.Size.Height;
 
-            int height = 0;
+            _historyHeight = 0;
 
             foreach (DXLabel control in History.Select(x => x.Label))
-                height += control.Size.Height;
+                _historyHeight += control.Size.Height;
 
-            ScrollBar.MaxValue = height;
+            ScrollBar.MaxValue = _historyHeight;
         }
 
         public void ReceiveChat(string message, MessageType type, List<ClientUserItem> linkedItems)
@@ -398,7 +400,9 @@ namespace Client.Scenes.Views
             Size size = DXLabel.GetHeight(label, TextPanel.Size.Width);
             label.Size = new Size(size.Width, size.Height);
 
-            History.Add(new ChatHistory { Message = message, Label = label, LinkedItems = linkedItems, SentDate = CEnvir.Now });
+            ChatHistory history = new ChatHistory { Message = message, Label = label, LinkedItems = linkedItems, SentDate = CEnvir.Now };
+            History.Add(history);
+            ProcessText(history);
 
             while (History.Count > 250)
             {
@@ -408,16 +412,14 @@ namespace Client.Scenes.Views
 
             AlertIcon.Visible = !IsVisible && Panel.AlertCheckBox.Checked;
 
-            bool update = ScrollBar.Value >= ScrollBar.MaxValue - ScrollBar.VisibleSize;
+            bool atBottom = IsScrolledToNewest();
 
             UpdateScrollBar();
 
-            if (update)
-            {
-                ScrollBar.Value = ScrollBar.MaxValue - label.Size.Height;
-            }
+            if (atBottom)
+                ScrollToNewest();
 
-            UpdateItems(update);
+            UpdateItems();
         }
         public void ReceiveChat(MessageAction action, params object[] args)
         {
@@ -458,7 +460,9 @@ namespace Client.Scenes.Views
             Size size = DXLabel.GetHeight(label, TextPanel.Size.Width);
             label.Size = new Size(size.Width, size.Height);
 
-            History.Add(new ChatHistory { Message = label.Text, Label = label, SentDate = CEnvir.Now, Action = action });
+            ChatHistory history = new ChatHistory { Message = label.Text, Label = label, SentDate = CEnvir.Now, Action = action };
+            History.Add(history);
+            ProcessText(history);
 
             while (History.Count > 250)
             {
@@ -468,16 +472,14 @@ namespace Client.Scenes.Views
 
             AlertIcon.Visible = !IsVisible && Panel.AlertCheckBox.Checked;
 
-            bool update = ScrollBar.Value >= ScrollBar.MaxValue - ScrollBar.VisibleSize;
+            bool atBottom = IsScrolledToNewest();
 
             UpdateScrollBar();
 
-            if (update)
-            {
-                ScrollBar.Value = ScrollBar.MaxValue - label.Size.Height;
-            }
+            if (atBottom)
+                ScrollToNewest();
 
-            UpdateItems(update);
+            UpdateItems();
         }
         public void UpdateColours()
         {
@@ -559,33 +561,33 @@ namespace Client.Scenes.Views
 
         public void TransparencyChanged()
         {
-            if (Panel.TransparentCheckBox.Checked)
+            var transparent = Panel.TransparentCheckBox.Checked;
+
+            float opacity = transparent ? 0.5F : 1F;
+
+            if (CurrentTabControl.SelectedTab == this)
+                foreach (DXButton button in CurrentTabControl.TabButtons)
+                    button.Opacity = opacity;
+
+            foreach (DXLabel label in History.Select(x => x.Label))
+                UpdateColours(label);
+
+            ScrollBar.Visible = !transparent;
+            DrawTexture = !transparent;
+            DrawOtherBorder = !transparent;
+            AllowResize = !transparent;
+
+            if (CurrentTabControl.SelectedTab == this)
             {
-                ScrollBar.Visible = false;
-                DrawTexture = false;
-                DrawOtherBorder = false;
-                AllowResize = false;
-
-                if (CurrentTabControl.SelectedTab == this)
-                    foreach (DXButton button in CurrentTabControl.TabButtons)
-                        button.Opacity = 0.5f;
-
-                foreach (DXLabel label in History.Select(x => x.Label))
-                    UpdateColours(label);
-            }
-            else
-            {
-                ScrollBar.Visible = true;
-                DrawTexture = true;
-                AllowResize = true;
-                DrawOtherBorder = true;
-
-                if (CurrentTabControl.SelectedTab == this)
-                    foreach (DXButton button in CurrentTabControl.TabButtons)
-                        button.Opacity = 1f;
-
-                foreach (DXLabel label in History.Select(x => x.Label))
-                    UpdateColours(label);
+                // When hide tab is checked and only 1 tab in list, then hide tab. Otherwise show tab at correct opacity
+                if (!(CurrentTabControl.TabButtons.Count == 1 && Panel.HideTabCheckBox.Checked) || GameScene.Game.ChatOptionsBox.Visible)
+                {
+                    CurrentTabControl.TabButtons[0].Opacity = opacity;
+                }
+                else
+                {
+                    CurrentTabControl.TabButtons[0].Opacity = 0f;
+                }
             }
         }
 
@@ -600,6 +602,30 @@ namespace Client.Scenes.Views
 
             foreach (ChatHistory history in History)
                 ProcessText(history);
+        }
+
+        private bool IsScrolledToNewest()
+        {
+            if (Panel?.ReverseListCheckBox.Checked == true)
+                return ScrollBar.Value <= ScrollBar.MinValue;
+
+            return ScrollBar.Value >= Math.Max(ScrollBar.MinValue, ScrollBar.MaxValue - ScrollBar.VisibleSize - 1);
+        }
+
+        private void ScrollToNewest()
+        {
+            if (Panel?.ReverseListCheckBox.Checked == true)
+                ScrollBar.Value = ScrollBar.MinValue;
+            else
+                ScrollBar.Value = Math.Max(ScrollBar.MinValue, ScrollBar.MaxValue - ScrollBar.VisibleSize);
+        }
+
+        private bool IsLabelInView(DXLabel label)
+        {
+            if (label == null || label.IsDisposed) return false;
+
+            return label.Location.Y < TextPanel.Size.Height &&
+                   label.Location.Y + label.Size.Height > 0;
         }
 
         public void ProcessText(ChatHistory history)
@@ -636,7 +662,7 @@ namespace Client.Scenes.Views
                 ClientUserItem item = items.FirstOrDefault(e => e.Index == index);
                 if (item == null) continue;
 
-                List<ButtonInfo> buttons = NPCDialog.GetWordRegionsNew(DXManager.Graphics, label.Text, label.Font, label.DrawFormat, label.Size.Width, ranges[i].First, ranges[i].Length);
+                List<ButtonInfo> buttons = DrawTextExtensions.GetWordRegionsNew(label.Text, label.Font, label.DrawFormat, label.Size.Width, ranges[i].First, ranges[i].Length);
 
                 List<DXLabel> labels = new List<DXLabel>();
 

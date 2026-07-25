@@ -1,4 +1,4 @@
-﻿using Client.Controls;
+using Client.Controls;
 using Client.Envir;
 using Client.Models;
 using Client.UserModels;
@@ -180,6 +180,7 @@ namespace Client.Scenes.Views
         private DXTabControl TabControl;
         private DXImageControl BackgroundImage;
         public DXTab FriendTab, ReceivedTab, SendTab, BlockTab;
+        public bool IsSendTabSelected => TabControl.SelectedTab == SendTab;
         private DXImageControl ReadTab;
 
         //Friends
@@ -297,6 +298,7 @@ namespace Client.Scenes.Views
             LibraryFile = LibraryFile.Interface;
             Movable = true;
             Sort = true;
+            DropShadow = true;
 
             #region Main
 
@@ -316,7 +318,7 @@ namespace Client.Scenes.Views
                 Text = CEnvir.Language.CommunicationDialogTitle,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -563,6 +565,7 @@ namespace Client.Scenes.Views
             {
                 ButtonType = ButtonType.Default,
                 Size = new Size(100, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Parent = this,
                 Label = { Text = CEnvir.Language.CommunicationDialogFriendTabFriendAddButtonLabel },
                 Visible = true
@@ -589,6 +592,7 @@ namespace Client.Scenes.Views
             {
                 ButtonType = ButtonType.Default,
                 Size = new Size(100, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Parent = this,
                 Label = { Text = CEnvir.Language.CommunicationDialogFriendTabFriendRemoveButtonLabel },
                 Visible = true,
@@ -698,6 +702,8 @@ namespace Client.Scenes.Views
             ReceivedCollectAllButton = new DXButton
             {
                 Size = new Size(80, DefaultHeight),
+
+                LabelStyle = ButtonLabelStyle.Gold,
                 Parent = this,
                 Label = { Text = CEnvir.Language.CommunicationDialogReceivedTabCollectAllButtonLabel },
                 Visible = false
@@ -736,6 +742,8 @@ namespace Client.Scenes.Views
             ReceivedDeleteAll = new DXButton
             {
                 Size = new Size(80, DefaultHeight),
+
+                LabelStyle = ButtonLabelStyle.Gold,
                 Parent = this,
                 Label = { Text = CEnvir.Language.CommunicationDialogReceivedTabDeleteAllButtonLabel },
                 Visible = false
@@ -757,6 +765,8 @@ namespace Client.Scenes.Views
             ReceivedNewButton = new DXButton
             {
                 Size = new Size(80, DefaultHeight),
+
+                LabelStyle = ButtonLabelStyle.Gold,
                 Parent = this,
                 Label = { Text = CEnvir.Language.CommunicationDialogReceivedTabNewButtonLabel },
                 Visible = false
@@ -894,6 +904,7 @@ namespace Client.Scenes.Views
             {
                 ButtonType = ButtonType.Default,
                 Size = new Size(70, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Parent = this,
                 Label = { Text = CEnvir.Language.CommunicationDialogSendTabSendButtonLabel },
                 Enabled = false,
@@ -932,6 +943,7 @@ namespace Client.Scenes.Views
                 Label = { Text = CEnvir.Language.CommunicationDialogBlockedTabAddButtonLabel },
                 Parent = this,
                 Size = new Size(100, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 ButtonType = ButtonType.Default,
                 Visible = false
             };
@@ -957,6 +969,7 @@ namespace Client.Scenes.Views
                 Label = { Text = CEnvir.Language.CommunicationDialogBlockedTabRemoveButtonLabel },
                 Parent = this,
                 Size = new Size(100, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 ButtonType = ButtonType.Default,
                 Enabled = false,
                 Visible = false
@@ -1109,6 +1122,8 @@ namespace Client.Scenes.Views
             ReadReplyButton = new DXButton
             {
                 Size = new Size(100, DefaultHeight),
+
+                LabelStyle = ButtonLabelStyle.Gold,
                 Parent = this,
                 Label = { Text = "Reply Mail" },
                 Visible = false
@@ -1132,6 +1147,8 @@ namespace Client.Scenes.Views
             ReadDeleteButton = new DXButton
             {
                 Size = new Size(100, DefaultHeight),
+
+                LabelStyle = ButtonLabelStyle.Gold,
                 Parent = this,
                 Label = { Text = "Delete Mail" },
                 Visible = false
@@ -1231,7 +1248,7 @@ namespace Client.Scenes.Views
             GoldValid = SendGoldBox.Value >= 0 && SendGoldBox.Value <= MapObject.User.Gold.Amount;
 
             if (SendGoldBox.Value == 0)
-                SendGoldBox.ValueTextBox.BorderColour = Color.FromArgb(198, 166, 99);
+                SendGoldBox.ValueTextBox.BorderColour = Constants.PrimaryColour;
             else
                 SendGoldBox.ValueTextBox.BorderColour = GoldValid ? Color.Green : Color.Red;
         }
@@ -1241,7 +1258,7 @@ namespace Client.Scenes.Views
             RecipientValid = Globals.CharacterReg.IsMatch(SendRecipientBox.TextBox.Text);
 
             if (string.IsNullOrEmpty(SendRecipientBox.TextBox.Text))
-                SendRecipientBox.BorderColour = Color.FromArgb(198, 166, 99);
+                SendRecipientBox.BorderColour = Constants.PrimaryColour;
             else
                 SendRecipientBox.BorderColour = RecipientValid ? Color.Green : Color.Red;
         }
@@ -1765,12 +1782,12 @@ namespace Client.Scenes.Views
             }
             else if (MouseControl == this)
             {
-                Label.ForeColour = Color.FromArgb(198, 166, 99);
+                Label.ForeColour = Constants.PrimaryColour;
                 BackColour = Color.FromArgb(64, 32, 32);
             }
             else
             {
-                Label.ForeColour = Color.FromArgb(198, 166, 99);
+                Label.ForeColour = Constants.PrimaryColour;
                 BackColour = Color.Empty;
             }
         }

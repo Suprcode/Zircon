@@ -307,5 +307,9 @@ namespace Library.SystemModels
         }
         private string _Description;
 
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

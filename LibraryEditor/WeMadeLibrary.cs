@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace LibraryEditor
@@ -175,35 +177,43 @@ namespace LibraryEditor
             }
         }
 
-        public void ToMLibrary()
+        public void ToMLibrary(bool useBlackKeyTransparency = false, IProgress<LibraryProgress> progress = null, CancellationToken cancellationToken = default, LibraryConversionOptions conversionOptions = null)
         {
-            string fileName = Path.ChangeExtension(_fileName, ".Zl");
+            conversionOptions ??= LibraryConversionOptions.Default;
+            string fileName = Mir3Library.GetConvertedLibraryPath(_fileName);
+            string displayName = Path.GetFileName(_fileName);
 
             if (File.Exists(fileName))
                 File.Delete(fileName);
 
-            Mir3Library library = new Mir3Library(fileName)
+            Mir3Library library = new Mir3Library(fileName, useBlackKeyTransparency)
             {
                 Images = new List<Mir3Library.Mir3Image>(Images.Length),
-                Version = Mir3Library.LIBRARY_VERSION
+                Version = Mir3Library.COMPRESSED_LIBRARY_VERSION,
+                ContainerCompression = conversionOptions.ContainerCompression
             };
 
             for (int i = 0; i < Images.Length; i++)
                 library.Images.Add(null);
 
-            ParallelOptions options = new ParallelOptions { MaxDegreeOfParallelism = 8 };
+            ParallelOptions options = new ParallelOptions { MaxDegreeOfParallelism = 8, CancellationToken = cancellationToken };
+            int completed = 0;
 
             try
             {
                 Parallel.For(0, Images.Length, options, i =>
                     {
+                        cancellationToken.ThrowIfCancellationRequested();
                         WeMadeImage image = Images[i];
                         WeMadeImage shadowimage = shadowLibrary != null ? shadowLibrary.Images[i] : null;
 
                         if (shadowimage != null)
-                            library.Images[i] = new Mir3Library.Mir3Image(image.Image, shadowimage.Image, image.MaskImage, library.Version) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = shadowimage.Image == null ? image.ShadowX : shadowimage.X, ShadowOffSetY = shadowimage.Image == null ? image.ShadowY : shadowimage.Y, ShadowType = image.Image != null ? (byte)49 : (byte)0 };
+                            library.Images[i] = new Mir3Library.Mir3Image(image.Image, shadowimage.Image, image.MaskImage, library.Version, library.UseBlackKeyTransparency) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = shadowimage.Image == null ? image.ShadowX : shadowimage.X, ShadowOffSetY = shadowimage.Image == null ? image.ShadowY : shadowimage.Y, ShadowType = image.Image != null ? (byte)49 : (byte)0 };
                         else
-                            library.Images[i] = new Mir3Library.Mir3Image(image.Image, library.Version) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY };
+                            library.Images[i] = new Mir3Library.Mir3Image(image.Image, library.Version, library.UseBlackKeyTransparency) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY };
+
+                        int value = System.Threading.Interlocked.Increment(ref completed);
+                        progress?.Report(new LibraryProgress($"Converting {displayName} ({value}/{Images.Length})", value, Images.Length));
                     });
             }
             catch (System.Exception)
@@ -212,6 +222,26 @@ namespace LibraryEditor
             }
             finally
             {
+                if (conversionOptions.BuildAtlasMetadata)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    library.SetRuntimePreferenceForAllImages(conversionOptions.IndividualRuntimePreference, conversionOptions.StorePngSourceImages, progress, displayName, cancellationToken);
+
+                    bool buildShadowAtlas = conversionOptions.BuildShadowAtlasMetadata || library.CountAtlasLayerEntries(ZlAtlasLayer.Shadow) > 100;
+                    bool buildOverlayAtlas = conversionOptions.BuildOverlayAtlasMetadata || library.CountAtlasLayerEntries(ZlAtlasLayer.Overlay) > 100;
+                    library.BuildAtlasMetadata(conversionOptions.AtlasPageSize, 2, conversionOptions.AtlasGroupImageCount, conversionOptions.RuntimePreference, progress, displayName, true, buildShadowAtlas, buildOverlayAtlas);
+                }
+                else
+                {
+                    library.SetRuntimePreferenceForAllImages(conversionOptions.IndividualRuntimePreference, conversionOptions.StorePngSourceImages, progress, displayName, cancellationToken);
+                }
+
+                cancellationToken.ThrowIfCancellationRequested();
+                progress?.Report(new LibraryProgress($"Saving {Path.GetFileName(fileName)}", 0, 0, true)
+                {
+                    CountText = "Writing compressed ZL v2 container",
+                    GroupText = "Saving and compressing payloads"
+                });
                 library.Save(fileName);
             }
 
@@ -238,7 +268,7 @@ namespace LibraryEditor
                     //if (image.HasMask)
                     //    library.Images[i] = new MLibraryV2.MImage(image.Image, image.MaskImage) { X = image.X, Y = image.Y, ShadowX = image.ShadowX, ShadowY = image.ShadowY, Shadow = image.boHasShadow ? (byte)1 : (byte)0, MaskX = image.X, MaskY = image.Y };
                     // else
-                    lib.Images[i + offset] = new Mir3Library.Mir3Image(image.Image, lib.Version) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY };
+                    lib.Images[i + offset] = new Mir3Library.Mir3Image(image.Image, lib.Version, lib.UseBlackKeyTransparency) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY };
                 });
                 lib.AddBlanks(newImages);
             }
@@ -260,8 +290,11 @@ namespace LibraryEditor
             public bool HasMask;
             public Bitmap MaskImage;
 
-            private int convert16bitTo32bit(int color)
+            private int convert16bitTo32bit(int color, bool useBlackKeyTransparency = false)
             {
+                if (useBlackKeyTransparency && color == 0)
+                    return 0;
+
                 byte red = (byte)((color & 0xf800) >> 8);
                 byte green = (byte)((color & 0x07e0) >> 3);
                 byte blue = (byte)((color & 0x001f) << 3);
@@ -278,7 +311,8 @@ namespace LibraryEditor
                 byte[][] Pixels = new byte[2][];
                 Pixels[0] = new byte[OutputWidth * OutputHeight * 2];
                 Pixels[1] = new byte[OutputWidth * OutputHeight * 2];
-                byte[] FileBytes = BReader.ReadBytes(InputLength * 2);
+                // InputLength is already stored in bytes for Mir 3 images.
+                byte[] FileBytes = BReader.ReadBytes(InputLength);
 
                 int End = 0, OffSet = 0, Start = 0, Count;
 
@@ -287,7 +321,10 @@ namespace LibraryEditor
                 for (int Y = OutputHeight - 1; Y >= 0; Y--)
                 {
                     OffSet = Start * 2;
-                    End += FileBytes[OffSet];
+                    // Scanline lengths are stored as little-endian 16-bit word counts.
+                    // Reading only the low byte desynchronises images whose encoded
+                    // scanline is larger than 255 words (for example, wide monsters).
+                    End += FileBytes[OffSet] | FileBytes[OffSet + 1] << 8;
                     Start++;
                     nX = Start;
                     OffSet += 2;
@@ -335,6 +372,9 @@ namespace LibraryEditor
                                 }
                                 nX += Count;
                                 break;
+
+                            default:
+                                throw new InvalidDataException($"Unsupported Mir 3 WIL opcode 0x{(FileBytes[OffSet + 1] << 8 | FileBytes[OffSet]):X4} at compressed byte offset {OffSet}.");
                         }
                     }
                     End++;
@@ -477,7 +517,7 @@ namespace LibraryEditor
                         for (int x = 0; x < Width; x++)
                         {
                             if (bo16bit)
-                                scan0[y * Width + x] = convert16bitTo32bit(bytes[index++] + (bytes[index++] << 8));
+                                  scan0[y * Width + x] = convert16bitTo32bit(bytes[index++] + (bytes[index++] << 8), nType == 3);
                             else
                                 scan0[y * Width + x] = palette[bytes[index++]];
                         }
@@ -495,7 +535,7 @@ namespace LibraryEditor
                         for (int y = Height - 1; y >= 0; y--)
                         {
                             for (int x = 0; x < Width; x++)
-                                maskscan0[y * Width + x] = convert16bitTo32bit(maskbytes[index++] + (maskbytes[index++] << 8));
+                                  maskscan0[y * Width + x] = convert16bitTo32bit(maskbytes[index++] + (maskbytes[index++] << 8), nType == 3);
                         }
                     }
                     MaskImage.UnlockBits(Maskdata);

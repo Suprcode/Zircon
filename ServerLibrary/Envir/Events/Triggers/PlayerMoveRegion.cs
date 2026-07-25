@@ -8,7 +8,7 @@ namespace Server.Envir.Events.Triggers
     /// Triggers when a player moves to another region
     /// </summary>
     [EventTriggerType("PLAYERMOVEREGION")]
-    public class PlayerMoverRegion : IPlayerEventTrigger, IEventTrigger
+    public class PlayerMoveRegion : IPlayerEventTrigger, IEventTrigger
     {
         public PlayerEventTriggerType[] PlayerTypes => [PlayerEventTriggerType.PlayerEnter, PlayerEventTriggerType.PlayerLeave];
 
@@ -17,6 +17,11 @@ namespace Server.Envir.Events.Triggers
             if (player.PreviousCell == null)
             {
                 return false;
+            }
+
+            if (player.PreviousCell.Map != player.CurrentCell.Map)
+            {
+                return true;
             }
 
             if (player.PreviousCell.Regions.Count != player.CurrentCell.Regions.Count)

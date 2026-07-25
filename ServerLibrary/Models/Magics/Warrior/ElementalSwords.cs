@@ -18,8 +18,6 @@ namespace Server.Models.Magics
 
         public ElementalSwords(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-            //TODO - Redo anim
-            //Magic Ex10 - 0
             //Swords appear over head, throws at enemy if they attack
             //https://www.youtube.com/watch?v=l8m9JipWIaA&t=1836s
         }
@@ -40,7 +38,7 @@ namespace Server.Models.Magics
             SwordCount = 5;
             SwordTime = SEnvir.Now.AddSeconds(5);
 
-            Player.BuffAdd(BuffType.ElementalSwords, TimeSpan.MaxValue, new Stats { [Stat.ElementalSwords] = SwordCount }, true, false, TimeSpan.Zero);
+            Player.BuffAdd(BuffType.ElementalSwords, TimeSpan.MaxValue, new Stats(), true, false, TimeSpan.Zero, extra: SwordCount);
 
             return response;
         }
@@ -69,7 +67,7 @@ namespace Server.Models.Magics
             SwordCount--;
             SwordTime = SEnvir.Now.AddSeconds(5);
 
-            Player.BuffAdd(BuffType.ElementalSwords, TimeSpan.MaxValue, new Stats { [Stat.ElementalSwords] = SwordCount }, true, false, TimeSpan.Zero);
+            Player.BuffAdd(BuffType.ElementalSwords, TimeSpan.MaxValue, new Stats(), true, false, TimeSpan.Zero, extra: SwordCount);
 
             var delay = SEnvir.Now.AddMilliseconds(500 + Functions.Distance(CurrentLocation, target.CurrentLocation) * 48);
 

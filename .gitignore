@@ -7,3 +7,5 @@ Build/
 packages/
 licenses.licx
 /NuGet.Config
+/.dotnet/.dotnet
+/.codex/skills/*

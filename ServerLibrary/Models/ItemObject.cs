@@ -43,6 +43,9 @@ namespace Server.Models
                 Item.Flags &= ~UserItemFlags.QuestItem;
             }
 
+            if (Item?.IsTemporary == true)
+                Item.Delete();
+
             Item = null;
             Account = null;
         }

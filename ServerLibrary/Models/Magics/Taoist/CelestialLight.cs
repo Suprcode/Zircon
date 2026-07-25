@@ -71,5 +71,12 @@ namespace Server.Models.Magics
 
             Player.LevelMagic(Magic);
         }
+
+        public void Activate()
+        {
+            Player.CurrentHP = Player.Stats[Stat.Health] * Player.Stats[Stat.CelestialLight] / 100;
+            Player.BuffRemove(BuffType.CelestialLight);
+            MagicCooldown(null, 6000);
+        }
     }
 }

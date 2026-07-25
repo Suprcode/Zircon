@@ -1,11 +1,11 @@
-﻿using Client.Envir;
+using Client.Envir;
 using Client.Models;
+using Shared.Rendering;
 using Client.Scenes;
 using Client.Scenes.Views;
 using Client.UserModels;
 using Library;
 using Library.SystemModels;
-using SlimDX;
 using System;
 using System.Drawing;
 using System.Linq;
@@ -188,6 +188,30 @@ namespace Client.Controls
             ItemGridChanged?.Invoke(this, EventArgs.Empty);
             ItemChanged?.Invoke(this, EventArgs.Empty);
             RefreshItem();
+        }
+
+        #endregion
+
+        #region Gray Scale
+
+        public bool GrayScale
+        {
+            get => _GrayScale;
+            set
+            {
+                if (_GrayScale == value) return;
+
+                bool oldValue = _GrayScale;
+                _GrayScale = value;
+
+                OnGrayScaleChanged(oldValue, value);
+            }
+        }
+        private bool _GrayScale = false;
+        public event EventHandler<EventArgs> GrayScaleChanged;
+        public void OnGrayScaleChanged(bool oValue, bool nValue)
+        {
+            GrayScaleChanged?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion
@@ -594,8 +618,7 @@ namespace Client.Controls
             ShowCountLabel = true;
             AllowLink = true;
 
-
-            BorderColour = Color.FromArgb(99, 83, 50);
+            BorderColour = Constants.InactiveBorderColour;
             Size = new Size(CellWidth, CellHeight);
 
             CountLabel = new DXLabel
@@ -617,22 +640,28 @@ namespace Client.Controls
         {
             base.OnClearTexture();
 
-            if (!Border || BorderInformation == null) return;
+            if (!Border || BorderInformation == null)
+            {
+                return;
+            }
 
-            DXManager.Line.Draw(BorderInformation, BorderColour);
+            RenderingPipelineManager.DrawLine(BorderInformation, BorderColour);
         }
         protected internal override void UpdateBorderInformation()
         {
             BorderInformation = null;
-            if (!Border || Size.Width == 0 || Size.Height == 0) return;
+            if (!Border || Size.Width == 0 || Size.Height == 0)
+            {
+                return;
+            }
 
             BorderInformation = new[]
             {
-                new Vector2(0, 0),
-                new Vector2(Size.Width - 1, 0 ),
-                new Vector2(Size.Width - 1, Size.Height - 1),
-                new Vector2(0 , Size.Height - 1),
-                new Vector2(0 , 0 )
+                new LinePoint(0, 0),
+                new LinePoint(Size.Width - 1, 0),
+                new LinePoint(Size.Width - 1, Size.Height - 1),
+                new LinePoint(0, Size.Height - 1),
+                new LinePoint(0, 0)
             };
             TextureValid = false;
         }
@@ -643,18 +672,17 @@ namespace Client.Controls
         {
             MirLibrary Library;
 
-            CEnvir.LibraryList.TryGetValue(LibraryFile.StoreItems, out Library);
+            CEnvir.LibraryList.TryGetValue(LibraryFile.StoreItem, out Library);
 
             if (LootBoxLocked)
             {
                 CEnvir.LibraryList.TryGetValue(LibraryFile.GameInter2, out Library);
-                MirImage image = Library.CreateImage(2930, ImageType.Image);
-                if (image != null)
+                if (Library.TryGetTexture(2930, ImageType.Image, out MirImage image, out var texture, out var sourceRectangle))
                 {
                     Rectangle area = new Rectangle(DisplayArea.X, DisplayArea.Y, image.Width, image.Height);
                     area.Offset((Size.Width - image.Width) / 2, (Size.Height - image.Height) / 2);
                     ItemInfo info = Item.Info;
-                    PresentTexture(image.Image, this, area, Item.Count > 0 ? Color.White : Color.Gray, this);
+                    PresentTexture(texture, sourceRectangle, this, area, Item.Count > 0 ? Color.White : Color.Gray, this);
                 }
 
                 base.DrawControl();
@@ -682,41 +710,50 @@ namespace Client.Controls
 
                 if (!Hidden)
                 {
-                    MirImage image = Library.CreateImage(drawIndex, ImageType.Image);
-                    if (image != null)
+                    if (Library.TryGetTexture(drawIndex, ImageType.Image, out MirImage image, out var texture, out var sourceRectangle))
                     {
+                        if (GrayScale)
+                        {
+                            RenderingPipelineManager.EnableGrayscaleEffect();
+                        }
+
                         Rectangle area = new Rectangle(DisplayArea.X, DisplayArea.Y, image.Width, image.Height);
                         area.Offset((Size.Width - image.Width) / 2, (Size.Height - image.Height) / 2);
                         ItemInfo info = Item.Info;
                         if (info.ItemEffect == ItemEffect.ItemPart && Item.AddedStats[Stat.ItemIndex] > 0)
                         {
                             info = Globals.ItemInfoList.Binding.First(x => x.Index == Item.AddedStats[Stat.ItemIndex]);
-                            PresentTexture(image.Image, this, area, Item.Count >= info.PartCount ? Color.White : Color.Gray, this);
+                            PresentTexture(texture, sourceRectangle, this, area, Item.Count >= info.PartCount ? Color.White : Color.Gray, this);
                         }
                         else
-                            PresentTexture(image.Image, this, area, Item.Count > 0 ? Color.White : Color.Gray, this);
+                            PresentTexture(texture, sourceRectangle, this, area, Item.Count > 0 ? Color.White : Color.Gray, this);
+
+                        if (GrayScale)
+                        {
+                            RenderingPipelineManager.DisableSpriteShaderEffect();
+                        }
                     }
                 }
             }
 
             if (InterfaceLibrary != null)
             {
-                MirImage image = InterfaceLibrary.CreateImage(47, ImageType.Image);
+                InterfaceLibrary.TryGetTexture(47, ImageType.Image, out MirImage image, out var texture, out var sourceRectangle);
 
                 if (Item != null && Item.New && image != null)
-                    PresentTexture(image.Image, this, new Rectangle(DisplayArea.X + 1, DisplayArea.Y + 1, image.Width, image.Height), Item.Count > 0 ? Color.White : Color.Gray, this);
+                    PresentTexture(texture, sourceRectangle, this, new Rectangle(DisplayArea.X + 1, DisplayArea.Y + 1, image.Width, image.Height), Item.Count > 0 ? Color.White : Color.Gray, this);
 
-                image = InterfaceLibrary.CreateImage(48, ImageType.Image);
+                InterfaceLibrary.TryGetTexture(48, ImageType.Image, out image, out texture, out sourceRectangle);
                 if (Item != null && (Item.Flags & UserItemFlags.Locked) == UserItemFlags.Locked && image != null && !Hidden && GridType != GridType.Inspect)
-                    PresentTexture(image.Image, this, new Rectangle(DisplayArea.X + 1, DisplayArea.Y + 1, image.Width, image.Height), Item.Count > 0 ? Color.White : Color.Gray, this);
+                    PresentTexture(texture, sourceRectangle, this, new Rectangle(DisplayArea.X + 1, DisplayArea.Y + 1, image.Width, image.Height), Item.Count > 0 ? Color.White : Color.Gray, this);
 
-                image = InterfaceLibrary.CreateImage(49, ImageType.Image);
+                InterfaceLibrary.TryGetTexture(49, ImageType.Image, out image, out texture, out sourceRectangle);
                 if (Item != null && GameScene.Game != null && !GameScene.Game.CanUseItem(Item) && image != null && !Hidden && GridType != GridType.Inspect)
-                    PresentTexture(image.Image, this, new Rectangle(DisplayArea.Right - 12, DisplayArea.Y + 1, image.Width, image.Height), Item.Count > 0 ? Color.White : Color.Gray, this);
+                    PresentTexture(texture, sourceRectangle, this, new Rectangle(DisplayArea.Right - 12, DisplayArea.Y + 1, image.Width, image.Height), Item.Count > 0 ? Color.White : Color.Gray, this);
 
-                image = InterfaceLibrary.CreateImage(103, ImageType.Image);
+                InterfaceLibrary.TryGetTexture(103, ImageType.Image, out image, out texture, out sourceRectangle);
                 if (Item != null && GameScene.Game != null && image != null && Item.Info.ItemEffect == ItemEffect.ItemPart)
-                    PresentTexture(image.Image, this, new Rectangle(DisplayArea.Right - 16, DisplayArea.Y + 1, image.Width, image.Height), Item.Count > 0 ? Color.White : Color.Gray, this);
+                    PresentTexture(texture, sourceRectangle, this, new Rectangle(DisplayArea.Right - 16, DisplayArea.Y + 1, image.Width, image.Height), Item.Count > 0 ? Color.White : Color.Gray, this);
             }
 
             base.DrawControl();
@@ -749,7 +786,7 @@ namespace Client.Controls
             else
             {
                 if (!FixedBorderColour)
-                    BorderColour = Color.FromArgb(99, 83, 50);
+                    BorderColour = Constants.InactiveBorderColour;
                 Border = FixedBorder;
             }
         }
@@ -774,6 +811,9 @@ namespace Client.Controls
 
             CountLabel.Visible = ShowCountLabel && !Hidden && !LootBoxLocked && Item != null && (!CEnvir.IsCurrencyItem(Item.Info) && Item.Info.ItemEffect != ItemEffect.Experience) && (Item.Info.StackSize > 1 || Item.Count > 1);
             CountLabel.Text = Linked ? LinkedCount.ToString() : Item?.Count.ToString();
+
+            TextureValid = false;
+            InvalidateParentChildCache();
         }
         public void MoveItem()
         {
@@ -1374,6 +1414,25 @@ namespace Client.Controls
 
                     if (Item.Level >= Globals.AccessoryExperienceList.Count) return false;
                     break;
+                case GridType.SocketTarget:
+                    if (GridType != GridType.Inventory) return false;
+                    if (Item.Info.ItemType != ItemType.Weapon && Item.Info.ItemType != ItemType.Armour) return false;
+                    break;
+                case GridType.SocketGem:
+                    if (GridType != GridType.Inventory) return false;
+                    if (!GameScene.Game.NPCSocketBox.CanUseGem(Item)) return false;
+                    break;
+                case GridType.SocketCombine1:
+                case GridType.SocketCombine2:
+                case GridType.SocketCombine3:
+                    if (GridType != GridType.Inventory) return false;
+                    if (Item.Info.ItemType != ItemType.SocketGem) return false;
+
+                    ItemInfo combineInfo = GameScene.Game.NPCSocketCombineBox.GetInputInfo();
+                    if (combineInfo != null && combineInfo != Item.Info) return false;
+                    break;
+                case GridType.SocketCombineResult:
+                    return false;
                 case GridType.MasterRefineFragment1:
                     if ((Item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return false;
                     if (Item.Info.ItemEffect != ItemEffect.Fragment1 || (Item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return false;
@@ -1860,6 +1919,41 @@ namespace Client.Controls
                                 return;
                             }
 
+                            if (GameScene.Game.NPCSocketCombineBox.IsVisible)
+                            {
+                                if (Item.Info.ItemType != ItemType.SocketGem) return;
+
+                                ItemInfo combineInfo = GameScene.Game.NPCSocketCombineBox.GetInputInfo();
+                                if (combineInfo != null && combineInfo != Item.Info)
+                                {
+                                    GameScene.Game.ReceiveChat(CEnvir.Language.UnableToSocketMismatch, MessageType.System);
+                                    return;
+                                }
+
+                                DXItemCell combineCell = GameScene.Game.NPCSocketCombineBox.GetNextInputCell();
+                                if (combineCell != null)
+                                    MoveItem(combineCell);
+                                return;
+                            }
+
+                            if (GameScene.Game.NPCSocketBox.IsVisible)
+                            {
+                                switch (Item.Info.ItemType)
+                                {
+                                    case ItemType.Weapon:
+                                    case ItemType.Armour:
+                                        MoveItem(GameScene.Game.NPCSocketBox.TargetCell);
+                                        return;
+                                    case ItemType.SocketGem:
+                                        if (!GameScene.Game.NPCSocketBox.CanUseGem(Item)) return;
+
+                                        MoveItem(GameScene.Game.NPCSocketBox.GemCell);
+                                        return;
+                                }
+
+                                return;
+                            }
+
                             if (GameScene.Game.InventoryBox.IsVisible)
                             {
                                 if (GameScene.Game.InventoryBox.InvMode == InventoryMode.Sell)
@@ -2062,13 +2156,13 @@ namespace Client.Controls
                                 return;
                             }
 
-                            if (GameScene.Game.MarketPlaceBox.ConsignTab.IsVisible)
+                            if (GameScene.Game.ConsignmentBox.ConsignItemBox?.IsVisible == true)
                             {
-                                MoveItem(GameScene.Game.MarketPlaceBox.ConsignGrid);
+                                MoveItem(GameScene.Game.ConsignmentBox.ConsignItemBox.ItemGrid);
                                 return;
                             }
 
-                            if (GameScene.Game.CommunicationBox.IsVisible)
+                            if (GameScene.Game.CommunicationBox.IsVisible && GameScene.Game.CommunicationBox.IsSendTabSelected)
                             {
                                 MoveItem(GameScene.Game.CommunicationBox.SendGrid);
                                 return;
@@ -2207,13 +2301,13 @@ namespace Client.Controls
                                 return;
                             }
 
-                            if (GameScene.Game.MarketPlaceBox.ConsignTab.IsVisible)
+                            if (GameScene.Game.ConsignmentBox.ConsignItemBox?.IsVisible == true)
                             {
-                                MoveItem(GameScene.Game.MarketPlaceBox.ConsignGrid);
+                                MoveItem(GameScene.Game.ConsignmentBox.ConsignItemBox.ItemGrid);
                                 return;
                             }
 
-                            if (GameScene.Game.CommunicationBox.IsVisible)
+                            if (GameScene.Game.CommunicationBox.IsVisible && GameScene.Game.CommunicationBox.IsSendTabSelected)
                             {
                                 MoveItem(GameScene.Game.CommunicationBox.SendGrid);
                                 return;
@@ -2342,9 +2436,9 @@ namespace Client.Controls
                                 return;
                             }
 
-                            if (GameScene.Game.MarketPlaceBox.ConsignTab.IsVisible)
+                            if (GameScene.Game.ConsignmentBox.ConsignItemBox?.IsVisible == true)
                             {
-                                MoveItem(GameScene.Game.MarketPlaceBox.ConsignGrid);
+                                MoveItem(GameScene.Game.ConsignmentBox.ConsignItemBox.ItemGrid);
                                 return;
                             }
 
@@ -2362,9 +2456,9 @@ namespace Client.Controls
                                 return;
                             }
 
-                            if (GameScene.Game.MarketPlaceBox.ConsignTab.IsVisible)
+                            if (GameScene.Game.ConsignmentBox.ConsignItemBox?.IsVisible == true)
                             {
-                                MoveItem(GameScene.Game.MarketPlaceBox.ConsignGrid);
+                                MoveItem(GameScene.Game.ConsignmentBox.ConsignItemBox.ItemGrid);
                                 return;
                             }
 

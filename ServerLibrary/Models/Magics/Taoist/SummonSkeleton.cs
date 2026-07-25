@@ -71,6 +71,8 @@ namespace Server.Models.Magics
             ob.SummonLevel = Magic.Level * 2;
             ob.TameTime = SEnvir.Now.AddDays(365);
 
+            Player.LogMilestone(MilestoneType.PetSummon, 1, monster: ob.MonsterInfo);
+
             if (Player.Buffs.Any(x => x.Type == BuffType.StrengthOfFaith) && Player.GetMagic(MagicType.StrengthOfFaith, out StrengthOfFaith strengthOfFaith))
                 ob.Magics.Add(strengthOfFaith.Magic);
 

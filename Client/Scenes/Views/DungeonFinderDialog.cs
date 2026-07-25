@@ -1,4 +1,4 @@
-﻿using Client.Controls;
+using Client.Controls;
 using Client.Envir;
 using Client.Models;
 using Client.UserModels;
@@ -81,6 +81,7 @@ namespace Client.Scenes.Views
         public DungeonFinderDialog()
         {
             TitleLabel.Text = "Dungeon Finder";
+            DropShadow = true;
             SetClientSize(new Size(560, 461));
 
             TabControl = new DXTabControl
@@ -110,7 +111,7 @@ namespace Client.Scenes.Views
                 Size = new Size(DungeonTab.Size.Width - 20, 26),
                 Location = new Point(10, 10),
                 Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99)
+                BorderColour = Constants.PrimaryColour
             };
 
             DXLabel label = new DXLabel
@@ -437,7 +438,89 @@ namespace Client.Scenes.Views
 
             if (disposing)
             {
+                SelectedDungeonRowChanged = null;
 
+                if (TabControl != null)
+                {
+                    if (!TabControl.IsDisposed)
+                        TabControl.Dispose();
+
+                    TabControl = null;
+                }
+
+                if (DungeonTab != null)
+                {
+                    if (!DungeonTab.IsDisposed)
+                        DungeonTab.Dispose();
+
+                    DungeonTab = null;
+                }
+
+                if (RaidTab != null)
+                {
+                    if (!RaidTab.IsDisposed)
+                        RaidTab.Dispose();
+
+                    RaidTab = null;
+                }
+
+                if (DungeonNameBox != null)
+                {
+                    if (!DungeonNameBox.IsDisposed)
+                        DungeonNameBox.Dispose();
+
+                    DungeonNameBox = null;
+                }
+
+                if (SortBox != null)
+                {
+                    if (!SortBox.IsDisposed)
+                        SortBox.Dispose();
+
+                    SortBox = null;
+                }
+
+                if (SearchButton != null)
+                {
+                    if (!SearchButton.IsDisposed)
+                        SearchButton.Dispose();
+
+                    SearchButton = null;
+                }
+
+                if (DungeonScrollBar != null)
+                {
+                    if (!DungeonScrollBar.IsDisposed)
+                        DungeonScrollBar.Dispose();
+
+                    DungeonScrollBar = null;
+                }
+
+                if (DungeonRows != null)
+                {
+                    for (int i = 0; i < DungeonRows.Length; i++)
+                    {
+                        if (DungeonRows[i] == null) continue;
+
+                        if (!DungeonRows[i].IsDisposed)
+                            DungeonRows[i].Dispose();
+
+                        DungeonRows[i] = null;
+                    }
+
+                    DungeonRows = null;
+                }
+
+                DungeonSearchResults?.Clear();
+                DungeonSearchResults = null;
+
+                if (JoinButton != null)
+                {
+                    if (!JoinButton.IsDisposed)
+                        JoinButton.Dispose();
+
+                    JoinButton = null;
+                }
             }
         }
 
@@ -468,7 +551,7 @@ namespace Client.Scenes.Views
         public event EventHandler<EventArgs> SelectedChanged;
         public void OnSelectedChanged(bool oValue, bool nValue)
         {
-            BackColour = Selected ? Color.FromArgb(80, 80, 125) : Color.FromArgb(25, 20, 0);
+            BackColour = Selected ? Constants.SelectedRowBackColour : Constants.RowBackColour;
 
             SelectedChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -546,7 +629,7 @@ namespace Client.Scenes.Views
             Size = new Size(515, 40);
 
             DrawTexture = true;
-            BackColour = Selected ? Color.FromArgb(80, 80, 125) : Color.FromArgb(25, 20, 0);
+            BackColour = Selected ? Constants.SelectedRowBackColour : Constants.RowBackColour;
 
             NameLabel = new DXLabel
             {

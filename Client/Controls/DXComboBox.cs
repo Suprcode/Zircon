@@ -1,4 +1,4 @@
-﻿using Library;
+using Library;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -12,6 +12,7 @@ namespace Client.Controls
         #region Properties
         public static List<DXComboBox> ComboBoxes = new List<DXComboBox>();
 
+        public DXImageControl Background;
 
         #region NormalHeight
 
@@ -89,7 +90,10 @@ namespace Client.Controls
             Size = new Size(Size.Width, Showing ? Math.Min(ListBox.ScrollBar.MaxValue + NormalHeight + 2, DropDownHeight) : NormalHeight);
 
             if (ListBox != null)
+            {
                 ListBox.Visible = Showing;
+                ListBox.UpdateClipAreaTree();
+            }
 
             ShowingChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -141,6 +145,8 @@ namespace Client.Controls
 
             if (Showing)
                 ListBox.Size = new Size(Size.Width, Size.Height - NormalHeight - 2);
+
+            ListBox.UpdateClipAreaTree();
         }
 
         #endregion
@@ -151,7 +157,15 @@ namespace Client.Controls
             NormalHeight = DefaultNormalHeight;
             DropDownHeight = 123;
             Border = true;
-            BorderColour = Color.FromArgb(198, 166, 99);
+            BorderColour = Constants.PrimaryColour;
+
+            Background = new DXImageControl
+            {
+                LibraryFile = LibraryFile.Interface,
+                Index = 206,
+                Visible = false,
+                Parent = this
+            };
 
             DownArrow = new DXButton
             {
@@ -214,6 +228,13 @@ namespace Client.Controls
                 DropDownHeightChanged = null;
                 ShowingChanged = null;
                 SelectedItemChanged = null;
+
+                if (Background != null)
+                {
+                    if (!Background.IsDisposed)
+                        Background.Dispose();
+                    Background = null;
+                }
 
                 if (DownArrow != null)
                 {

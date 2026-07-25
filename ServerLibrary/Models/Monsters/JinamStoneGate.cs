@@ -52,7 +52,7 @@ namespace Server.Models.Monsters
                 return;
             }
 
-            if (SEnvir.Now >= SearchTime && SEnvir.LairMapRegion != null && SEnvir.LairMapRegion.PointList.Count > 0)
+            if (SEnvir.Now >= SearchTime && SEnvir.LairMapRegion != null)
             {
                 SearchTime = SEnvir.Now.AddSeconds(3);
                 Map map = SEnvir.GetMap(SEnvir.LairMapRegion.Map, CurrentMap.Instance, CurrentMap.InstanceSequence);
@@ -60,6 +60,16 @@ namespace Server.Models.Monsters
                 if (map == null)
                 {
                     SearchTime = SEnvir.Now.AddSeconds(60);
+                    return;
+                }
+
+                if (SEnvir.LairMapRegion.PointList == null)
+                {
+                    SEnvir.LairMapRegion.CreatePoints(map.Width);
+                }
+
+                if (SEnvir.LairMapRegion.PointList.Count == 0)
+                {
                     return;
                 }
 

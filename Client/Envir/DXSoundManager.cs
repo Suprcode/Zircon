@@ -1,5 +1,6 @@
-﻿using Library;
-using SlimDX.DirectSound;
+﻿using Shared.Rendering;
+using Library;
+using SharpDX.DirectSound;
 using System;
 using System.Collections.Generic;
 
@@ -108,12 +109,16 @@ namespace Client.Envir
 
             [SoundIndex.GoldPickUp] = new DXSound(SoundPath + @"120.wav", SoundType.System),
             [SoundIndex.GoldGained] = new DXSound(SoundPath + @"122.wav", SoundType.System),
+            //[SoundIndex.??] = new DXSound(SoundPath + @"123.wav", SoundType.System), //Refine Weapon??
 
             [SoundIndex.RollDice] = new DXSound(SoundPath + @"dice_roll.wav", SoundType.System),
             [SoundIndex.RollYut] = new DXSound(SoundPath + @"yut_sticks.wav", SoundType.System),
 
             [SoundIndex.QuestTake] = new DXSound(SoundPath + @"Qtake.wav", SoundType.System),
             [SoundIndex.QuestComplete] = new DXSound(SoundPath + @"Qcomp.wav", SoundType.System),
+
+            [SoundIndex.GemStart] = new DXSound(SoundPath + @"Sopen.wav", SoundType.System),
+            [SoundIndex.GemCombine] = new DXSound(SoundPath + @"Scombine.wav", SoundType.System),
 
             #endregion
 
@@ -1071,8 +1076,12 @@ namespace Client.Envir
         }
         public static void StopAllSounds()
         {
-            for (int i = DXManager.SoundList.Count - 1; i >= 0; i--)
-                DXManager.SoundList[i].Stop();
+            List<ISoundCacheItem> sounds = new List<ISoundCacheItem>(RenderingPipelineManager.GetRegisteredSoundCaches());
+
+            for (int i = sounds.Count - 1; i >= 0; i--)
+            {
+                sounds[i].Stop();
+            }
         }
         public static void AdjustVolume()
         {
@@ -1081,8 +1090,12 @@ namespace Client.Envir
         }
         public static void UpdateFlags()
         {
-            for (int i = DXManager.SoundList.Count - 1; i >= 0; i--)
-                DXManager.SoundList[i].UpdateFlags();
+            List<ISoundCacheItem> sounds = new List<ISoundCacheItem>(RenderingPipelineManager.GetRegisteredSoundCaches());
+
+            for (int i = sounds.Count - 1; i >= 0; i--)
+            {
+                sounds[i].UpdateFlags();
+            }
         }
 
         public static int GetVolume(SoundType type)
@@ -1092,19 +1105,19 @@ namespace Client.Envir
             switch (type)
             {
                 case SoundType.System:
-                    volume = Math.Max(0, Math.Min(100, Config.SystemVolume));
+                    volume = Config.SystemVolumeMuted ? 0 : Math.Max(0, Math.Min(100, Config.SystemVolume));
                     break;
                 case SoundType.Music:
-                    volume = Math.Max(0, Math.Min(100, Config.MusicVolume));
+                    volume = Config.MusicVolumeMuted ? 0 : Math.Max(0, Math.Min(100, Config.MusicVolume));
                     break;
                 case SoundType.Player:
-                    volume = Math.Max(0, Math.Min(100, Config.PlayerVolume));
+                    volume = Config.PlayerVolumeMuted ? 0 : Math.Max(0, Math.Min(100, Config.PlayerVolume));
                     break;
                 case SoundType.Monster:
-                    volume = Math.Max(0, Math.Min(100, Config.MonsterVolume));
+                    volume = Config.MonsterVolumeMuted ? 0 : Math.Max(0, Math.Min(100, Config.MonsterVolume));
                     break;
                 case SoundType.Magic:
-                    volume = Math.Max(0, Math.Min(100, Config.MagicVolume));
+                    volume = Config.MagicVolumeMuted ? 0 : Math.Max(0, Math.Min(100, Config.MagicVolume));
                     break;
                 default:
                     volume = 0;
@@ -1119,21 +1132,24 @@ namespace Client.Envir
 
         public static void Unload()
         {
-            for (int i = DXManager.SoundList.Count - 1; i >= 0; i--)
-                DXManager.SoundList[i].DisposeSoundBuffer();
+            List<ISoundCacheItem> sounds = new List<ISoundCacheItem>(RenderingPipelineManager.GetRegisteredSoundCaches());
+
+            for (int i = sounds.Count - 1; i >= 0; i--)
+            {
+                sounds[i].DisposeSoundBuffer();
+            }
 
             if (Device != null)
             {
-                if (!Device.Disposed)
+                if (!Device.IsDisposed)
+                {
                     Device.Dispose();
+                }
 
                 Device = null;
             }
-
-
         }
     }
-
 
     public enum SoundType
     {
@@ -1146,4 +1162,3 @@ namespace Client.Envir
         Player,
     }
 }
-

@@ -28,420 +28,466 @@
         /// </summary>
         private void InitializeComponent()
         {
+            DevExpress.XtraGrid.GridLevelNode gridLevelNode1 = new DevExpress.XtraGrid.GridLevelNode();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CompanionInfoView));
-            this.ribbon = new DevExpress.XtraBars.Ribbon.RibbonControl();
-            this.SaveButton = new DevExpress.XtraBars.BarButtonItem();
-            this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
-            this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
-            this.CompanionInfoGridControl = new DevExpress.XtraGrid.GridControl();
-            this.CompanionInfoGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
-            this.gridColumn1 = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.MonsterInfoLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
-            this.gridColumn3 = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.gridColumn4 = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.tabPane1 = new DevExpress.XtraBars.Navigation.TabPane();
-            this.tabNavigationPage1 = new DevExpress.XtraBars.Navigation.TabNavigationPage();
-            this.tabNavigationPage2 = new DevExpress.XtraBars.Navigation.TabNavigationPage();
-            this.CompanionLevelInfoGridControl = new DevExpress.XtraGrid.GridControl();
-            this.CompanionLevelInfoGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
-            this.gridColumn2 = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.gridColumn5 = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.gridColumn6 = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.gridColumn7 = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.gridColumn8 = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.repositoryItemLookUpEdit1 = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
-            this.tabNavigationPage3 = new DevExpress.XtraBars.Navigation.TabNavigationPage();
-            this.CompanionSkillInfoGridControl = new DevExpress.XtraGrid.GridControl();
-            this.CompanionSkillInfoGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
-            this.gridColumn9 = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.gridColumn10 = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.gridColumn11 = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.gridColumn12 = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.gridColumn13 = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.repositoryItemLookUpEdit2 = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
-            this.JsonImportExport = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
-            this.ImportButton = new DevExpress.XtraBars.BarButtonItem();
-            this.ExportButton = new DevExpress.XtraBars.BarButtonItem();
-            ((System.ComponentModel.ISupportInitialize)(this.ribbon)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.CompanionInfoGridControl)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.CompanionInfoGridView)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.MonsterInfoLookUpEdit)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tabPane1)).BeginInit();
-            this.tabPane1.SuspendLayout();
-            this.tabNavigationPage1.SuspendLayout();
-            this.tabNavigationPage2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.CompanionLevelInfoGridControl)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.CompanionLevelInfoGridView)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.repositoryItemLookUpEdit1)).BeginInit();
-            this.tabNavigationPage3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.CompanionSkillInfoGridControl)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.CompanionSkillInfoGridView)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.repositoryItemLookUpEdit2)).BeginInit();
-            this.SuspendLayout();
+            CompanionSpeechGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
+            gridColumn14 = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn15 = new DevExpress.XtraGrid.Columns.GridColumn();
+            CompanionActionImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
+            CompanionInfoGridControl = new DevExpress.XtraGrid.GridControl();
+            CompanionInfoGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
+            gridColumn1 = new DevExpress.XtraGrid.Columns.GridColumn();
+            MonsterInfoLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
+            gridColumn3 = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn4 = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn16 = new DevExpress.XtraGrid.Columns.GridColumn();
+            ItemInfoLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
+            gridColumn17 = new DevExpress.XtraGrid.Columns.GridColumn();
+            CurrencyInfoLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
+            gridColumn18 = new DevExpress.XtraGrid.Columns.GridColumn();
+            ribbon = new DevExpress.XtraBars.Ribbon.RibbonControl();
+            SaveButton = new DevExpress.XtraBars.BarButtonItem();
+            ImportButton = new DevExpress.XtraBars.BarButtonItem();
+            ExportButton = new DevExpress.XtraBars.BarButtonItem();
+            ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
+            ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            JsonImportExport = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            tabPane1 = new DevExpress.XtraBars.Navigation.TabPane();
+            tabNavigationPage1 = new DevExpress.XtraBars.Navigation.TabNavigationPage();
+            tabNavigationPage2 = new DevExpress.XtraBars.Navigation.TabNavigationPage();
+            CompanionLevelInfoGridControl = new DevExpress.XtraGrid.GridControl();
+            CompanionLevelInfoGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
+            gridColumn2 = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn5 = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn6 = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn7 = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn8 = new DevExpress.XtraGrid.Columns.GridColumn();
+            repositoryItemLookUpEdit1 = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
+            tabNavigationPage3 = new DevExpress.XtraBars.Navigation.TabNavigationPage();
+            CompanionSkillInfoGridControl = new DevExpress.XtraGrid.GridControl();
+            CompanionSkillInfoGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
+            gridColumn9 = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn10 = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn11 = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn12 = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn13 = new DevExpress.XtraGrid.Columns.GridColumn();
+            repositoryItemLookUpEdit2 = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
+            ((System.ComponentModel.ISupportInitialize)CompanionSpeechGridView).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)CompanionActionImageComboBox).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)CompanionInfoGridControl).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)CompanionInfoGridView).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)MonsterInfoLookUpEdit).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)ItemInfoLookUpEdit).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)CurrencyInfoLookUpEdit).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)ribbon).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)tabPane1).BeginInit();
+            tabPane1.SuspendLayout();
+            tabNavigationPage1.SuspendLayout();
+            tabNavigationPage2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)CompanionLevelInfoGridControl).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)CompanionLevelInfoGridView).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)repositoryItemLookUpEdit1).BeginInit();
+            tabNavigationPage3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)CompanionSkillInfoGridControl).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)CompanionSkillInfoGridView).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)repositoryItemLookUpEdit2).BeginInit();
+            SuspendLayout();
             // 
-            // ribbon
+            // CompanionSpeechGridView
             // 
-            this.ribbon.ExpandCollapseItem.Id = 0;
-            this.ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] {
-            this.ribbon.ExpandCollapseItem,
-            this.SaveButton,
-            this.ribbon.SearchEditItem,
-            this.ImportButton,
-            this.ExportButton});
-            this.ribbon.Location = new System.Drawing.Point(0, 0);
-            this.ribbon.MaxItemId = 4;
-            this.ribbon.Name = "ribbon";
-            this.ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
-            this.ribbonPage1});
-            this.ribbon.Size = new System.Drawing.Size(972, 144);
+            CompanionSpeechGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn14, gridColumn15 });
+            CompanionSpeechGridView.GridControl = CompanionInfoGridControl;
+            CompanionSpeechGridView.Name = "CompanionSpeechGridView";
+            CompanionSpeechGridView.OptionsView.EnableAppearanceEvenRow = true;
+            CompanionSpeechGridView.OptionsView.EnableAppearanceOddRow = true;
+            CompanionSpeechGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
+            CompanionSpeechGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
+            CompanionSpeechGridView.OptionsView.ShowGroupPanel = false;
             // 
-            // SaveButton
+            // gridColumn14
             // 
-            this.SaveButton.Caption = "Save Database";
-            this.SaveButton.Id = 1;
-            this.SaveButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("SaveButton.ImageOptions.Image")));
-            this.SaveButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("SaveButton.ImageOptions.LargeImage")));
-            this.SaveButton.LargeWidth = 60;
-            this.SaveButton.Name = "SaveButton";
-            this.SaveButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.SaveButton_ItemClick);
+            gridColumn14.Caption = "Speech";
+            gridColumn14.FieldName = "Speech";
+            gridColumn14.Name = "gridColumn14";
+            gridColumn14.Visible = true;
+            gridColumn14.VisibleIndex = 1;
             // 
-            // ribbonPage1
+            // gridColumn15
             // 
-            this.ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
-            this.ribbonPageGroup1,
-            this.JsonImportExport});
-            this.ribbonPage1.Name = "ribbonPage1";
-            this.ribbonPage1.Text = "Home";
+            gridColumn15.ColumnEdit = CompanionActionImageComboBox;
+            gridColumn15.FieldName = "Action";
+            gridColumn15.Name = "gridColumn15";
+            gridColumn15.Visible = true;
+            gridColumn15.VisibleIndex = 0;
             // 
-            // ribbonPageGroup1
+            // CompanionActionImageComboBox
             // 
-            this.ribbonPageGroup1.AllowTextClipping = false;
-            this.ribbonPageGroup1.CaptionButtonVisible = DevExpress.Utils.DefaultBoolean.False;
-            this.ribbonPageGroup1.ItemLinks.Add(this.SaveButton);
-            this.ribbonPageGroup1.Name = "ribbonPageGroup1";
-            this.ribbonPageGroup1.Text = "Saving";
+            CompanionActionImageComboBox.AutoHeight = false;
+            CompanionActionImageComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
+            CompanionActionImageComboBox.Name = "CompanionActionImageComboBox";
             // 
             // CompanionInfoGridControl
             // 
-            this.CompanionInfoGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.CompanionInfoGridControl.Location = new System.Drawing.Point(0, 0);
-            this.CompanionInfoGridControl.MainView = this.CompanionInfoGridView;
-            this.CompanionInfoGridControl.MenuManager = this.ribbon;
-            this.CompanionInfoGridControl.Name = "CompanionInfoGridControl";
-            this.CompanionInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
-            this.MonsterInfoLookUpEdit});
-            this.CompanionInfoGridControl.Size = new System.Drawing.Size(972, 371);
-            this.CompanionInfoGridControl.TabIndex = 2;
-            this.CompanionInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
-            this.CompanionInfoGridView});
+            CompanionInfoGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            gridLevelNode1.LevelTemplate = CompanionSpeechGridView;
+            gridLevelNode1.RelationName = "CompanionSpeeches";
+            CompanionInfoGridControl.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] { gridLevelNode1 });
+            CompanionInfoGridControl.Location = new System.Drawing.Point(0, 0);
+            CompanionInfoGridControl.MainView = CompanionInfoGridView;
+            CompanionInfoGridControl.MenuManager = ribbon;
+            CompanionInfoGridControl.Name = "CompanionInfoGridControl";
+            CompanionInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { MonsterInfoLookUpEdit, CompanionActionImageComboBox, CurrencyInfoLookUpEdit, ItemInfoLookUpEdit });
+            CompanionInfoGridControl.ShowOnlyPredefinedDetails = true;
+            CompanionInfoGridControl.Size = new System.Drawing.Size(902, 336);
+            CompanionInfoGridControl.TabIndex = 2;
+            CompanionInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { CompanionInfoGridView, CompanionSpeechGridView });
             // 
             // CompanionInfoGridView
             // 
-            this.CompanionInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
-            this.gridColumn1,
-            this.gridColumn3,
-            this.gridColumn4});
-            this.CompanionInfoGridView.GridControl = this.CompanionInfoGridControl;
-            this.CompanionInfoGridView.Name = "CompanionInfoGridView";
-            this.CompanionInfoGridView.OptionsView.EnableAppearanceEvenRow = true;
-            this.CompanionInfoGridView.OptionsView.EnableAppearanceOddRow = true;
-            this.CompanionInfoGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
-            this.CompanionInfoGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
-            this.CompanionInfoGridView.OptionsView.ShowGroupPanel = false;
+            CompanionInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn1, gridColumn3, gridColumn4, gridColumn16, gridColumn17, gridColumn18 });
+            CompanionInfoGridView.GridControl = CompanionInfoGridControl;
+            CompanionInfoGridView.Name = "CompanionInfoGridView";
+            CompanionInfoGridView.OptionsDetail.AllowExpandEmptyDetails = true;
+            CompanionInfoGridView.OptionsView.EnableAppearanceEvenRow = true;
+            CompanionInfoGridView.OptionsView.EnableAppearanceOddRow = true;
+            CompanionInfoGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
+            CompanionInfoGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
+            CompanionInfoGridView.OptionsView.ShowGroupPanel = false;
             // 
             // gridColumn1
             // 
-            this.gridColumn1.ColumnEdit = this.MonsterInfoLookUpEdit;
-            this.gridColumn1.FieldName = "MonsterInfo";
-            this.gridColumn1.Name = "gridColumn1";
-            this.gridColumn1.Visible = true;
-            this.gridColumn1.VisibleIndex = 0;
+            gridColumn1.ColumnEdit = MonsterInfoLookUpEdit;
+            gridColumn1.FieldName = "MonsterInfo";
+            gridColumn1.Name = "gridColumn1";
+            gridColumn1.Visible = true;
+            gridColumn1.VisibleIndex = 0;
             // 
             // MonsterInfoLookUpEdit
             // 
-            this.MonsterInfoLookUpEdit.AutoHeight = false;
-            this.MonsterInfoLookUpEdit.BestFitMode = DevExpress.XtraEditors.Controls.BestFitMode.BestFitResizePopup;
-            this.MonsterInfoLookUpEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
-            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
-            this.MonsterInfoLookUpEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] {
-            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Index", "Index"),
-            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("MonsterName", "Monster Name"),
-            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("AI", "AI"),
-            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Level", "Level"),
-            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Experience", "Experience"),
-            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("IsBoss", "Is Boss")});
-            this.MonsterInfoLookUpEdit.DisplayMember = "MonsterName";
-            this.MonsterInfoLookUpEdit.Name = "MonsterInfoLookUpEdit";
-            this.MonsterInfoLookUpEdit.NullText = "[Monster is null]";
+            MonsterInfoLookUpEdit.AutoHeight = false;
+            MonsterInfoLookUpEdit.BestFitMode = DevExpress.XtraEditors.Controls.BestFitMode.BestFitResizePopup;
+            MonsterInfoLookUpEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
+            MonsterInfoLookUpEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] { new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Index", "Index"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("MonsterName", "Monster Name"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("AI", "AI"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Level", "Level"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Experience", "Experience"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("IsBoss", "Is Boss") });
+            MonsterInfoLookUpEdit.DisplayMember = "MonsterName";
+            MonsterInfoLookUpEdit.Name = "MonsterInfoLookUpEdit";
+            MonsterInfoLookUpEdit.NullText = "[Monster is null]";
             // 
             // gridColumn3
             // 
-            this.gridColumn3.FieldName = "Price";
-            this.gridColumn3.Name = "gridColumn3";
-            this.gridColumn3.Visible = true;
-            this.gridColumn3.VisibleIndex = 1;
+            gridColumn3.FieldName = "Price";
+            gridColumn3.Name = "gridColumn3";
+            gridColumn3.Visible = true;
+            gridColumn3.VisibleIndex = 2;
             // 
             // gridColumn4
             // 
-            this.gridColumn4.FieldName = "Available";
-            this.gridColumn4.Name = "gridColumn4";
-            this.gridColumn4.Visible = true;
-            this.gridColumn4.VisibleIndex = 2;
+            gridColumn4.FieldName = "Available";
+            gridColumn4.Name = "gridColumn4";
+            gridColumn4.Visible = true;
+            gridColumn4.VisibleIndex = 5;
             // 
-            // tabPane1
+            // gridColumn16
             // 
-            this.tabPane1.Controls.Add(this.tabNavigationPage1);
-            this.tabPane1.Controls.Add(this.tabNavigationPage2);
-            this.tabPane1.Controls.Add(this.tabNavigationPage3);
-            this.tabPane1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabPane1.Location = new System.Drawing.Point(0, 144);
-            this.tabPane1.Name = "tabPane1";
-            this.tabPane1.Pages.AddRange(new DevExpress.XtraBars.Navigation.NavigationPageBase[] {
-            this.tabNavigationPage1,
-            this.tabNavigationPage2,
-            this.tabNavigationPage3});
-            this.tabPane1.RegularSize = new System.Drawing.Size(972, 400);
-            this.tabPane1.SelectedPage = this.tabNavigationPage1;
-            this.tabPane1.Size = new System.Drawing.Size(972, 400);
-            this.tabPane1.TabIndex = 3;
+            gridColumn16.ColumnEdit = ItemInfoLookUpEdit;
+            gridColumn16.FieldName = "UnlockItem";
+            gridColumn16.Name = "gridColumn16";
+            gridColumn16.Visible = true;
+            gridColumn16.VisibleIndex = 4;
             // 
-            // tabNavigationPage1
+            // ItemInfoLookUpEdit
             // 
-            this.tabNavigationPage1.Caption = "Companion Info";
-            this.tabNavigationPage1.Controls.Add(this.CompanionInfoGridControl);
-            this.tabNavigationPage1.Name = "tabNavigationPage1";
-            this.tabNavigationPage1.Size = new System.Drawing.Size(972, 371);
+            ItemInfoLookUpEdit.AutoHeight = false;
+            ItemInfoLookUpEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
+            ItemInfoLookUpEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] { new DevExpress.XtraEditors.Controls.LookUpColumnInfo("ItemName", "ItemName"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("ItemType", "ItemType") });
+            ItemInfoLookUpEdit.DisplayMember = "ItemName";
+            ItemInfoLookUpEdit.Name = "ItemInfoLookUpEdit";
+            ItemInfoLookUpEdit.NullText = "[Item is null]";
             // 
-            // tabNavigationPage2
+            // gridColumn17
             // 
-            this.tabNavigationPage2.Caption = "Companion Level Info";
-            this.tabNavigationPage2.Controls.Add(this.CompanionLevelInfoGridControl);
-            this.tabNavigationPage2.Name = "tabNavigationPage2";
-            this.tabNavigationPage2.Size = new System.Drawing.Size(972, 371);
+            gridColumn17.ColumnEdit = CurrencyInfoLookUpEdit;
+            gridColumn17.FieldName = "Currency";
+            gridColumn17.Name = "gridColumn17";
+            gridColumn17.Visible = true;
+            gridColumn17.VisibleIndex = 3;
             // 
-            // CompanionLevelInfoGridControl
+            // CurrencyInfoLookUpEdit
             // 
-            this.CompanionLevelInfoGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.CompanionLevelInfoGridControl.Location = new System.Drawing.Point(0, 0);
-            this.CompanionLevelInfoGridControl.MainView = this.CompanionLevelInfoGridView;
-            this.CompanionLevelInfoGridControl.MenuManager = this.ribbon;
-            this.CompanionLevelInfoGridControl.Name = "CompanionLevelInfoGridControl";
-            this.CompanionLevelInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
-            this.repositoryItemLookUpEdit1});
-            this.CompanionLevelInfoGridControl.Size = new System.Drawing.Size(972, 371);
-            this.CompanionLevelInfoGridControl.TabIndex = 3;
-            this.CompanionLevelInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
-            this.CompanionLevelInfoGridView});
+            CurrencyInfoLookUpEdit.AutoHeight = false;
+            CurrencyInfoLookUpEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
+            CurrencyInfoLookUpEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] { new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Name", "Name"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Type", "Type") });
+            CurrencyInfoLookUpEdit.DisplayMember = "Name";
+            CurrencyInfoLookUpEdit.Name = "CurrencyInfoLookUpEdit";
+            CurrencyInfoLookUpEdit.NullText = "[Currency is null]";
             // 
-            // CompanionLevelInfoGridView
+            // gridColumn18
             // 
-            this.CompanionLevelInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
-            this.gridColumn2,
-            this.gridColumn5,
-            this.gridColumn6,
-            this.gridColumn7,
-            this.gridColumn8});
-            this.CompanionLevelInfoGridView.GridControl = this.CompanionLevelInfoGridControl;
-            this.CompanionLevelInfoGridView.Name = "CompanionLevelInfoGridView";
-            this.CompanionLevelInfoGridView.OptionsView.EnableAppearanceEvenRow = true;
-            this.CompanionLevelInfoGridView.OptionsView.EnableAppearanceOddRow = true;
-            this.CompanionLevelInfoGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
-            this.CompanionLevelInfoGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
-            this.CompanionLevelInfoGridView.OptionsView.ShowGroupPanel = false;
+            gridColumn18.FieldName = "Description";
+            gridColumn18.Name = "gridColumn18";
+            gridColumn18.Visible = true;
+            gridColumn18.VisibleIndex = 1;
             // 
-            // gridColumn2
+            // ribbon
             // 
-            this.gridColumn2.FieldName = "Level";
-            this.gridColumn2.Name = "gridColumn2";
-            this.gridColumn2.Visible = true;
-            this.gridColumn2.VisibleIndex = 0;
+            ribbon.ExpandCollapseItem.Id = 0;
+            ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] { ribbon.ExpandCollapseItem, ribbon.SearchEditItem, SaveButton, ImportButton, ExportButton });
+            ribbon.Location = new System.Drawing.Point(0, 0);
+            ribbon.MaxItemId = 4;
+            ribbon.Name = "ribbon";
+            ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] { ribbonPage1 });
+            ribbon.Size = new System.Drawing.Size(902, 144);
             // 
-            // gridColumn5
+            // SaveButton
             // 
-            this.gridColumn5.FieldName = "MaxExperience";
-            this.gridColumn5.Name = "gridColumn5";
-            this.gridColumn5.Visible = true;
-            this.gridColumn5.VisibleIndex = 1;
-            // 
-            // gridColumn6
-            // 
-            this.gridColumn6.FieldName = "InventorySpace";
-            this.gridColumn6.Name = "gridColumn6";
-            this.gridColumn6.Visible = true;
-            this.gridColumn6.VisibleIndex = 2;
-            // 
-            // gridColumn7
-            // 
-            this.gridColumn7.FieldName = "InventoryWeight";
-            this.gridColumn7.Name = "gridColumn7";
-            this.gridColumn7.Visible = true;
-            this.gridColumn7.VisibleIndex = 3;
-            // 
-            // gridColumn8
-            // 
-            this.gridColumn8.FieldName = "MaxHunger";
-            this.gridColumn8.Name = "gridColumn8";
-            this.gridColumn8.Visible = true;
-            this.gridColumn8.VisibleIndex = 4;
-            // 
-            // repositoryItemLookUpEdit1
-            // 
-            this.repositoryItemLookUpEdit1.AutoHeight = false;
-            this.repositoryItemLookUpEdit1.BestFitMode = DevExpress.XtraEditors.Controls.BestFitMode.BestFitResizePopup;
-            this.repositoryItemLookUpEdit1.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
-            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
-            this.repositoryItemLookUpEdit1.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] {
-            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Index", "Index"),
-            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("MonsterName", "Monster Name"),
-            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("AI", "AI"),
-            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Level", "Level"),
-            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Experience", "Experience"),
-            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("IsBoss", "Is Boss")});
-            this.repositoryItemLookUpEdit1.DisplayMember = "MonsterName";
-            this.repositoryItemLookUpEdit1.Name = "repositoryItemLookUpEdit1";
-            this.repositoryItemLookUpEdit1.NullText = "[Monster is null]";
-            // 
-            // tabNavigationPage3
-            // 
-            this.tabNavigationPage3.Caption = "Companion Skill Info";
-            this.tabNavigationPage3.Controls.Add(this.CompanionSkillInfoGridControl);
-            this.tabNavigationPage3.Name = "tabNavigationPage3";
-            this.tabNavigationPage3.Size = new System.Drawing.Size(972, 371);
-            // 
-            // CompanionSkillInfoGridControl
-            // 
-            this.CompanionSkillInfoGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.CompanionSkillInfoGridControl.Location = new System.Drawing.Point(0, 0);
-            this.CompanionSkillInfoGridControl.MainView = this.CompanionSkillInfoGridView;
-            this.CompanionSkillInfoGridControl.MenuManager = this.ribbon;
-            this.CompanionSkillInfoGridControl.Name = "CompanionSkillInfoGridControl";
-            this.CompanionSkillInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
-            this.repositoryItemLookUpEdit2});
-            this.CompanionSkillInfoGridControl.Size = new System.Drawing.Size(972, 371);
-            this.CompanionSkillInfoGridControl.TabIndex = 4;
-            this.CompanionSkillInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
-            this.CompanionSkillInfoGridView});
-            // 
-            // CompanionSkillInfoGridView
-            // 
-            this.CompanionSkillInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
-            this.gridColumn9,
-            this.gridColumn10,
-            this.gridColumn11,
-            this.gridColumn12,
-            this.gridColumn13});
-            this.CompanionSkillInfoGridView.GridControl = this.CompanionSkillInfoGridControl;
-            this.CompanionSkillInfoGridView.Name = "CompanionSkillInfoGridView";
-            this.CompanionSkillInfoGridView.OptionsView.EnableAppearanceEvenRow = true;
-            this.CompanionSkillInfoGridView.OptionsView.EnableAppearanceOddRow = true;
-            this.CompanionSkillInfoGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
-            this.CompanionSkillInfoGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
-            this.CompanionSkillInfoGridView.OptionsView.ShowGroupPanel = false;
-            // 
-            // gridColumn9
-            // 
-            this.gridColumn9.FieldName = "Level";
-            this.gridColumn9.Name = "gridColumn9";
-            this.gridColumn9.Visible = true;
-            this.gridColumn9.VisibleIndex = 0;
-            // 
-            // gridColumn10
-            // 
-            this.gridColumn10.FieldName = "StatType";
-            this.gridColumn10.Name = "gridColumn10";
-            this.gridColumn10.Visible = true;
-            this.gridColumn10.VisibleIndex = 1;
-            // 
-            // gridColumn11
-            // 
-            this.gridColumn11.FieldName = "MinAmount";
-            this.gridColumn11.Name = "gridColumn11";
-            this.gridColumn11.Visible = true;
-            this.gridColumn11.VisibleIndex = 2;
-            // 
-            // gridColumn12
-            // 
-            this.gridColumn12.FieldName = "MaxAmount";
-            this.gridColumn12.Name = "gridColumn12";
-            this.gridColumn12.Visible = true;
-            this.gridColumn12.VisibleIndex = 3;
-            // 
-            // gridColumn13
-            // 
-            this.gridColumn13.FieldName = "Weight";
-            this.gridColumn13.Name = "gridColumn13";
-            this.gridColumn13.Visible = true;
-            this.gridColumn13.VisibleIndex = 4;
-            // 
-            // repositoryItemLookUpEdit2
-            // 
-            this.repositoryItemLookUpEdit2.AutoHeight = false;
-            this.repositoryItemLookUpEdit2.BestFitMode = DevExpress.XtraEditors.Controls.BestFitMode.BestFitResizePopup;
-            this.repositoryItemLookUpEdit2.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
-            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
-            this.repositoryItemLookUpEdit2.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] {
-            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Index", "Index"),
-            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("MonsterName", "Monster Name"),
-            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("AI", "AI"),
-            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Level", "Level"),
-            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Experience", "Experience"),
-            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("IsBoss", "Is Boss")});
-            this.repositoryItemLookUpEdit2.DisplayMember = "MonsterName";
-            this.repositoryItemLookUpEdit2.Name = "repositoryItemLookUpEdit2";
-            this.repositoryItemLookUpEdit2.NullText = "[Monster is null]";
-            // 
-            // JsonImportExport
-            // 
-            this.JsonImportExport.ItemLinks.Add(this.ImportButton);
-            this.JsonImportExport.ItemLinks.Add(this.ExportButton);
-            this.JsonImportExport.Name = "JsonImportExport";
-            this.JsonImportExport.Text = "Json";
+            SaveButton.Caption = "Save Database";
+            SaveButton.Id = 1;
+            SaveButton.ImageOptions.Image = (System.Drawing.Image)resources.GetObject("SaveButton.ImageOptions.Image");
+            SaveButton.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("SaveButton.ImageOptions.LargeImage");
+            SaveButton.LargeWidth = 60;
+            SaveButton.Name = "SaveButton";
+            SaveButton.ItemClick += SaveButton_ItemClick;
             // 
             // ImportButton
             // 
-            this.ImportButton.Caption = "Import";
-            this.ImportButton.Id = 2;
-            this.ImportButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("ImportButton.ImageOptions.Image")));
-            this.ImportButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ImportButton.ImageOptions.LargeImage")));
-            this.ImportButton.Name = "ImportButton";
-            this.ImportButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.ImportButton_ItemClick);
+            ImportButton.Caption = "Import";
+            ImportButton.Id = 2;
+            ImportButton.ImageOptions.Image = (System.Drawing.Image)resources.GetObject("ImportButton.ImageOptions.Image");
+            ImportButton.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("ImportButton.ImageOptions.LargeImage");
+            ImportButton.Name = "ImportButton";
+            ImportButton.ItemClick += ImportButton_ItemClick;
             // 
             // ExportButton
             // 
-            this.ExportButton.Caption = "Export";
-            this.ExportButton.Id = 3;
-            this.ExportButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("ExportButton.ImageOptions.Image")));
-            this.ExportButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ExportButton.ImageOptions.LargeImage")));
-            this.ExportButton.Name = "ExportButton";
-            this.ExportButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.ExportButton_ItemClick);
+            ExportButton.Caption = "Export";
+            ExportButton.Id = 3;
+            ExportButton.ImageOptions.Image = (System.Drawing.Image)resources.GetObject("ExportButton.ImageOptions.Image");
+            ExportButton.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("ExportButton.ImageOptions.LargeImage");
+            ExportButton.Name = "ExportButton";
+            ExportButton.ItemClick += ExportButton_ItemClick;
+            // 
+            // ribbonPage1
+            // 
+            ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] { ribbonPageGroup1, JsonImportExport });
+            ribbonPage1.Name = "ribbonPage1";
+            ribbonPage1.Text = "Home";
+            // 
+            // ribbonPageGroup1
+            // 
+            ribbonPageGroup1.AllowTextClipping = false;
+            ribbonPageGroup1.CaptionButtonVisible = DevExpress.Utils.DefaultBoolean.False;
+            ribbonPageGroup1.ItemLinks.Add(SaveButton);
+            ribbonPageGroup1.Name = "ribbonPageGroup1";
+            ribbonPageGroup1.Text = "Saving";
+            // 
+            // JsonImportExport
+            // 
+            JsonImportExport.ItemLinks.Add(ImportButton);
+            JsonImportExport.ItemLinks.Add(ExportButton);
+            JsonImportExport.Name = "JsonImportExport";
+            JsonImportExport.Text = "Json";
+            // 
+            // tabPane1
+            // 
+            tabPane1.Controls.Add(tabNavigationPage1);
+            tabPane1.Controls.Add(tabNavigationPage2);
+            tabPane1.Controls.Add(tabNavigationPage3);
+            tabPane1.Dock = System.Windows.Forms.DockStyle.Fill;
+            tabPane1.Location = new System.Drawing.Point(0, 144);
+            tabPane1.Name = "tabPane1";
+            tabPane1.Pages.AddRange(new DevExpress.XtraBars.Navigation.NavigationPageBase[] { tabNavigationPage1, tabNavigationPage2, tabNavigationPage3 });
+            tabPane1.RegularSize = new System.Drawing.Size(902, 365);
+            tabPane1.SelectedPage = tabNavigationPage1;
+            tabPane1.Size = new System.Drawing.Size(902, 365);
+            tabPane1.TabIndex = 3;
+            // 
+            // tabNavigationPage1
+            // 
+            tabNavigationPage1.Caption = "Companion Info";
+            tabNavigationPage1.Controls.Add(CompanionInfoGridControl);
+            tabNavigationPage1.Name = "tabNavigationPage1";
+            tabNavigationPage1.Size = new System.Drawing.Size(902, 336);
+            // 
+            // tabNavigationPage2
+            // 
+            tabNavigationPage2.Caption = "Companion Level Info";
+            tabNavigationPage2.Controls.Add(CompanionLevelInfoGridControl);
+            tabNavigationPage2.Name = "tabNavigationPage2";
+            tabNavigationPage2.Size = new System.Drawing.Size(972, 371);
+            // 
+            // CompanionLevelInfoGridControl
+            // 
+            CompanionLevelInfoGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            CompanionLevelInfoGridControl.Location = new System.Drawing.Point(0, 0);
+            CompanionLevelInfoGridControl.MainView = CompanionLevelInfoGridView;
+            CompanionLevelInfoGridControl.MenuManager = ribbon;
+            CompanionLevelInfoGridControl.Name = "CompanionLevelInfoGridControl";
+            CompanionLevelInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { repositoryItemLookUpEdit1 });
+            CompanionLevelInfoGridControl.Size = new System.Drawing.Size(972, 371);
+            CompanionLevelInfoGridControl.TabIndex = 3;
+            CompanionLevelInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { CompanionLevelInfoGridView });
+            // 
+            // CompanionLevelInfoGridView
+            // 
+            CompanionLevelInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn2, gridColumn5, gridColumn6, gridColumn7, gridColumn8 });
+            CompanionLevelInfoGridView.GridControl = CompanionLevelInfoGridControl;
+            CompanionLevelInfoGridView.Name = "CompanionLevelInfoGridView";
+            CompanionLevelInfoGridView.OptionsView.EnableAppearanceEvenRow = true;
+            CompanionLevelInfoGridView.OptionsView.EnableAppearanceOddRow = true;
+            CompanionLevelInfoGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
+            CompanionLevelInfoGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
+            CompanionLevelInfoGridView.OptionsView.ShowGroupPanel = false;
+            // 
+            // gridColumn2
+            // 
+            gridColumn2.FieldName = "Level";
+            gridColumn2.Name = "gridColumn2";
+            gridColumn2.Visible = true;
+            gridColumn2.VisibleIndex = 0;
+            // 
+            // gridColumn5
+            // 
+            gridColumn5.FieldName = "MaxExperience";
+            gridColumn5.Name = "gridColumn5";
+            gridColumn5.Visible = true;
+            gridColumn5.VisibleIndex = 1;
+            // 
+            // gridColumn6
+            // 
+            gridColumn6.FieldName = "InventorySpace";
+            gridColumn6.Name = "gridColumn6";
+            gridColumn6.Visible = true;
+            gridColumn6.VisibleIndex = 2;
+            // 
+            // gridColumn7
+            // 
+            gridColumn7.FieldName = "InventoryWeight";
+            gridColumn7.Name = "gridColumn7";
+            gridColumn7.Visible = true;
+            gridColumn7.VisibleIndex = 3;
+            // 
+            // gridColumn8
+            // 
+            gridColumn8.FieldName = "MaxHunger";
+            gridColumn8.Name = "gridColumn8";
+            gridColumn8.Visible = true;
+            gridColumn8.VisibleIndex = 4;
+            // 
+            // repositoryItemLookUpEdit1
+            // 
+            repositoryItemLookUpEdit1.AutoHeight = false;
+            repositoryItemLookUpEdit1.BestFitMode = DevExpress.XtraEditors.Controls.BestFitMode.BestFitResizePopup;
+            repositoryItemLookUpEdit1.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
+            repositoryItemLookUpEdit1.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] { new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Index", "Index"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("MonsterName", "Monster Name"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("AI", "AI"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Level", "Level"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Experience", "Experience"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("IsBoss", "Is Boss") });
+            repositoryItemLookUpEdit1.DisplayMember = "MonsterName";
+            repositoryItemLookUpEdit1.Name = "repositoryItemLookUpEdit1";
+            repositoryItemLookUpEdit1.NullText = "[Monster is null]";
+            // 
+            // tabNavigationPage3
+            // 
+            tabNavigationPage3.Caption = "Companion Skill Info";
+            tabNavigationPage3.Controls.Add(CompanionSkillInfoGridControl);
+            tabNavigationPage3.Name = "tabNavigationPage3";
+            tabNavigationPage3.Size = new System.Drawing.Size(972, 371);
+            // 
+            // CompanionSkillInfoGridControl
+            // 
+            CompanionSkillInfoGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            CompanionSkillInfoGridControl.Location = new System.Drawing.Point(0, 0);
+            CompanionSkillInfoGridControl.MainView = CompanionSkillInfoGridView;
+            CompanionSkillInfoGridControl.MenuManager = ribbon;
+            CompanionSkillInfoGridControl.Name = "CompanionSkillInfoGridControl";
+            CompanionSkillInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { repositoryItemLookUpEdit2 });
+            CompanionSkillInfoGridControl.Size = new System.Drawing.Size(972, 371);
+            CompanionSkillInfoGridControl.TabIndex = 4;
+            CompanionSkillInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { CompanionSkillInfoGridView });
+            // 
+            // CompanionSkillInfoGridView
+            // 
+            CompanionSkillInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn9, gridColumn10, gridColumn11, gridColumn12, gridColumn13 });
+            CompanionSkillInfoGridView.GridControl = CompanionSkillInfoGridControl;
+            CompanionSkillInfoGridView.Name = "CompanionSkillInfoGridView";
+            CompanionSkillInfoGridView.OptionsView.EnableAppearanceEvenRow = true;
+            CompanionSkillInfoGridView.OptionsView.EnableAppearanceOddRow = true;
+            CompanionSkillInfoGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
+            CompanionSkillInfoGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
+            CompanionSkillInfoGridView.OptionsView.ShowGroupPanel = false;
+            // 
+            // gridColumn9
+            // 
+            gridColumn9.FieldName = "Level";
+            gridColumn9.Name = "gridColumn9";
+            gridColumn9.Visible = true;
+            gridColumn9.VisibleIndex = 0;
+            // 
+            // gridColumn10
+            // 
+            gridColumn10.FieldName = "StatType";
+            gridColumn10.Name = "gridColumn10";
+            gridColumn10.Visible = true;
+            gridColumn10.VisibleIndex = 1;
+            // 
+            // gridColumn11
+            // 
+            gridColumn11.FieldName = "MinAmount";
+            gridColumn11.Name = "gridColumn11";
+            gridColumn11.Visible = true;
+            gridColumn11.VisibleIndex = 2;
+            // 
+            // gridColumn12
+            // 
+            gridColumn12.FieldName = "MaxAmount";
+            gridColumn12.Name = "gridColumn12";
+            gridColumn12.Visible = true;
+            gridColumn12.VisibleIndex = 3;
+            // 
+            // gridColumn13
+            // 
+            gridColumn13.FieldName = "Weight";
+            gridColumn13.Name = "gridColumn13";
+            gridColumn13.Visible = true;
+            gridColumn13.VisibleIndex = 4;
+            // 
+            // repositoryItemLookUpEdit2
+            // 
+            repositoryItemLookUpEdit2.AutoHeight = false;
+            repositoryItemLookUpEdit2.BestFitMode = DevExpress.XtraEditors.Controls.BestFitMode.BestFitResizePopup;
+            repositoryItemLookUpEdit2.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
+            repositoryItemLookUpEdit2.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] { new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Index", "Index"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("MonsterName", "Monster Name"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("AI", "AI"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Level", "Level"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Experience", "Experience"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("IsBoss", "Is Boss") });
+            repositoryItemLookUpEdit2.DisplayMember = "MonsterName";
+            repositoryItemLookUpEdit2.Name = "repositoryItemLookUpEdit2";
+            repositoryItemLookUpEdit2.NullText = "[Monster is null]";
             // 
             // CompanionInfoView
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(972, 544);
-            this.Controls.Add(this.tabPane1);
-            this.Controls.Add(this.ribbon);
-            this.Name = "CompanionInfoView";
-            this.Ribbon = this.ribbon;
-            this.Text = "Companion Info";
-            ((System.ComponentModel.ISupportInitialize)(this.ribbon)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.CompanionInfoGridControl)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.CompanionInfoGridView)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.MonsterInfoLookUpEdit)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tabPane1)).EndInit();
-            this.tabPane1.ResumeLayout(false);
-            this.tabNavigationPage1.ResumeLayout(false);
-            this.tabNavigationPage2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.CompanionLevelInfoGridControl)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.CompanionLevelInfoGridView)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.repositoryItemLookUpEdit1)).EndInit();
-            this.tabNavigationPage3.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.CompanionSkillInfoGridControl)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.CompanionSkillInfoGridView)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.repositoryItemLookUpEdit2)).EndInit();
-            this.ResumeLayout(false);
-            this.PerformLayout();
+            AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            ClientSize = new System.Drawing.Size(902, 509);
+            Controls.Add(tabPane1);
+            Controls.Add(ribbon);
+            Name = "CompanionInfoView";
+            Ribbon = ribbon;
+            Text = "Companion Info";
+            ((System.ComponentModel.ISupportInitialize)CompanionSpeechGridView).EndInit();
+            ((System.ComponentModel.ISupportInitialize)CompanionActionImageComboBox).EndInit();
+            ((System.ComponentModel.ISupportInitialize)CompanionInfoGridControl).EndInit();
+            ((System.ComponentModel.ISupportInitialize)CompanionInfoGridView).EndInit();
+            ((System.ComponentModel.ISupportInitialize)MonsterInfoLookUpEdit).EndInit();
+            ((System.ComponentModel.ISupportInitialize)ItemInfoLookUpEdit).EndInit();
+            ((System.ComponentModel.ISupportInitialize)CurrencyInfoLookUpEdit).EndInit();
+            ((System.ComponentModel.ISupportInitialize)ribbon).EndInit();
+            ((System.ComponentModel.ISupportInitialize)tabPane1).EndInit();
+            tabPane1.ResumeLayout(false);
+            tabNavigationPage1.ResumeLayout(false);
+            tabNavigationPage2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)CompanionLevelInfoGridControl).EndInit();
+            ((System.ComponentModel.ISupportInitialize)CompanionLevelInfoGridView).EndInit();
+            ((System.ComponentModel.ISupportInitialize)repositoryItemLookUpEdit1).EndInit();
+            tabNavigationPage3.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)CompanionSkillInfoGridControl).EndInit();
+            ((System.ComponentModel.ISupportInitialize)CompanionSkillInfoGridView).EndInit();
+            ((System.ComponentModel.ISupportInitialize)repositoryItemLookUpEdit2).EndInit();
+            ResumeLayout(false);
+            PerformLayout();
 
         }
 
@@ -452,6 +498,8 @@
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroup1;
         private DevExpress.XtraBars.BarButtonItem SaveButton;
         private DevExpress.XtraGrid.GridControl CompanionInfoGridControl;
+        private DevExpress.XtraGrid.Views.Grid.GridView CompanionSpeechGridView;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn14;
         private DevExpress.XtraGrid.Views.Grid.GridView CompanionInfoGridView;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn1;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn3;
@@ -480,5 +528,12 @@
         private DevExpress.XtraBars.BarButtonItem ImportButton;
         private DevExpress.XtraBars.BarButtonItem ExportButton;
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup JsonImportExport;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn15;
+        private DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox CompanionActionImageComboBox;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn16;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn17;
+        private DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit CurrencyInfoLookUpEdit;
+        private DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit ItemInfoLookUpEdit;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn18;
     }
 }

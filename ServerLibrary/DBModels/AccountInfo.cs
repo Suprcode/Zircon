@@ -594,6 +594,9 @@ namespace Server.DBModels
         [Association("StoreSales")]
         public DBBindingList<GameStoreSale> StoreSales { get; set; }
 
+        [Association("StoreFavourites")]
+        public DBBindingList<GameStoreFavourite> StoreFavourites { get; set; }
+
         [Association("Fortunes")]
         public DBBindingList<UserFortuneInfo> Fortunes { get; set; }
 

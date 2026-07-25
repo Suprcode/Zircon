@@ -32,6 +32,9 @@ namespace Library
         public static DBCollection<FameInfo> FameInfoList;
         public static DBCollection<BundleInfo> BundleInfoList;
         public static DBCollection<LootBoxInfo> LootBoxInfoList;
+        public static DBCollection<HelpInfo> HelpInfoList;
+        public static DBCollection<MilestoneInfo> MilestoneInfoList;
+        public static DBCollection<MilestoneInfoTask> MilestoneTaskInfoList;
 
         public static Random Random = new Random();
 
@@ -64,7 +67,6 @@ namespace Library
             MinRealNameLength = 3,
             MaxRealNameLength = 20,
 
-
             MinCaptionLength = 3,
             MaxCaptionLength = 25,
 
@@ -78,6 +80,7 @@ namespace Library
             MaxGuildNameLength = 15,
 
             MaxChatLength = 120,
+            MaxChatItemLinks = 10,
             MaxGuildNoticeLength = 4000,
 
             MaxBeltCount = 10,
@@ -91,6 +94,7 @@ namespace Library
             DuraLossRate = 15,
 
             GroupLimit = 15,
+            LookingForGroupMinutes = 60,
 
             MaxGrowthLevel = 3,
 
@@ -130,6 +134,9 @@ namespace Library
         public static int
             PhysicalPoisonRate = 200,
             MagicalPoisonRate = 100;
+
+        public static int
+            MaxGemPurity = 100;
 
         public static List<string> Languages = new List<string>
         {
@@ -337,6 +344,7 @@ namespace Library
         public string Name { get; set; }
 
         public string Caption { get; set; }
+        public Color CaptionOutlineColour { get; set; }
         public Color NameColour { get; set; }
         public string GuildName { get; set; }
         public string GuildRank { get; set; }
@@ -379,13 +387,17 @@ namespace Library
         public int HermitPoints { get; set; }
 
         public float DayTime { get; set; }
+        public TimeOfDay TimeOfDay { get; set; }
+        public string TimeOfDayLabel { get; set; }
         public bool AllowGroup { get; set; }
+        public bool AllowTrade { get; set; }
 
         public List<ClientFriendInfo> Friends { get; set; }
 
         public List<ClientUserItem> Items { get; set; }
         public List<ClientBeltLink> BeltLinks { get; set; }
         public List<ClientAutoPotionLink> AutoPotionLinks { get; set; }
+        public List<ClientUserMilestone> Milestones { get; set; }
 
         public List<ClientUserMagic> Magics { get; set; }
         public List<ClientBuffInfo> Buffs { get; set; }
@@ -424,6 +436,7 @@ namespace Library
         //Server settings
         public bool StruckEnabled { get; set; }
         public bool HermitEnabled { get; set; }
+        public int MaxGemPurity { get; set; }
 
         [CompleteObject]
         public void OnComplete()
@@ -460,6 +473,8 @@ namespace Library
 
         public Stats AddedStats { get; set; }
 
+        public List<ClientUserItemSocket> Sockets { get; set; } = new List<ClientUserItemSocket>();
+
         public UserItemFlags Flags { get; set; }
         public TimeSpan ExpireTime { get; set; }
 
@@ -484,6 +499,10 @@ namespace Library
         public void Complete()
         {
             Info = Globals.ItemInfoList.Binding.FirstOrDefault(x => x.Index == InfoIndex);
+
+            if (Sockets != null)
+                foreach (ClientUserItemSocket socket in Sockets)
+                    socket.Gem?.Complete();
 
             NextSpecialRepair = Time.Now + SpecialRepairCoolDown;
             NextReset = Time.Now + ResetCoolDown;
@@ -521,14 +540,20 @@ namespace Library
             Colour = item.Colour;
 
             SpecialRepairCoolDown = item.SpecialRepairCoolDown;
+            ResetCoolDown = item.ResetCoolDown;
 
             Flags = item.Flags;
             ExpireTime = item.ExpireTime;
 
             New = item.New;
             NextSpecialRepair = item.NextSpecialRepair;
+            NextReset = item.NextReset;
 
             AddedStats = new Stats(item.AddedStats);
+
+            Sockets = item.Sockets == null
+                ? new List<ClientUserItemSocket>()
+                : item.Sockets.Select(x => new ClientUserItemSocket(x)).ToList();
         }
 
         public long Price(long count)
@@ -760,6 +785,22 @@ namespace Library
         }
     }
 
+    public sealed class ClientUserItemSocket
+    {
+        public int Slot { get; set; }
+        public ClientUserItem Gem { get; set; }
+
+        public ClientUserItemSocket() { }
+
+        public ClientUserItemSocket(ClientUserItemSocket socket)
+        {
+            if (socket == null) return;
+
+            Slot = socket.Slot;
+            Gem = socket.Gem == null ? null : new ClientUserItem(socket.Gem, socket.Gem.Count);
+        }
+    }
+
     public sealed class ClientBeltLink
     {
         public int Slot { get; set; }
@@ -829,6 +870,7 @@ namespace Library
         public Stats Stats { get; set; }
         public bool Pause { get; set; }
         public int ItemIndex { get; set; }
+        public int Extra { get; set; }
     }
 
     public class ClientRefineInfo
@@ -872,6 +914,7 @@ namespace Library
         public ClientUserItem Item { get; set; }
 
         public int Price { get; set; }
+        public DateTime ConsignDate { get; set; }
 
         public string Seller { get; set; }
         public string Message { get; set; }
@@ -1137,6 +1180,12 @@ namespace Library
         {
             get { return Info != null && Info.DropItem != null && Info.DropItem.CanDrop; }
         }
+
+        [CompleteObject]
+        public void Complete()
+        {
+            Info = Globals.CurrencyInfoList.Binding.FirstOrDefault(x => x.Index == CurrencyIndex);
+        }
     }
 
     public class ClientUserDiscipline
@@ -1146,6 +1195,12 @@ namespace Library
         public int Level { get; set; }
         public long Experience { get; set; }
         public List<ClientUserMagic> Magics { get; set; }
+
+        [CompleteObject]
+        public void Complete()
+        {
+            DisciplineInfo = Globals.DisciplineInfoList.Binding.FirstOrDefault(x => x.Index == InfoIndex);
+        }
     }
 
     public class ClientBundleItemInfo
@@ -1173,6 +1228,59 @@ namespace Library
         public void OnComplete()
         {
             ItemInfo = Globals.ItemInfoList.Binding.FirstOrDefault(x => x.Index == ItemIndex);
+        }
+    }
+
+    public class ClientLookingForGroup
+    {
+        public string LeaderName { get; set; }
+        public string GroupName { get; set; }
+        public string GroupType { get; set; }
+
+        [IgnorePropertyPacket]
+        public int CurrentCount => MemberInfo.Count;
+        public List<string> MemberInfo { get; set; } = new List<string>();
+        public int MaxCount { get; set; }
+        public bool Enabled { get; set; }
+    }
+
+    public class ClientUserMilestone
+    {
+        public int Index { get; set; }
+        public int InfoIndex { get; set; }
+        public MilestoneInfo Info;
+        public bool Active { get; set; }
+        public bool Claimed { get; set; }
+        public DateTime DateEarned { get; set; }
+
+        public List<ClientUserMilestoneTask> Tasks { get; set; }
+
+        [IgnorePropertyPacket]
+        public DateTime LastSent { get; set; }
+
+        [IgnorePropertyPacket]
+        public DateTime LastUpdated { get; set; }
+
+        [IgnorePropertyPacket]
+        public bool IsComplete => DateEarned > DateTime.MinValue;
+
+        [CompleteObject]
+        public void Complete()
+        {
+            Info = Globals.MilestoneInfoList.Binding.FirstOrDefault(x => x.Index == InfoIndex);
+        }
+    }
+
+    public class ClientUserMilestoneTask
+    {
+        public int InfoTaskIndex { get; set; }
+        public MilestoneInfoTask Info;
+        public long Count { get; set; }
+
+        [CompleteObject]
+        public void Complete()
+        {
+            Info = Globals.MilestoneTaskInfoList.Binding.FirstOrDefault(x => x.Index == InfoTaskIndex);
         }
     }
 }

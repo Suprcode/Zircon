@@ -175,6 +175,21 @@ namespace Server.DBModels
         }
         private bool _Hidden;
 
+        public int Extra
+        {
+            get { return _Extra; }
+            set
+            {
+                if (_Extra == value) return;
+
+                var oldValue = _Extra;
+                _Extra = value;
+
+                OnChanged(oldValue, value, "Extra");
+            }
+        }
+        private int _Extra;
+
         protected override void OnDeleted()
         {
             Account = null;
@@ -215,6 +230,7 @@ namespace Server.DBModels
                 Pause = Pause,
                 Stats = Stats,
                 ItemIndex = ItemIndex,
+                Extra = Extra
             };
         }
     }

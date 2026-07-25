@@ -1,15 +1,82 @@
-﻿using Client.Envir;
+using Client.Envir;
+using Shared.Rendering;
 using Client.UserModels;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-//Cleaned
 namespace Client.Controls
 {
+    public sealed class DXColourControlPair : DXControl
+    {
+        public DXColourControl ForeColourControl, BackColourControl;
+
+        public event EventHandler<EventArgs> BackColourPairChanged, ForeColourPairChanged;
+
+        public DXColourControlPair()
+        {
+            Size = new Size(40, 16);
+            Border = true;
+            BorderColour = Constants.PrimaryColour;
+
+            ForeColourControl = new DXColourControl
+            {
+                Parent = this,
+                Location = new Point(0, 0),
+                Size = new Size(20, 16),
+            };
+            ForeColourControl.BackColourChanged += ForeColourControl_BackColourChanged;
+
+            BackColourControl = new DXColourControl
+            {
+                Parent = this,
+                Location = new Point(20, 0),
+                Size = new Size(20, 16),
+                AllowNoColour = true,
+            };
+            BackColourControl.BackColourChanged += BackColourControl_BackColourChanged;
+        }
+
+        private void BackColourControl_BackColourChanged(object sender, EventArgs e)
+        {
+            BackColourPairChanged?.Invoke(this, e);
+        }
+
+        private void ForeColourControl_BackColourChanged(object sender, EventArgs e)
+        {
+            ForeColourPairChanged?.Invoke(this, e);
+        }
+
+        #region IDisposable
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                if (ForeColourControl != null)
+                {
+                    if (!ForeColourControl.IsDisposed)
+                        ForeColourControl.Dispose();
+
+                    ForeColourControl = null;
+                }
+
+                if (BackColourControl != null)
+                {
+                    if (!BackColourControl.IsDisposed)
+                        BackColourControl.Dispose();
+
+                    BackColourControl = null;
+                }
+            }
+        }
+        #endregion
+    }
+
     public sealed class DXColourControl : DXControl
     {
-        #region Properies
+        #region Properties
         private DXColourPicker Window;
 
         #region AllowNoColour
@@ -45,7 +112,7 @@ namespace Client.Controls
         {
             DrawTexture = true;
             Border = true;
-            BorderColour = Color.FromArgb(198, 166, 99);
+            BorderColour = Constants.PrimaryColour;
             Size = new Size(40, 15);
             BackColour = Color.Black;
 
@@ -199,6 +266,7 @@ namespace Client.Controls
                 Label = { Text = CEnvir.Language.CommonControlCancel },
                 Location = new Point(Size.Width / 2 + 10, Size.Height - 43),
                 Size = new Size(80, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
             };
             CancelButton.MouseClick += CancelButton_MouseClick;
             CloseButton.MouseClick += CancelButton_MouseClick;
@@ -209,6 +277,7 @@ namespace Client.Controls
                 Label = { Text = CEnvir.Language.CommonControlSelect },
                 Location = new Point((Size.Width) / 2 - 80 - 10, Size.Height - 43),
                 Size = new Size(80, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
             };
             SelectButton.MouseClick += (o, e) => Dispose();
 
@@ -218,6 +287,7 @@ namespace Client.Controls
                 Label = { Text = CEnvir.Language.CommonControlColourPickerEmptyLabel },
                 Location = new Point((Size.Width) / 2 - 80 - 10, Size.Height - 43),
                 Size = new Size(80, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Visible = AllowNoColour
             };
             EmptyButton.Location = new Point(Size.Width - EmptyButton.Size.Width - 10, 115);
@@ -228,12 +298,17 @@ namespace Client.Controls
                 Location = new Point(20, 40),
                 Parent = this,
                 Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
-                Size = new Size(200, 149)
+                BorderColour = Constants.PrimaryColour,
+                Size = new Size(ColourPaletteHelper.PaletteWidth, ColourPaletteHelper.PaletteHeight)
             };
             AfterDraw += (o, e) =>
             {
-                PresentTexture(DXManager.ColourPallete, ColourScaleBox, ColourScaleBox.DisplayArea, Color.White, this);
+                RenderTexture paletteHandle = RenderingPipelineManager.GetColourPaletteTexture();
+
+                if (!paletteHandle.IsValid)
+                    return;
+
+                PresentTexture(paletteHandle, ColourScaleBox, ColourScaleBox.DisplayArea, Color.White, this);
             };
             ColourScaleBox.MouseClick += ColourScaleBox_MouseClick;
 
@@ -292,9 +367,9 @@ namespace Client.Controls
                 BackColour = SelectedColour,
                 Border = true,
                 DrawTexture = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
+                BorderColour = Constants.PrimaryColour,
                 Parent = this,
-                Visible = SelectedColour != Color.Empty
+                Visible = SelectedColour != Color.FromArgb(0, 0, 0, 0)
             };
             label = new DXLabel
             {
@@ -308,7 +383,7 @@ namespace Client.Controls
                 Parent = this,
                 Location = new Point(BlueBox.Location.X + BlueBox.ValueTextBox.Location.X, 172),
                 Text = CEnvir.Language.CommonControlColourPickerNoneLabel,
-                Visible = SelectedColour == Color.Empty
+                Visible = SelectedColour == Color.FromArgb(0, 0, 0, 0)
             };
         }
 
@@ -318,9 +393,16 @@ namespace Client.Controls
             int x = e.X - ColourScaleBox.DisplayArea.X;
             int y = e.Y - ColourScaleBox.DisplayArea.Y;
 
-            if (x < 0 || y < 0 || x >= 200 || y >= 149) return;
+            if (x < 0 || y < 0 || x >= ColourPaletteHelper.PaletteWidth || y >= ColourPaletteHelper.PaletteHeight) return;
 
-            SelectedColour = Color.FromArgb(DXManager.PalleteData[(y * 200 + x) * 4 + 2], DXManager.PalleteData[(y * 200 + x) * 4 + 1], DXManager.PalleteData[(y * 200 + x) * 4]);
+            byte[] paletteData = RenderingPipelineManager.GetColourPaletteData();
+
+            int index = (y * ColourPaletteHelper.PaletteWidth + x) * 4;
+
+            if (index + 2 >= paletteData.Length)
+                return;
+
+            SelectedColour = Color.FromArgb(paletteData[index + 2], paletteData[index + 1], paletteData[index]);
         }
         private void CancelButton_MouseClick(object sender, MouseEventArgs e)
         {

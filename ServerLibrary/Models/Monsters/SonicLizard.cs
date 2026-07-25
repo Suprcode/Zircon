@@ -21,7 +21,6 @@ namespace Server.Models.Monsters
 
             if (x > Range || y > Range) return false;
 
-
             return x == 0 || x == y || y == 0;
         }
 
@@ -107,8 +106,6 @@ namespace Server.Models.Monsters
                         break;
                     }
                 }
-
-
             }
         }
 

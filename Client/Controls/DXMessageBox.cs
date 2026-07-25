@@ -1,9 +1,8 @@
-﻿using Client.Envir;
+using Client.Envir;
 using Client.UserModels;
 using System.Drawing;
 using System.Windows.Forms;
 
-//Cleaned
 namespace Client.Controls
 {
     public sealed class DXMessageBox : DXWindow
@@ -68,7 +67,7 @@ namespace Client.Controls
             Buttons = buttons;
             Modal = true;
             HasFooter = true;
-
+            DropShadow = true;
             TitleLabel.Text = caption;
 
             Parent = ActiveScene;
@@ -97,6 +96,7 @@ namespace Client.Controls
                     {
                         Location = new Point((Size.Width - 80) / 2, Size.Height - 43),
                         Size = new Size(80, DefaultHeight),
+                        LabelStyle = ButtonLabelStyle.Gold,
                         Parent = this,
                         Label = { Text = CEnvir.Language.CommonControlOk }
                     };
@@ -107,6 +107,7 @@ namespace Client.Controls
                     {
                         Location = new Point((Size.Width) / 2 - 80 - 10, Size.Height - 43),
                         Size = new Size(80, DefaultHeight),
+                        LabelStyle = ButtonLabelStyle.Gold,
                         Parent = this,
                         Label = { Text = CEnvir.Language.CommonControlYes }
                     };
@@ -115,6 +116,7 @@ namespace Client.Controls
                     {
                         Location = new Point(Size.Width / 2 + 10, Size.Height - 43),
                         Size = new Size(80, DefaultHeight),
+                        LabelStyle = ButtonLabelStyle.Gold,
                         Parent = this,
                         Label = { Text = CEnvir.Language.CommonControlNo }
                     };
@@ -125,6 +127,7 @@ namespace Client.Controls
                     {
                         Location = new Point((Size.Width - 80) / 2, Size.Height - 43),
                         Size = new Size(80, DefaultHeight),
+                        LabelStyle = ButtonLabelStyle.Gold,
                         Parent = this,
                         Label = { Text = CEnvir.Language.CommonControlCancel }
                     };

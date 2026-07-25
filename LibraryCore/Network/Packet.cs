@@ -232,7 +232,7 @@ namespace Library.Network
                                     writeAction(x, writer);
                             }
                         }
-                        else if (item.PropertyType.GetGenericTypeDefinition() == typeof(SortedDictionary<,>))
+                        else if (item.PropertyType.GetGenericTypeDefinition() == typeof(SortedDictionary<,>) || item.PropertyType.GetGenericTypeDefinition() == typeof(Dictionary<,>))
                         {
                             IDictionary dictionary = (IDictionary)item.GetValue(ob);
 
@@ -342,7 +342,7 @@ namespace Library.Network
                                     list.Add(readAction(reader));
                             }
                         }
-                        else if (item.PropertyType.GetGenericTypeDefinition() == typeof(SortedDictionary<,>))
+                        else if (item.PropertyType.GetGenericTypeDefinition() == typeof(SortedDictionary<,>) || item.PropertyType.GetGenericTypeDefinition() == typeof(Dictionary<,>))
                         {
                             IDictionary dictionary = (IDictionary)item.GetValue(ob);
 

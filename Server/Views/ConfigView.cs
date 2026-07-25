@@ -40,7 +40,9 @@ namespace Server.Views
 
             SMain.Session.Save(true);
 
-            File.Copy(SMain.Session.SystemPath, Path.Combine(Config.ClientPath, "Data\\", Path.GetFileName(SMain.Session.SystemPath)), true);
+            string dataPath = Path.Combine(Config.ClientPath, "Data\\");
+
+            File.Copy(SMain.Session.SystemPath, Path.Combine(dataPath, Path.GetFileName(SMain.Session.SystemPath)), true);
 
             SEnvir.Log($"Syncronization completed...");
         }
@@ -51,9 +53,9 @@ namespace Server.Views
 
             LoadSettings();
         }
-        protected override void OnClosing(CancelEventArgs e)
+        protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            base.OnClosing(e);
+            base.OnFormClosing(e);
 
             SaveSettings();
         }
@@ -95,6 +97,7 @@ namespace Server.Views
             VersionPathEdit.EditValue = Config.VersionPath;
             DBSaveDelayEdit.EditValue = Config.DBSaveDelay;
             MapPathEdit.EditValue = Config.MapPath;
+            LazyLoadMapsEdit.EditValue = Config.LazyLoadMaps;
             MasterPasswordEdit.EditValue = Config.MasterPassword;
             ClientPathEdit.EditValue = Config.ClientPath;
             ReleaseDateEdit.EditValue = Config.ReleaseDate;
@@ -162,6 +165,7 @@ namespace Server.Views
             DropDistanceEdit.EditValue = Config.DropDistance;
             DropLayersEdit.EditValue = Config.DropLayers;
             TorchRateEdit.EditValue = Config.TorchRate;
+            MaxGemPurityEdit.EditValue = Config.MaxGemPurity;
             SpecialRepairDelayEdit.EditValue = Config.SpecialRepairDelay;
             MaxLuckEdit.EditValue = Config.MaxLuck;
             LuckRateEdit.EditValue = Config.LuckRate;
@@ -215,6 +219,7 @@ namespace Server.Views
             Config.VersionPath = (string)VersionPathEdit.EditValue;
             Config.DBSaveDelay = (TimeSpan)DBSaveDelayEdit.EditValue;
             Config.MapPath = (string)MapPathEdit.EditValue;
+            Config.LazyLoadMaps = (bool)LazyLoadMapsEdit.EditValue;
             Config.MasterPassword = (string)MasterPasswordEdit.EditValue;
             Config.ClientPath = (string)ClientPathEdit.EditValue;
             Config.ReleaseDate = (DateTime)ReleaseDateEdit.EditValue;
@@ -279,6 +284,7 @@ namespace Server.Views
             Config.DropDistance = (int)DropDistanceEdit.EditValue;
             Config.DropLayers = (int)DropLayersEdit.EditValue;
             Config.TorchRate = (int)TorchRateEdit.EditValue;
+            Config.MaxGemPurity = (int)MaxGemPurityEdit.EditValue;
             Config.SpecialRepairDelay = (TimeSpan)SpecialRepairDelayEdit.EditValue;
             Config.MaxLuck = (int)MaxLuckEdit.EditValue;
             Config.LuckRate = (int)LuckRateEdit.EditValue;

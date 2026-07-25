@@ -16,15 +16,14 @@ namespace Client.Models
         #region Stats
         public override Stats Stats
         {
-            get { return _Stats; }
+            get { return base.Stats; }
             set
             {
-                _Stats = value;
+                base.Stats = value;
 
                 GameScene.Game.StatsChanged();
             }
         }
-        private Stats _Stats = new Stats();
         #endregion
 
         #region Hermit Stats
@@ -206,6 +205,7 @@ namespace Client.Models
         public List<ClientBuffInfo> Buffs = new List<ClientBuffInfo>();
 
         public Dictionary<MagicInfo, ClientUserMagic> Magics = new Dictionary<MagicInfo, ClientUserMagic>();
+        public List<ClientUserMilestone> Milestones = new List<ClientUserMilestone>();
 
         public DateTime NextActionTime, ServerTime, AttackTime, NextRunTime, NextMagicTime, BuffTime = CEnvir.Now, LotusTime, CombatTime, MoveTime;
         public MagicType AttackMagic;
@@ -270,7 +270,6 @@ namespace Client.Models
         }
         private bool _CanFlameSplash;
 
-
         public UserObject(StartInformation info)
         {
             CharacterIndex = info.Index;
@@ -279,6 +278,7 @@ namespace Client.Models
 
             Name = info.Name;
             Caption = info.Caption;
+            CaptionOutlineColour = info.CaptionOutlineColour;
             NameColour = info.NameColour;
 
             Class = info.Class;
@@ -328,10 +328,15 @@ namespace Client.Models
             HideHead = info.HideHead;
 
             GameScene.Game.DayTime = info.DayTime;
+            GameScene.Game.TimeOfDay = info.TimeOfDay;
+            GameScene.Game.TimeOfDayLabel = info.TimeOfDayLabel;
+
             GameScene.Game.GroupBox.AllowGroup = info.AllowGroup;
 
             GameScene.Game.StruckEnabled = info.StruckEnabled;
             GameScene.Game.HermitEnabled = info.HermitEnabled;
+
+            Globals.MaxGemPurity = info.MaxGemPurity;
 
             HermitPoints = info.HermitPoints;
 
@@ -341,21 +346,14 @@ namespace Client.Models
             foreach (ClientBuffInfo buff in info.Buffs)
                 AddBuff(buff);
 
+            foreach (ClientUserMilestone title in info.Milestones)
+                Milestones.Add(title);
+
             foreach (ClientUserCurrency currency in info.Currencies)
-            {
-                Currencies.Add(new ClientUserCurrency
-                {
-                    CurrencyIndex = currency.CurrencyIndex,
-                    Info = Globals.CurrencyInfoList.Binding.First(x => x.Index == currency.CurrencyIndex),
-                    Amount = currency.Amount
-                });
-            }
+                Currencies.Add(currency);
 
             if (info.Discipline != null)
-            {
                 Discipline = info.Discipline;
-                Discipline.DisciplineInfo = Globals.DisciplineInfoList.Binding.First(x => x.Index == info.Discipline.InfoIndex);
-            }
 
             FiltersClass = info.FiltersClass;
             FiltersRarity = info.FiltersRarity;
@@ -632,7 +630,7 @@ namespace Client.Models
                     if (BagWeight > Stats[Stat.BagWeight] || (Poison & PoisonType.Neutralize) == PoisonType.Neutralize)
                         AttackTime += TimeSpan.FromMilliseconds(attackDelay);
 
-                    CEnvir.Enqueue(new C.RangeAttack { Direction = action.Direction, Target = (uint)action.Extra[0], DelayedTime = (int)action.Extra[2] });
+                    CEnvir.Enqueue(new C.RangeAttack { Direction = action.Direction, Target = (uint)action.Extra[0] });
                     GameScene.Game.CanRun = false;
                     break;
                 case MirAction.Spell:
@@ -784,8 +782,10 @@ namespace Client.Models
         {
             Buffs.Add(buff);
 
-            if (!VisibleBuffs.Contains(buff.Type))
-                VisibleBuffs.Add(buff.Type);
+            if (!VisibleBuffs.ContainsKey(buff.Type))
+                VisibleBuffs[buff.Type] = 0;
+
+            VisibleBuffs[buff.Type] = buff.Extra;
 
             if (buff.Type == BuffType.SuperiorMagicShield)
             {

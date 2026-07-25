@@ -29,10 +29,6 @@ namespace Launcher
 
         public LMain()
         {
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls |
-                                                   SecurityProtocolType.Tls11 |
-                                                   SecurityProtocolType.Tls12;
-
             InitializeComponent();
 
         }
@@ -199,7 +195,14 @@ namespace Launcher
             {
                 progress.Report("Downloading Patch Information");
 
-                using (HttpClient client = new HttpClient())
+                // Create a handler with explicit TLS settings
+                var handler = new HttpClientHandler
+                {
+                    SslProtocols = System.Security.Authentication.SslProtocols.Tls12
+                                 | System.Security.Authentication.SslProtocols.Tls13
+                };
+
+                using (HttpClient client = new HttpClient(handler))
                 {
                     if (Config.UseLogin)
                     {
@@ -325,7 +328,14 @@ namespace Launcher
 
             try
             {
-                using (HttpClient client = new HttpClient())
+                // Create a handler with explicit TLS settings
+                var handler = new HttpClientHandler
+                {
+                    SslProtocols = System.Security.Authentication.SslProtocols.Tls12
+                                 | System.Security.Authentication.SslProtocols.Tls13
+                };
+
+                using (HttpClient client = new HttpClient(handler))
                 {
                     if (Config.UseLogin)
                     {

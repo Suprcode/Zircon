@@ -279,6 +279,22 @@ namespace Library.SystemModels
         }
         private int _TimeLimitInMinutes;
 
+        public bool ShowTimer
+        {
+            get { return _ShowTimer; }
+            set
+            {
+                if (_ShowTimer == value) return;
+
+                var oldValue = _ShowTimer;
+                _ShowTimer = value;
+
+                OnChanged(oldValue, value, "ShowTimer");
+            }
+        }
+
+        private bool _ShowTimer;
+
         [Association("Map", true)]
         public DBBindingList<InstanceMapInfo> Maps { get; set; }
 
@@ -315,6 +331,11 @@ namespace Library.SystemModels
             Stats.Clear();
             foreach (InstanceInfoStat stat in BuffStats)
                 Stats[stat.Stat] += stat.Amount;
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
     }
 

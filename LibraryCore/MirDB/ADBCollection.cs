@@ -1,5 +1,6 @@
 ﻿using MirDB;
 using System;
+using System.Collections.Generic;
 
 namespace Library.MirDB
 {
@@ -18,6 +19,7 @@ namespace Library.MirDB
 
         public bool RaisePropertyChanges { get; set; }
 
+        internal abstract bool HasChanges();
         internal abstract void Load(byte[] data, DBMapping mapping);
         internal abstract void SaveObjects();
         internal abstract byte[] GetSaveData();
@@ -28,5 +30,7 @@ namespace Library.MirDB
         internal abstract DBObject GetObjectByIndex(int index);
         protected internal abstract DBObject GetObjectbyFieldName(string fieldName, object value);
         internal abstract void OnLoaded();
+
+        internal abstract IEnumerable<DBObject> GetObjects();
     }
 }

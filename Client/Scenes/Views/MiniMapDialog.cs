@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
-//Cleaned
 namespace Client.Scenes.Views
 {
     public sealed class MiniMapDialog : DXWindow
@@ -19,6 +18,14 @@ namespace Client.Scenes.Views
         public Rectangle Area;
         private DXImageControl Image;
         public DXControl Panel;
+
+        public DXImageControl TimeOfDayImage;
+        public DXButton SizeButton, TransparencyButton, BigMapButton;
+
+        private static readonly Size DefaultMiniMapSize = new Size(200, 200);
+        private static readonly Size LargeMiniMapSize = new Size(300, 300);
+        private const float TransparentOpacity = 0.5F;
+        private bool IsLarge, IsTransparent;
 
         public Dictionary<object, DXControl> MapInfoObjects = new Dictionary<object, DXControl>();
 
@@ -39,6 +46,14 @@ namespace Client.Scenes.Views
                 Image.Opacity = Opacity;
                 Image.ImageOpacity = Opacity;
             }
+
+            IsTransparent = nValue < 1F;
+
+            if (TransparencyButton != null)
+                TransparencyButton.Index = IsTransparent ? 131 : 130;
+
+            if (Settings != null)
+                Settings.Extra = IsTransparent ? 1 : 0;
         }
         public override void OnClientAreaChanged(Rectangle oValue, Rectangle nValue)
         {
@@ -52,12 +67,37 @@ namespace Client.Scenes.Views
             Panel.Location = Area.Location;
             Panel.Size = Area.Size;
 
+            if (Size.Height < HeaderSize)
+            {
+                Size = new Size(Size.Width, HeaderSize);
+            }
+
+            UpdateButtonLocations();
             UpdateMapPosition();
         }
 
         public override WindowType Type => WindowType.MiniMapBox;
         public override bool CustomSize => true;
         public override bool AutomaticVisibility => true;
+
+        public override void ApplySettings()
+        {
+            if (Settings == null) return;
+
+            base.ApplySettings();
+
+            IsLarge = Size == LargeMiniMapSize;
+            IsTransparent = Settings.Extra == 1;
+            Opacity = IsTransparent ? TransparentOpacity : 1F;
+            TransparencyButton.Index = IsTransparent ? 131 : 130;
+        }
+
+        public override void OnSizeChanged(Size oValue, Size nValue)
+        {
+            base.OnSizeChanged(oValue, nValue);
+
+            IsLarge = nValue == LargeMiniMapSize;
+        }
 
         #endregion
 
@@ -69,7 +109,7 @@ namespace Client.Scenes.Views
             AllowResize = true;
             CloseButton.Visible = false;
 
-            Size = new Size(200, 200);
+            Size = DefaultMiniMapSize;
 
             Panel = new DXControl
             {
@@ -85,11 +125,98 @@ namespace Client.Scenes.Views
                 Movable = true,
                 IgnoreMoveBounds = true,
             };
+
+            TimeOfDayImage = new DXImageControl
+            {
+                Parent = this,
+                LibraryFile = LibraryFile.GameInter,
+                Index = 0,
+                HintPosition = HintPosition.Fluid
+            };
+
+            SizeButton = new DXButton
+            {
+                Parent = this,
+                LibraryFile = LibraryFile.GameInter,
+                Index = 132,
+                Hint = CEnvir.Language.CommonControlMiniMapSizeHint,
+                HintPosition = HintPosition.TopLeft,
+                Visible = false,
+            };
+            SizeButton.MouseClick += (o, e) => ToggleSize();
+
+            TransparencyButton = new DXButton
+            {
+                Parent = this,
+                LibraryFile = LibraryFile.GameInter,
+                Index = 130,
+                Hint = CEnvir.Language.CommonControlMiniMapTransparencyHint,
+                HintPosition = HintPosition.TopLeft,
+                Visible = false,
+            };
+            TransparencyButton.MouseClick += (o, e) => ToggleTransparency();
+
+            BigMapButton = new DXButton
+            {
+                Parent = this,
+                LibraryFile = LibraryFile.GameInter,
+                Index = 137,
+                Hint = CEnvir.Language.CommonControlMiniMapBigMapHint,
+                HintPosition = HintPosition.TopLeft,
+                Visible = false,
+            };
+            BigMapButton.MouseClick += (o, e) => GameScene.Game.BigMapBox.ToggleOpen(!GameScene.Game.BigMapBox.Visible);
+
+            UpdateButtonLocations();
+
             GameScene.Game.MapControl.MapInfoChanged += MapControl_MapInfoChanged;
             Image.Moving += Image_Moving;
         }
 
         #region Methods
+
+        public override void Process()
+        {
+            base.Process();
+
+            bool visible = IsVisible && DisplayArea.Contains(CEnvir.MouseLocation);
+
+            SizeButton.Visible = visible;
+            TransparencyButton.Visible = visible;
+            BigMapButton.Visible = visible;
+        }
+
+        private void ToggleSize()
+        {
+            int right = Location.X + Size.Width;
+
+            IsLarge = !IsLarge;
+            Size = IsLarge ? LargeMiniMapSize : DefaultMiniMapSize;
+            Location = new Point(right - Size.Width, Location.Y);
+
+            if (Settings != null)
+            {
+                Settings.Size = Size;
+                Settings.Location = Location;
+            }
+        }
+
+        private void ToggleTransparency()
+        {
+            Opacity = IsTransparent ? 1F : TransparentOpacity;
+        }
+
+        private void UpdateButtonLocations()
+        {
+            if (SizeButton == null || TransparencyButton == null || BigMapButton == null) return;
+
+            const int rightPadding = 3;
+            const int spacing = 0;
+
+            SizeButton.Location = new Point(Size.Width - SizeButton.Size.Width - rightPadding, Area.Top);
+            TransparencyButton.Location = new Point(Size.Width - TransparencyButton.Size.Width - rightPadding, SizeButton.Location.Y + SizeButton.Size.Height + spacing);
+            BigMapButton.Location = new Point(Size.Width - BigMapButton.Size.Width - rightPadding, TransparencyButton.Location.Y + TransparencyButton.Size.Height + spacing);
+        }
 
         private void Image_Moving(object sender, System.Windows.Forms.MouseEventArgs e)
         {
@@ -234,25 +361,19 @@ namespace Client.Scenes.Views
             control.Location = new Point((int)(ScaleX * x) - control.Size.Width / 2, (int)(ScaleY * y) - control.Size.Height / 2);
         }
 
-        public void Update(ClientObjectData ob)
+        public void Update(ClientObjectData ob, bool playLocatorAnim = false)
         {
             if (GameScene.Game.MapControl.MapInfo == null) return;
-            DXControl control;
 
-            if (!MapInfoObjects.TryGetValue(ob, out control))
+            if (!MapInfoObjects.TryGetValue(ob, out DXControl control))
             {
                 if (ob.MapIndex != GameScene.Game.MapControl.MapInfo.Index) return;
                 if (ob.ItemInfo != null && ob.ItemInfo.Rarity == Rarity.Common) return;
                 if (ob.MonsterInfo != null && (ob.Dead || ob.MonsterInfo.Image == MonsterImage.None)) return;
 
-                MapInfoObjects[ob] = control = new DXControl
-                {
-                    DrawTexture = true,
-                    Parent = Image,
-                    Opacity = Opacity,
-                    //MonsterInfo.AI < 0 ? Color.FromArgb(150, 200, 255) : Color.Red,
-                };
-
+                DXMapInfoControl created = CreateMapInfoObject();
+                MapInfoObjects[ob] = created;
+                control = created;
 
             }
             else if (ob.MapIndex != GameScene.Game.MapControl.MapInfo.Index || (ob.MonsterInfo != null && ob.Dead) || (ob.ItemInfo != null && ob.ItemInfo.Rarity == Rarity.Common))
@@ -265,6 +386,11 @@ namespace Client.Scenes.Views
             Size size = new Size(3, 3);
             Color colour = Color.White;
             string name = ob.Name;
+            bool isGroupMember = GameScene.Game.GroupBox.Members.Any(x => x.ObjectID == ob.ObjectID);
+            if (control is DXMapInfoControl mapInfoControl)
+                mapInfoControl.Hollow = false;
+
+            control.Visible = true;
 
             if (ob.MonsterInfo != null)
             {
@@ -293,12 +419,11 @@ namespace Client.Scenes.Views
 
                     if (control.Controls.Count == 0) // This is disgusting but its cheap
                     {
-                        new DXControl
+                        new DXMapInfoControl
                         {
                             Parent = control,
                             Location = new Point(1, 1),
                             BackColour = colour,
-                            DrawTexture = true,
                             Size = new Size(3, 3)
                         };
                     }
@@ -332,30 +457,47 @@ namespace Client.Scenes.Views
             {
                 if (MapObject.User.ObjectID == ob.ObjectID)
                 {
-                    size = new Size(3, 3);
+                    size = new Size(5, 5);
+                    control.Border = false;
+                    control.BorderSize = 1f;
+                    control.BorderColour = Color.Transparent;
+                    colour = Color.Lime;
+                    if (control is DXMapInfoControl playerControl)
+                        playerControl.Hollow = true;
 
                     if (control.ProcessAction == null)
                     {
+                        var overlay = DXMapInfoControl.GetOverlay(control);
+
                         control.ProcessAction = () =>
                         {
-                            bool isVisibleSecond = CEnvir.Now.Millisecond < 500;
+                            if (overlay?.IsBorderAnimationActive == false)
+                            {
+                                bool isVisibleSecond = CEnvir.Now.Millisecond < 500;
 
-                            control.Border = true;
-                            control.BackColour = Color.Transparent;
-                            control.BorderColour = isVisibleSecond ? Color.Lime : Color.Transparent;
+                                control.Border = false;
+                                control.BackColour = isVisibleSecond ? Color.Lime : Color.Transparent;
+                                if (control is DXMapInfoControl playerControl)
+                                    playerControl.Hollow = true;
+                            }
+                            else
+                            {
+                                control.Border = false;
+                                control.BackColour = Color.Lime;
+                                if (control is DXMapInfoControl playerControl)
+                                    playerControl.Hollow = true;
+                            }
                         };
                     }
-
-                    colour = Color.Transparent;
+                }
+                else if (isGroupMember)
+                {
+                    colour = Color.Lime;
+                    size = new Size(4, 4);
                 }
                 else if (GameScene.Game.Observer)
                 {
                     control.Visible = false;
-                }
-                else if (GameScene.Game.GroupBox.Members.Any(x => x.ObjectID == ob.ObjectID))
-                {
-                    colour = Color.Lime;
-                    size = new Size(4, 4);
                 }
                 else if (GameScene.Game.Partner != null && GameScene.Game.Partner.ObjectID == ob.ObjectID)
                 {
@@ -377,6 +519,11 @@ namespace Client.Scenes.Views
             Image.Location = new Point(-control.Location.X + Area.Width / 2, -control.Location.Y + Area.Height / 2);
 
             ClipMap();
+
+            if (playLocatorAnim)
+            {
+                GameScene.Game.MiniMapBox.PlayLocatorAnim(ob.ObjectID);
+            }
         }
 
         public void UpdateMapPosition()
@@ -426,6 +573,29 @@ namespace Client.Scenes.Views
             Image.Location = new Point(x, y);
         }
 
+        public void PlayLocatorAnim(uint objectID)
+        {
+            if (MapInfoObjects.Keys
+                .OfType<ClientObjectData>()
+                .FirstOrDefault(info => info.ObjectID == objectID)
+                is not { } ob)
+                return;
+
+            if (!MapInfoObjects.TryGetValue(ob, out var control))
+                return;
+
+            DXMapInfoControl.GetOverlay(control)?.PlayBorderAnimation(Color.Lime);
+        }
+
+        private DXMapInfoControl CreateMapInfoObject()
+        {
+            return new DXMapInfoControl
+            {
+                Parent = Image,
+                Opacity = Opacity,
+            };
+        }
+
         public void Remove(object ob)
         {
             DXControl control;
@@ -446,9 +616,42 @@ namespace Client.Scenes.Views
             DrawChildControls();
             DrawWindow();
             TitleLabel.Draw();
+            SizeButton.Draw();
+            TransparencyButton.Draw();
+            BigMapButton.Draw();
+            DrawTimeOfDay();
             DrawBorder();
             OnAfterDraw();
         }
+
+        private void DrawTimeOfDay()
+        {
+            int index = 0;
+
+            switch (GameScene.Game.TimeOfDay)
+            {
+                case TimeOfDay.Dawn:
+                    index = 215;
+                    break;
+                case TimeOfDay.Day:
+                    index = 216;
+                    break;
+                case TimeOfDay.Dusk:
+                    index = 217;
+                    break;
+                case TimeOfDay.Night:
+                    index = 218;
+                    break;
+            }
+
+            TimeOfDayImage.Index = index;
+            TimeOfDayImage.Location = new Point(3, Size.Height - 28 - 1);
+            TimeOfDayImage.Hint = TimeOfDayLabel;
+            TimeOfDayImage.Draw();
+        }
+
+        private static string TimeOfDayLabel => GameScene.Game.TimeOfDayLabel.Replace("##GAME_TIME##", CEnvir.Now.ToShortTimeString());
+
         #endregion
 
         #region IDisposable
@@ -462,6 +665,8 @@ namespace Client.Scenes.Views
                 Area = Rectangle.Empty;
                 ScaleX = 0;
                 ScaleY = 0;
+                IsLarge = false;
+                IsTransparent = false;
 
                 foreach (KeyValuePair<object, DXControl> pair in MapInfoObjects)
                 {
@@ -489,6 +694,30 @@ namespace Client.Scenes.Views
                         Panel.Dispose();
 
                     Panel = null;
+                }
+
+                if (SizeButton != null)
+                {
+                    if (!SizeButton.IsDisposed)
+                        SizeButton.Dispose();
+
+                    SizeButton = null;
+                }
+
+                if (TransparencyButton != null)
+                {
+                    if (!TransparencyButton.IsDisposed)
+                        TransparencyButton.Dispose();
+
+                    TransparencyButton = null;
+                }
+
+                if (BigMapButton != null)
+                {
+                    if (!BigMapButton.IsDisposed)
+                        BigMapButton.Dispose();
+
+                    BigMapButton = null;
                 }
             }
         }

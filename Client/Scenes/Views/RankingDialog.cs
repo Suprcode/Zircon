@@ -1,5 +1,6 @@
-﻿using Client.Controls;
+using Client.Controls;
 using Client.Envir;
+using Client.Models;
 using Client.Scenes.Views.Character;
 using Client.UserModels;
 using Library;
@@ -71,6 +72,8 @@ namespace Client.Scenes.Views
 
 
 
+            RefreshSelectedRows();
+
             StartIndexChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -100,6 +103,8 @@ namespace Client.Scenes.Views
 
             foreach (RankingLine line in Lines)
                 line.Loading = true;
+
+            SelectedRow = null;
 
             FilterClassChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -131,12 +136,12 @@ namespace Client.Scenes.Views
             foreach (RankingLine line in Lines)
                 line.Loading = true;
 
+            SelectedRow = null;
 
             OnlineOnlyChanged?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion
-
 
         #region AllowObservation
 
@@ -157,36 +162,9 @@ namespace Client.Scenes.Views
         public event EventHandler<EventArgs> AllowObservationChanged;
         public void OnAllowObservationChanged(bool oValue, bool nValue)
         {
-            ObservableBox.Visible = nValue;
             ObserveButton.Visible = nValue;
 
             AllowObservationChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        #endregion
-
-        #region Observable
-
-        public bool Observable
-        {
-            get => _Observable;
-            set
-            {
-                if (_Observable == value) return;
-
-                bool oldValue = _Observable;
-                _Observable = value;
-
-                OnObserverableChanged(oldValue, value);
-            }
-        }
-        private bool _Observable;
-        public event EventHandler<EventArgs> ObserverableChanged;
-        public void OnObserverableChanged(bool oValue, bool nValue)
-        {
-            ObservableBox.Checked = nValue;
-
-            ObserverableChanged?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion
@@ -207,24 +185,36 @@ namespace Client.Scenes.Views
             }
         }
         private RankingLine _SelectedRow;
+        private RankInfo _SelectedRank;
+        private int _SelectedStartIndex = -1;
         public event EventHandler<EventArgs> SelectedRowChanged;
         public void OnSelectedRowChanged(RankingLine oValue, RankingLine nValue)
         {
-            if (oValue != null)
-                oValue.Selected = false;
-
             if (nValue != null && nValue.Rank != null)
-                nValue.Selected = true;
+            {
+                _SelectedRank = nValue.Rank;
+                _SelectedStartIndex = GetLineStartIndex(nValue);
+            }
+            else
+            {
+                _SelectedRank = null;
+                _SelectedStartIndex = -1;
+            }
 
-            ObserveButton.Enabled = SelectedRow != null && SelectedRow.Rank.Online && SelectedRow.Rank.Observable;
+            RefreshSelectedRows();
 
-            if (GameScene.Game != null && SelectedRow == null)
+            ObserveButton.Enabled = _SelectedRank != null && _SelectedRank.Online && _SelectedRank.Observable;
+
+            if (GameScene.Game != null && _SelectedRank == null)
                 ClearInformation();
 
             SelectedRowChanged?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion
+
+        public RankInfo SelectedRank => _SelectedRank;
+        public int SelectedStartIndex => _SelectedStartIndex;
 
         public DateTime UpdateTime;
 
@@ -235,7 +225,7 @@ namespace Client.Scenes.Views
         private DXVScrollBar ScrollBar;
 
         public DXComboBox RequiredClassBox;
-        public DXCheckBox OnlineOnlyBox, ObservableBox;
+        public DXCheckBox OnlineOnlyBox;
         public DXButton CloseButton, SearchButton, ObserveButton;
 
         public DXLabel TitleLabel, LastUpdate;
@@ -249,6 +239,35 @@ namespace Client.Scenes.Views
 
         public DXLabel InspectLabel, CharacterNameLabel, GuildNameLabel, GuildRankLabel;
         public DXItemCell[] Grid;
+
+        private bool HideHead
+        {
+            get
+            {
+                return Grid[(int)EquipmentSlot.Costume]?.Item?.Info != null || HasFishingRobe;
+            }
+        }
+
+        private bool HideBody
+        {
+            get
+            {
+                return Grid[(int)EquipmentSlot.Costume]?.Item?.Info != null;
+            }
+        }
+
+        private bool HideWeapon
+        {
+            get
+            {
+                return PlayerObject.CostumeShapeHideWeapon.Contains(Grid[(int)EquipmentSlot.Costume]?.Item?.Info.Shape ?? -1);
+            }
+        }
+
+        private bool HasFishingRobe
+        {
+            get { return Grid != null && Grid[(int)EquipmentSlot.Armour]?.Item?.Info.ItemEffect == ItemEffect.FishingRobe; }
+        }
 
         private ClientUserItem[] _inspectEquipment = new ClientUserItem[Globals.EquipmentSize];
         public MirClass _inspectClass;
@@ -343,6 +362,7 @@ namespace Client.Scenes.Views
             Size = new Size(fullRanking ? 576 : 330, 456);
             Movable = true;
             Sort = true;
+            DropShadow = true;
 
             CloseButton = new DXButton
             {
@@ -360,7 +380,7 @@ namespace Client.Scenes.Views
                 Text = CEnvir.Language.RankingDialogTitle,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -768,7 +788,7 @@ namespace Client.Scenes.Views
             };
             ObserveButton.MouseClick += (o, e) =>
             {
-                if (SelectedRow == null)
+                if (_SelectedRank == null)
                     return;
 
                 if (GameScene.Game != null && CEnvir.Now < GameScene.Game.User.CombatTime.AddSeconds(10) && !GameScene.Game.Observer)
@@ -777,7 +797,9 @@ namespace Client.Scenes.Views
                     return;
                 }
 
-                CEnvir.Enqueue(new C.ObserverRequest { Name = SelectedRow.Rank.Name });
+                ScrollToRank(_SelectedRank);
+
+                CEnvir.Enqueue(new C.ObserverRequest { Name = _SelectedRank.Name });
             };
 
             RankPanelList = new DXControl
@@ -806,7 +828,6 @@ namespace Client.Scenes.Views
             ScrollBar.ValueChanged += (o, e) =>
             {
                 StartIndex = ScrollBar.Value;
-                SelectedRow = null;
             };
             MouseWheel += ScrollBar.DoMouseWheel;
 
@@ -893,28 +914,6 @@ namespace Client.Scenes.Views
             OnlineOnlyBox.Location = new Point(RequiredClassBox.Location.X + RequiredClassBox.Size.Width + 5, 38);
             OnlineOnlyBox.Checked = Config.RankingOnline;
 
-            ObservableBox = new DXCheckBox
-            {
-                Parent = RankPanel,
-                Visible = false,
-                Label = { Text = CEnvir.Language.RankingDialogObservableLabel }
-            };
-            ObservableBox.CheckedChanged += (o, e) =>
-            {
-                if (ObservableBox.Checked == Observable) return;
-
-                if (GameScene.Game == null) return;
-                if (GameScene.Game.Observer) return;
-                if (!GameScene.Game.User.InSafeZone)
-                {
-                    GameScene.Game.ReceiveChat(CEnvir.Language.SpectatorModeWarningInSafezone, MessageType.System);
-                    return;
-                }
-
-                CEnvir.Enqueue(new C.ObservableSwitch { Allow = !Observable });
-            };
-            ObservableBox.Location = new Point(OnlineOnlyBox.Location.X + OnlineOnlyBox.Size.Width + 5, 38);
-
             LastUpdate = new DXLabel
             {
                 Parent = this,
@@ -948,28 +947,37 @@ namespace Client.Scenes.Views
                 MirImage image = EquipEffectDecider.GetEffectImageOrNull(armour, Gender);
                 if (image != null)
                 {
-                    bool oldBlend = DXManager.Blending;
-                    float oldRate = DXManager.BlendRate;
+                    bool oldBlend = RenderingPipelineManager.IsBlending();
+                    float oldRate = RenderingPipelineManager.GetBlendRate();
+                    BlendMode previousBlendMode = RenderingPipelineManager.GetBlendMode();
 
-                    DXManager.SetBlend(true, 0.8F);
+                    RenderingPipelineManager.SetBlend(true, 0.8F);
+
                     PresentTexture(image.Image, InspectPanel, new Rectangle(InspectPanel.DisplayArea.X + x + image.OffSetX, InspectPanel.DisplayArea.Y + y + image.OffSetY, image.Width, image.Height), ForeColour, this);
-                    DXManager.SetBlend(oldBlend, oldRate);
+
+                    RenderingPipelineManager.SetBlend(oldBlend, oldRate, previousBlendMode);
                 }
             }
 
             if (!CEnvir.LibraryList.TryGetValue(LibraryFile.ProgUse, out library)) return;
 
-            if (Class == MirClass.Assassin && Gender == MirGender.Female && HairType == 1 && helmet == null)
-                library.Draw(1160, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, HairColour, true, 1F, ImageType.Image);
-
-            switch (Gender)
+            if (!HideHead)
             {
-                case MirGender.Male:
-                    library.Draw(0, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
-                    break;
-                case MirGender.Female:
-                    library.Draw(1, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
-                    break;
+                if (Class == MirClass.Assassin && Gender == MirGender.Female && HairType == 1 && helmet == null)
+                    library.Draw(1160, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, HairColour, true, 1F, ImageType.Image);
+            }
+
+            if (!HideBody)
+            {
+                switch (Gender)
+                {
+                    case MirGender.Male:
+                        library.Draw(0, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
+                        break;
+                    case MirGender.Female:
+                        library.Draw(1, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
+                        break;
+                }
             }
 
             if (CEnvir.LibraryList.TryGetValue(LibraryFile.Equip, out library))
@@ -986,7 +994,7 @@ namespace Client.Scenes.Views
                     library.Draw(armourIndex, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, armour.Colour, true, 1F, ImageType.Overlay);
                 }
 
-                if (weapon != null)
+                if (weapon != null && !HideWeapon)
                 {
                     int weaponIndex = weapon.Info.Image;
                     library.Draw(weaponIndex, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
@@ -995,16 +1003,19 @@ namespace Client.Scenes.Views
                     MirImage image = EquipEffectDecider.GetEffectImageOrNull(weapon, Gender);
                     if (image != null)
                     {
-                        bool oldBlend = DXManager.Blending;
-                        float oldRate = DXManager.BlendRate;
+                        bool oldBlend = RenderingPipelineManager.IsBlending();
+                        float oldRate = RenderingPipelineManager.GetBlendRate();
+                        BlendMode previousBlendMode = RenderingPipelineManager.GetBlendMode();
 
-                        DXManager.SetBlend(true, 0.8F);
-                        PresentTexture(image.Image, InspectPanel, new Rectangle(DisplayArea.X + x + image.OffSetX, DisplayArea.Y + y + image.OffSetY, image.Width, image.Height), ForeColour, this);
-                        DXManager.SetBlend(oldBlend, oldRate);
+                        RenderingPipelineManager.SetBlend(true, 0.8F);
+
+                        PresentTexture(image.Image, InspectPanel, new Rectangle(InspectPanel.DisplayArea.X + x + image.OffSetX, InspectPanel.DisplayArea.Y + y + image.OffSetY, image.Width, image.Height), ForeColour, this);
+
+                        RenderingPipelineManager.SetBlend(oldBlend, oldRate, previousBlendMode);
                     }
                 }
 
-                if (shield != null)
+                if (shield != null && !HideWeapon)
                 {
                     int shieldIndex = shield.Info.Image;
                     library.Draw(shieldIndex, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
@@ -1013,12 +1024,15 @@ namespace Client.Scenes.Views
                     MirImage image = EquipEffectDecider.GetEffectImageOrNull(shield, Gender);
                     if (image != null)
                     {
-                        bool oldBlend = DXManager.Blending;
-                        float oldRate = DXManager.BlendRate;
+                        bool oldBlend = RenderingPipelineManager.IsBlending();
+                        float oldRate = RenderingPipelineManager.GetBlendRate();
+                        BlendMode previousBlendMode = RenderingPipelineManager.GetBlendMode();
 
-                        DXManager.SetBlend(true, 0.8F);
-                        PresentTexture(image.Image, InspectPanel, new Rectangle(DisplayArea.X + x + image.OffSetX, DisplayArea.Y + y + image.OffSetY, image.Width, image.Height), ForeColour, this);
-                        DXManager.SetBlend(oldBlend, oldRate);
+                        RenderingPipelineManager.SetBlend(true, 0.8F);
+
+                        PresentTexture(image.Image, InspectPanel, new Rectangle(InspectPanel.DisplayArea.X + x + image.OffSetX, InspectPanel.DisplayArea.Y + y + image.OffSetY, image.Width, image.Height), ForeColour, this);
+
+                        RenderingPipelineManager.SetBlend(oldBlend, oldRate, previousBlendMode);
                     }
                 }
             }
@@ -1026,14 +1040,14 @@ namespace Client.Scenes.Views
             var hasFishingRobe = armour?.Info.ItemEffect == ItemEffect.FishingRobe;
             if (hasFishingRobe) return;
 
-            if (helmet != null && library != null)
+            if (helmet != null && library != null && !HideHead)
             {
                 int index = helmet.Info.Image;
 
                 library.Draw(index, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
                 library.Draw(index, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, helmet.Colour, true, 1F, ImageType.Overlay);
             }
-            else if (HairType > 0)
+            else if (HairType > 0 && !HideHead)
             {
                 library = CEnvir.LibraryList[LibraryFile.ProgUse];
 
@@ -1090,6 +1104,14 @@ namespace Client.Scenes.Views
         public void Update(S.RankSearch p)
         {
             SearchLine.Rank = p.Rank;
+
+            if (p.Rank != null)
+            {
+                _SelectedStartIndex = p.StartIndex;
+                SelectRank(p.Rank);
+            }
+            else
+                SelectedRow = null;
         }
 
         public void Update(S.Rankings p)
@@ -1099,11 +1121,104 @@ namespace Client.Scenes.Views
             if (p.Class != FilterClass || p.OnlineOnly != OnlineOnly) return;
 
             ScrollBar.MaxValue = p.Total;
+            ScrollBar.Value = p.StartIndex;
 
             for (int i = 0; i < Lines.Length; i++)
             {
                 Lines[i].Loading = false;
                 Lines[i].Rank = i >= p.Ranks.Count ? null : p.Ranks[i];
+            }
+
+            RefreshSelectedRows();
+        }
+
+        public void SelectRank(RankInfo rank)
+        {
+            SelectRank(rank, _SelectedStartIndex);
+        }
+
+        public void SelectRank(RankInfo rank, int startIndex)
+        {
+            if (rank != null && rank.Rank <= 0)
+            {
+                RankInfo visibleRank = Lines?.Select(x => x?.Rank).FirstOrDefault(x => x != null && x.Index == rank.Index);
+
+                if (visibleRank != null)
+                    rank = visibleRank;
+            }
+
+            _SelectedRank = rank;
+            _SelectedStartIndex = rank == null ? -1 : startIndex;
+            RefreshSelectedRows();
+
+            ObserveButton.Enabled = _SelectedRank != null && _SelectedRank.Online && _SelectedRank.Observable;
+        }
+
+        public void InspectSelectedRank()
+        {
+            if (GameScene.Game == null || _SelectedRank == null) return;
+
+            CEnvir.Enqueue(new C.Inspect { Index = _SelectedRank.Index, Ranking = true });
+        }
+
+        public void SetScrollIndex(int startIndex)
+        {
+            startIndex = Math.Max(0, startIndex);
+
+            if (ScrollBar.MaxValue > ScrollBar.VisibleSize)
+            {
+                startIndex = Math.Min(startIndex, ScrollBar.MaxValue - ScrollBar.VisibleSize);
+                ScrollBar.Value = startIndex;
+            }
+
+            StartIndex = startIndex;
+        }
+
+        private void ScrollToRank(RankInfo rank)
+        {
+            if (rank == null) return;
+
+            int startIndex = _SelectedStartIndex >= 0 ? _SelectedStartIndex : Math.Max(0, rank.Rank - 1);
+
+            SetScrollIndex(startIndex);
+        }
+
+        private int GetLineStartIndex(RankingLine line)
+        {
+            if (line == null) return -1;
+
+            if (line == SearchLine) return _SelectedStartIndex;
+
+            for (int i = 0; i < Lines.Length; i++)
+                if (Lines[i] == line)
+                    return StartIndex + i;
+
+            return -1;
+        }
+
+        private void RefreshSelectedRows()
+        {
+            _SelectedRow = null;
+
+            if (SearchLine != null)
+            {
+                SearchLine.Selected = _SelectedRank != null && SearchLine.Rank != null && SearchLine.Rank.Index == _SelectedRank.Index;
+
+                if (SearchLine.Selected)
+                    _SelectedRow = SearchLine;
+            }
+
+            if (Lines != null)
+            {
+                foreach (RankingLine line in Lines)
+                {
+                    if (line == null) continue;
+
+                    line.Selected = _SelectedRank != null && line.Rank != null && line.Rank.Index == _SelectedRank.Index;
+
+                    if (line.Selected)
+                        _SelectedRow = line;
+                }
             }
         }
 
@@ -1169,12 +1284,15 @@ namespace Client.Scenes.Views
 
             if (image != null)
             {
-                bool oldBlend = DXManager.Blending;
-                float oldRate = DXManager.BlendRate;
+                bool oldBlend = RenderingPipelineManager.IsBlending();
+                float oldRate = RenderingPipelineManager.GetBlendRate();
+                BlendMode previousBlendMode = RenderingPipelineManager.GetBlendMode();
 
-                DXManager.SetBlend(true, 0.8F);
-                PresentTexture(image.Image, this, new Rectangle(cell.DisplayArea.X + image.OffSetX + x, cell.DisplayArea.Y + image.OffSetY + y, image.Width, image.Height), ForeColour, this);
-                DXManager.SetBlend(oldBlend, oldRate);
+                RenderingPipelineManager.SetBlend(true, 0.8F);
+
+                PresentTexture(image.Image, this, new Rectangle(cell.DisplayArea.X + x + image.OffSetX, cell.DisplayArea.Y + y + image.OffSetY, image.Width, image.Height), ForeColour, this);
+
+                RenderingPipelineManager.SetBlend(oldBlend, oldRate, previousBlendMode);
             }
         }
 
@@ -1197,10 +1315,9 @@ namespace Client.Scenes.Views
                 _OnlineOnly = false;
                 OnlineOnlyChanged = null;
 
-                _Observable = false;
-                ObserverableChanged = null;
-
                 _SelectedRow = null;
+                _SelectedRank = null;
+                _SelectedStartIndex = -1;
                 SelectedRowChanged = null;
 
                 UpdateTime = DateTime.MinValue;
@@ -1267,14 +1384,6 @@ namespace Client.Scenes.Views
                         OnlineOnlyBox.Dispose();
 
                     OnlineOnlyBox = null;
-                }
-
-                if (ObservableBox != null)
-                {
-                    if (!ObservableBox.IsDisposed)
-                        ObservableBox.Dispose();
-
-                    ObservableBox = null;
                 }
 
                 if (CloseButton != null)
@@ -1414,6 +1523,9 @@ namespace Client.Scenes.Views
 
     public sealed class RankingLine : DXControl
     {
+        private const string RankChangeUpArrow = "\u25B2";
+        private const string RankChangeDownArrow = "\u25BC";
+
         #region Properties
 
         #region Rank
@@ -1465,7 +1577,7 @@ namespace Client.Scenes.Views
                 }
                 else
                 {
-                    ChangeLabel.Text = $"{(change > 0 ? "▲" : "▼")}{Math.Abs(Rank.RankChange)}";
+                    ChangeLabel.Text = $"{(change > 0 ? RankChangeUpArrow : RankChangeDownArrow)}{Math.Abs(Rank.RankChange)}";
                     ChangeLabel.ForeColour = change > 0 ? Color.OrangeRed : Color.DodgerBlue;
                 }
 
@@ -1556,7 +1668,8 @@ namespace Client.Scenes.Views
         public RankingLine()
         {
             Size = new Size(288, 22);
-            DrawTexture = true;
+            DrawTexture = false;
+            CacheInParent = false;
             BackColour = Color.Empty;
 
             OnlineImage = new DXImageControl
@@ -1615,6 +1728,13 @@ namespace Client.Scenes.Views
         }
 
         #region Methods
+
+        protected override void DrawControl()
+        {
+            if (BackColour == Color.Empty) return;
+
+            RenderingPipelineManager.FillRectangle(DisplayArea, BackColour);
+        }
 
         public override void OnMouseClick(MouseEventArgs e)
         {
@@ -1704,5 +1824,4 @@ namespace Client.Scenes.Views
 
         #endregion
     }
-
 }

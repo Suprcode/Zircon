@@ -4,8 +4,6 @@ using Client.Models;
 using Client.Models.Particles;
 using Library;
 using Library.SystemModels;
-using SlimDX;
-using SlimDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -146,6 +144,8 @@ namespace Client.Scenes.Views
 
             OffSetX = Size.Width / 2 / CellWidth;
             OffSetY = Size.Height / 2 / CellHeight;
+            PixelOffsetX = (Size.Width - CellWidth) / 2 - OffSetX * CellWidth;
+            PixelOffsetY = (Size.Height - CellHeight) / 2 - OffSetY * CellHeight - ManualHeightOffset;
         }
 
         public MouseButtons MapButtons;
@@ -176,11 +176,14 @@ namespace Client.Scenes.Views
         public List<Models.Particles.ParticleEmitter> ParticleEffects = new List<Models.Particles.ParticleEmitter>();
 
         public const int CellWidth = 48, CellHeight = 32;
+        public const int ManualHeightOffset = 34;
 
         public int ViewRangeX = 12, ViewRangeY = 24;
 
         public static int OffSetX;
         public static int OffSetY;
+        public static int PixelOffsetX;
+        public static int PixelOffsetY;
 
 
         #endregion
@@ -206,7 +209,12 @@ namespace Client.Scenes.Views
             DrawBackground();
 
             if (FLayer.TextureValid)
-                DXManager.Sprite.Draw(FLayer.ControlTexture, Color.White);
+            {
+                RenderTexture floorTexture = FLayer.ControlTexture;
+                Rectangle floorSource = new Rectangle(0, 0, FLayer.TextureSize.Width, FLayer.TextureSize.Height);
+                RectangleF floorDestination = new RectangleF(0F, 0F, FLayer.TextureSize.Width, FLayer.TextureSize.Height);
+                RenderingPipelineManager.DrawTexture(floorTexture, floorSource, floorDestination, Color.White);
+            }
 
             if (Config.DrawEffects)
             {
@@ -233,15 +241,23 @@ namespace Client.Scenes.Views
                 }
             }
 
-            DXManager.Sprite.Flush();
+            RenderingPipelineManager.FlushSprite();
 
-            DXManager.Device.SetRenderState(RenderState.SourceBlend, Blend.Zero);
-            DXManager.Device.SetRenderState(RenderState.DestinationBlend, Blend.SourceColor);
+            bool previousBlendEnabled = RenderingPipelineManager.IsBlending();
+            float previousBlendRate = RenderingPipelineManager.GetBlendRate();
+            BlendMode previousBlendMode = RenderingPipelineManager.GetBlendMode();
 
-            DXManager.Sprite.Draw(LLayer.ControlTexture, Color.White);
+            RenderingPipelineManager.SetBlend(true, 1F, BlendMode.LIGHTMAP);
 
-            DXManager.Sprite.End();
-            DXManager.Sprite.Begin(SpriteFlags.AlphaBlend);
+            if (LLayer.TextureValid)
+            {
+                RenderTexture lightLayerTexture = LLayer.ControlTexture;
+                Rectangle lightLayerSource = new Rectangle(0, 0, LLayer.TextureSize.Width, LLayer.TextureSize.Height);
+                RectangleF lightLayerDestination = new RectangleF(0F, 0F, LLayer.TextureSize.Width, LLayer.TextureSize.Height);
+                RenderingPipelineManager.DrawTexture(lightLayerTexture, lightLayerSource, lightLayerDestination, Color.White);
+            }
+
+            RenderingPipelineManager.SetBlend(previousBlendEnabled, previousBlendRate, previousBlendMode);
 
             foreach (MapObject ob in Objects)
             {
@@ -308,6 +324,7 @@ namespace Client.Scenes.Views
             DrawControl();
 
             DrawBorder();
+
             OnAfterDraw();
         }
 
@@ -317,11 +334,9 @@ namespace Client.Scenes.Views
 
             if (!CEnvir.LibraryList.TryGetValue(LibraryFile.Background, out MirLibrary library)) return;
 
-            MirImage image = library.CreateImage(MapInfo.Background, ImageType.Image);
+            if (!library.TryGetTexture(MapInfo.Background, ImageType.Image, out _, out var texture, out var sourceRectangle)) return;
 
-            if (image?.Image == null) return;
-
-            PresentTexture(image.Image, Parent, DisplayArea, Color.White, this, 0, 0, 1F);
+            PresentTexture(texture, sourceRectangle, Parent, DisplayArea, Color.White, this, 0, 0, 1F);
         }
 
         private void DrawObjects()
@@ -331,61 +346,84 @@ namespace Client.Scenes.Views
 
             for (int y = minY; y <= maxY; y++)
             {
-                int drawY = (y - User.CurrentLocation.Y + OffSetY + 1) * CellHeight - User.MovingOffSet.Y - User.ShakeScreenOffset.Y;
+                int drawY = (y - User.CurrentLocation.Y + OffSetY + 1) * CellHeight + PixelOffsetY - User.MovingOffSet.Y - User.ShakeScreenOffset.Y;
 
                 for (int x = minX; x <= maxX; x++)
                 {
-                    int drawX = (x - User.CurrentLocation.X + OffSetX) * CellWidth - User.MovingOffSet.X - User.ShakeScreenOffset.X;
+                    int drawX = (x - User.CurrentLocation.X + OffSetX) * CellWidth + PixelOffsetX - User.MovingOffSet.X - User.ShakeScreenOffset.X;
 
                     Cell cell = Cells[x, y];
 
-                    MirLibrary library;
-                    LibraryFile file;
+                    if (!cell.LibrariesLoaded)
+                    {
+                        if (Libraries.KROrder.TryGetValue(cell.MiddleFile, out LibraryFile file) && file != LibraryFile.Tilesc)
+                            CEnvir.LibraryList.TryGetValue(file, out cell.MiddleLibrary);
 
-                    if (Libraries.KROrder.TryGetValue(cell.MiddleFile, out file) && file != LibraryFile.Tilesc && CEnvir.LibraryList.TryGetValue(file, out library))
+                        if (Libraries.KROrder.TryGetValue(cell.FrontFile, out file) && file != LibraryFile.Tilesc)
+                            CEnvir.LibraryList.TryGetValue(file, out cell.FrontLibrary);
+
+                        cell.LibrariesLoaded = true;
+                    }
+
+                    if (cell.MiddleLibrary != null)
                     {
                         int index = cell.MiddleImage - 1;
 
                         bool blend = false;
                         if (cell.MiddleAnimationFrame > 1 && cell.MiddleAnimationFrame < 255)
                         {
-                            index += Animation % (cell.MiddleAnimationFrame & 0x4F);
-                            blend = (cell.MiddleAnimationFrame & 0x50) > 0;
+                            blend = cell.MiddleAnimationBlend;
+                            index += Animation % cell.MiddleAnimationCount;
                         }
 
-                        Size s = library.GetSize(index);
+                        Size s = cell.MiddleLibrary.GetSize(index);
 
                         if ((s.Width != CellWidth || s.Height != CellHeight) && (s.Width != CellWidth * 2 || s.Height != CellHeight * 2))
                         {
                             if (!blend)
-                                library.Draw(index, drawX, drawY - s.Height, Color.White, false, 1F, ImageType.Image);
+                                cell.MiddleLibrary.Draw(index, drawX, drawY - s.Height, Color.White, false, 1F, ImageType.Image);
                             else
-                                library.DrawBlend(index, drawX, drawY - s.Height, Color.White, false, 0.5F, ImageType.Image);
+                                cell.MiddleLibrary.DrawBlend(index, drawX, drawY - s.Height, Color.White, false, 0.5F, ImageType.Image);
+                        }
+                        else
+                        {
+                            cell.MiddleLibrary.Draw(index, drawX, drawY - s.Height, Color.White, false, 1F, ImageType.Image);
                         }
                     }
 
-
-
-                    if (Libraries.KROrder.TryGetValue(cell.FrontFile, out file) && file != LibraryFile.Tilesc && CEnvir.LibraryList.TryGetValue(file, out library))
+                    if (cell.FrontLibrary != null)
                     {
                         int index = cell.FrontImage - 1;
 
                         bool blend = false;
                         if (cell.FrontAnimationFrame > 1 && cell.FrontAnimationFrame < 255)
                         {
-                            index += Animation % (cell.FrontAnimationFrame & 0x7F);
-                            blend = (cell.FrontAnimationFrame & 0x80) > 0;
+                            blend = cell.FrontAnimationBlend;
+                            int frameCount = cell.FrontAnimationCount;
+                            if (frameCount > 0)
+                            {
+                                index += Animation % frameCount;
+                            }
                         }
 
-                        Size s = library.GetSize(index);
+                        Size s = cell.FrontLibrary.GetSize(index);
 
+                        bool cellSized = (s.Width == CellWidth && s.Height == CellHeight) ||
+                                         (s.Width == CellWidth * 2 && s.Height == CellHeight * 2);
 
-                        if ((s.Width != CellWidth || s.Height != CellHeight) && (s.Width != CellWidth * 2 || s.Height != CellHeight * 2))
+                        if (!cellSized)
                         {
                             if (!blend)
-                                library.Draw(index, drawX, drawY - s.Height, Color.White, false, 1F, ImageType.Image);
+                                cell.FrontLibrary.Draw(index, drawX, drawY - s.Height, Color.White, false, 1F, ImageType.Image);
                             else
-                                library.DrawBlend(index, drawX, drawY - s.Height, Color.White, false, 0.5F, ImageType.Image);
+                                cell.FrontLibrary.DrawBlend(index, drawX, drawY - s.Height, Color.White, false, 0.5F, ImageType.Image);
+                        }
+                        else
+                        {
+                            if (!blend)
+                                cell.FrontLibrary.Draw(index, drawX, drawY - CellHeight, Color.White, false, 1F, ImageType.Image);
+                            else
+                                cell.FrontLibrary.DrawBlend(index, drawX, drawY - CellHeight, Color.White, false, 0.5F, ImageType.Image);
                         }
                     }
                 }
@@ -414,13 +452,15 @@ namespace Client.Scenes.Views
 
             }
 
-            if (User.Opacity != 1f) return;
-            float oldOpacity = MapObject.User.Opacity;
-            MapObject.User.Opacity = 0.65F;
+            if (User.Opacity == 1f)
+            {
+                float oldOpacity = MapObject.User.Opacity;
+                MapObject.User.Opacity = 0.65F;
 
-            MapObject.User.DrawPlayer(false);
+                MapObject.User.DrawPlayer(false, false);
 
-            MapObject.User.Opacity = oldOpacity;
+                MapObject.User.Opacity = oldOpacity;
+            }
 
             if (Config.DrawEffects)
             {
@@ -665,25 +705,6 @@ namespace Client.Scenes.Views
 
                     if (CEnvir.Now >= User.AttackTime)
                     {
-                        int delayTime = 500;
-
-                        if (Functions.Distance(MapObject.TargetObject.CurrentLocation, MapObject.User.CurrentLocation) == 1)
-                        {
-                            delayTime = 100;
-                        }
-                        else
-                        {
-                            int x = MapObject.OffSetX * MapObject.CellWidth - MapObject.User.MovingOffSet.X;
-                            int y = MapObject.OffSetY * MapObject.CellHeight - MapObject.User.MovingOffSet.Y;
-
-                            int x1 = (MapObject.TargetObject.CurrentLocation.X - MapObject.User.CurrentLocation.X + MapObject.OffSetX) * MapObject.CellWidth - MapObject.User.MovingOffSet.X;
-                            int y1 = (MapObject.TargetObject.CurrentLocation.Y - MapObject.User.CurrentLocation.Y + MapObject.OffSetY) * MapObject.CellHeight - MapObject.User.MovingOffSet.Y;
-
-                            long duration = Functions.Distance(new Point(x, y / 32 * 48), new Point(x1, y1 / 32 * 48)) * TimeSpan.TicksPerMillisecond * 2;
-
-                            delayTime = int.Parse(duration.ToString().Substring(0, 3));
-                        }
-
                         MapObject.User.AttemptAction(
                             new ObjectAction
                             (
@@ -691,8 +712,7 @@ namespace Client.Scenes.Views
                                       Functions.DirectionFromPoint(MapObject.User.CurrentLocation, MapObject.TargetObject.CurrentLocation),
                                       MapObject.User.CurrentLocation,
                                       MapObject.TargetObject.ObjectID, //Ranged Attack Target ID;
-                                      MagicType.Shuriken,
-                                      delayTime
+                                      MagicType.Shuriken
                             ));
 
                         Stop();
@@ -849,7 +869,7 @@ namespace Client.Scenes.Views
                 Mining = false;
             }
 
-            bool haselementalhurricane = MapObject.User.VisibleBuffs.Contains(BuffType.ElementalHurricane);
+            bool haselementalhurricane = MapObject.User.VisibleBuffs.ContainsKey(BuffType.ElementalHurricane);
 
             if (!haselementalhurricane && MapObject.TargetObject != null && !MapObject.TargetObject.Dead && ((MapObject.TargetObject.Race == ObjectType.Monster && string.IsNullOrEmpty(MapObject.TargetObject.PetOwner)) || CEnvir.Shift))
             {
@@ -1146,10 +1166,11 @@ namespace Client.Scenes.Views
 
             if (loc.X >= 0 && loc.Y >= 0 && loc.X < Width && loc.Y < Height && !Cells[loc.X, loc.Y].Blocking()) return dir;
 
+            Point localMouse = new Point(MouseLocation.X - GameScene.Game.Location.X, MouseLocation.Y - GameScene.Game.Location.Y);
 
-            PointF c = new PointF(OffSetX * CellWidth + CellWidth / 2F, OffSetY * CellHeight + CellHeight / 2F);
+            PointF c = new PointF(OffSetX * CellWidth + PixelOffsetX + CellWidth / 2F, OffSetY * CellHeight + PixelOffsetY + CellHeight / 2F);
             PointF a = new PointF(c.X, 0);
-            PointF b = MouseLocation;
+            PointF b = localMouse;
             float bc = (float)Functions.Distance(c, b);
             float ac = bc;
             b.Y -= c.Y;
@@ -1161,7 +1182,7 @@ namespace Client.Scenes.Views
 
             angle *= 180 / Math.PI;
 
-            if (MouseLocation.X < c.X) angle = 360 - angle;
+            if (localMouse.X < c.X) angle = 360 - angle;
 
             MirDirection best = (MirDirection)(angle / 45F);
 
@@ -1185,10 +1206,10 @@ namespace Client.Scenes.Views
             if (loc.X >= 0 && loc.Y >= 0 && loc.X < Width && loc.Y < Height && !Cells[loc.X, loc.Y].Blocking()) return dir;
 
 
-            PointF c = new PointF(MapObject.OffSetX * MapObject.CellWidth + MapObject.CellWidth / 2F, MapObject.OffSetY * MapObject.CellHeight + MapObject.CellHeight / 2F);
+            PointF c = new PointF(MapObject.OffSetX * MapObject.CellWidth + PixelOffsetX + MapObject.CellWidth / 2F, MapObject.OffSetY * MapObject.CellHeight + PixelOffsetY + MapObject.CellHeight / 2F);
             PointF a = new PointF(c.X, 0);
-            PointF b = new PointF((targetLocation.X - MapObject.User.CurrentLocation.X + MapObject.OffSetX) * MapObject.CellWidth + MapObject.CellWidth / 2F,
-                (targetLocation.Y - MapObject.User.CurrentLocation.Y + MapObject.OffSetY) * MapObject.CellHeight + MapObject.CellHeight / 2F);
+            PointF b = new PointF((targetLocation.X - MapObject.User.CurrentLocation.X + MapObject.OffSetX) * MapObject.CellWidth + PixelOffsetX + MapObject.CellWidth / 2F,
+                (targetLocation.Y - MapObject.User.CurrentLocation.Y + MapObject.OffSetY) * MapObject.CellHeight + PixelOffsetY + MapObject.CellHeight / 2F);
             float bc = (float)Functions.Distance(c, b);
             float ac = bc;
             b.Y -= c.Y;
@@ -1231,15 +1252,16 @@ namespace Client.Scenes.Views
 
         public MirDirection MouseDirection() //22.5 = 16
         {
-            PointF p = new PointF(MouseLocation.X / CellWidth, MouseLocation.Y / CellHeight);
+            Point localMouse = new Point(MouseLocation.X - GameScene.Game.Location.X, MouseLocation.Y - GameScene.Game.Location.Y);
+            PointF p = new PointF((localMouse.X - PixelOffsetX) / (float)CellWidth, (localMouse.Y - PixelOffsetY) / (float)CellHeight);
 
             //If close proximity then co by co ords 
             if (Functions.InRange(new Point(OffSetX, OffSetY), Point.Truncate(p), 2))
                 return Functions.DirectionFromPoint(new Point(OffSetX, OffSetY), Point.Truncate(p));
 
-            PointF c = new PointF(OffSetX * CellWidth + CellWidth / 2F, OffSetY * CellHeight + CellHeight / 2F);
+            PointF c = new PointF(OffSetX * CellWidth + PixelOffsetX + CellWidth / 2F, OffSetY * CellHeight + PixelOffsetY + CellHeight / 2F);
             PointF a = new PointF(c.X, 0);
-            PointF b = new PointF(MouseLocation.X, MouseLocation.Y);
+            PointF b = new PointF(localMouse.X, localMouse.Y);
             float bc = (float)Functions.Distance(c, b);
             float ac = bc;
             b.Y -= c.Y;
@@ -1251,7 +1273,7 @@ namespace Client.Scenes.Views
 
             angle *= 180 / Math.PI;
 
-            if (MouseLocation.X < c.X) angle = 360 - angle;
+            if (localMouse.X < c.X) angle = 360 - angle;
             angle += 22.5F;
             if (angle > 360) angle -= 360;
 
@@ -1300,8 +1322,8 @@ namespace Client.Scenes.Views
         {
             if (User == null) return;
 
-            GameScene.Game.MapControl.MapLocation = new Point((GameScene.Game.MapControl.MouseLocation.X - GameScene.Game.Location.X) / CellWidth - OffSetX + User.CurrentLocation.X,
-                                                              (GameScene.Game.MapControl.MouseLocation.Y - GameScene.Game.Location.Y) / CellHeight - OffSetY + User.CurrentLocation.Y);
+            GameScene.Game.MapControl.MapLocation = new Point((GameScene.Game.MapControl.MouseLocation.X - GameScene.Game.Location.X - PixelOffsetX) / CellWidth - OffSetX + User.CurrentLocation.X,
+                                                              (GameScene.Game.MapControl.MouseLocation.Y - GameScene.Game.Location.Y - PixelOffsetY) / CellHeight - OffSetY + User.CurrentLocation.Y);
         }
 
         public bool HasTarget(Point loc)
@@ -1450,14 +1472,14 @@ namespace Client.Scenes.Views
                     if (y < 0) continue;
                     if (y >= GameScene.Game.MapControl.Height) break;
 
-                    int drawY = (y - User.CurrentLocation.Y + OffSetY) * CellHeight - User.MovingOffSet.Y - User.ShakeScreenOffset.Y;
+                    int drawY = (y - User.CurrentLocation.Y + OffSetY) * CellHeight + PixelOffsetY - User.MovingOffSet.Y - User.ShakeScreenOffset.Y;
 
                     for (int x = minX; x <= maxX; x++)
                     {
                         if (x < 0) continue;
                         if (x >= GameScene.Game.MapControl.Width) break;
 
-                        int drawX = (x - User.CurrentLocation.X + OffSetX) * CellWidth - User.MovingOffSet.X - User.ShakeScreenOffset.X;
+                        int drawX = (x - User.CurrentLocation.X + OffSetX) * CellWidth + PixelOffsetX - User.MovingOffSet.X - User.ShakeScreenOffset.X;
 
                         Cell tile = GameScene.Game.MapControl.Cells[x, y];
 
@@ -1477,11 +1499,11 @@ namespace Client.Scenes.Views
 
                 for (int y = minY; y <= maxY; y++)
                 {
-                    int drawY = (y - User.CurrentLocation.Y + OffSetY + 1) * CellHeight - User.MovingOffSet.Y - User.ShakeScreenOffset.Y;
+                    int drawY = (y - User.CurrentLocation.Y + OffSetY + 1) * CellHeight + PixelOffsetY - User.MovingOffSet.Y - User.ShakeScreenOffset.Y;
 
                     for (int x = minX; x <= maxX; x++)
                     {
-                        int drawX = (x - User.CurrentLocation.X + OffSetX) * CellWidth - User.MovingOffSet.X - User.ShakeScreenOffset.X;
+                        int drawX = (x - User.CurrentLocation.X + OffSetX) * CellWidth + PixelOffsetX - User.MovingOffSet.X - User.ShakeScreenOffset.X;
 
                         Cell cell = GameScene.Game.MapControl.Cells[x, y];
 
@@ -1530,6 +1552,14 @@ namespace Client.Scenes.Views
 
         public sealed class Light : DXControl
         {
+            private const float LightScale = 0.02F;
+            private const float BaseLightSize = 0.1F;
+            private const float TileLightScaleMultiplier = 30F;
+            private const float EffectLightScaleDivisor = 5F;
+            private const int TileLightSearchPadding = 15;
+
+            private int _lastLightSignature;
+
             public Light()
             {
                 IsControl = false;
@@ -1540,54 +1570,88 @@ namespace Client.Scenes.Views
 
             public void CheckTexture()
             {
+                UpdateAmbientLight();
+
+                if (!ShouldRenderLightLayer())
+                {
+                    _lastLightSignature = 0;
+
+                    if (TextureValid)
+                        DisposeTexture();
+
+                    return;
+                }
+
+                // A pipeline reset can briefly leave the shared light texture unavailable.
+                // Do not create and cache an incomplete light layer during that window.
+                try
+                {
+                    if (!RenderingPipelineManager.GetLightTexture().IsValid ||
+                        RenderingPipelineManager.GetLightTextureSize().IsEmpty)
+                        return;
+                }
+                catch (InvalidOperationException)
+                {
+                    return;
+                }
+
+                int signature = GetLightSignature();
+
+                if (TextureValid && signature == _lastLightSignature)
+                    return;
+
                 CreateTexture();
+                _lastLightSignature = signature;
             }
 
             protected override void OnClearTexture()
             {
                 base.OnClearTexture();
 
-                if (MapObject.User.Dead)
+                MapControl map = GameScene.Game.MapControl;
+                UserObject user = MapObject.User;
+
+                if (user.Dead)
                 {
-                    DXManager.Device.Clear(ClearFlags.Target, Color.IndianRed, 0, 0);
+                    RenderingPipelineManager.Clear(RenderClearFlags.Target, Color.IndianRed, 0, 0);
                     return;
                 }
 
-                DXManager.SetBlend(true);
-                DXManager.Device.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
-                DXManager.Device.SetRenderState(RenderState.DestinationBlend, Blend.One);
+                bool previousBlendEnabled = RenderingPipelineManager.IsBlending();
+                float previousBlendRate = RenderingPipelineManager.GetBlendRate();
+                BlendMode previousBlendMode = RenderingPipelineManager.GetBlendMode();
 
+                RenderingPipelineManager.SetBlend(true, 1F, BlendMode.COLORFY);
 
-                const float lightScale = 0.02F; //Players/Monsters
-                const float baseSize = 0.1F;
+                RenderTexture lightTexture;
+                Size lightSize;
 
-                float fX;
-                float fY;
-
-                if ((MapObject.User.Poison & PoisonType.Abyss) == PoisonType.Abyss)
+                try
                 {
-                    DXManager.Device.Clear(ClearFlags.Target, Color.Black, 0, 0);
+                    lightTexture = RenderingPipelineManager.GetLightTexture();
+                    lightSize = RenderingPipelineManager.GetLightTextureSize();
+                }
+                catch (InvalidOperationException)
+                {
+                    RenderingPipelineManager.SetBlend(previousBlendEnabled, previousBlendRate, previousBlendMode);
+                    return;
+                }
 
-                    float scale = baseSize + 4 * lightScale;
+                Rectangle lightSource = new Rectangle(0, 0, lightSize.Width, lightSize.Height);
 
-                    fX = (OffSetX + MapObject.User.CurrentLocation.X - User.CurrentLocation.X) * CellWidth + CellWidth / 2;
-                    fY = (OffSetY + MapObject.User.CurrentLocation.Y - User.CurrentLocation.Y) * CellHeight;
+                if ((user.Poison & PoisonType.Abyss) == PoisonType.Abyss)
+                {
+                    RenderingPipelineManager.Clear(RenderClearFlags.Target, Color.Black, 0, 0);
 
-                    fX -= (DXManager.LightWidth * scale) / 2;
-                    fY -= (DXManager.LightHeight * scale) / 2;
+                    float scale = BaseLightSize + 4 * LightScale;
+                    float abyssX = OffSetX * CellWidth + PixelOffsetX + CellWidth / 2F - (lightSize.Width * scale) / 2F;
+                    float abyssY = OffSetY * CellHeight + PixelOffsetY - (lightSize.Height * scale) / 2F;
 
-                    fX /= scale;
-                    fY /= scale;
+                    DrawLight(lightTexture, lightSource, lightSize, abyssX, abyssY, scale, Color.White);
 
-                    DXManager.Sprite.Transform = Matrix.Scaling(scale, scale, 1);
+                    RenderingPipelineManager.SetBlend(previousBlendEnabled, previousBlendRate, previousBlendMode);
 
-                    DXManager.Sprite.Draw(DXManager.LightTexture, Vector3.Zero, new Vector3(fX, fY, 0), Color.White);
-
-                    DXManager.Sprite.Transform = Matrix.Identity;
-
-                    DXManager.SetBlend(false);
-
-                    var abyssEffects = MapObject.User.CreateMagicEffect(MagicEffect.Abyss);
+                    var abyssEffects = user.CreateMagicEffect(MagicEffect.Abyss);
 
                     foreach (var effect in abyssEffects)
                     {
@@ -1596,98 +1660,92 @@ namespace Client.Scenes.Views
                     return;
                 }
 
-                foreach (MapObject ob in GameScene.Game.MapControl.Objects)
+                foreach (MapObject ob in map.Objects)
                 {
-                    if (ob.Light > 0 && (!ob.Dead || ob == MapObject.User || ob.Race == ObjectType.Spell))
-                    {
-                        float scale = baseSize + ob.Light * 2 * lightScale;
+                    if (!ShouldDrawObjectLight(ob, user))
+                        continue;
 
-                        fX = (OffSetX + ob.CurrentLocation.X - User.CurrentLocation.X) * CellWidth + ob.MovingOffSet.X - User.MovingOffSet.X + CellWidth / 2;
-                        fY = (OffSetY + ob.CurrentLocation.Y - User.CurrentLocation.Y) * CellHeight + ob.MovingOffSet.Y - User.MovingOffSet.Y;
+                    float scale = BaseLightSize + ob.Light * 2 * LightScale;
+                    float objectX = (OffSetX + ob.CurrentLocation.X - user.CurrentLocation.X) * CellWidth + PixelOffsetX + ob.MovingOffSet.X - user.MovingOffSet.X + CellWidth / 2F - (lightSize.Width * scale) / 2F;
+                    float objectY = (OffSetY + ob.CurrentLocation.Y - user.CurrentLocation.Y) * CellHeight + PixelOffsetY + ob.MovingOffSet.Y - user.MovingOffSet.Y - (lightSize.Height * scale) / 2F;
 
-                        fX -= (DXManager.LightWidth * scale) / 2;
-                        fY -= (DXManager.LightHeight * scale) / 2;
-
-                        fX /= scale;
-                        fY /= scale;
-
-                        DXManager.Sprite.Transform = Matrix.Scaling(scale, scale, 1);
-
-                        DXManager.Sprite.Draw(DXManager.LightTexture, Vector3.Zero, new Vector3(fX, fY, 0), ob.LightColour);
-
-                        DXManager.Sprite.Transform = Matrix.Identity;
-                    }
+                    DrawLight(lightTexture, lightSource, lightSize, objectX, objectY, scale, ob.LightColour);
                 }
 
-                foreach (MirEffect ob in GameScene.Game.MapControl.Effects)
+                foreach (MirEffect ob in map.Effects)
                 {
                     float frameLight = ob.FrameLight;
 
                     if (frameLight > 0)
                     {
-                        float scale = baseSize + frameLight * 2 * lightScale / 5;
+                        float scale = BaseLightSize + frameLight * 2 * LightScale / EffectLightScaleDivisor;
+                        float effectX = ob.DrawX + CellWidth / 2F - (lightSize.Width * scale) / 2F;
+                        float effectY = ob.DrawY + CellHeight / 2F - (lightSize.Height * scale) / 2F;
 
-                        fX = ob.DrawX + CellWidth / 2;
-                        fY = ob.DrawY + CellHeight / 2;
-
-                        fX -= (DXManager.LightWidth * scale) / 2;
-                        fY -= (DXManager.LightHeight * scale) / 2;
-
-                        fX /= scale;
-                        fY /= scale;
-
-                        DXManager.Sprite.Transform = Matrix.Scaling(scale, scale, 1);
-
-                        DXManager.Sprite.Draw(DXManager.LightTexture, Vector3.Zero, new Vector3(fX, fY, 0), ob.FrameLightColour);
-
-                        DXManager.Sprite.Transform = Matrix.Identity;
+                        DrawLight(lightTexture, lightSource, lightSize, effectX, effectY, scale, ob.FrameLightColour);
                     }
                 }
 
-                int minX = Math.Max(0, User.CurrentLocation.X - OffSetX - 15), maxX = Math.Min(GameScene.Game.MapControl.Width - 1, User.CurrentLocation.X + OffSetX + 15);
-                int minY = Math.Max(0, User.CurrentLocation.Y - OffSetY - 15), maxY = Math.Min(GameScene.Game.MapControl.Height - 1, User.CurrentLocation.Y + OffSetY + 15);
+                int minX = Math.Max(0, user.CurrentLocation.X - OffSetX - TileLightSearchPadding);
+                int maxX = Math.Min(map.Width - 1, user.CurrentLocation.X + OffSetX + TileLightSearchPadding);
+                int minY = Math.Max(0, user.CurrentLocation.Y - OffSetY - TileLightSearchPadding);
+                int maxY = Math.Min(map.Height - 1, user.CurrentLocation.Y + OffSetY + TileLightSearchPadding);
 
                 for (int y = minY; y <= maxY; y++)
                 {
                     if (y < 0) continue;
-                    if (y >= GameScene.Game.MapControl.Height) break;
+                    if (y >= map.Height) break;
 
-                    int drawY = (y - User.CurrentLocation.Y + OffSetY) * CellHeight - User.MovingOffSet.Y - User.ShakeScreenOffset.Y;
+                    int drawY = (y - user.CurrentLocation.Y + OffSetY) * CellHeight + PixelOffsetY - user.MovingOffSet.Y - user.ShakeScreenOffset.Y;
 
                     for (int x = minX; x <= maxX; x++)
                     {
                         if (x < 0) continue;
-                        if (x >= GameScene.Game.MapControl.Width) break;
+                        if (x >= map.Width) break;
 
-                        int drawX = (x - User.CurrentLocation.X + OffSetX) * CellWidth - User.MovingOffSet.X - User.ShakeScreenOffset.X;
+                        int drawX = (x - user.CurrentLocation.X + OffSetX) * CellWidth + PixelOffsetX - user.MovingOffSet.X - user.ShakeScreenOffset.X;
 
-                        Cell tile = GameScene.Game.MapControl.Cells[x, y];
+                        Cell tile = map.Cells[x, y];
 
                         if (tile.Light == 0) continue;
 
-                        float scale = baseSize + tile.Light * 30 * lightScale;
+                        float scale = BaseLightSize + tile.Light * TileLightScaleMultiplier * LightScale;
+                        float tileX = drawX + CellWidth / 2F - (lightSize.Width * scale) / 2F;
+                        float tileY = drawY + CellHeight / 2F - (lightSize.Height * scale) / 2F;
 
-                        fX = drawX + CellWidth / 2;
-                        fY = drawY + CellHeight / 2;
-
-                        fX -= DXManager.LightWidth * scale / 2;
-                        fY -= DXManager.LightHeight * scale / 2;
-
-                        fX /= scale;
-                        fY /= scale;
-
-                        DXManager.Sprite.Transform = Matrix.Scaling(scale, scale, 1);
-
-                        DXManager.Sprite.Draw(DXManager.LightTexture, Vector3.Zero, new Vector3(fX, fY, 0), Color.White);
-
-                        DXManager.Sprite.Transform = Matrix.Identity;
+                        DrawLight(lightTexture, lightSource, lightSize, tileX, tileY, scale, Color.White);
                     }
                 }
 
-                DXManager.SetBlend(false);
+                RenderingPipelineManager.SetBlend(previousBlendEnabled, previousBlendRate, previousBlendMode);
+            }
+
+            private void DrawLight(RenderTexture lightTexture, Rectangle sourceRectangle, Size lightSize, float topLeftX, float topLeftY, float scale, Color colour)
+            {
+                float width = lightSize.Width * scale;
+                float height = lightSize.Height * scale;
+
+                if (width <= 0 || height <= 0)
+                {
+                    return;
+                }
+
+                RectangleF destination = new RectangleF(topLeftX, topLeftY, width, height);
+                RenderingPipelineManager.DrawTexture(lightTexture, sourceRectangle, destination, colour);
+            }
+
+            private static bool ShouldDrawObjectLight(MapObject ob, UserObject user)
+            {
+                return ob.Light > 0 && (!ob.Dead || ob == user || ob.Race == ObjectType.Spell);
             }
 
             public void UpdateLights()
+            {
+                UpdateAmbientLight();
+                TextureValid = false;
+            }
+
+            private void UpdateAmbientLight()
             {
                 switch (GameScene.Game.MapControl.MapInfo.Light)
                 {
@@ -1716,6 +1774,75 @@ namespace Client.Scenes.Views
                     Visible = false;
                 }
             }
+
+            private static bool ShouldRenderLightLayer()
+            {
+                MapControl map = GameScene.Game.MapControl;
+                UserObject user = MapObject.User;
+
+                if (user != null && (user.Dead || (user.Poison & PoisonType.Abyss) == PoisonType.Abyss))
+                    return true;
+
+                Light lightLayer = map.LLayer;
+
+                if (map.MapInfo.Light == LightSetting.Light)
+                    return false;
+
+                return lightLayer.BackColour.R < 255 || lightLayer.BackColour.G < 255 || lightLayer.BackColour.B < 255;
+            }
+
+            private static int GetLightSignature()
+            {
+                unchecked
+                {
+                    int hash = 17;
+                    MapControl map = GameScene.Game.MapControl;
+                    UserObject user = MapObject.User;
+
+                    hash = hash * 31 + map.Size.Width;
+                    hash = hash * 31 + map.Size.Height;
+                    hash = hash * 31 + (int)map.MapInfo.Light;
+                    hash = hash * 31 + map.LLayer.BackColour.ToArgb();
+                    hash = hash * 31 + user.CurrentLocation.X;
+                    hash = hash * 31 + user.CurrentLocation.Y;
+                    hash = hash * 31 + user.MovingOffSet.X;
+                    hash = hash * 31 + user.MovingOffSet.Y;
+                    hash = hash * 31 + user.ShakeScreenOffset.X;
+                    hash = hash * 31 + user.ShakeScreenOffset.Y;
+                    hash = hash * 31 + user.Light;
+                    hash = hash * 31 + user.LightColour.ToArgb();
+                    hash = hash * 31 + (int)user.Poison;
+
+                    foreach (MapObject ob in map.Objects)
+                    {
+                        if (!ShouldDrawObjectLight(ob, user))
+                            continue;
+
+                        hash = hash * 31 + ob.ObjectID.GetHashCode();
+                        hash = hash * 31 + ob.CurrentLocation.X;
+                        hash = hash * 31 + ob.CurrentLocation.Y;
+                        hash = hash * 31 + ob.MovingOffSet.X;
+                        hash = hash * 31 + ob.MovingOffSet.Y;
+                        hash = hash * 31 + ob.Light;
+                        hash = hash * 31 + ob.LightColour.ToArgb();
+                        hash = hash * 31 + (ob.Dead ? 1 : 0);
+                    }
+
+                    foreach (MirEffect effect in map.Effects)
+                    {
+                        float frameLight = effect.FrameLight;
+                        if (frameLight <= 0)
+                            continue;
+
+                        hash = hash * 31 + effect.DrawX;
+                        hash = hash * 31 + effect.DrawY;
+                        hash = hash * 31 + (int)(frameLight * 100);
+                        hash = hash * 31 + effect.FrameLightColour.ToArgb();
+                    }
+
+                    return hash;
+                }
+            }
             protected override void DrawControl()
             {
             }
@@ -1738,15 +1865,31 @@ namespace Client.Scenes.Views
         public int FrontFile;
         public int FrontImage;
 
-        public int FrontAnimationFrame;
-        public int FrontAnimationTick;
+        public int FrontAnimationFrame { get; set; }
+        public int FrontAnimationTick { get; set; }
+        public int FrontAnimationCount => FrontAnimationFrame & FrontFrameMask;
+        public bool FrontAnimationBlend => (FrontAnimationFrame & FrontBlendBit) != 0;
 
-        public int MiddleAnimationFrame;
-        public int MiddleAnimationTick;
+        public int MiddleAnimationFrame { get; set; }
+        public int MiddleAnimationTick { get; set; }
+        public int MiddleAnimationCount => MiddleAnimationFrame & MiddleFrameMask;
+        public bool MiddleAnimationBlend => (MiddleAnimationFrame & MiddleBlendBit) != 0;
 
         public int Light;
 
         public bool Flag;
+
+        // --- FRONT ANIMATION ENCODING ---
+        public const int FrontFrameMask = 0x0F; // lower 4 bits = frame count
+        public const int FrontBlendBit = 0x80;  // bit 7 = blend flag
+
+        // --- MIDDLE ANIMATION ENCODING ---
+        public const int MiddleFrameMask = 0x0F; // lower 4 bits = frame count
+        public const int MiddleBlendBit = 0x80;  // bit 7 = blend flag
+
+        public MirLibrary MiddleLibrary;
+        public MirLibrary FrontLibrary;
+        public bool LibrariesLoaded;
 
         public List<MapObject> Objects;
 

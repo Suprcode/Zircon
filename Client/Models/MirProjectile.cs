@@ -1,6 +1,7 @@
 ﻿using Client.Envir;
 using Client.Models.Particles;
 using Client.Scenes;
+using Client.Scenes.Views;
 using Library;
 using System;
 using System.Drawing;
@@ -80,9 +81,9 @@ namespace Client.Models
 
             DrawFrame = frame + StartIndex + Direction16 * Skip;
 
-            DrawX = x + (int)(time.Ticks / (duration / x2)) + AdditionalOffSet.X;
-            DrawY = y + (int)(time.Ticks / (duration / y2)) + AdditionalOffSet.Y;
-
+            DrawX = x + (int)(time.Ticks / (duration / x2)) + AdditionalOffSet.X + MapControl.PixelOffsetX;
+            DrawY = y + (int)(time.Ticks / (duration / y2)) + AdditionalOffSet.Y + MapControl.PixelOffsetY;
+            
             if (_particleEmitter != null)
             {
                 Point offset = Library.GetOffSet(DrawFrame);

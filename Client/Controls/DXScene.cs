@@ -1,4 +1,5 @@
 ﻿using Client.Envir;
+using Shared.Rendering;
 using Client.Scenes.Views;
 using Library;
 using System;
@@ -28,7 +29,6 @@ namespace Client.Controls
             if (DebugLabel == null || PingLabel == null) return;
 
             DebugLabel.Location = new Point(Location.X + 5, Location.Y + 5);
-
             PingLabel.Location = new Point(Location.X + 5, Location.Y + 19);
         }
 
@@ -43,16 +43,24 @@ namespace Client.Controls
         }
         #endregion
 
-        protected DXScene(Size size)
+        protected DXScene(Size size, bool updateGameSize = true)
         {
             DrawTexture = false;
 
             Size = size;
 
-            DXManager.SetResolution(size);
+            if (!updateGameSize && !Config.FullScreen && CEnvir.Target.ClientSize == Size)
+                return;
+
+            Size configuredGameSize = Config.GameSize;
+
+            RenderingPipelineManager.SetResolution(size);
 
             if (!Config.FullScreen)
-                CEnvir.Target.Center();
+                RenderingPipelineManager.CenterOnSelectedMonitor();
+
+            if (!updateGameSize)
+                Config.GameSize = configuredGameSize;
         }
 
         #region Methods
@@ -177,13 +185,20 @@ namespace Client.Controls
                 });
             */
 
-            DebugLabel.Draw();
+            if (DebugLabel.IsVisible)
+            {
+                DebugLabel.Draw();
+            }
 
             if (!string.IsNullOrEmpty(HintLabel.Text))
+            {
                 HintLabel.Draw();
+            }
 
-            if (!string.IsNullOrEmpty(PingLabel.Text))
+            if (PingLabel.IsVisible && !string.IsNullOrEmpty(PingLabel.Text))
+            {
                 PingLabel.Draw();
+            }
         }
 
         protected internal sealed override void CheckIsVisible()

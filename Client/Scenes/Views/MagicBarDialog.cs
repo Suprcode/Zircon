@@ -1,4 +1,4 @@
-﻿using Client.Controls;
+using Client.Controls;
 using Client.Envir;
 using Client.UserModels;
 using Library;
@@ -101,7 +101,7 @@ namespace Client.Scenes.Views
                     Visible = isVisible,
                     BackColour = Color.FromArgb(20, 20, 20),
                     Border = true,
-                    BorderColour = Color.FromArgb(198, 166, 99),
+                    BorderColour = Constants.PrimaryColour,
                 };
 
                 Icons[key] = new DXImageControl
@@ -387,6 +387,87 @@ namespace Client.Scenes.Views
             }
 
             return index;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (!disposing) return;
+
+            SpellSetChanged = null;
+
+            if (UpButton != null)
+            {
+                if (!UpButton.IsDisposed)
+                    UpButton.Dispose();
+
+                UpButton = null;
+            }
+
+            if (DownButton != null)
+            {
+                if (!DownButton.IsDisposed)
+                    DownButton.Dispose();
+
+                DownButton = null;
+            }
+
+            if (SetLabel != null)
+            {
+                if (!SetLabel.IsDisposed)
+                    SetLabel.Dispose();
+
+                SetLabel = null;
+            }
+
+            if (IconBorders != null)
+            {
+                foreach (KeyValuePair<SpellKey, DXImageControl> pair in IconBorders)
+                {
+                    DXImageControl control = pair.Value;
+
+                    if (control == null) continue;
+                    if (control.IsDisposed) continue;
+
+                    control.Dispose();
+                }
+
+                IconBorders.Clear();
+                IconBorders = null;
+            }
+
+            if (Icons != null)
+            {
+                foreach (KeyValuePair<SpellKey, DXImageControl> pair in Icons)
+                {
+                    DXImageControl control = pair.Value;
+
+                    if (control == null) continue;
+                    if (control.IsDisposed) continue;
+
+                    control.Dispose();
+                }
+
+                Icons.Clear();
+                Icons = null;
+            }
+
+            if (Cooldowns != null)
+            {
+                foreach (KeyValuePair<SpellKey, DXLabel> pair in Cooldowns)
+                {
+                    DXLabel label = pair.Value;
+
+                    if (label == null) continue;
+                    if (label.IsDisposed) continue;
+
+                    label.Dispose();
+                }
+
+                Cooldowns.Clear();
+                Cooldowns = null;
+            }
         }
     }
 }

@@ -70,6 +70,8 @@ namespace Client.Scenes.Views
 
             buffs.Sort((x1, x2) => x2.RemainingTime.CompareTo(x1.RemainingTime));
 
+            Size = new Size(3 + Math.Min(6, Math.Max(1, buffs.Count)) * 27, 3 + Math.Max(1, 1 + (buffs.Count - 1) / 6) * 27);
+
             foreach (ClientBuffInfo buff in buffs)
             {
                 DXImageControl icon;
@@ -123,6 +125,15 @@ namespace Client.Scenes.Views
                         break;
                     case BuffType.Fame:
                         icon.Index = 80;
+                        break;
+                    case BuffType.RedGem:
+                        icon.Index = 210;
+                        break;
+                    case BuffType.BlueGem:
+                        icon.Index = 211;
+                        break;
+                    case BuffType.CursedGem:
+                        icon.Index = 212;
                         break;
 
                     case BuffType.Heal:
@@ -256,8 +267,6 @@ namespace Client.Scenes.Views
 
             for (int i = 0; i < buffs.Count; i++)
                 Icons[buffs[i]].Location = new Point(3 + (i % 6) * 27, 3 + (i / 6) * 27);
-
-            Size = new Size(3 + Math.Min(6, Math.Max(1, Icons.Count)) * 27, 3 + Math.Max(1, 1 + (Icons.Count - 1) / 6) * 27);
         }
 
         private string GetBuffHint(ClientBuffInfo buff)
@@ -325,6 +334,18 @@ namespace Client.Scenes.Views
                             text += "\n" + Functions.BreakStringIntoLines(info.Description, 45) + "\n";
                         }
                     }
+                    break;
+                case BuffType.RedGem:
+                    text = "Red Gem\n\n" +
+                        "Your weapon gains a red aura.";
+                    break;
+                case BuffType.BlueGem:
+                    text = "Blue Gem\n\n" +
+                        "Your armour gains a blue aura.";
+                    break;
+                case BuffType.CursedGem:
+                    text = "Cursed Gem\n\n" +
+                        "Your equipment gains a cursed aura.";
                     break;
 
                 case BuffType.Defiance:

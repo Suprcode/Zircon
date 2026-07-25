@@ -1,6 +1,8 @@
-﻿using Client.Controls;
+using Client.Controls;
 using Client.Envir;
+using Client.Extensions;
 using Client.Models;
+using Shared.Rendering;
 using Client.UserModels;
 using Library;
 using Library.SystemModels;
@@ -16,20 +18,13 @@ using S = Library.Network.ServerPackets;
 
 namespace Client.Scenes.Views
 {
-    public class ButtonInfo
-    {
-        public Rectangle Region;
-        public int Index;
-        public int Length;
-    }
-
-    public sealed partial class NPCDialog : DXControl
+    public sealed partial class NPCDialog : DXWindow
     {
         #region Properties
 
-        private readonly Regex B = ButtonRegex();
-        private readonly Regex C = ColourRegex();
-        private readonly Regex V = ValueRegex();
+        private readonly Regex B = DrawTextExtensions.ButtonRegex();
+        private readonly Regex C = DrawTextExtensions.ColourRegex();
+        private readonly Regex V = DrawTextExtensions.ValueRegex();
 
         public NPCPage Page;
         private readonly DXControl PageTextContainer;
@@ -41,14 +36,20 @@ namespace Client.Scenes.Views
         private string CurrentPageSay;
         private bool Rolling = true;
 
-        public DXButton CloseButton;
-        private DXImageControl HeaderImage, FooterImage;
-        private DXImageControl[] RowImages = new DXImageControl[6];
         private DXVScrollBar ScrollBar;
+        private int _visibleRowCount;
+        private int _footerY = _HeaderHeight;
 
         private const int _HeaderHeight = 140;
         private const int _FooterHeight = 64;
         private const int _RowHeight = 20;
+        private const int _MaxRowCount = 6;
+
+        public override WindowType Type => WindowType.None;
+
+        public override bool CustomSize => false;
+
+        public override bool AutomaticVisibility => false;
 
         public override void OnIsVisibleChanged(bool oValue, bool nValue)
         {
@@ -78,6 +79,9 @@ namespace Client.Scenes.Views
             if (GameScene.Game.NPCCompanionStorageBox != null && !IsVisible)
                 GameScene.Game.NPCCompanionStorageBox.Visible = false;
 
+            if (GameScene.Game.ConsignmentBox != null && !IsVisible)
+                GameScene.Game.ConsignmentBox.Visible = false;
+
             if (GameScene.Game.NPCWeddingRingBox != null && !IsVisible)
                 GameScene.Game.NPCWeddingRingBox.Visible = false;
 
@@ -101,6 +105,12 @@ namespace Client.Scenes.Views
 
             if (GameScene.Game.NPCAccessoryRefineBox != null && !IsVisible)
                 GameScene.Game.NPCAccessoryRefineBox.Visible = false;
+
+            if (GameScene.Game.NPCSocketBox != null && !IsVisible)
+                GameScene.Game.NPCSocketBox.Visible = false;
+
+            if (GameScene.Game.NPCSocketCombineBox != null && !IsVisible)
+                GameScene.Game.NPCSocketCombineBox.Visible = false;
 
             if (GameScene.Game.NPCRollBox != null && !IsVisible)
                 GameScene.Game.NPCRollBox.Visible = false;
@@ -139,37 +149,10 @@ namespace Client.Scenes.Views
         {
             Movable = false;
             Sort = true;
-
-            HeaderImage = new DXImageControl
-            {
-                Parent = this,
-                Index = 380,
-                LibraryFile = LibraryFile.GameInter,
-                Location = new Point(0, 0),
-                IsControl = false
-            };
-
-            for (int i = 0; i < RowImages.Length; i++)
-            {
-                RowImages[i] = new DXImageControl
-                {
-                    Parent = this,
-                    Index = 381,
-                    LibraryFile = LibraryFile.GameInter,
-                    Location = new Point(0, _HeaderHeight + i * _RowHeight),
-                    IsControl = false,
-                    Visible = false
-                };
-            }
-
-            FooterImage = new DXImageControl
-            {
-                Parent = this,
-                Index = 382,
-                LibraryFile = LibraryFile.GameInter,
-                Location = new Point(0, _HeaderHeight),
-                IsControl = false
-            };
+            DropShadow = true;
+            HasFooter = false;
+            HasTitle = false;
+            DrawTexture = false;
 
             PageTextContainer = new DXControl
             {
@@ -232,6 +215,90 @@ namespace Client.Scenes.Views
 
         #region Methods
 
+        public override void Draw()
+        {
+            if (!IsVisible || Size.Width == 0 || Size.Height == 0) return;
+
+            OnBeforeDraw();
+            DrawNPCWindow();
+            RenderingPipelineManager.FlushSprite();
+            OnBeforeChildrenDraw();
+            DrawChildControls();
+            DrawBorder();
+            OnAfterDraw();
+        }
+
+        protected override void DrawChildControls()
+        {
+            foreach (DXControl control in Controls)
+            {
+                if (control == TitleLabel) continue;
+                if (!control.IsVisible || control.DisplayArea.Width <= 0 || control.DisplayArea.Height <= 0) continue;
+
+                control.Draw();
+            }
+        }
+
+        private void DrawNPCWindow()
+        {
+            if (!WindowValid || !WindowTexture.IsValid || !WindowSurface.IsValid)
+            {
+                CreateTexture();
+
+                if (!WindowSurface.IsValid)
+                    throw new InvalidOperationException("Window surface is not available.");
+
+                RenderSurface oldSurface = RenderingPipelineManager.GetCurrentSurface();
+                RenderingPipelineManager.SetSurface(WindowSurface);
+                RenderingPipelineManager.Clear(RenderClearFlags.Target, Color.FromArgb(0), 0, 0);
+
+                DrawNPCFrame(Point.Empty);
+
+                RenderingPipelineManager.SetSurface(oldSurface);
+                WindowValid = true;
+            }
+
+            float oldOpacity = RenderingPipelineManager.GetOpacity();
+
+            if (DropShadow)
+            {
+                Rectangle displayArea = DisplayArea;
+                RectangleF shadowBounds = new RectangleF(displayArea.X, displayArea.Y, displayArea.Width, displayArea.Height);
+
+                RenderingPipelineManager.EnableDropShadowEffect(Color.Black, 8f, 0.5f, shadowBounds);
+            }
+
+            RenderingPipelineManager.SetOpacity(Opacity);
+            PresentTexture(WindowTexture, Parent, DisplayArea, ForeColour, this);
+
+            if (DropShadow)
+            {
+                RenderingPipelineManager.DisableSpriteShaderEffect();
+            }
+
+            RenderingPipelineManager.SetOpacity(oldOpacity);
+        }
+
+        private void DrawNPCFrame(Point origin)
+        {
+            if (!CEnvir.LibraryList.TryGetValue(LibraryFile.GameInter, out MirLibrary library)) return;
+
+            DrawNPCFrameImage(library, 380, origin);
+
+            for (int i = 0; i < _visibleRowCount; i++)
+                DrawNPCFrameImage(library, 381, new Point(origin.X, origin.Y + _HeaderHeight + i * _RowHeight));
+
+            DrawNPCFrameImage(library, 382, new Point(origin.X, origin.Y + _footerY));
+        }
+
+        private void DrawNPCFrameImage(MirLibrary library, int index, Point location)
+        {
+            Size size = library.GetSize(index);
+            if (size.Width <= 0 || size.Height <= 0) return;
+
+            library.Draw(index, location.X, location.Y, Color.White, new Rectangle(Point.Empty, size), 1F, ImageType.Image);
+        }
+
         private void SetSize(int pageTextHeight)
         {
             var overflow = pageTextHeight - _HeaderHeight - _FooterHeight + 35 + 45;
@@ -239,21 +306,18 @@ namespace Client.Scenes.Views
 
             if (overflow > 0)
             {
-                additionalRowCount = Math.Min(overflow / _RowHeight, RowImages.Length);
+                additionalRowCount = Math.Min(overflow / _RowHeight, _MaxRowCount);
             }
 
-            for (int i = 0; i < RowImages.Length; i++)
-            {
-                RowImages[i].Visible = additionalRowCount > i;
-            }
-
-            FooterImage.Location = new Point(0, _HeaderHeight + additionalRowCount * _RowHeight);
+            _visibleRowCount = additionalRowCount;
+            _footerY = _HeaderHeight + additionalRowCount * _RowHeight;
 
             Size = new Size(380, _HeaderHeight + _FooterHeight + additionalRowCount * _RowHeight);
 
             PageText.Size = new Size(350, pageTextHeight);
-            PageTextContainer.Size = new Size(350, Size.Height - 45 - 14);
-            ScrollBar.Size = new Size(14, Size.Height - 45 - 14);
+            int textViewportHeight = Math.Max(0, Size.Height - PageTextContainer.Location.Y - 14);
+            PageTextContainer.Size = new Size(350, textViewportHeight);
+            ScrollBar.Size = new Size(14, Math.Max(0, Size.Height - ScrollBar.Location.Y - 14));
 
             ScrollBar.MaxValue = PageText.Size.Height - PageTextContainer.Size.Height + 14;
         }
@@ -282,6 +346,10 @@ namespace Client.Scenes.Views
             int height = DXLabel.GetHeight(PageText, PageText.Size.Width).Height;
             SetSize(height);
             ProcessText(CurrentPageSay);
+            ScrollBar.Value = 0;
+            ScrollBar_ValueChanged(ScrollBar, EventArgs.Empty);
+            PageText.UpdateDisplayArea();
+            PageText.UpdateClipAreaTree();
 
             Opened = true;
 
@@ -292,6 +360,7 @@ namespace Client.Scenes.Views
             GameScene.Game.NPCRefineRetrieveBox.Visible = false;
             GameScene.Game.NPCAdoptCompanionBox.Visible = false;
             GameScene.Game.NPCCompanionStorageBox.Visible = false;
+            GameScene.Game.ConsignmentBox.Visible = false;
             GameScene.Game.NPCWeddingRingBox.Visible = false;
             GameScene.Game.NPCItemFragmentBox.Visible = false;
             GameScene.Game.NPCAccessoryUpgradeBox.Visible = false;
@@ -299,6 +368,8 @@ namespace Client.Scenes.Views
             GameScene.Game.NPCMasterRefineBox.Visible = false;
             GameScene.Game.NPCAccessoryResetBox.Visible = false;
             GameScene.Game.NPCWeaponCraftBox.Visible = false;
+            GameScene.Game.NPCSocketBox.Visible = false;
+            GameScene.Game.NPCSocketCombineBox.Visible = false;
             GameScene.Game.NPCQuestListBox.Visible = false;
 
             if (Rolling)
@@ -316,9 +387,21 @@ namespace Client.Scenes.Views
                     }
                     break;
                 case NPCDialogType.BuySell:
+                    var goodsIndex = 0;
+
+                    foreach (MapObject ob in GameScene.Game.MapControl.Objects)
+                    {
+                        if (ob.Race != ObjectType.NPC || ob.ObjectID != info.ObjectID) continue;
+
+                        goodsIndex = ((NPCObject)ob).NPCInfo.GoodsIndex;
+                        break;
+                    }
+
+                    var goods = Page.Goods.Where(x => x.GoodsIndex == goodsIndex).ToList();
+
                     GameScene.Game.NPCGoodsBox.Location = new Point(0, Size.Height);
-                    GameScene.Game.NPCGoodsBox.Visible = Page.Goods.Count > 0;
-                    GameScene.Game.NPCGoodsBox.NewGoods(Page.Goods, Page.Currency);
+                    GameScene.Game.NPCGoodsBox.Visible = goods.Count > 0;
+                    GameScene.Game.NPCGoodsBox.NewGoods(goods, Page.Currency);
 
                     if (Page.Types.Count > 0)
                     {
@@ -354,10 +437,14 @@ namespace Client.Scenes.Views
                     GameScene.Game.NPCRefineRetrieveBox.RefreshList();
                     break;
                 case NPCDialogType.CompanionManage:
-                    GameScene.Game.NPCCompanionStorageBox.Visible = true;
-                    GameScene.Game.NPCCompanionStorageBox.Location = new Point(0, Size.Height);
+                    GameScene.Game.NPCCompanionStorageBox.Visible = GameScene.Game.NPCCompanionStorageBox.Companions.Count > 0;
+                    GameScene.Game.NPCCompanionStorageBox.Location = new Point((GameScene.Game.Size.Width - GameScene.Game.NPCCompanionStorageBox.Size.Width) / 2, (GameScene.Game.Size.Height - GameScene.Game.NPCCompanionStorageBox.Size.Height) / 2);
+                    GameScene.Game.NPCCompanionStorageBox.SelectedIndex = 0;
                     GameScene.Game.NPCAdoptCompanionBox.Visible = true;
-                    GameScene.Game.NPCAdoptCompanionBox.Location = new Point(GameScene.Game.NPCCompanionStorageBox.Size.Width, Size.Height);
+                    GameScene.Game.NPCAdoptCompanionBox.Location = new Point(0, Size.Height);
+                    break;
+                case NPCDialogType.Consignment:
+                    GameScene.Game.ConsignmentBox.Visible = true;
                     break;
                 case NPCDialogType.WeddingRing:
                     GameScene.Game.NPCWeddingRingBox.Visible = true;
@@ -386,6 +473,14 @@ namespace Client.Scenes.Views
                 case NPCDialogType.AccessoryRefine:
                     GameScene.Game.NPCAccessoryRefineBox.Visible = true;
                     GameScene.Game.NPCAccessoryRefineBox.Location = new Point(Size.Width - GameScene.Game.NPCAccessoryRefineBox.Size.Width, Size.Height);
+                    break;
+                case NPCDialogType.Socketing:
+                    GameScene.Game.NPCSocketBox.Visible = true;
+                    GameScene.Game.NPCSocketBox.Location = new Point((GameScene.Game.Size.Width - GameScene.Game.NPCSocketBox.Size.Width) / 2, (GameScene.Game.Size.Height - GameScene.Game.NPCSocketBox.Size.Height) / 2);
+                    break;
+                case NPCDialogType.SocketCombine:
+                    GameScene.Game.NPCSocketCombineBox.Visible = true;
+                    GameScene.Game.NPCSocketCombineBox.Location = new Point((GameScene.Game.Size.Width - GameScene.Game.NPCSocketCombineBox.Size.Width) / 2, (GameScene.Game.Size.Height - GameScene.Game.NPCSocketCombineBox.Size.Height) / 2);
                     break;
                 case NPCDialogType.RollDie:
                     Rolling = true;
@@ -420,7 +515,7 @@ namespace Client.Scenes.Views
 
             Buttons.Clear();
 
-            List<ButtonIndex> buttonRanges = new();
+            List<DXButtonIndex> buttonRanges = new();
 
             List<Match> matchList = new();
             matchList.AddRange(B.Matches(page).Cast<Match>());
@@ -431,7 +526,7 @@ namespace Client.Scenes.Views
             int offset = 1;
             foreach (Match match in matchList)
             {
-                ButtonIndex index = new()
+                DXButtonIndex index = new()
                 {
                     Range = new CharacterRange(match.Groups["Text"].Index - offset, match.Groups["Text"].Length)
                 };
@@ -440,12 +535,12 @@ namespace Client.Scenes.Views
 
                 if (!string.IsNullOrEmpty(match.Groups["ID"].Value))
                 {
-                    index.Type = ButtonType.Button;
+                    index.Type = DXButtonType.Button;
                     offset += 3 + match.Groups["ID"].Length;
                 }
                 else if (!string.IsNullOrEmpty(match.Groups["Colour"].Value))
                 {
-                    index.Type = ButtonType.Label;
+                    index.Type = DXButtonType.Label;
                     offset += 3 + match.Groups["Colour"].Length;
                 }
             }
@@ -454,7 +549,7 @@ namespace Client.Scenes.Views
             {
                 var buttonIndex = buttonRanges[i];
 
-                List<ButtonInfo> buttons = GetWordRegionsNew(DXManager.Graphics, PageText.Text, PageText.Font, PageText.DrawFormat, PageText.Size.Width, buttonIndex.Range.First, buttonIndex.Range.Length);
+                List<ButtonInfo> buttons = DrawTextExtensions.GetWordRegionsNew(PageText.Text, PageText.Font, PageText.DrawFormat, PageText.Size.Width, buttonIndex.Range.First, buttonIndex.Range.Length);
 
                 List<DXLabel> labels = new();
 
@@ -479,7 +574,7 @@ namespace Client.Scenes.Views
                 {
                     switch (buttonIndex.Type)
                     {
-                        case ButtonType.Button:
+                        case DXButtonType.Button:
                             {
                                 label.ForeColour = Color.Yellow;
                                 label.Sound = SoundIndex.ButtonC;
@@ -516,7 +611,7 @@ namespace Client.Scenes.Views
                                 };
                             }
                             break;
-                        case ButtonType.Label:
+                        case DXButtonType.Label:
                             {
                                 label.ForeColour = Color.FromName(matchList[index].Groups["Colour"].Value);
                             }
@@ -526,95 +621,6 @@ namespace Client.Scenes.Views
                     Buttons.Add(label);
                 }
             }
-        }
-
-        public static List<ButtonInfo> GetWordRegionsNew(Graphics graphics, string text, Font font, TextFormatFlags flags, int width, int index, int length)
-        {
-            List<ButtonInfo> regions = new List<ButtonInfo>();
-
-            Size tSize = TextRenderer.MeasureText(graphics, "A", font, new Size(width, 2000), flags);
-            int h = tSize.Height;
-            int leading = tSize.Width - (TextRenderer.MeasureText(graphics, "AA", font, new Size(width, 2000), flags).Width - tSize.Width);
-
-            int lineStart = 0;
-            int lastHeight = h;
-
-            Regex regex = new Regex(@"(?<Words>\S+)", RegexOptions.Compiled);
-
-            MatchCollection matches = regex.Matches(text);
-
-            List<CharacterRange> ranges = new List<CharacterRange>();
-
-            foreach (Match match in matches)
-                ranges.Add(new CharacterRange(match.Index, match.Length));
-
-            ButtonInfo currentInfo = null;
-
-            //If Word Wrap enabled.
-            foreach (CharacterRange range in ranges)
-            {
-                int height = TextRenderer.MeasureText(graphics, text.Substring(0, range.First + range.Length), font, new Size(width, 9999), flags).Height;
-
-                if (range.First >= index + length) break;
-
-                if (height > lastHeight)
-                {
-                    lineStart = range.First; // New Line was formed record from start.
-                    lastHeight = height;
-
-                    //This Word is on a new line and therefore must start at 0.
-                    //We do NOT know its length on this new line but since its on a new line it will be easy to measure.
-
-                    if (range.First >= index)
-                    {
-                        //We need to capture this word
-                        //It needs to be a new Rectangle.
-                        Rectangle region = new Rectangle
-                        {
-                            X = 0,
-                            Y = height - h,
-                            Width = TextRenderer.MeasureText(graphics, text.Substring(range.First, range.Length), font, new Size(width, 9999), flags).Width,
-                            Height = h,
-                        };
-                        currentInfo = new ButtonInfo { Region = region, Index = range.First, Length = range.Length };
-                        regions.Add(currentInfo);
-                    }
-                }
-                else
-                {
-                    //it is on the same Line IT Must be able to contain ALL of the letters. (Word Wrap)
-                    //just need to know the length of the word and the Length of the start of the line to the start of the word
-
-                    if (range.First >= index)
-                    {
-                        if (currentInfo == null)
-                        {
-                            Rectangle region = new Rectangle
-                            {
-                                X = TextRenderer.MeasureText(graphics, text.Substring(lineStart, range.First - lineStart), font, new Size(width, 9999), flags).Width,
-                                Y = height - h,
-                                Width = TextRenderer.MeasureText(graphics, text.Substring(range.First, range.Length), font, new Size(width, 9999), flags).Width,
-                                Height = h,
-                            };
-
-                            if (region.X > 0)
-                                region.X -= leading;
-                            currentInfo = new ButtonInfo { Region = region, Index = range.First, Length = range.Length };
-                            regions.Add(currentInfo);
-                        }
-                        else
-                        {
-                            //Measure Current.Index to range.First + Length
-                            currentInfo.Length = range.First + range.Length - currentInfo.Index;
-                            currentInfo.Region.Width = TextRenderer.MeasureText(graphics, text.Substring(currentInfo.Index, currentInfo.Length), font, new Size(width, 9999), flags).Width;
-                        }
-                        //We need to capture this word.
-                        //ADD to any previous rects otherwise create new ?
-                    }
-                }
-            }
-
-            return regions;
         }
 
         public override void OnKeyDown(KeyEventArgs e)
@@ -640,44 +646,18 @@ namespace Client.Scenes.Views
             {
                 Page = null;
 
+                if (PageTextContainer != null)
+                {
+                    if (!PageTextContainer.IsDisposed)
+                        PageTextContainer.Dispose();
+                }
+
                 if (PageText != null)
                 {
                     if (!PageText.IsDisposed)
                         PageText.Dispose();
 
                     PageText = null;
-                }
-
-                if (HeaderImage != null)
-                {
-                    if (!HeaderImage.IsDisposed)
-                        HeaderImage.Dispose();
-
-                    HeaderImage = null;
-                }
-
-                if (FooterImage != null)
-                {
-                    if (!FooterImage.IsDisposed)
-                        FooterImage.Dispose();
-
-                    FooterImage = null;
-                }
-
-                if (RowImages != null)
-                {
-                    for (int i = 0; i < RowImages.Length; i++)
-                    {
-                        if (RowImages[i] != null)
-                        {
-                            if (!RowImages[i].IsDisposed)
-                                RowImages[i].Dispose();
-
-                            RowImages[i] = null;
-                        }
-                    }
-
-                    RowImages = null;
                 }
 
                 if (CloseButton != null)
@@ -718,27 +698,6 @@ namespace Client.Scenes.Views
         }
 
         #endregion
-
-        public class ButtonIndex
-        {
-            public CharacterRange Range;
-            public ButtonType Type;
-        };
-
-        public enum ButtonType
-        {
-            Button,
-            Label
-        };
-
-        [GeneratedRegex("\\<(?<Text>.*?):(?<Default>.+?)\\>", RegexOptions.Compiled)]
-        private static partial Regex ValueRegex();
-
-        [GeneratedRegex("\\{(?<Text>.*?):(?<Colour>.+?)\\}", RegexOptions.Compiled)]
-        private static partial Regex ColourRegex();
-
-        [GeneratedRegex("\\[(?<Text>.*?):(?<ID>.+?)\\]", RegexOptions.Compiled)]
-        private static partial Regex ButtonRegex();
     }
 
     public sealed class NPCGoodsDialog : DXWindow
@@ -804,10 +763,9 @@ namespace Client.Scenes.Views
         public NPCGoodsDialog()
         {
             TitleLabel.Text = "Goods";
-
+            DropShadow = true;
             HasFooter = true;
             Movable = false;
-
 
             SetClientSize(new Size(227, 7 * 43 + 1));
 
@@ -822,9 +780,15 @@ namespace Client.Scenes.Views
             ScrollBar = new DXVScrollBar
             {
                 Parent = this,
-                Size = new Size(14, ClientArea.Height - 1),
+                Size = new Size(19, ClientArea.Height - 1),
+                BackColour = Color.Empty,
+                Border = false,
+                UpButton = { Index = 61, LibraryFile = LibraryFile.Interface },
+                DownButton = { Index = 62, LibraryFile = LibraryFile.Interface },
+                PositionBar = { Index = 60, LibraryFile = LibraryFile.Interface },
+                ShowBackgroundSlider = true,
             };
-            ScrollBar.Location = new Point(ClientArea.Right - ScrollBar.Size.Width - 2, ClientArea.Y + 1);
+            ScrollBar.Location = new Point(ClientArea.Right - ScrollBar.Size.Width, ClientArea.Y + 1);
             ScrollBar.ValueChanged += (o, e) => UpdateLocations();
 
             MouseWheel += ScrollBar.DoMouseWheel;
@@ -833,6 +797,7 @@ namespace Client.Scenes.Views
             {
                 Location = new Point(40, Size.Height - 43),
                 Size = new Size(80, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Parent = this,
                 Label = { Text = "Buy" },
                 Enabled = false,
@@ -912,14 +877,22 @@ namespace Client.Scenes.Views
             if (GuildCheckBox.Checked && GameScene.Game.GuildBox.GuildInfo != null)
                 gold = GameScene.Game.GuildBox.GuildInfo.GuildFunds;
 
-            var cost = (int)Math.Max(1, SelectedCell.Good.Cost * Currency.ExchangeRate);
+            long cost = SelectedCell.Good.CostFor(Currency, 1);
 
-            if (SelectedCell.Good.Item.StackSize > 1)
+            bool isCurrencyGood = SelectedCell.Good.IsCurrencyGood;
+
+            if (SelectedCell.Good.Item.StackSize > 1 || isCurrencyGood)
             {
-                long maxCount = SelectedCell.Good.Item.StackSize;
+                long maxCount = isCurrencyGood ? long.MaxValue : SelectedCell.Good.Item.StackSize;
 
-                maxCount = Math.Min(maxCount, gold / cost);
-                if (SelectedCell.Good.Item.Weight > 0)
+                maxCount = SelectedCell.Good.MaxAmountFor(Currency, gold, maxCount);
+                if (maxCount <= 0)
+                {
+                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.BuySellNeedCurrency, SelectedCell.Good.Item.ItemName, Currency.Name), MessageType.System);
+                    return;
+                }
+
+                if (!isCurrencyGood && SelectedCell.Good.Item.Weight > 0)
                 {
                     switch (SelectedCell.Good.Item.ItemType)
                     {
@@ -946,6 +919,14 @@ namespace Client.Scenes.Views
                 ClientUserItem item = new ClientUserItem(SelectedCell.Good.Item, (int)Math.Min(int.MaxValue, maxCount));
 
                 DXItemAmountWindow window = new DXItemAmountWindow("Buy Item", item);
+                if (isCurrencyGood)
+                {
+                    window.AmountBox.Change = Math.Max(1, SelectedCell.Good.NormaliseCurrencyPurchaseAmount(Currency, 1));
+                    window.AmountBox.Value = SelectedCell.Good.NormaliseCurrencyPurchaseAmount(Currency, 1);
+                }
+                else
+                    window.AmountBox.Change = 1;
+
                 window.ConfirmButton.MouseClick += (o, e) =>
                 {
                     CEnvir.Enqueue(new C.NPCBuy { Index = SelectedCell.Good.Index, Amount = window.Amount, GuildFunds = GuildCheckBox.Checked });
@@ -962,7 +943,7 @@ namespace Client.Scenes.Views
 
                 if (cost > gold)
                 {
-                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.BuySellNeedGold, SelectedCell.Good.Item.ItemName), MessageType.System);
+                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.BuySellNeedCurrency, SelectedCell.Good.Item.ItemName, Currency.Name), MessageType.System);
                     return;
                 }
 
@@ -1092,6 +1073,10 @@ namespace Client.Scenes.Views
                     RequirementLabel.Text = $"Purity: {Good.Item.Durability / 1000}";
                     RequirementLabel.ForeColour = Color.Wheat;
                     break;
+                case ItemType.SocketGem:
+                    RequirementLabel.Text = $"Purity: {Good.Item.Durability / 1000}";
+                    RequirementLabel.ForeColour = Color.Wheat;
+                    break;
                 case ItemType.Consumable:
                 case ItemType.Scroll:
                 case ItemType.Weapon:
@@ -1147,8 +1132,8 @@ namespace Client.Scenes.Views
         public void OnSelectedChanged(bool oValue, bool nValue)
         {
             Border = Selected;
-            BackColour = Selected ? Color.FromArgb(80, 80, 125) : Color.FromArgb(25, 20, 0);
-            ItemCell.BorderColour = Selected ? Color.FromArgb(198, 166, 99) : Color.FromArgb(99, 83, 50);
+            BackColour = Selected ? Constants.SelectedRowBackColour : Constants.RowBackColour;
+            ItemCell.BorderColour = Selected ? Constants.PrimaryColour : Constants.InactiveBorderColour;
             SelectedChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -1195,16 +1180,16 @@ namespace Client.Scenes.Views
         public DXItemCell ItemCell;
 
         public DXImageControl CurrencyIcon;
-        public DXLabel ItemNameLabel, RequirementLabel, CostLabel;
+        public DXLabel ItemNameLabel, RequirementLabel, CostLabel, PreviewCountLabel;
 
         #endregion
 
         public NPCGoodsCell()
         {
             DrawTexture = true;
-            BackColour = Color.FromArgb(25, 20, 0);
-            BorderColour = Color.FromArgb(198, 166, 99);
-            Size = new Size(219, 40);
+            BackColour = Constants.RowBackColour;
+            BorderColour = Constants.PrimaryColour;
+            Size = new Size(204, 40);
 
             ItemCell = new DXItemCell
             {
@@ -1218,6 +1203,17 @@ namespace Client.Scenes.Views
                 FixedBorderColour = true,
                 ShowCountLabel = false,
             };
+
+            PreviewCountLabel = new DXLabel
+            {
+                Parent = this,
+                ForeColour = Color.Yellow,
+                Outline = true,
+                OutlineColour = Color.Black,
+                IsControl = false,
+                Visible = false,
+            };
+
             ItemNameLabel = new DXLabel
             {
                 Parent = this,
@@ -1259,13 +1255,34 @@ namespace Client.Scenes.Views
 
             var userCurrency = GameScene.Game.User.GetCurrency(Currency);
 
-            var totalCost = (int)Math.Max(1, Good.Cost * Currency.ExchangeRate);
+            long totalCost = Good.CostFor(Currency, 1);
+            long previewCount = Good.NormaliseCurrencyPurchaseAmount(Currency, 1);
+
+            if (ItemCell.Item != null)
+            {
+                ItemCell.Item.Count = previewCount;
+                ItemCell.RefreshItem();
+            }
+
+            PreviewCountLabel.Visible = Good.IsCurrencyGood && previewCount > 1;
+            PreviewCountLabel.Text = FormatPreviewCount(previewCount);
+            PreviewCountLabel.Location = new Point(ItemCell.Location.X + ItemCell.Size.Width - PreviewCountLabel.Size.Width, ItemCell.Location.Y + ItemCell.Size.Height - PreviewCountLabel.Size.Height);
 
             CostLabel.Text = totalCost.ToString("##,##0");
             CostLabel.ForeColour = totalCost > userCurrency.Amount ? Color.Red : Color.Yellow;
-            CostLabel.Location = new Point(Size.Width - CurrencyIcon.Size.Width - ItemCell.Location.X - 10 - CostLabel.Size.Width, ItemCell.Location.Y + ItemCell.Size.Height - RequirementLabel.Size.Height);
+            CostLabel.Location = new Point(Size.Width - CurrencyIcon.Size.Width - ItemCell.Location.X - CostLabel.Size.Width, ItemCell.Location.Y + ItemCell.Size.Height - RequirementLabel.Size.Height);
 
-            CurrencyIcon.Location = new Point(Size.Width - CurrencyIcon.Size.Width - ItemCell.Location.X - 10, Size.Height - CurrencyIcon.Size.Height - ItemCell.Location.X);
+            CurrencyIcon.Location = new Point(Size.Width - CurrencyIcon.Size.Width - ItemCell.Location.X, Size.Height - CurrencyIcon.Size.Height - ItemCell.Location.X);
+        }
+
+        private static string FormatPreviewCount(long count)
+        {
+            if (count < 1000) return count.ToString("##,##0");
+            if (count < 1000000) return $"{count / 1000M:0.#}K";
+            if (count < 1000000000) return $"{count / 1000000M:0.#}M";
+            if (count < 1000000000000) return $"{count / 1000000000M:0.#}B";
+
+            return $"{count / 1000000000000M:0.#}T";
         }
 
         public void UpdateColours()
@@ -1329,6 +1346,14 @@ namespace Client.Scenes.Views
                         ItemCell.Dispose();
 
                     ItemCell = null;
+                }
+
+                if (PreviewCountLabel != null)
+                {
+                    if (!PreviewCountLabel.IsDisposed)
+                        PreviewCountLabel.Dispose();
+
+                    PreviewCountLabel = null;
                 }
 
                 if (CurrencyIcon != null)
@@ -1406,6 +1431,7 @@ namespace Client.Scenes.Views
         {
             TitleLabel.Text = "Repair Items";
             Movable = false;
+            DropShadow = true;
 
             Grid = new DXItemGrid
             {
@@ -1426,7 +1452,7 @@ namespace Client.Scenes.Views
             {
                 AutoSize = false,
                 Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
+                BorderColour = Constants.PrimaryColour,
                 ForeColour = Color.White,
                 DrawFormat = TextFormatFlags.VerticalCenter,
                 Parent = this,
@@ -1439,7 +1465,7 @@ namespace Client.Scenes.Views
             {
                 AutoSize = false,
                 Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
+                BorderColour = Constants.PrimaryColour,
                 ForeColour = Color.White,
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
                 Parent = this,
@@ -1855,8 +1881,7 @@ namespace Client.Scenes.Views
         public NPCRefineDialog()
         {
             TitleLabel.Text = "Refine";
-
-
+            DropShadow = true;
 
             SetClientSize(new Size(491, 130));
 
@@ -2319,6 +2344,7 @@ namespace Client.Scenes.Views
             {
                 Location = new Point((Size.Width - 80) / 2, Size.Height - 43),
                 Size = new Size(80, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Parent = this,
                 Label = { Text = "Retrieve" },
                 Enabled = false,
@@ -2556,8 +2582,8 @@ namespace Client.Scenes.Views
         public void OnSelectedChanged(bool oValue, bool nValue)
         {
             Border = Selected;
-            BackColour = Selected ? Color.FromArgb(80, 80, 125) : Color.FromArgb(25, 20, 0);
-            ItemCell.BorderColour = Selected ? Color.FromArgb(198, 166, 99) : Color.FromArgb(99, 83, 50);
+            BackColour = Selected ? Constants.SelectedRowBackColour : Constants.RowBackColour;
+            ItemCell.BorderColour = Selected ? Constants.PrimaryColour : Constants.InactiveBorderColour;
             SelectedChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -2572,9 +2598,9 @@ namespace Client.Scenes.Views
         public NPCRefineCell()
         {
             DrawTexture = true;
-            BackColour = Color.FromArgb(25, 20, 0);
+            BackColour = Constants.RowBackColour;
 
-            BorderColour = Color.FromArgb(198, 166, 99);
+            BorderColour = Constants.PrimaryColour;
             Size = new Size(483, 40);
 
 
@@ -2856,13 +2882,14 @@ namespace Client.Scenes.Views
             Movable = false;
             Sort = true;
             Location = new Point(0, GameScene.Game.NPCBox.Size.Height);
+            DropShadow = true;
 
             TitleLabel = new DXLabel
             {
                 Text = "Quest List",
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -3299,13 +3326,14 @@ namespace Client.Scenes.Views
             Movable = false;
             Sort = true;
             Location = new Point(GameScene.Game.NPCBox.Size.Width, 0);
+            DropShadow = true;
 
             TitleLabel = new DXLabel
             {
                 Text = "Quest",
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -3338,7 +3366,7 @@ namespace Client.Scenes.Views
                 Text = CEnvir.Language.QuestTabDetailsLabel,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                //ForeColour = Color.FromArgb(198, 166, 99),
+                //ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -3425,7 +3453,7 @@ namespace Client.Scenes.Views
                 Text = CEnvir.Language.QuestTabChoiceLabel,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                //ForeColour = Color.FromArgb(198, 166, 99),
+                //ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -3451,7 +3479,7 @@ namespace Client.Scenes.Views
                 Text = CEnvir.Language.QuestTabStartLabel,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                //ForeColour = Color.FromArgb(198, 166, 99),
+                //ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -3471,6 +3499,7 @@ namespace Client.Scenes.Views
                 GameScene.Game.BigMapBox.Visible = true;
                 GameScene.Game.BigMapBox.Opacity = 1F;
                 GameScene.Game.BigMapBox.SelectedInfo = SelectedQuest.QuestInfo.StartNPC.Region.Map;
+                GameScene.Game.BigMapBox.PlayLocatorAnim(SelectedQuest.QuestInfo.StartNPC.Index);
             };
 
             label = new DXLabel
@@ -3478,7 +3507,7 @@ namespace Client.Scenes.Views
                 Text = CEnvir.Language.QuestTabEndLabel,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                //ForeColour = Color.FromArgb(198, 166, 99),
+                //ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -3499,6 +3528,7 @@ namespace Client.Scenes.Views
                 GameScene.Game.BigMapBox.Visible = true;
                 GameScene.Game.BigMapBox.Opacity = 1F;
                 GameScene.Game.BigMapBox.SelectedInfo = SelectedQuest.QuestInfo.FinishNPC.Region.Map;
+                GameScene.Game.BigMapBox.PlayLocatorAnim(SelectedQuest.QuestInfo.FinishNPC.Index);
             };
 
             AcceptButton = new DXButton
@@ -3507,6 +3537,7 @@ namespace Client.Scenes.Views
                 Parent = this,
                 Location = new Point(250, label.Location.Y + label.Size.Height + 40),
                 Size = new Size(100, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 ButtonType = ButtonType.Default,
                 Visible = false,
             };
@@ -3523,6 +3554,7 @@ namespace Client.Scenes.Views
                 Parent = this,
                 Location = new Point(250, label.Location.Y + label.Size.Height + 40),
                 Size = new Size(100, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 ButtonType = ButtonType.Default,
                 Visible = false,
             };
@@ -3800,7 +3832,7 @@ namespace Client.Scenes.Views
         public void OnSelectedChanged(bool oValue, bool nValue)
         {
             Border = Selected;
-            BackColour = Selected ? Color.FromArgb(80, 80, 125) : Color.FromArgb(25, 20, 0);
+            BackColour = Selected ? Constants.SelectedRowBackColour : Constants.RowBackColour;
 
             SelectedChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -3815,9 +3847,9 @@ namespace Client.Scenes.Views
         public NPCQuestRow()
         {
             DrawTexture = true;
-            BackColour = Color.FromArgb(25, 20, 0);
+            BackColour = Constants.RowBackColour;
 
-            BorderColour = Color.FromArgb(198, 166, 99);
+            BorderColour = Constants.PrimaryColour;
             Size = new Size(280, 20);
 
             QuestIcon = new DXAnimatedControl
@@ -3881,17 +3913,18 @@ namespace Client.Scenes.Views
         #endregion
     }
 
-    public sealed class NPCAdoptCompanionDialog : DXWindow
+    public sealed class NPCAdoptCompanionDialog : DXImageControl
     {
         #region Properties
 
         public MonsterObject CompanionDisplay;
         public Point CompanionDisplayPoint;
 
-        public DXLabel NameLabel, IndexLabel, PriceLabel;
-        public DXButton LeftButton, RightButton, AdoptButton, UnlockButton;
+        public DXLabel TitleLabel;
+        public DXButton CloseButton;
 
-        public DXTextBox CompanionNameTextBox;
+        public DXLabel NameLabel, DescriptionLabel, PriceLabel, PriceCurrencyLabel;
+        public DXButton LeftButton, RightButton, AdoptButton, UnlockButton;
 
         public List<CompanionInfo> AvailableCompanions = new List<CompanionInfo>();
 
@@ -3916,19 +3949,32 @@ namespace Client.Scenes.Views
         {
             CompanionDisplay = null;
 
-            if (SelectedCompanionInfo?.MonsterInfo == null) return;
+            if (SelectedCompanionInfo?.MonsterInfo == null || SelectedCompanionInfo.Currency == null) return;
 
             CompanionDisplay = new MonsterObject(SelectedCompanionInfo);
 
             RefreshUnlockButton();
 
             PriceLabel.Text = SelectedCompanionInfo.Price.ToString("#,##0");
+            PriceCurrencyLabel.Text = SelectedCompanionInfo.Currency.Abbreviation;
             NameLabel.Text = SelectedCompanionInfo.MonsterInfo.MonsterName;
+            DescriptionLabel.Text = SelectedCompanionInfo.Description;
             SelectedCompanionInfoChanged?.Invoke(this, EventArgs.Empty);
+
+            switch (SelectedCompanionInfo.Currency.Type)
+            {
+                case CurrencyType.Gold:
+                    PriceCurrencyLabel.ForeColour = Color.Goldenrod;
+                    break;
+                case CurrencyType.GameGold:
+                    PriceCurrencyLabel.ForeColour = Color.DarkOrange;
+                    break;
+                default:
+                    PriceCurrencyLabel.ForeColour = Color.CornflowerBlue;
+                    break;
+
+            }
         }
-
-
-
 
         #endregion
 
@@ -3952,8 +3998,6 @@ namespace Client.Scenes.Views
             if (SelectedIndex >= Globals.CompanionInfoList.Count) return;
 
             SelectedCompanionInfo = Globals.CompanionInfoList[SelectedIndex];
-
-            IndexLabel.Text = $"{SelectedIndex + 1} of {Globals.CompanionInfoList.Count}";
 
             LeftButton.Enabled = SelectedIndex > 0;
 
@@ -3989,125 +4033,129 @@ namespace Client.Scenes.Views
 
         #endregion
 
-        #region CompanionNameValid
-
-        public bool CompanionNameValid
-        {
-            get => _CompanionNameValid;
-            set
-            {
-                if (_CompanionNameValid == value) return;
-
-                bool oldValue = _CompanionNameValid;
-                _CompanionNameValid = value;
-
-                OnCompanionNameValidChanged(oldValue, value);
-            }
-        }
-        private bool _CompanionNameValid;
-        public event EventHandler<EventArgs> CompanionNameValidChanged;
-        public void OnCompanionNameValidChanged(bool oValue, bool nValue)
-        {
-            RefreshUnlockButton();
-            CompanionNameValidChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        #endregion
-
-        public bool CanAdopt => GameScene.Game.User != null && SelectedCompanionInfo != null && SelectedCompanionInfo.Price <= GameScene.Game.User.Gold.Amount && !AdoptAttempted && !UnlockButton.Visible && CompanionNameValid;
-
-
-        public override WindowType Type => WindowType.None;
-        public override bool CustomSize => false;
-        public override bool AutomaticVisibility => false;
+        public bool CanAdopt => GameScene.Game.User != null && SelectedCompanionInfo != null && SelectedCompanionInfo.Currency != null && SelectedCompanionInfo.Price <= GameScene.Game.User.GetCurrency(SelectedCompanionInfo.Currency).Amount && !AdoptAttempted && !UnlockButton.Visible;
 
         #endregion
 
         public NPCAdoptCompanionDialog()
         {
-            TitleLabel.Text = "Adopt Companion";
-
+            LibraryFile = LibraryFile.Interface;
+            Index = 146;
             Movable = false;
+            DropShadow = true;
 
-            SetClientSize(new Size(275, 130));
-            CompanionDisplayPoint = new Point(40, 95);
-
-            NameLabel = new DXLabel
+            CloseButton = new DXButton
             {
                 Parent = this,
+                Index = 15,
+                LibraryFile = LibraryFile.Interface,
+                Hint = CEnvir.Language.CommonControlClose,
+                HintPosition = HintPosition.TopLeft
+            };
+            CloseButton.Location = new Point(DisplayArea.Width - CloseButton.Size.Width - 3, 3);
+            CloseButton.MouseClick += (o, e) => Visible = false;
+
+            TitleLabel = new DXLabel
+            {
+                Text = "Adopt Companion",
+                Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                //ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
             };
+            TitleLabel.Location = new Point((DisplayArea.Width - TitleLabel.Size.Width) / 2, 8);
+
+            CompanionDisplayPoint = new Point(105, 130);
+
+            NameLabel = new DXLabel
+            {
+                Parent = this,
+                ForeColour = Color.White,
+                IsControl = false
+            };
 
             NameLabel.SizeChanged += (o, e) =>
             {
-                NameLabel.Location = new Point(CompanionDisplayPoint.X + 25 - NameLabel.Size.Width / 2, CompanionDisplayPoint.Y + 30);
+                NameLabel.Location = new Point(145 - NameLabel.Size.Width / 2, 192);
             };
 
-            IndexLabel = new DXLabel
+            DescriptionLabel = new DXLabel
             {
                 Parent = this,
-                Location = new Point(CompanionDisplayPoint.X, 200),
+                ForeColour = Color.White,
+                IsControl = false,
+                Location = new Point(30, 242),
+                AutoSize = false,
+                Size = new Size(195, 63)
             };
-            IndexLabel.SizeChanged += (o, e) =>
-            {
-                IndexLabel.Location = new Point(CompanionDisplayPoint.X + 25 - IndexLabel.Size.Width / 2, CompanionDisplayPoint.Y + 55);
-            };
+
             LeftButton = new DXButton
             {
                 Parent = this,
                 LibraryFile = LibraryFile.GameInter,
-                Index = 32,
-                Location = new Point(CompanionDisplayPoint.X - 20, CompanionDisplayPoint.Y + 55)
+                Index = 4112,
+                Location = new Point(20, 135)
             };
             LeftButton.MouseClick += (o, e) => SelectedIndex--;
             RightButton = new DXButton
             {
                 Parent = this,
                 LibraryFile = LibraryFile.GameInter,
-                Index = 37,
-                Location = new Point(CompanionDisplayPoint.X + 60, CompanionDisplayPoint.Y + 55)
+                Index = 4117,
+                Location = new Point(200, 135)
             };
             RightButton.MouseClick += (o, e) => SelectedIndex++;
 
             DXLabel label = new DXLabel
             {
                 Parent = this,
-                Text = "Price:"
+                Text = "Name"
             };
-            label.Location = new Point(160 - label.Size.Width, CompanionDisplayPoint.Y);
-
-            PriceLabel = new DXLabel
-            {
-                Parent = this,
-                Location = new Point(160, CompanionDisplayPoint.Y),
-                ForeColour = Color.White,
-            };
-
-            CompanionNameTextBox = new DXTextBox
-            {
-                Parent = this,
-                Location = new Point(160, CompanionDisplayPoint.Y + 25),
-                Size = new Size(120, 20)
-            };
-            CompanionNameTextBox.TextBox.TextChanged += TextBox_TextChanged;
+            label.Location = new Point(70 - label.Size.Width, 190);
 
             label = new DXLabel
             {
                 Parent = this,
-                Text = "Name:"
+                Text = "Price"
             };
-            label.Location = new Point(CompanionNameTextBox.Location.X - label.Size.Width, CompanionNameTextBox.Location.Y + (CompanionNameTextBox.Size.Height - label.Size.Height) / 2);
+            label.Location = new Point(70 - label.Size.Width, 214);
+
+            PriceLabel = new DXLabel
+            {
+                Parent = this,
+                ForeColour = Color.White,
+            };
+
+            PriceLabel.SizeChanged += (o, e) =>
+            {
+                PriceLabel.Location = new Point(145 - PriceLabel.Size.Width / 2, 214);
+            };
+
+            PriceCurrencyLabel = new DXLabel
+            {
+                AutoSize = false,
+                ForeColour = Color.Goldenrod,
+                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.Right,
+                Parent = this,
+                Location = new Point(130, 211),
+                Font = new Font(Config.FontName, CEnvir.FontSize(8F), FontStyle.Bold),
+                Text = "",
+                Size = new Size(97, 20)
+            };
+            PriceCurrencyLabel.SizeChanged += (o, e) =>
+            {
+                PriceCurrencyLabel.Location = new Point(150 - PriceCurrencyLabel.Size.Width / 2, 211);
+            };
 
             AdoptButton = new DXButton
             {
                 Parent = this,
-                Location = new Point(CompanionNameTextBox.Location.X, CompanionNameTextBox.Location.Y + 27),
-                Size = new Size(120, SmallButtonHeight),
-                ButtonType = ButtonType.SmallButton,
+                Location = new Point(30, Size.Height - 42),
+                Size = new Size(80, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
+                ButtonType = ButtonType.Default,
                 Label = { Text = "Adopt" }
             };
             AdoptButton.MouseClick += AdoptButton_MouseClick;
@@ -4115,9 +4163,10 @@ namespace Client.Scenes.Views
             UnlockButton = new DXButton
             {
                 Parent = this,
-                Location = new Point(ClientArea.Right - 80, ClientArea.Y),
-                Size = new Size(80, SmallButtonHeight),
-                ButtonType = ButtonType.SmallButton,
+                Location = new Point(Size.Width - 80 - 30, Size.Height - 42),
+                Size = new Size(80, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
+                ButtonType = ButtonType.Default,
                 Label = { Text = "Unlock" }
             };
 
@@ -4127,32 +4176,43 @@ namespace Client.Scenes.Views
         }
 
         #region Methods
-        private void TextBox_TextChanged(object sender, EventArgs e)
-        {
-            CompanionNameValid = Globals.CharacterReg.IsMatch(CompanionNameTextBox.TextBox.Text);
-
-            if (string.IsNullOrEmpty(CompanionNameTextBox.TextBox.Text))
-                CompanionNameTextBox.BorderColour = Color.FromArgb(198, 166, 99);
-            else
-                CompanionNameTextBox.BorderColour = CompanionNameValid ? Color.Green : Color.Red;
-        }
 
         private void AdoptButton_MouseClick(object sender, MouseEventArgs e)
         {
-            AdoptAttempted = true;
+            DXInputWindow window = new DXInputWindow("Name your companion", "Companion Name")
+            {
+                ConfirmButton = { Enabled = false },
+                Modal = true
+            };
+            window.ValueTextBox.TextBox.TextChanged += (o1, e1) =>
+            {
+                window.ConfirmButton.Enabled = Globals.CharacterReg.IsMatch(window.ValueTextBox.TextBox.Text);
+            };
+            window.ConfirmButton.MouseClick += (o1, e1) =>
+            {
+                AdoptAttempted = true;
 
-            CEnvir.Enqueue(new C.CompanionAdopt { Index = SelectedCompanionInfo.Index, Name = CompanionNameTextBox.TextBox.Text });
+                CEnvir.Enqueue(new C.CompanionAdopt { Index = SelectedCompanionInfo.Index, Name = window.Value });
+            };
         }
         private void UnlockButton_MouseClick(object sender, MouseEventArgs e)
         {
-            if (GameScene.Game.Inventory.All(x => x == null || x.Info.ItemEffect != ItemEffect.CompanionTicket))
+            ItemInfo item = SelectedCompanionInfo.UnlockItem;
+
+            item ??= Globals.ItemInfoList.Binding.FirstOrDefault(x => x.ItemEffect == ItemEffect.CompanionTicket);
+
+            if (item == null)
             {
-                GameScene.Game.ReceiveChat(CEnvir.Language.CompanionNeedTicket, MessageType.System);
                 return;
             }
 
-            DXMessageBox box = new DXMessageBox($"Are you sure you want to use a Companion Ticket?\n\n" + $"" + $"This will unlock the {SelectedCompanionInfo.MonsterInfo.MonsterName} appearance for new companions", "Unlock Appearance", DXMessageBoxButtons.YesNo);
+            if (GameScene.Game.Inventory.All(x => x == null || x.Info != item))
+            {
+                GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.CompanionNeedItem, item.ItemName), MessageType.System);
+                return;
+            }
 
+            DXMessageBox box = new DXMessageBox($"Are you sure you want to use a {item.ItemName}?\n\n" + $"" + $"This will unlock the {SelectedCompanionInfo.MonsterInfo.MonsterName} appearance for new companions", "Unlock Appearance", DXMessageBoxButtons.YesNo);
 
             box.YesButton.MouseClick += (o1, e1) =>
             {
@@ -4191,11 +4251,10 @@ namespace Client.Scenes.Views
 
         public void RefreshUnlockButton()
         {
-
             UnlockButton.Visible = !SelectedCompanionInfo.Available && !AvailableCompanions.Contains(SelectedCompanionInfo);
 
             if (GameScene.Game.User == null || SelectedCompanionInfo == null || SelectedCompanionInfo.Price <= GameScene.Game.User.Gold.Amount)
-                PriceLabel.ForeColour = Color.FromArgb(198, 166, 99);
+                PriceLabel.ForeColour = Color.White;
             else
                 PriceLabel.ForeColour = Color.Red;
 
@@ -4224,10 +4283,6 @@ namespace Client.Scenes.Views
                 _AdoptAttempted = false;
                 AdoptAttemptedChanged = null;
 
-                _CompanionNameValid = false;
-                CompanionNameValidChanged = null;
-
-
                 if (NameLabel != null)
                 {
                     if (!NameLabel.IsDisposed)
@@ -4236,12 +4291,28 @@ namespace Client.Scenes.Views
                     NameLabel = null;
                 }
 
-                if (IndexLabel != null)
+                if (TitleLabel != null)
                 {
-                    if (!IndexLabel.IsDisposed)
-                        IndexLabel.Dispose();
+                    if (!TitleLabel.IsDisposed)
+                        TitleLabel.Dispose();
 
-                    IndexLabel = null;
+                    TitleLabel = null;
+                }
+
+                if (CloseButton != null)
+                {
+                    if (!CloseButton.IsDisposed)
+                        CloseButton.Dispose();
+
+                    CloseButton = null;
+                }
+
+                if (DescriptionLabel != null)
+                {
+                    if (!DescriptionLabel.IsDisposed)
+                        DescriptionLabel.Dispose();
+
+                    DescriptionLabel = null;
                 }
 
                 if (PriceLabel != null)
@@ -4250,6 +4321,14 @@ namespace Client.Scenes.Views
                         PriceLabel.Dispose();
 
                     PriceLabel = null;
+                }
+
+                if (PriceCurrencyLabel != null)
+                {
+                    if (!PriceCurrencyLabel.IsDisposed)
+                        PriceCurrencyLabel.Dispose();
+
+                    PriceCurrencyLabel = null;
                 }
 
                 if (LeftButton != null)
@@ -4284,277 +4363,363 @@ namespace Client.Scenes.Views
                     UnlockButton = null;
                 }
 
-                if (CompanionNameTextBox != null)
-                {
-                    if (!CompanionNameTextBox.IsDisposed)
-                        CompanionNameTextBox.Dispose();
-
-                    CompanionNameTextBox = null;
-                }
             }
-
         }
 
         #endregion
     }
 
-    public sealed class NPCCompanionStorageDialog : DXWindow
+    public sealed class NPCCompanionStorageDialog : DXImageControl
     {
-        #region Properties
-
-        private DXVScrollBar ScrollBar;
-
-        public NPCCompanionStorageRow[] Rows;
+        public MonsterObject CompanionDisplay;
+        public Point CompanionDisplayPoint;
 
         public List<ClientUserCompanion> Companions = new List<ClientUserCompanion>();
 
+        #region Properties
 
-        public override WindowType Type => WindowType.None;
-        public override bool CustomSize => false;
-        public override bool AutomaticVisibility => false;
+        public DXLabel NameTitleLabel, LevelTitleLabel, ExpTitleLabel, HungerTitleLabel;
+        public DXLabel TitleLabel, NameLabel, LevelLabel, ExpLabel, HungerLabel, IndexLabel;
+
+        public DXButton CloseButton, LeftButton, RightButton, StoreButton, RetrieveButton, ReleaseButton;
+
+        public DXControl ExperienceBar, HungerBar;
+
+        #endregion
+
+        #region SelectedUserCompanion
+
+        public ClientUserCompanion SelectedUserCompanion
+        {
+            get => _SelectedUserCompanion;
+            set
+            {
+                if (_SelectedUserCompanion == value) return;
+
+                ClientUserCompanion oldValue = _SelectedUserCompanion;
+                _SelectedUserCompanion = value;
+
+                OnSelectedUserCompanionChanged(oldValue, value);
+            }
+        }
+        private ClientUserCompanion _SelectedUserCompanion;
+        public event EventHandler<EventArgs> SelectedUserCompanionChanged;
+        public void OnSelectedUserCompanionChanged(ClientUserCompanion oValue, ClientUserCompanion nValue)
+        {
+            CompanionDisplay = null;
+
+            if (SelectedUserCompanion?.CompanionInfo.MonsterInfo == null) return;
+
+            CompanionDisplay = new MonsterObject(SelectedUserCompanion.CompanionInfo);
+
+            NameLabel.Text = SelectedUserCompanion.Name;
+            LevelLabel.Text = $"Lv. {SelectedUserCompanion.Level}";
+
+            var info = Globals.CompanionLevelInfoList.Binding.First(x => x.Level == SelectedUserCompanion.Level);
+
+            ExpLabel.Text = info.MaxExperience > 0 ? $"{SelectedUserCompanion.Experience / (decimal)info.MaxExperience:p2}" : "100%";
+
+            HungerLabel.Text = $"{SelectedUserCompanion.Hunger} of {info.MaxHunger}";
+
+            SelectedUserCompanionChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
+        #region SelectedIndex
+
+        public int SelectedIndex
+        {
+            get => _SelectedIndex;
+            set
+            {
+                int oldValue = _SelectedIndex;
+                _SelectedIndex = value;
+
+                OnSelectedIndexChanged(oldValue, value);
+            }
+        }
+        private int _SelectedIndex = -1;
+        public event EventHandler<EventArgs> SelectedIndexChanged;
+        public void OnSelectedIndexChanged(int oValue, int nValue)
+        {
+            if (SelectedIndex >= Companions.Count) return;
+
+            SelectedUserCompanion = Companions[SelectedIndex];
+
+            IndexLabel.Text = $"{SelectedIndex + 1} of {Companions.Count}";
+
+            LeftButton.Enabled = SelectedIndex > 0;
+            RightButton.Enabled = SelectedIndex < Companions.Count - 1;
+
+            if (SelectedUserCompanion == GameScene.Game.Companion)
+            {
+                StoreButton.Visible = true;
+                RetrieveButton.Visible = false;
+                ReleaseButton.Enabled = true;
+            }
+            else
+            {
+                StoreButton.Visible = false;
+                RetrieveButton.Visible = true;
+
+                if (!string.IsNullOrEmpty(SelectedUserCompanion.CharacterName))
+                {
+                    ReleaseButton.Enabled = false;
+                    RetrieveButton.Enabled = false;
+                    RetrieveButton.Hint = $"The Companion is currently with {SelectedUserCompanion.CharacterName}.";
+                }
+                else
+                {
+                    ReleaseButton.Enabled = true;
+                    RetrieveButton.Enabled = true;
+                    RetrieveButton.Hint = null;
+                }
+            }
+
+            SelectedIndexChanged?.Invoke(this, EventArgs.Empty);
+        }
 
         #endregion
 
         public NPCCompanionStorageDialog()
         {
-            TitleLabel.Text = "Storage";
+            LibraryFile = LibraryFile.Interface;
+            Index = 147;
 
-            Movable = false;
+            Movable = true;
+            DropShadow = true;
 
-            SetClientSize(new Size(198, 349));
-
-            Rows = new NPCCompanionStorageRow[4];
-
-            for (int i = 0; i < Rows.Length; i++)
-            {
-                Rows[i] = new NPCCompanionStorageRow
-                {
-                    Parent = this,
-                    Location = new Point(ClientArea.X, ClientArea.Y + i * 88),
-                };
-            }
-
-            ScrollBar = new DXVScrollBar
+            CloseButton = new DXButton
             {
                 Parent = this,
-                Location = new Point(ClientArea.Right - 15, ClientArea.Y + 1),
-                Size = new Size(14, Rows.Length * 87 - 1),
-                VisibleSize = Rows.Length,
-                Change = 1,
+                Index = 15,
+                LibraryFile = LibraryFile.Interface,
+                Hint = CEnvir.Language.CommonControlClose,
+                HintPosition = HintPosition.TopLeft
             };
-            ScrollBar.ValueChanged += (o, e) => UpdateScrollBar();
-        }
+            CloseButton.Location = new Point(DisplayArea.Width - CloseButton.Size.Width - 3, 3);
+            CloseButton.MouseClick += (o, e) => Visible = false;
 
-        #region Methods
-
-        public void UpdateScrollBar()
-        {
-            ScrollBar.MaxValue = Companions.Count;
-
-            for (int i = 0; i < Rows.Length; i++)
+            TitleLabel = new DXLabel
             {
-                Rows[i].UserCompanion = i + ScrollBar.Value >= Companions.Count ? null : Companions[i + ScrollBar.Value];
-            }
+                Text = "Companion Storage",
+                Parent = this,
+                Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
+                ForeColour = Constants.PrimaryColour,
+                Outline = true,
+                OutlineColour = Color.Black,
+                IsControl = false,
+            };
+            TitleLabel.Location = new Point((DisplayArea.Width - TitleLabel.Size.Width) / 2, 8);
 
+            CompanionDisplayPoint = new Point(55, 90);
 
-        }
-
-        #endregion
-
-        #region IDisposable
-
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
-
-            if (disposing)
+            NameTitleLabel = new DXLabel
             {
-                Companions.Clear();
-                Companions = null;
+                Parent = this,
+                Text = CEnvir.Language.CompanionDialogCompanionTabNameLabel
+            };
+            NameTitleLabel.Location = new Point(190 - NameTitleLabel.Size.Width, 52);
 
-                if (Rows != null)
-                {
-                    for (int i = 0; i < Rows.Length; i++)
-                    {
-                        if (Rows[i] != null)
-                        {
-                            if (!Rows[i].IsDisposed)
-                                Rows[i].Dispose();
-
-                            Rows[i] = null;
-                        }
-
-                    }
-
-                    Rows = null;
-                }
-
-                if (ScrollBar != null)
-                {
-                    if (!ScrollBar.IsDisposed)
-                        ScrollBar.Dispose();
-
-                    ScrollBar = null;
-                }
-            }
-
-        }
-
-        #endregion
-    }
-
-    public sealed class NPCCompanionStorageRow : DXControl
-    {
-        #region Properties
-        #region UserCompanion
-
-        public ClientUserCompanion UserCompanion
-        {
-            get => _UserCompanion;
-            set
+            LevelTitleLabel = new DXLabel
             {
-                ClientUserCompanion oldValue = _UserCompanion;
-                _UserCompanion = value;
+                Parent = this,
+                Text = CEnvir.Language.CompanionDialogCompanionTabLevelLabel
+            };
+            LevelTitleLabel.Location = new Point(190 - LevelTitleLabel.Size.Width, 74);
 
-                OnUserCompanionChanged(oldValue, value);
-            }
-        }
-        private ClientUserCompanion _UserCompanion;
-        public event EventHandler<EventArgs> UserCompanionChanged;
-        public void OnUserCompanionChanged(ClientUserCompanion oValue, ClientUserCompanion nValue)
-        {
-            UserCompanionChanged?.Invoke(this, EventArgs.Empty);
-
-            if (UserCompanion == null)
+            ExpTitleLabel = new DXLabel
             {
-                Visible = false;
-                return;
-            }
+                Parent = this,
+                Text = CEnvir.Language.CompanionDialogCompanionTabExpLabel
+            };
+            ExpTitleLabel.Location = new Point(190 - ExpTitleLabel.Size.Width, 96);
 
-            Visible = true;
-
-            CompanionDisplay = new MonsterObject(UserCompanion.CompanionInfo);
-
-            NameLabel.Text = UserCompanion.Name;
-            LevelLabel.Text = $"Level {UserCompanion.Level}";
-
-            if (UserCompanion == GameScene.Game.Companion)
-                Selected = true;
-            else
+            HungerTitleLabel = new DXLabel
             {
-                Selected = false;
+                Parent = this,
+                Text = CEnvir.Language.CompanionDialogCompanionTabHungerLabel
+            };
+            HungerTitleLabel.Location = new Point(190 - HungerTitleLabel.Size.Width, 118);
 
-                if (!string.IsNullOrEmpty(UserCompanion.CharacterName))
-                {
-                    RetrieveButton.Enabled = false;
-                    RetrieveButton.Hint = $"The Companion is currently with {UserCompanion.CharacterName}.";
-                }
-                else
-                {
-                    RetrieveButton.Enabled = true;
-                    RetrieveButton.Hint = null;
-                }
+            CEnvir.LibraryList.TryGetValue(LibraryFile.GameInter, out MirLibrary library);
 
-            }
-        }
-
-        #endregion
-
-        #region Selected
-
-        public bool Selected
-        {
-            get => _Selected;
-            set
+            ExperienceBar = new DXControl
             {
-                if (_Selected == value) return;
+                Parent = this,
+                Location = new Point(196, 98),
+                Size = library.GetSize(4310),
+            };
+            ExperienceBar.BeforeDraw += (o, e) =>
+            {
+                if (library == null) return;
 
-                bool oldValue = _Selected;
-                _Selected = value;
+                if (SelectedUserCompanion == null) return;
 
-                OnSelectedChanged(oldValue, value);
-            }
-        }
-        private bool _Selected;
-        public event EventHandler<EventArgs> SelectedChanged;
-        public void OnSelectedChanged(bool oValue, bool nValue)
-        {
-            Border = Selected;
-            BackColour = Selected ? Color.FromArgb(80, 80, 125) : Color.FromArgb(25, 20, 0);
+                var info = Globals.CompanionLevelInfoList.Binding.First(x => x.Level == SelectedUserCompanion.Level);
 
-            RetrieveButton.Visible = !Selected;
-            StoreButton.Visible = Selected;
+                if (info == null) return;
 
+                float percent = Math.Min(1, Math.Max(0, SelectedUserCompanion.Experience / (float)info.MaxExperience));
 
-            SelectedChanged?.Invoke(this, EventArgs.Empty);
-        }
+                if (percent == 0) return;
 
-        #endregion
+                if (!library.TryGetTexture(4310, ImageType.Image, out MirImage image, out var texture, out var sourceRectangle)) return;
 
-        public MonsterObject CompanionDisplay;
-        public Point CompanionDisplayPoint;
-        public DXLabel NameLabel, LevelLabel;
-        public DXButton StoreButton, RetrieveButton;
+                PresentTexture(texture, sourceRectangle, this, new Rectangle(ExperienceBar.DisplayArea.X, ExperienceBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, ExperienceBar);
+            };
 
-        #endregion
+            HungerBar = new DXControl
+            {
+                Parent = this,
+                Location = new Point(196, 120),
+                Size = library.GetSize(4311),
+            };
 
-        public NPCCompanionStorageRow()
-        {
-            DrawTexture = true;
-            BackColour = Color.FromArgb(25, 20, 0);
+            HungerBar.BeforeDraw += (o, e) =>
+            {
+                if (library == null) return;
 
-            BorderColour = Color.FromArgb(198, 166, 99);
-            Size = new Size(180, 85);
-            CompanionDisplayPoint = new Point(10, 45);
+                if (SelectedUserCompanion == null) return;
+
+                var info = Globals.CompanionLevelInfoList.Binding.First(x => x.Level == SelectedUserCompanion.Level);
+
+                if (info == null) return;
+
+                float percent = Math.Min(1, Math.Max(0, SelectedUserCompanion.Hunger / (float)info.MaxHunger));
+
+                if (percent == 0) return;
+
+                if (!library.TryGetTexture(4311, ImageType.Image, out MirImage image, out var texture, out var sourceRectangle)) return;
+
+                PresentTexture(texture, sourceRectangle, this, new Rectangle(HungerBar.DisplayArea.X, HungerBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, HungerBar);
+            };
 
             NameLabel = new DXLabel
             {
                 Parent = this,
-                Location = new Point(85, 5)
-
+                ForeColour = Color.White,
+                IsControl = false
+            };
+            NameLabel.SizeChanged += (o, e) =>
+            {
+                NameLabel.Location = new Point(270 - NameLabel.Size.Width / 2, 52);
             };
 
             LevelLabel = new DXLabel
             {
                 Parent = this,
-                Location = new Point(85, 30)
+                ForeColour = Color.White,
+                IsControl = false
             };
+            LevelLabel.SizeChanged += (o, e) =>
+            {
+                LevelLabel.Location = new Point(270 - LevelLabel.Size.Width / 2, 74);
+            };
+
+            ExpLabel = new DXLabel
+            {
+                Parent = this,
+                ForeColour = Color.White,
+                IsControl = false
+            };
+            ExpLabel.SizeChanged += (o, e) =>
+            {
+                ExpLabel.Location = new Point(270 - ExpLabel.Size.Width / 2, 96);
+            };
+
+            HungerLabel = new DXLabel
+            {
+                Parent = this,
+                ForeColour = Color.White,
+                IsControl = false
+            };
+            HungerLabel.SizeChanged += (o, e) =>
+            {
+                HungerLabel.Location = new Point(270 - HungerLabel.Size.Width / 2, 118);
+            };
+
+            IndexLabel = new DXLabel
+            {
+                Parent = this,
+                ForeColour = Color.White,
+                IsControl = false
+            };
+
+            IndexLabel.SizeChanged += (o, e) =>
+            {
+                IndexLabel.Location = new Point(185 - IndexLabel.Size.Width / 2, 156);
+            };
+
+            LeftButton = new DXButton
+            {
+                Parent = this,
+                LibraryFile = LibraryFile.GameInter,
+                Index = 4211,
+                Location = new Point(105, 157)
+            };
+            LeftButton.MouseClick += (o, e) => SelectedIndex--;
+            RightButton = new DXButton
+            {
+                Parent = this,
+                LibraryFile = LibraryFile.GameInter,
+                Index = 4216,
+                Location = new Point(245, 157)
+            };
+            RightButton.MouseClick += (o, e) => SelectedIndex++;
 
             StoreButton = new DXButton
             {
                 Parent = this,
-                Location = new Point(85, 60),
-                Size = new Size(80, SmallButtonHeight),
-                ButtonType = ButtonType.SmallButton,
+                Location = new Point(30, Size.Height - 43),
+                Size = new Size(80, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
+                ButtonType = ButtonType.Default,
                 Label = { Text = "Store" },
-                Visible = false
             };
             StoreButton.MouseClick += StoreButton_MouseClick;
-
 
             RetrieveButton = new DXButton
             {
                 Parent = this,
-                Location = new Point(85, 60),
-                Size = new Size(80, SmallButtonHeight),
-                ButtonType = ButtonType.SmallButton,
-                Label = { Text = "Retrieve" }
+                Size = new Size(80, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
+                ButtonType = ButtonType.Default,
+                Label = { Text = "Retrieve" },
+                Location = new Point(30, Size.Height - 43),
+                Visible = false
             };
             RetrieveButton.MouseClick += RetrieveButton_MouseClick;
 
-
+            ReleaseButton = new DXButton
+            {
+                Parent = this,
+                Size = new Size(80, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
+                ButtonType = ButtonType.Default,
+                Label = { Text = "Release" },
+                Location = new Point(30 + 80 + 35, Size.Height - 43)
+            };
+            ReleaseButton.MouseClick += ReleaseButton_MouseClick;
         }
 
         #region Methods
 
-        private void StoreButton_MouseClick(object sender, MouseEventArgs e)
+        public void Refresh()
         {
-            CEnvir.Enqueue(new C.CompanionStore { Index = UserCompanion.Index });
-        }
+            if (Companions.Count == 0) return;
 
-        private void RetrieveButton_MouseClick(object sender, MouseEventArgs e)
-        {
-            CEnvir.Enqueue(new C.CompanionRetrieve { Index = UserCompanion.Index });
+            if (GameScene.Game.Companion != null)
+            {
+                var index = Companions.IndexOf(GameScene.Game.Companion);
+
+                SelectedIndex = index;
+            }
+            else
+            {
+                SelectedIndex = 0;
+            }
         }
 
         public override void Process()
@@ -4584,6 +4749,25 @@ namespace Client.Scenes.Views
             CompanionDisplay.DrawBody(x, y);
         }
 
+        private void StoreButton_MouseClick(object sender, MouseEventArgs e)
+        {
+            CEnvir.Enqueue(new C.CompanionStore { Index = SelectedUserCompanion.Index });
+        }
+
+        private void RetrieveButton_MouseClick(object sender, MouseEventArgs e)
+        {
+            CEnvir.Enqueue(new C.CompanionRetrieve { Index = SelectedUserCompanion.Index });
+        }
+
+        private void ReleaseButton_MouseClick(object sender, MouseEventArgs e)
+        {
+            DXMessageBox window = new DXMessageBox("Are you sure you wish to release your companion?", "Confirm Release", DXMessageBoxButtons.YesNo);
+
+            window.YesButton.MouseClick += (o1, e1) =>
+            {
+                CEnvir.Enqueue(new C.CompanionRelease { Index = SelectedUserCompanion.Index });
+            };
+        }
 
         #endregion
 
@@ -4595,14 +4779,57 @@ namespace Client.Scenes.Views
 
             if (disposing)
             {
-                _UserCompanion = null;
-                UserCompanionChanged = null;
-
-                _Selected = false;
-                SelectedChanged = null;
-
                 CompanionDisplay = null;
                 CompanionDisplayPoint = Point.Empty;
+
+                Companions?.Clear();
+                Companions = null;
+
+                _SelectedUserCompanion = null;
+                SelectedUserCompanionChanged = null;
+
+                _SelectedIndex = -1;
+                SelectedIndexChanged = null;
+
+                if (NameTitleLabel != null)
+                {
+                    if (!NameTitleLabel.IsDisposed)
+                        NameTitleLabel.Dispose();
+
+                    NameTitleLabel = null;
+                }
+
+                if (LevelTitleLabel != null)
+                {
+                    if (!LevelTitleLabel.IsDisposed)
+                        LevelTitleLabel.Dispose();
+
+                    LevelTitleLabel = null;
+                }
+
+                if (ExpTitleLabel != null)
+                {
+                    if (!ExpTitleLabel.IsDisposed)
+                        ExpTitleLabel.Dispose();
+
+                    ExpTitleLabel = null;
+                }
+
+                if (HungerTitleLabel != null)
+                {
+                    if (!HungerTitleLabel.IsDisposed)
+                        HungerTitleLabel.Dispose();
+
+                    HungerTitleLabel = null;
+                }
+
+                if (TitleLabel != null)
+                {
+                    if (!TitleLabel.IsDisposed)
+                        TitleLabel.Dispose();
+
+                    TitleLabel = null;
+                }
 
                 if (NameLabel != null)
                 {
@@ -4620,6 +4847,54 @@ namespace Client.Scenes.Views
                     LevelLabel = null;
                 }
 
+                if (ExpLabel != null)
+                {
+                    if (!ExpLabel.IsDisposed)
+                        ExpLabel.Dispose();
+
+                    ExpLabel = null;
+                }
+
+                if (HungerLabel != null)
+                {
+                    if (!HungerLabel.IsDisposed)
+                        HungerLabel.Dispose();
+
+                    HungerLabel = null;
+                }
+
+                if (IndexLabel != null)
+                {
+                    if (!IndexLabel.IsDisposed)
+                        IndexLabel.Dispose();
+
+                    IndexLabel = null;
+                }
+
+                if (CloseButton != null)
+                {
+                    if (!CloseButton.IsDisposed)
+                        CloseButton.Dispose();
+
+                    CloseButton = null;
+                }
+
+                if (LeftButton != null)
+                {
+                    if (!LeftButton.IsDisposed)
+                        LeftButton.Dispose();
+
+                    LeftButton = null;
+                }
+
+                if (RightButton != null)
+                {
+                    if (!RightButton.IsDisposed)
+                        RightButton.Dispose();
+
+                    RightButton = null;
+                }
+
                 if (StoreButton != null)
                 {
                     if (!StoreButton.IsDisposed)
@@ -4635,8 +4910,31 @@ namespace Client.Scenes.Views
 
                     RetrieveButton = null;
                 }
-            }
 
+                if (ReleaseButton != null)
+                {
+                    if (!ReleaseButton.IsDisposed)
+                        ReleaseButton.Dispose();
+
+                    ReleaseButton = null;
+                }
+
+                if (ExperienceBar != null)
+                {
+                    if (!ExperienceBar.IsDisposed)
+                        ExperienceBar.Dispose();
+
+                    ExperienceBar = null;
+                }
+
+                if (HungerBar != null)
+                {
+                    if (!HungerBar.IsDisposed)
+                        HungerBar.Dispose();
+
+                    HungerBar = null;
+                }
+            }
         }
 
         #endregion
@@ -4667,7 +4965,7 @@ namespace Client.Scenes.Views
                 Text = "Ring",
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -5039,7 +5337,7 @@ namespace Client.Scenes.Views
                 GoldBox.BorderColour = Color.Red;
                 return;
             }
-            GoldBox.BorderColour = Color.FromArgb(198, 166, 99);
+            GoldBox.BorderColour = Constants.PrimaryColour;
 
             foreach (DXItemCell cell in IronOreGrid.Grid)
             {
@@ -5187,7 +5485,7 @@ namespace Client.Scenes.Views
             {
                 AutoSize = false,
                 Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
+                BorderColour = Constants.PrimaryColour,
                 ForeColour = Color.White,
                 DrawFormat = TextFormatFlags.VerticalCenter,
                 Parent = this,
@@ -5201,7 +5499,7 @@ namespace Client.Scenes.Views
             {
                 AutoSize = false,
                 Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
+                BorderColour = Constants.PrimaryColour,
                 ForeColour = Color.White,
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
                 Parent = this,
@@ -5457,7 +5755,7 @@ namespace Client.Scenes.Views
 
             DXLabel label = new DXLabel
             {
-                Text = "Fragement I",
+                Text = "Fragment I",
                 Location = ClientArea.Location,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(8F), FontStyle.Underline)
@@ -5474,7 +5772,7 @@ namespace Client.Scenes.Views
 
             label = new DXLabel
             {
-                Text = "Fragement II",
+                Text = "Fragment II",
                 Location = new Point(label.Size.Width + 5 + label.Location.X, label.Location.Y),
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(8F), FontStyle.Underline)
@@ -5491,7 +5789,7 @@ namespace Client.Scenes.Views
 
             label = new DXLabel
             {
-                Text = "Fragement III",
+                Text = "Fragment III",
                 Location = new Point(label.Size.Width + 5 + label.Location.X, label.Location.Y),
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(8F), FontStyle.Underline)
@@ -5743,45 +6041,30 @@ namespace Client.Scenes.Views
                     if (cell.Link == null) continue;
 
                     frag1.Add(new CellLinkInfo { Count = cell.LinkedCount, GridType = cell.Link.GridType, Slot = cell.Link.Slot });
-
-                    cell.Link.Locked = true;
-                    cell.Link = null;
                 }
                 foreach (DXItemCell cell in Fragment2Grid.Grid)
                 {
                     if (cell.Link == null) continue;
 
                     frag2.Add(new CellLinkInfo { Count = cell.LinkedCount, GridType = cell.Link.GridType, Slot = cell.Link.Slot });
-
-                    cell.Link.Locked = true;
-                    cell.Link = null;
                 }
                 foreach (DXItemCell cell in Fragment3Grid.Grid)
                 {
                     if (cell.Link == null) continue;
 
                     frag3.Add(new CellLinkInfo { Count = cell.LinkedCount, GridType = cell.Link.GridType, Slot = cell.Link.Slot });
-
-                    cell.Link.Locked = true;
-                    cell.Link = null;
                 }
                 foreach (DXItemCell cell in RefinementStoneGrid.Grid)
                 {
                     if (cell.Link == null) continue;
 
                     stone.Add(new CellLinkInfo { Count = cell.LinkedCount, GridType = cell.Link.GridType, Slot = cell.Link.Slot });
-
-                    cell.Link.Locked = true;
-                    cell.Link = null;
                 }
                 foreach (DXItemCell cell in SpecialGrid.Grid)
                 {
                     if (cell.Link == null) continue;
 
                     special.Add(new CellLinkInfo { Count = cell.LinkedCount, GridType = cell.Link.GridType, Slot = cell.Link.Slot });
-
-                    cell.Link.Locked = true;
-                    cell.Link = null;
                 }
 
                 if (frag1.Count < 1 || frag1[0].Count != 10)
@@ -5806,6 +6089,17 @@ namespace Client.Scenes.Views
                 {
                     GameScene.Game.ReceiveChat(CEnvir.Language.RefineNeedRefinementStone, MessageType.System);
                     return;
+                }
+
+                foreach (DXItemGrid grid in new[] { Fragment1Grid, Fragment2Grid, Fragment3Grid, RefinementStoneGrid, SpecialGrid })
+                {
+                    foreach (DXItemCell cell in grid.Grid)
+                    {
+                        if (cell.Link == null) continue;
+
+                        cell.Link.Locked = true;
+                        cell.Link = null;
+                    }
                 }
 
                 CEnvir.Enqueue(new C.NPCMasterRefine { RefineType = RefineType, Fragment1s = frag1, Fragment2s = frag2, Fragment3s = frag3, Stones = stone, Specials = special });
@@ -6602,7 +6896,7 @@ namespace Client.Scenes.Views
             {
                 AutoSize = false,
                 Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
+                BorderColour = Constants.PrimaryColour,
                 ForeColour = Color.White,
                 DrawFormat = TextFormatFlags.VerticalCenter,
                 Parent = this,
@@ -6616,7 +6910,7 @@ namespace Client.Scenes.Views
             {
                 AutoSize = false,
                 Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
+                BorderColour = Constants.PrimaryColour,
                 ForeColour = Color.White,
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
                 Parent = this,
@@ -6764,7 +7058,7 @@ namespace Client.Scenes.Views
                 Text = "Accessory",
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -6799,7 +7093,7 @@ namespace Client.Scenes.Views
             {
                 Text = $"Cost: {Globals.AccessoryResetCost:#,##0}",
                 Parent = this,
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -6988,6 +7282,7 @@ namespace Client.Scenes.Views
             TitleLabel.Text = "Weapon Craft";
 
             HasFooter = false;
+            DropShadow = true;
 
             SetClientSize(new Size(250, 280));
 
@@ -7285,6 +7580,108 @@ namespace Client.Scenes.Views
                 AttemptButton.Enabled = CanCraft;
             };
         }
+
+        #region IDisposable
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (!disposing) return;
+
+            _RequiredClass = RequiredClass.None;
+            RequiredClassChanged = null;
+
+            if (ClassComboBox != null)
+            {
+                if (!ClassComboBox.IsDisposed)
+                    ClassComboBox.Dispose();
+
+                ClassComboBox = null;
+            }
+
+            if (PreviewImageBox != null)
+            {
+                if (!PreviewImageBox.IsDisposed)
+                    PreviewImageBox.Dispose();
+
+                PreviewImageBox = null;
+            }
+
+            if (TemplateCell != null)
+            {
+                if (!TemplateCell.IsDisposed)
+                    TemplateCell.Dispose();
+
+                TemplateCell = null;
+            }
+
+            if (YellowCell != null)
+            {
+                if (!YellowCell.IsDisposed)
+                    YellowCell.Dispose();
+
+                YellowCell = null;
+            }
+
+            if (BlueCell != null)
+            {
+                if (!BlueCell.IsDisposed)
+                    BlueCell.Dispose();
+
+                BlueCell = null;
+            }
+
+            if (RedCell != null)
+            {
+                if (!RedCell.IsDisposed)
+                    RedCell.Dispose();
+
+                RedCell = null;
+            }
+
+            if (PurpleCell != null)
+            {
+                if (!PurpleCell.IsDisposed)
+                    PurpleCell.Dispose();
+
+                PurpleCell = null;
+            }
+
+            if (GreenCell != null)
+            {
+                if (!GreenCell.IsDisposed)
+                    GreenCell.Dispose();
+
+                GreenCell = null;
+            }
+
+            if (GreyCell != null)
+            {
+                if (!GreyCell.IsDisposed)
+                    GreyCell.Dispose();
+
+                GreyCell = null;
+            }
+
+            if (ClassLabel != null)
+            {
+                if (!ClassLabel.IsDisposed)
+                    ClassLabel.Dispose();
+
+                ClassLabel = null;
+            }
+
+            if (AttemptButton != null)
+            {
+                if (!AttemptButton.IsDisposed)
+                    AttemptButton.Dispose();
+
+                AttemptButton = null;
+            }
+        }
+
+        #endregion
 
     }
 
@@ -7698,7 +8095,7 @@ namespace Client.Scenes.Views
             {
                 AutoSize = false,
                 Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
+                BorderColour = Constants.PrimaryColour,
                 ForeColour = Color.White,
                 DrawFormat = TextFormatFlags.VerticalCenter,
                 Parent = this,
@@ -7712,7 +8109,7 @@ namespace Client.Scenes.Views
             {
                 AutoSize = false,
                 Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
+                BorderColour = Constants.PrimaryColour,
                 ForeColour = Color.White,
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
                 Parent = this,
@@ -8077,5 +8474,23 @@ namespace Client.Scenes.Views
 
             CEnvir.Enqueue(new C.NPCRollResult());
         }
+
+        #region IDisposable
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                if (_animation != null && !_animation.IsDisposed)
+                    _animation.Dispose();
+
+                if (_image != null && !_image.IsDisposed)
+                    _image.Dispose();
+            }
+        }
+
+        #endregion
     }
 }

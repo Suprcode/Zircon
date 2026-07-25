@@ -50,7 +50,7 @@ namespace Server.Models.Monsters
                 return;
             }
 
-            if (SEnvir.Now >= SearchTime && SEnvir.MysteryShipMapRegion != null && SEnvir.MysteryShipMapRegion.PointList.Count > 0)
+            if (SEnvir.Now >= SearchTime && SEnvir.MysteryShipMapRegion != null)
             {
                 SearchTime = SEnvir.Now.AddSeconds(3);
                 Map map = SEnvir.GetMap(SEnvir.MysteryShipMapRegion.Map, CurrentMap.Instance, CurrentMap.InstanceSequence);
@@ -58,6 +58,16 @@ namespace Server.Models.Monsters
                 if (map == null)
                 {
                     SearchTime = SEnvir.Now.AddSeconds(60);
+                    return;
+                }
+
+                if (SEnvir.MysteryShipMapRegion.PointList == null)
+                {
+                    SEnvir.MysteryShipMapRegion.CreatePoints(map.Width);
+                }
+
+                if (SEnvir.MysteryShipMapRegion.PointList.Count == 0)
+                {
                     return;
                 }
 

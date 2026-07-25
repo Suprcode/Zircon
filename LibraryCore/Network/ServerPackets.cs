@@ -160,6 +160,14 @@ namespace Library.Network.ServerPackets
         public MirDirection Direction { get; set; }
         public Point Location { get; set; }
     }
+    public sealed class ObjectIdle : Packet
+    {
+        public uint ObjectID { get; set; }
+        public MirDirection Direction { get; set; }
+        public Point Location { get; set; }
+        public int Type { get; set; }
+    }
+
     public sealed class ObjectAttack : Packet
     {
         public uint ObjectID { get; set; }
@@ -258,6 +266,7 @@ namespace Library.Network.ServerPackets
     {
         public uint ObjectID { get; set; }
         public BuffType Type { get; set; }
+        public int Extra { get; set; }
     }
     public sealed class ObjectBuffRemove : Packet
     {
@@ -277,6 +286,7 @@ namespace Library.Network.ServerPackets
         public string Name { get; set; }
 
         public string Caption { get; set; }
+        public Color CaptionOutlineColour { get; set; }
         public Color NameColour { get; set; }
         public string GuildName { get; set; }
 
@@ -299,11 +309,12 @@ namespace Library.Network.ServerPackets
         public ExteriorEffect ShieldEffect { get; set; }
 
         public int Light { get; set; }
+        public int SizePercent { get; set; }
 
         public bool Dead { get; set; }
         public PoisonType Poison { get; set; }
 
-        public List<BuffType> Buffs { get; set; }
+        public Dictionary<BuffType, int> Buffs { get; set; }
 
         public HorseType Horse { get; set; }
 
@@ -337,7 +348,7 @@ namespace Library.Network.ServerPackets
         public bool HalloweenEvent { get; set; }
         public bool ChristmasEvent { get; set; }
 
-        public List<BuffType> Buffs { get; set; }
+        public Dictionary<BuffType, int> Buffs { get; set; }
         public bool Extra { get; set; }
 
         public int Extra1 { get; set; }
@@ -399,6 +410,7 @@ namespace Library.Network.ServerPackets
         public int HorseArmour { get; set; }
         public int Helmet { get; set; }
         public int Light { get; set; }
+        public int SizePercent { get; set; }
 
         public bool HideHead { get; set; }
     }
@@ -414,6 +426,12 @@ namespace Library.Network.ServerPackets
     public sealed class DayChanged : Packet
     {
         public float DayTime { get; set; }
+    }
+
+    public sealed class TimeOfDayChanged : Packet
+    {
+        public TimeOfDay TimeOfDay { get; set; }
+        public string TimeOfDayLabel { get; set; }
     }
 
     public sealed class InformMaxExperience : Packet
@@ -616,6 +634,7 @@ namespace Library.Network.ServerPackets
         public string Text { get; set; }
         public MessageType Type { get; set; }
         public List<ClientUserItem> LinkedItems { get; set; }
+        public bool OverheadOnly { get; set; }
     }
 
     public sealed class NPCResponse : Packet
@@ -715,6 +734,22 @@ namespace Library.Network.ServerPackets
     {
         public string Name { get; set; }
     }
+    public sealed class GroupRequest : Packet
+    {
+        public string Name { get; set; }
+        public int Level { get; set; }
+        public MirClass Class { get; set; }
+    }
+
+    public sealed class GroupLFG : Packet
+    {
+        public List<ClientLookingForGroup> List { get; set; } = new List<ClientLookingForGroup>();
+    }
+
+    public sealed class GroupUpdate : Packet
+    {
+        public ClientLookingForGroup Group { get; set; }
+    }
 
     public sealed class BuffAdd : Packet
     {
@@ -771,6 +806,7 @@ namespace Library.Network.ServerPackets
 
         public bool Ranking { get; set; }
     }
+
     public sealed class Rankings : Packet
     {
         public bool OnlineOnly { get; set; }
@@ -781,9 +817,11 @@ namespace Library.Network.ServerPackets
 
         public List<RankInfo> Ranks { get; set; }
     }
+
     public sealed class RankSearch : Packet
     {
         public RankInfo Rank { get; set; }
+        public int StartIndex { get; set; }
     }
 
     public sealed class StartObserver : Packet
@@ -834,6 +872,28 @@ namespace Library.Network.ServerPackets
     }
     public sealed class MarketPlaceStoreBuy : Packet
     {
+    }
+
+    public sealed class GameStoreData : Packet
+    {
+        public List<int> Favourites { get; set; }
+        public List<int> TopItems { get; set; }
+    }
+
+    public sealed class GameStoreTopItems : Packet
+    {
+        public List<int> Items { get; set; }
+    }
+
+    public sealed class GameStoreFavouriteChanged : Packet
+    {
+        public int Index { get; set; }
+        public bool Favourited { get; set; }
+    }
+
+    public sealed class GameStoreGift : Packet
+    {
+        public GameStoreGiftResult Result { get; set; }
     }
 
     public sealed class MarketPlaceConsignChanged : Packet
@@ -1111,6 +1171,10 @@ namespace Library.Network.ServerPackets
     {
         public int Index { get; set; }
     }
+    public sealed class CompanionRelease : Packet
+    {
+        public int Index { get; set; }
+    }
     public sealed class CompanionStore : Packet
     {
     }
@@ -1146,7 +1210,6 @@ namespace Library.Network.ServerPackets
         public Stats Level13 { get; set; }
         public Stats Level15 { get; set; }
     }
-
 
     public sealed class MarriageInvite : Packet
     {
@@ -1274,6 +1337,7 @@ namespace Library.Network.ServerPackets
         public uint ObjectID { get; set; }
         public string Name { get; set; }
         public string Caption { get; set; }
+        public Color CaptionOutlineColour { get; set; }
         public MirGender Gender { get; set; }
         public int HairType { get; set; }
 
@@ -1307,6 +1371,25 @@ namespace Library.Network.ServerPackets
         public List<CellLinkInfo> Links { get; set; }
         public RefineType RefineType { get; set; }
         public bool Success { get; set; }
+    }
+    public sealed class NPCSocketItem : Packet
+    {
+        public GridType GridType { get; set; }
+        public int Slot { get; set; }
+        public int SocketSlot { get; set; }
+        public int GemShape { get; set; }
+        public ClientUserItem Item { get; set; }
+        public bool Success { get; set; }
+        public string Message { get; set; }
+    }
+    public sealed class NPCSocketCombine : Packet
+    {
+        public List<int> ClearedSlots { get; set; }
+        public List<ClientUserItem> Items { get; set; }
+        public int ResultSlot { get; set; }
+        public bool Accepted { get; set; }
+        public bool Success { get; set; }
+        public string Message { get; set; }
     }
 
     public sealed class ItemAcessoryRefined : Packet
@@ -1386,6 +1469,16 @@ namespace Library.Network.ServerPackets
     public sealed class BundleClose : Packet
     {
 
+    }
+
+    public sealed class UserMilestones : Packet
+    {
+        public List<ClientUserMilestone> Milestones { get; set; }
+    }
+
+    public sealed class MilestoneEarned : Packet
+    {
+        public int Index { get; set; }
     }
 }
 

@@ -1,4 +1,4 @@
-﻿namespace LibraryEditor
+namespace LibraryEditor
 {
     partial class LMain
     {
@@ -48,7 +48,12 @@
             skinToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             splitContainer1 = new System.Windows.Forms.SplitContainer();
             splitContainer2 = new System.Windows.Forms.SplitContainer();
+            label2 = new System.Windows.Forms.Label();
             ShadowTypeLabel = new System.Windows.Forms.Label();
+            label3 = new System.Windows.Forms.Label();
+            LibraryVersionLabel = new System.Windows.Forms.Label();
+            label4 = new System.Windows.Forms.Label();
+            AtlasLabel = new System.Windows.Forms.Label();
             InsertBlankButton = new System.Windows.Forms.Button();
             AddBlankButton = new System.Windows.Forms.Button();
             nudJump = new System.Windows.Forms.NumericUpDown();
@@ -89,7 +94,6 @@
             radioButtonOverlay = new System.Windows.Forms.RadioButton();
             radioButtonShadow = new System.Windows.Forms.RadioButton();
             radioButtonImage = new System.Windows.Forms.RadioButton();
-            label2 = new System.Windows.Forms.Label();
             MainMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
@@ -156,7 +160,7 @@
             saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             saveToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             saveToolStripMenuItem.Text = "Save";
-            saveToolStripMenuItem.ToolTipText = "Saves currently open .Lib";
+            saveToolStripMenuItem.ToolTipText = "Save the current library as a ZL v2 container.";
             saveToolStripMenuItem.Click += saveToolStripMenuItem_Click;
             // 
             // saveAsToolStripMenuItem
@@ -165,7 +169,7 @@
             saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
             saveAsToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             saveAsToolStripMenuItem.Text = "Save As";
-            saveAsToolStripMenuItem.ToolTipText = ".Lib Only.";
+            saveAsToolStripMenuItem.ToolTipText = "Save the current library as a new ZL v2 container.";
             saveAsToolStripMenuItem.Click += saveAsToolStripMenuItem_Click;
             // 
             // toolStripMenuItem2
@@ -194,7 +198,7 @@
             // 
             copyToToolStripMenuItem.Image = (System.Drawing.Image)resources.GetObject("copyToToolStripMenuItem.Image");
             copyToToolStripMenuItem.Name = "copyToToolStripMenuItem";
-            copyToToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            copyToToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             copyToToolStripMenuItem.Text = "Copy To..";
             copyToToolStripMenuItem.ToolTipText = "Copy to a new .Lib or to the end of an exsisting one.";
             copyToToolStripMenuItem.Visible = false;
@@ -204,7 +208,7 @@
             // 
             countBlanksToolStripMenuItem.Image = (System.Drawing.Image)resources.GetObject("countBlanksToolStripMenuItem.Image");
             countBlanksToolStripMenuItem.Name = "countBlanksToolStripMenuItem";
-            countBlanksToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            countBlanksToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             countBlanksToolStripMenuItem.Text = "Count Blanks";
             countBlanksToolStripMenuItem.ToolTipText = "Counts the blank images in the .Lib";
             countBlanksToolStripMenuItem.Visible = false;
@@ -215,7 +219,7 @@
             removeBlanksToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { safeToolStripMenuItem });
             removeBlanksToolStripMenuItem.Image = (System.Drawing.Image)resources.GetObject("removeBlanksToolStripMenuItem.Image");
             removeBlanksToolStripMenuItem.Name = "removeBlanksToolStripMenuItem";
-            removeBlanksToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            removeBlanksToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             removeBlanksToolStripMenuItem.Text = "Remove Blanks";
             removeBlanksToolStripMenuItem.ToolTipText = "Quick removal of blanks.";
             removeBlanksToolStripMenuItem.Click += removeBlanksToolStripMenuItem_Click;
@@ -233,9 +237,9 @@
             // 
             convertToolStripMenuItem.Image = (System.Drawing.Image)resources.GetObject("convertToolStripMenuItem.Image");
             convertToolStripMenuItem.Name = "convertToolStripMenuItem";
-            convertToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            convertToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             convertToolStripMenuItem.Text = "Converter";
-            convertToolStripMenuItem.ToolTipText = "Convert Wil/Wzl/Miz to .Lib";
+            convertToolStripMenuItem.ToolTipText = "Convert Wtl/Wil/Wzl/Miz to .Lib";
             convertToolStripMenuItem.Click += convertToolStripMenuItem_Click;
             // 
             // skinToolStripMenuItem
@@ -283,6 +287,10 @@
             // 
             splitContainer2.Panel1.Controls.Add(label2);
             splitContainer2.Panel1.Controls.Add(ShadowTypeLabel);
+            splitContainer2.Panel1.Controls.Add(label3);
+            splitContainer2.Panel1.Controls.Add(LibraryVersionLabel);
+            splitContainer2.Panel1.Controls.Add(label4);
+            splitContainer2.Panel1.Controls.Add(AtlasLabel);
             splitContainer2.Panel1.Controls.Add(InsertBlankButton);
             splitContainer2.Panel1.Controls.Add(AddBlankButton);
             splitContainer2.Panel1.Controls.Add(nudJump);
@@ -317,6 +325,17 @@
             splitContainer2.SplitterWidth = 5;
             splitContainer2.TabIndex = 0;
             // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.ForeColor = System.Drawing.SystemColors.ControlText;
+            label2.Location = new System.Drawing.Point(51, 119);
+            label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label2.Name = "label2";
+            label2.Size = new System.Drawing.Size(80, 15);
+            label2.TabIndex = 26;
+            label2.Text = "Shadow Type:";
+            // 
             // ShadowTypeLabel
             // 
             ShadowTypeLabel.AutoSize = true;
@@ -327,6 +346,50 @@
             ShadowTypeLabel.Size = new System.Drawing.Size(75, 15);
             ShadowTypeLabel.TabIndex = 25;
             ShadowTypeLabel.Text = "<No Image>";
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.ForeColor = System.Drawing.SystemColors.ControlText;
+            label3.Location = new System.Drawing.Point(43, 140);
+            label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label3.Name = "label3";
+            label3.Size = new System.Drawing.Size(87, 15);
+            label3.TabIndex = 27;
+            label3.Text = "Library Format:";
+            // 
+            // LibraryVersionLabel
+            // 
+            LibraryVersionLabel.AutoEllipsis = true;
+            LibraryVersionLabel.ForeColor = System.Drawing.SystemColors.ControlText;
+            LibraryVersionLabel.Location = new System.Drawing.Point(144, 140);
+            LibraryVersionLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            LibraryVersionLabel.Name = "LibraryVersionLabel";
+            LibraryVersionLabel.Size = new System.Drawing.Size(126, 15);
+            LibraryVersionLabel.TabIndex = 28;
+            LibraryVersionLabel.Text = "<None>";
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.ForeColor = System.Drawing.SystemColors.ControlText;
+            label4.Location = new System.Drawing.Point(95, 161);
+            label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label4.Name = "label4";
+            label4.Size = new System.Drawing.Size(36, 15);
+            label4.TabIndex = 29;
+            label4.Text = "Atlas:";
+            // 
+            // AtlasLabel
+            // 
+            AtlasLabel.AutoEllipsis = true;
+            AtlasLabel.ForeColor = System.Drawing.SystemColors.ControlText;
+            AtlasLabel.Location = new System.Drawing.Point(144, 161);
+            AtlasLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            AtlasLabel.Name = "AtlasLabel";
+            AtlasLabel.Size = new System.Drawing.Size(126, 15);
+            AtlasLabel.TabIndex = 30;
+            AtlasLabel.Text = "<None>";
             // 
             // InsertBlankButton
             // 
@@ -663,7 +726,7 @@
             PreviewListView.Location = new System.Drawing.Point(0, 0);
             PreviewListView.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             PreviewListView.Name = "PreviewListView";
-            PreviewListView.Size = new System.Drawing.Size(1253, 384);
+            PreviewListView.Size = new System.Drawing.Size(1253, 383);
             PreviewListView.TabIndex = 0;
             PreviewListView.UseCompatibleStateImageBehavior = false;
             PreviewListView.VirtualMode = true;
@@ -779,17 +842,6 @@
             radioButtonImage.UseVisualStyleBackColor = true;
             radioButtonImage.CheckedChanged += radioButtonImage_CheckedChanged;
             // 
-            // label2
-            // 
-            label2.AutoSize = true;
-            label2.ForeColor = System.Drawing.SystemColors.ControlText;
-            label2.Location = new System.Drawing.Point(51, 119);
-            label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            label2.Name = "label2";
-            label2.Size = new System.Drawing.Size(80, 15);
-            label2.TabIndex = 26;
-            label2.Text = "Shadow Type:";
-            // 
             // LMain
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -895,6 +947,10 @@
         private System.Windows.Forms.Button AddBlankButton;
         private System.Windows.Forms.Label ShadowTypeLabel;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label LibraryVersionLabel;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label AtlasLabel;
+        private System.Windows.Forms.Label label4;
     }
 }
 

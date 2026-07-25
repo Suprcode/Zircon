@@ -1,55 +1,84 @@
-﻿using Client.Envir;
+using Client.Envir;
+using Shared.Rendering;
 using Client.Scenes;
-using Client.Scenes.Views;
 using Client.UserModels;
 using Library;
+using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using C = Library.Network.ClientPackets;
 
-//Cleaned
 namespace Client.Controls
 {
-    public sealed class DXConfigWindow : DXWindow
+    public sealed class DXConfigWindow : DXImageControl
     {
-        #region Properties
         public static DXConfigWindow ActiveConfig;
+
         public DXKeyBindWindow KeyBindWindow;
 
         private DXTabControl TabControl;
+        public DXConfigTab GraphicsTab, SoundTab, GameTab, NetworkTab, UITab;
 
-        //Grpahics
-        public DXTab GraphicsTab;
-        public DXCheckBox FullScreenCheckBox, VSyncCheckBox, LimitFPSCheckBox, ClipMouseCheckBox, DebugLabelCheckBox, SmoothMoveCheckBox;
-        private DXComboBox GameSizeComboBox, LanguageComboBox;
+        //Graphics
+        public DXCheckBox FullScreenCheckBox, BorderlessCheckbox, VSyncCheckBox, LimitFPSCheckBox, ClipMouseCheckBox, DebugLabelCheckBox, SmoothMoveCheckBox;
+        private DXComboBox GameSizeComboBox, DefaultMonitorComboBox, LanguageComboBox, RenderingPipelineComboBox;
 
         //Sound
-        public DXTab SoundTab;
-        private DXNumberBox SystemVolumeBox, MusicVolumeBox, SpellVolumeBox, PlayerVolumeBox, MonsterVolumeBox;
-        private DXCheckBox BackgroundSoundBox;
+        public DXCheckBox BackgroundSoundBox;
+        public DXSoundBar SoundMusicBar, SoundSystemBar, SoundPlayerBar, SoundMonsterBar, SoundMagicBar;
 
-        //Game 
-        public DXTab GameTab;
+        //Game
         private DXCheckBox ItemNameCheckBox, MonsterNameCheckBox, PlayerNameCheckBox, UserHealthCheckBox, MonsterHealthCheckBox, DamageNumbersCheckBox,
             EscapeCloseAllCheckBox, ShiftOpenChatCheckBox, RightClickDeTargetCheckBox, MonsterBoxVisibleCheckBox, LogChatCheckBox, DrawEffectsCheckBox,
-            DrawParticlesCheckBox, DrawWeatherCheckBox;
+            DrawParticlesCheckBox, DrawWeatherCheckBox, ShowTargetOutlineCheckBox, ObservableCheckBox;
         public DXCheckBox DisplayHelmetCheckBox, HideChatBarCheckBox;
-
         public DXButton KeyBindButton;
 
         //Network
-        public DXTab NetworkTab;
         private DXCheckBox UseNetworkConfigCheckBox;
         private DXTextBox IPAddressTextBox;
         private DXNumberBox PortBox;
 
-        //Colours
-        public DXTab ColourTab;
-        public DXColourControl LocalForeColourBox, GMWhisperInForeColourBox, WhisperInForeColourBox, WhisperOutForeColourBox, GroupForeColourBox, GuildForeColourBox, ShoutForeColourBox, GlobalForeColourBox, ObserverForeColourBox, HintForeColourBox, SystemForeColourBox, GainsForeColourBox, AnnouncementForeColourBox;
-        public DXColourControl LocalBackColourBox, GMWhisperInBackColourBox, WhisperInBackColourBox, WhisperOutBackColourBox, GroupBackColourBox, GuildBackColourBox, ShoutBackColourBox, GlobalBackColourBox, ObserverBackColourBox, HintBackColourBox, SystemBackColourBox, GainsBackColourBox, AnnouncementBackColourBox;
+        //Chat
+        public DXColourControlPair LocalColourBox, GMWhisperInColourBox, WhisperInColourBox, WhisperOutColourBox, GroupColourBox, GuildColourBox, ShoutColourBox, GlobalColourBox, ObserverColourBox, HintColourBox, SystemColourBox, GainsColourBox, AnnouncementColourBox;
         public DXButton ResetColoursButton;
 
-        private DXButton SaveButton, CancelButton;
+        //Target Outline Colours
+        public DXColourControl TargetMonsterLowLevelColourBox, TargetMonsterSameLevelColourBox, TargetMonsterHighLevelColourBox, TargetMonsterFriendlyColourBox, TargetPlayerEnemyColourBox, TargetPlayerFriendlyColourBox, TargetNPCColourBox;
+        public DXButton ResetTargetColoursButton;
+
+        private DXButton CloseButton;
+        private DXLabel TitleLabel;
+
+        #region Properties
+
+        #region Observable
+
+        public bool Observable
+        {
+            get => _Observable;
+            set
+            {
+                if (_Observable == value) return;
+
+                bool oldValue = _Observable;
+                _Observable = value;
+
+                OnObserverableChanged(oldValue, value);
+            }
+        }
+        private bool _Observable;
+        public event EventHandler<EventArgs> ObserverableChanged;
+        public void OnObserverableChanged(bool oValue, bool nValue)
+        {
+            ObservableCheckBox.Checked = nValue;
+
+            ObserverableChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
 
         public override void OnVisibleChanged(bool oValue, bool nValue)
         {
@@ -57,21 +86,38 @@ namespace Client.Controls
 
             if (!IsVisible) return;
 
+            BringToFront();
+
+            FullScreenCheckBox.Enabled = ActiveScene is GameScene;
+            BorderlessCheckbox.Enabled = ActiveScene is GameScene;
+            GameSizeComboBox.Enabled = ActiveScene is GameScene;
+            DefaultMonitorComboBox.Enabled = ActiveScene is GameScene;
+            RenderingPipelineComboBox.Enabled = ActiveScene is GameScene;
+
             FullScreenCheckBox.Checked = Config.FullScreen;
+            BorderlessCheckbox.Checked = Config.Borderless;
             GameSizeComboBox.ListBox.SelectItem(Config.GameSize);
+            DefaultMonitorComboBox.ListBox.SelectItem(RenderingPipelineManager.GetSelectedMonitor());
             VSyncCheckBox.Checked = Config.VSync;
             LimitFPSCheckBox.Checked = Config.LimitFPS;
             SmoothMoveCheckBox.Checked = Config.SmoothMove;
             ClipMouseCheckBox.Checked = Config.ClipMouse;
             DebugLabelCheckBox.Checked = Config.DebugLabel;
             LanguageComboBox.ListBox.SelectItem(Config.Language);
+            RenderingPipelineComboBox.ListBox.SelectItem(Config.RenderingPipeline);
 
             BackgroundSoundBox.Checked = Config.SoundInBackground;
-            SystemVolumeBox.ValueTextBox.TextBox.Text = Config.SystemVolume.ToString();
-            MusicVolumeBox.ValueTextBox.TextBox.Text = Config.MusicVolume.ToString();
-            PlayerVolumeBox.ValueTextBox.TextBox.Text = Config.PlayerVolume.ToString();
-            MonsterVolumeBox.ValueTextBox.TextBox.Text = Config.MonsterVolume.ToString();
-            SpellVolumeBox.ValueTextBox.TextBox.Text = Config.MagicVolume.ToString();
+            SoundSystemBar.Value = Config.SystemVolume;
+            SoundSystemBar.Muted = Config.SystemVolumeMuted;
+            SoundMusicBar.Value = Config.MusicVolume;
+            SoundMusicBar.Muted = Config.MusicVolumeMuted;
+            SoundPlayerBar.Value = Config.PlayerVolume;
+            SoundPlayerBar.Muted = Config.PlayerVolumeMuted;
+            SoundMonsterBar.Value = Config.MonsterVolume;
+            SoundMonsterBar.Muted = Config.MonsterVolumeMuted;
+            SoundMagicBar.Value = Config.MagicVolume;
+            SoundMagicBar.Muted = Config.MagicVolumeMuted;
+
             UseNetworkConfigCheckBox.Checked = Config.UseNetworkConfig;
             IPAddressTextBox.TextBox.Text = Config.IPAddress;
             PortBox.ValueTextBox.TextBox.Text = Config.Port.ToString();
@@ -82,44 +128,57 @@ namespace Client.Controls
             UserHealthCheckBox.Checked = Config.ShowUserHealth;
             MonsterHealthCheckBox.Checked = Config.ShowMonsterHealth;
             DamageNumbersCheckBox.Checked = Config.ShowDamageNumbers;
+            DrawParticlesCheckBox.Checked = Config.DrawParticles;
+            HideChatBarCheckBox.Checked = Config.HideChatBar;
+
             EscapeCloseAllCheckBox.Checked = Config.EscapeCloseAll;
             ShiftOpenChatCheckBox.Checked = Config.ShiftOpenChat;
             RightClickDeTargetCheckBox.Checked = Config.RightClickDeTarget;
             MonsterBoxVisibleCheckBox.Checked = Config.MonsterBoxVisible;
             LogChatCheckBox.Checked = Config.LogChat;
             DrawEffectsCheckBox.Checked = Config.DrawEffects;
-            DrawParticlesCheckBox.Checked = Config.DrawParticles;
             DrawWeatherCheckBox.Checked = Config.DrawWeather;
-            HideChatBarCheckBox.Checked = Config.HideChatBar;
+            ShowTargetOutlineCheckBox.Checked = Config.ShowTargetOutline;
 
-            LocalForeColourBox.BackColour = Config.LocalTextForeColour;
-            GMWhisperInForeColourBox.BackColour = Config.GMWhisperInTextForeColour;
-            WhisperInForeColourBox.BackColour = Config.WhisperInTextForeColour;
-            WhisperOutForeColourBox.BackColour = Config.WhisperOutTextForeColour;
-            GroupForeColourBox.BackColour = Config.GroupTextForeColour;
-            GuildForeColourBox.BackColour = Config.GuildTextForeColour;
-            ShoutForeColourBox.BackColour = Config.ShoutTextForeColour;
-            GlobalForeColourBox.BackColour = Config.GlobalTextForeColour;
-            ObserverForeColourBox.BackColour = Config.ObserverTextForeColour;
-            HintForeColourBox.BackColour = Config.HintTextForeColour;
-            SystemForeColourBox.BackColour = Config.SystemTextForeColour;
-            GainsForeColourBox.BackColour = Config.GainsTextForeColour;
-            AnnouncementForeColourBox.BackColour = Config.AnnouncementTextForeColour;
+            LocalColourBox.ForeColourControl.BackColour = Config.LocalTextForeColour;
+            GMWhisperInColourBox.ForeColourControl.BackColour = Config.GMWhisperInTextForeColour;
+            WhisperInColourBox.ForeColourControl.BackColour = Config.WhisperInTextForeColour;
+            WhisperOutColourBox.ForeColourControl.BackColour = Config.WhisperOutTextForeColour;
+            GroupColourBox.ForeColourControl.BackColour = Config.GroupTextForeColour;
+            GuildColourBox.ForeColourControl.BackColour = Config.GuildTextForeColour;
+            ShoutColourBox.ForeColourControl.BackColour = Config.ShoutTextForeColour;
+            GlobalColourBox.ForeColourControl.BackColour = Config.GlobalTextForeColour;
+            ObserverColourBox.ForeColourControl.BackColour = Config.ObserverTextForeColour;
+            HintColourBox.ForeColourControl.BackColour = Config.HintTextForeColour;
+            SystemColourBox.ForeColourControl.BackColour = Config.SystemTextForeColour;
+            GainsColourBox.ForeColourControl.BackColour = Config.GainsTextForeColour;
+            AnnouncementColourBox.ForeColourControl.BackColour = Config.AnnouncementTextForeColour;
 
-            LocalBackColourBox.BackColour = Config.LocalTextBackColour;
-            GMWhisperInBackColourBox.BackColour = Config.GMWhisperInTextBackColour;
-            WhisperInBackColourBox.BackColour = Config.WhisperInTextBackColour;
-            WhisperOutBackColourBox.BackColour = Config.WhisperOutTextBackColour;
-            GroupBackColourBox.BackColour = Config.GroupTextBackColour;
-            GuildBackColourBox.BackColour = Config.GuildTextBackColour;
-            ShoutBackColourBox.BackColour = Config.ShoutTextBackColour;
-            GlobalBackColourBox.BackColour = Config.GlobalTextBackColour;
-            ObserverBackColourBox.BackColour = Config.ObserverTextBackColour;
-            HintBackColourBox.BackColour = Config.HintTextBackColour;
-            SystemBackColourBox.BackColour = Config.SystemTextBackColour;
-            GainsBackColourBox.BackColour = Config.GainsTextBackColour;
-            AnnouncementBackColourBox.BackColour = Config.AnnouncementTextBackColour;
+            LocalColourBox.BackColourControl.BackColour = Config.LocalTextBackColour;
+            GMWhisperInColourBox.BackColourControl.BackColour = Config.GMWhisperInTextBackColour;
+            WhisperInColourBox.BackColourControl.BackColour = Config.WhisperInTextBackColour;
+            WhisperOutColourBox.BackColourControl.BackColour = Config.WhisperOutTextBackColour;
+            GroupColourBox.BackColourControl.BackColour = Config.GroupTextBackColour;
+            GuildColourBox.BackColourControl.BackColour = Config.GuildTextBackColour;
+            ShoutColourBox.BackColourControl.BackColour = Config.ShoutTextBackColour;
+            GlobalColourBox.BackColourControl.BackColour = Config.GlobalTextBackColour;
+            ObserverColourBox.BackColourControl.BackColour = Config.ObserverTextBackColour;
+            HintColourBox.BackColourControl.BackColour = Config.HintTextBackColour;
+            SystemColourBox.BackColourControl.BackColour = Config.SystemTextBackColour;
+            GainsColourBox.BackColourControl.BackColour = Config.GainsTextBackColour;
+            AnnouncementColourBox.BackColourControl.BackColour = Config.AnnouncementTextBackColour;
+
+            TargetMonsterLowLevelColourBox.BackColour = Config.TargetMonsterLowLevelColour;
+            TargetMonsterSameLevelColourBox.BackColour = Config.TargetMonsterSameLevelColour;
+            TargetMonsterHighLevelColourBox.BackColour = Config.TargetMonsterHighLevelColour;
+            TargetMonsterHighLevelColourBox.BackColour = Config.TargetMonsterHighLevelColour;
+            TargetMonsterHighLevelColourBox.BackColour = Config.TargetMonsterHighLevelColour;
+            TargetMonsterFriendlyColourBox.BackColour = Config.TargetMonsterFriendlyColour;
+            TargetNPCColourBox.BackColour = Config.TargetNPCColour;
+            TargetPlayerFriendlyColourBox.BackColour = Config.TargetPlayerFriendlyColour;
+            TargetPlayerEnemyColourBox.BackColour = Config.TargetPlayerEnemyColour;
         }
+
         public override void OnParentChanged(DXControl oValue, DXControl nValue)
         {
             base.OnParentChanged(oValue, nValue);
@@ -127,92 +186,242 @@ namespace Client.Controls
             KeyBindWindow.Parent = nValue;
         }
 
-        public override WindowType Type => WindowType.ConfigBox;
-        public override bool CustomSize => false;
-        public override bool AutomaticVisibility => false;
+        public override void OnLocationChanged(Point oValue, Point nValue)
+        {
+            base.OnLocationChanged(oValue, nValue);
+
+            if (Settings != null && IsMoving)
+                Settings.Location = nValue;
+        }
+
+        #region Settings
+
+        public WindowSetting Settings;
+        public WindowType Type => WindowType.ConfigBox;
+
+        public void LoadSettings()
+        {
+            if (Type == WindowType.None || !CEnvir.Loaded) return;
+
+            Settings = CEnvir.WindowSettings.Binding.FirstOrDefault(x => x.Resolution == Config.GameSize && x.Window == Type);
+
+            if (Settings != null)
+            {
+                ApplySettings();
+                return;
+            }
+
+            Settings = CEnvir.WindowSettings.CreateNewObject();
+            Settings.Resolution = Config.GameSize;
+            Settings.Window = Type;
+            Settings.Size = Size;
+            Settings.Visible = Visible;
+            Settings.Location = Location;
+        }
+
+        public void ApplySettings()
+        {
+            if (Settings == null) return;
+
+            Location = Settings.Location;
+
+            Visible = Settings.Visible;
+        }
+
+        #endregion
+
         #endregion
 
         public DXConfigWindow()
         {
             ActiveConfig = this;
 
-            Size = new Size(300, 355);
-            TitleLabel.Text = CEnvir.Language.CommonControlConfigWindowTitle;
-            HasFooter = true;
+            Index = 282;
+            LibraryFile = LibraryFile.Interface;
+            Movable = true;
+            Sort = true;
+            DropShadow = true;
 
-            TabControl = new DXTabControl
+            CloseButton = new DXButton
             {
                 Parent = this,
-                Location = ClientArea.Location,
-                Size = ClientArea.Size,
+                Index = 15,
+                LibraryFile = LibraryFile.Interface,
+                Hint = CEnvir.Language.CommonControlClose,
+                HintPosition = HintPosition.TopLeft
             };
-            GraphicsTab = new DXTab
+            CloseButton.Location = new Point(DisplayArea.Width - CloseButton.Size.Width - 3, 3);
+            CloseButton.MouseClick += (o, e) => Visible = false;
+
+            TitleLabel = new DXLabel
             {
-                Parent = TabControl,
-                Border = true,
-                TabButton = { Label = { Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabLabel } },
+                Text = CEnvir.Language.CommonControlConfigWindowTitle,
+                Parent = this,
+                Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
+                ForeColour = Constants.PrimaryColour,
+                Outline = true,
+                OutlineColour = Color.Black,
+                IsControl = false,
             };
-
-            SoundTab = new DXTab
-            {
-                Parent = TabControl,
-                Border = true,
-                TabButton = { Label = { Text = CEnvir.Language.CommonControlConfigWindowSoundTabLabel } },
-            };
-
-            GameTab = new DXTab
-            {
-                Parent = TabControl,
-                Border = true,
-                TabButton = { Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabLabel } },
-            };
-
-            NetworkTab = new DXTab
-            {
-                Parent = TabControl,
-                Border = true,
-                TabButton = { Label = { Text = CEnvir.Language.CommonControlConfigWindowNetworkTabLabel } },
-            };
-
-            ColourTab = new DXTab
-            {
-                Parent = TabControl,
-                Border = true,
-                TabButton = { Label = { Text = CEnvir.Language.CommonControlConfigWindowColoursTabLabel }, Visible = false },
-            };
-
-
+            TitleLabel.Location = new Point((DisplayArea.Width - TitleLabel.Size.Width) / 2, 8);
+            
             KeyBindWindow = new DXKeyBindWindow
             {
                 Visible = false
             };
 
+            TabControl = new DXTabControl
+            {
+                Parent = this,
+                Location = new Point(0, 37),
+                Size = new Size(357, 365),
+                Border = false,
+                MarginLeft = 10,
+            };
+
+            GraphicsTab = new DXConfigTab
+            {
+                Parent = TabControl,
+                BackColour = Color.Empty,
+                Location = new Point(8, 25),
+                TabButton = { Label = { Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabLabel } },
+            };
+
+            SoundTab = new DXConfigTab
+            {
+                Parent = TabControl,
+                Border = false,
+                BackColour = Color.Empty,
+                Location = new Point(8, 25),
+                TabButton = { Label = { Text = CEnvir.Language.CommonControlConfigWindowSoundTabLabel } },
+            };
+
+            GameTab = new DXConfigTab
+            {
+                Parent = TabControl,
+                Border = false,
+                BackColour = Color.Empty,
+                Location = new Point(8, 25),
+                TabButton = { Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabLabel } },
+            };
+
+            NetworkTab = new DXConfigTab
+            {
+                Parent = TabControl,
+                Border = false,
+                BackColour = Color.Empty,
+                Location = new Point(8, 25),
+                TabButton = { Label = { Text = CEnvir.Language.CommonControlConfigWindowNetworkTabLabel } },
+            };
+
+            UITab = new DXConfigTab
+            {
+                Parent = TabControl,
+                Border = false,
+                BackColour = Color.Empty,
+                Location = new Point(8, 25),
+                TabButton = { Label = { Text = CEnvir.Language.CommonControlConfigWindowUITabLabel } },
+            };
+
+            const int checkboxPadding = 0;
+
             #region Graphics
+
+            #region Display
+
+            DXConfigSection displayGraphicsSection = new(CEnvir.Language.CommonControlConfigWindowGraphicsSectionDisplayLabel)
+            {
+                Columns = 1,
+                Parent = GraphicsTab,
+                Location = new Point(0, 0)
+            };
+            GraphicsTab.AddSection(displayGraphicsSection);
 
             FullScreenCheckBox = new DXCheckBox
             {
                 Label = { Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabFullScreenLabel },
-                Parent = GraphicsTab,
-                Checked = Config.FullScreen,
+                LabelBoxPadding = checkboxPadding,
+                Enabled = false
             };
-            FullScreenCheckBox.Location = new Point(120 - FullScreenCheckBox.Size.Width, 10);
-
-            DXLabel label = new DXLabel
+            FullScreenCheckBox.CheckedChanged += (o, e) =>
             {
-                Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabGameSizeLabel,
-                Outline = true,
-                Parent = GraphicsTab,
+                if (Config.FullScreen != FullScreenCheckBox.Checked)
+                {
+                    RenderingPipelineManager.ToggleFullScreen();
+
+                    if (!Config.FullScreen)
+                    {
+                        CEnvir.Target.ClientSize = Config.GameSize;
+                        RenderingPipelineManager.CenterOnSelectedMonitor();
+                    }
+                }
             };
-            label.Location = new Point(104 - label.Size.Width, 35);
+
+            displayGraphicsSection.AddControl("", FullScreenCheckBox);
+
+            BorderlessCheckbox = new DXCheckBox
+            {
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabBorderlessLabel },
+                LabelBoxPadding = checkboxPadding,
+                Enabled = false
+            };
+            BorderlessCheckbox.CheckedChanged += (o, e) =>
+            {
+                Config.Borderless = BorderlessCheckbox.Checked;
+                RenderingPipelineManager.ResetDevice();
+            };
+
+            displayGraphicsSection.AddControl("", BorderlessCheckbox);
+
+            RenderingPipelineComboBox = new DXComboBox
+            {
+                Size = new Size(122, DXComboBox.DefaultNormalHeight),
+                Border = false,
+                Background = { Visible = true },
+                Enabled = false
+            };
+            RenderingPipelineComboBox.SelectedItemChanged += (o, e) =>
+            {
+                var renderingPipeline = RenderingPipelineManager.SupportsMultiplePipelines
+                       ? RenderingPipelineComboBox.SelectedItem as string
+                       : RenderingPipelineManager.DefaultPipelineIdentifier;
+
+                Config.RenderingPipeline = renderingPipeline;
+                RenderingPipelineManager.RequestSwitchPipeline(renderingPipeline);
+            };
+
+            foreach (string pipelineId in RenderingPipelineManager.AvailablePipelineIds.OrderBy(x => x))
+            {
+                new DXListBoxItem
+                {
+                    Parent = RenderingPipelineComboBox.ListBox,
+                    Label = { Text = pipelineId },
+                    Item = pipelineId
+                };
+            }
+            displayGraphicsSection.AddControl(CEnvir.Language.CommonControlConfigWindowGraphicsTabRenderingPipelineLabel, RenderingPipelineComboBox);
 
             GameSizeComboBox = new DXComboBox
             {
-                Parent = GraphicsTab,
-                Location = new Point(104, 35),
-                Size = new Size(100, DXComboBox.DefaultNormalHeight),
+                Size = new Size(122, DXComboBox.DefaultNormalHeight),
+                Border = false,
+                Background = { Visible = true },
+                Enabled = false
+            };
+            GameSizeComboBox.SelectedItemChanged += (o, e) => 
+            {
+                Config.GameSize = (Size)GameSizeComboBox.SelectedItem;
+
+                if (ActiveScene is GameScene)
+                {
+                    ActiveScene.Size = Config.GameSize;
+                    RenderingPipelineManager.SetResolution(Config.GameSize);
+                }
             };
 
-            foreach (Size resolution in DXManager.ValidResolutions)
+            IReadOnlyList<Size> supportedResolutions = RenderingPipelineManager.GetSupportedResolutions();
+
+            foreach (Size resolution in supportedResolutions)
                 new DXListBoxItem
                 {
                     Parent = GameSizeComboBox.ListBox,
@@ -220,54 +429,105 @@ namespace Client.Controls
                     Item = resolution
                 };
 
+            displayGraphicsSection.AddControl(CEnvir.Language.CommonControlConfigWindowGraphicsTabGameSizeLabel, GameSizeComboBox);
+
+            DefaultMonitorComboBox = new DXComboBox
+            {
+                Size = new Size(122, DXComboBox.DefaultNormalHeight),
+                Border = false,
+                Background = { Visible = true },
+                Enabled = false
+            };
+            DefaultMonitorComboBox.SelectedItemChanged += (o, e) =>
+            {
+                if (DefaultMonitorComboBox.SelectedItem is not DisplayMonitorInfo monitor)
+                    return;
+
+                RenderingPipelineManager.SelectMonitor(monitor.Index);
+            };
+
+            foreach (DisplayMonitorInfo monitor in RenderingPipelineManager.GetDisplayMonitors())
+                new DXListBoxItem
+                {
+                    Parent = DefaultMonitorComboBox.ListBox,
+                    Label = { Text = monitor.DisplayName },
+                    Item = monitor
+                };
+
+            displayGraphicsSection.AddControl(CEnvir.Language.CommonControlConfigWindowGraphicsTabDefaultMonitorLabel, DefaultMonitorComboBox);
+
             VSyncCheckBox = new DXCheckBox
             {
                 Label = { Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabVSyncLabel },
-                Parent = GraphicsTab,
+                LabelBoxPadding = checkboxPadding
             };
-            VSyncCheckBox.Location = new Point(120 - VSyncCheckBox.Size.Width, 60);
+            VSyncCheckBox.CheckedChanged += (o, e) =>
+            {
+                Config.VSync = VSyncCheckBox.Checked;
+                RenderingPipelineManager.ResetDevice();
+            };
+
+            displayGraphicsSection.AddControl("", VSyncCheckBox);
 
             LimitFPSCheckBox = new DXCheckBox
             {
                 Label = { Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabLimitFPSLabel },
-                Parent = GraphicsTab,
+                LabelBoxPadding = checkboxPadding
             };
-            LimitFPSCheckBox.Location = new Point(120 - LimitFPSCheckBox.Size.Width, 80);
+            LimitFPSCheckBox.CheckedChanged += (o, e) => Config.LimitFPS = LimitFPSCheckBox.Checked;
+
+            displayGraphicsSection.AddControl("", LimitFPSCheckBox);
+
+            #endregion
+
+            #region Usability
+
+            DXConfigSection displayUsabilitySection = new(CEnvir.Language.CommonControlConfigWindowGraphicsSectionUsabilityLabel)
+            {
+                Columns = 1,
+                Parent = GraphicsTab,
+                Location = new Point(0, displayGraphicsSection.Size.Height )
+            };
+            GraphicsTab.AddSection(displayUsabilitySection);
 
             SmoothMoveCheckBox = new DXCheckBox
             {
                 Label = { Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabSmoothMoveLabel },
-                Parent = GraphicsTab,
+                LabelBoxPadding = checkboxPadding
             };
-            SmoothMoveCheckBox.Location = new Point(120 - SmoothMoveCheckBox.Size.Width, 100);
+            SmoothMoveCheckBox.CheckedChanged += (o, e) => Config.SmoothMove = SmoothMoveCheckBox.Checked;
+            displayUsabilitySection.AddControl("", SmoothMoveCheckBox);
 
             ClipMouseCheckBox = new DXCheckBox
             {
                 Label = { Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabClipMouseLabel },
-                Parent = GraphicsTab,
+                LabelBoxPadding = checkboxPadding
             };
-            ClipMouseCheckBox.Location = new Point(120 - ClipMouseCheckBox.Size.Width, 120);
+            ClipMouseCheckBox.CheckedChanged += (o, e) => Config.ClipMouse = ClipMouseCheckBox.Checked;
+            displayUsabilitySection.AddControl("", ClipMouseCheckBox);
 
             DebugLabelCheckBox = new DXCheckBox
             {
                 Label = { Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabDebugLabelLabel },
-                Parent = GraphicsTab,
+                LabelBoxPadding = checkboxPadding
             };
-            DebugLabelCheckBox.Location = new Point(120 - DebugLabelCheckBox.Size.Width, 140);
-
-            label = new DXLabel
-            {
-                Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabLanguageLabel,
-                Outline = true,
-                Parent = GraphicsTab,
-            };
-            label.Location = new Point(104 - label.Size.Width, 160);
+            DebugLabelCheckBox.CheckedChanged += (o, e) => Config.DebugLabel = DebugLabelCheckBox.Checked;
+            displayUsabilitySection.AddControl("", DebugLabelCheckBox);
 
             LanguageComboBox = new DXComboBox
             {
-                Parent = GraphicsTab,
-                Location = new Point(104, 160),
-                Size = new Size(100, DXComboBox.DefaultNormalHeight),
+                Size = new Size(122, DXComboBox.DefaultNormalHeight),
+                Border = false,
+                Background = { Visible = true }
+            };
+            LanguageComboBox.SelectedItemChanged += (o, e) =>
+            {
+                Config.Language = (string)LanguageComboBox.SelectedItem;
+
+                CEnvir.LoadLanguage();
+
+                if (CEnvir.Connection != null && CEnvir.Connection.ServerConnected)
+                    CEnvir.Enqueue(new C.SelectLanguage { Language = Config.Language });
             };
 
             foreach (string language in Globals.Languages)
@@ -277,241 +537,332 @@ namespace Client.Controls
                     Label = { Text = language },
                     Item = language
                 };
+            displayUsabilitySection.AddControl(CEnvir.Language.CommonControlConfigWindowGraphicsTabLanguageLabel, LanguageComboBox);
+
+            #endregion
+
+            #region Effects
+
+            DXConfigSection displayEffectsSection = new(CEnvir.Language.CommonControlConfigWindowGraphicsSectionEffectsLabel)
+            {
+                Columns = 2,
+                Parent = GraphicsTab,
+                Location = new Point(0, displayGraphicsSection.Size.Height + displayUsabilitySection.Size.Height)
+            };
+            GraphicsTab.AddSection(displayEffectsSection);
+
+            DrawParticlesCheckBox = new DXCheckBox
+            {
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabDrawParticlesLabel },
+            };
+            DrawParticlesCheckBox.CheckedChanged += (o, e) => Config.DrawParticles = DrawParticlesCheckBox.Checked;
+            displayEffectsSection.AddControl("", DrawParticlesCheckBox);
+
+            DrawEffectsCheckBox = new DXCheckBox
+            {
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabDrawEffectsLabel },
+            };
+            DrawEffectsCheckBox.CheckedChanged += (o, e) => Config.DrawEffects = DrawEffectsCheckBox.Checked;
+            displayEffectsSection.AddControl("", DrawEffectsCheckBox);
+
+            DrawWeatherCheckBox = new DXCheckBox
+            {
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabDrawWeatherLabel },
+            };
+            DrawWeatherCheckBox.CheckedChanged += (o, e) => Config.DrawWeather = DrawWeatherCheckBox.Checked;
+            displayEffectsSection.AddControl("", DrawWeatherCheckBox);
+
+            DisplayHelmetCheckBox = new DXCheckBox
+            {
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabDisplayHelmetLabel },
+            };
+            DisplayHelmetCheckBox.MouseClick += (o, e) =>
+            {
+                CEnvir.Enqueue(new C.HelmetToggle { HideHelmet = DisplayHelmetCheckBox.Checked });
+            };
+            displayEffectsSection.AddControl("", DisplayHelmetCheckBox);
+
+            #endregion
+
             #endregion
 
             #region Sound
 
+            #region Options
+
+            DXConfigSection soundSettingsSection = new DXConfigSection(CEnvir.Language.CommonControlConfigWindowSoundsSectionOptionsLabel)
+            {
+                Columns = 1,
+                Parent = SoundTab,
+                Location = new Point(0, 0)
+            };
+            SoundTab.AddSection(soundSettingsSection);
+
             BackgroundSoundBox = new DXCheckBox
             {
                 Label = { Text = CEnvir.Language.CommonControlConfigWindowSoundTabBackgroundSoundLabel },
-                Parent = SoundTab,
+                LabelBoxPadding = checkboxPadding,
                 Checked = Config.SoundInBackground,
             };
-            BackgroundSoundBox.Location = new Point(120 - BackgroundSoundBox.Size.Width, 10);
-
-            label = new DXLabel
+            BackgroundSoundBox.CheckedChanged += (o, e) =>
             {
-                Text = CEnvir.Language.CommonControlConfigWindowSoundTabSystemVolumeLabel,
-                Outline = true,
+                Config.SoundInBackground = BackgroundSoundBox.Checked;
+                DXSoundManager.UpdateFlags();
+            };
+            soundSettingsSection.AddControl("", BackgroundSoundBox);
+
+            #endregion
+
+            #region Volume
+
+            DXConfigSection soundVolumeSection = new DXConfigSection(CEnvir.Language.CommonControlConfigWindowSoundsSectionVolumeLabel)
+            {
+                Columns = 1,
                 Parent = SoundTab,
             };
-            label.Location = new Point(104 - label.Size.Width, 35);
+            SoundTab.AddSection(soundVolumeSection);
 
-            SystemVolumeBox = new DXNumberBox
+            SoundMusicBar = new DXSoundBar
             {
-                Parent = SoundTab,
-                MinValue = 0,
-                MaxValue = 100,
-                Location = new Point(104, 35)
+                Parent = soundVolumeSection
             };
+            SoundMusicBar.ValueChanged += (o, e) =>
+            {
+                Config.MusicVolume = SoundMusicBar.Value;
+                DXSoundManager.AdjustVolume();
+            };
+            SoundMusicBar.MutedChanged += (o, e) =>
+            {
+                Config.MusicVolumeMuted = SoundMusicBar.Muted;
+                DXSoundManager.AdjustVolume();
+            };
+            soundVolumeSection.AddControl(CEnvir.Language.CommonControlConfigWindowSoundTabMusicVolumeLabel, SoundMusicBar);
+    
+            SoundSystemBar = new DXSoundBar
+            {
+                Parent = soundVolumeSection
+            };
+            SoundSystemBar.ValueChanged += (o, e) =>
+            {
+                Config.SystemVolume = SoundSystemBar.Value;
+                DXSoundManager.AdjustVolume();
+            };
+            SoundSystemBar.MutedChanged += (o, e) =>
+            {
+                Config.SystemVolumeMuted = SoundSystemBar.Muted;
+                DXSoundManager.AdjustVolume();
+            };
+            soundVolumeSection.AddControl(CEnvir.Language.CommonControlConfigWindowSoundTabSystemVolumeLabel, SoundSystemBar);
+            
+            SoundPlayerBar = new();
+            SoundPlayerBar.ValueChanged += (o, e) =>
+            {
+                Config.PlayerVolume = SoundPlayerBar.Value;
+                DXSoundManager.AdjustVolume();
+            };
+            SoundPlayerBar.MutedChanged += (o, e) =>
+            {
+                Config.PlayerVolumeMuted = SoundPlayerBar.Muted;
+                DXSoundManager.AdjustVolume();
+            };
+            soundVolumeSection.AddControl(CEnvir.Language.CommonControlConfigWindowSoundTabPlayerVolumeLabel, SoundPlayerBar);
+            
+            SoundMonsterBar = new();
+            SoundMonsterBar.ValueChanged += (o, e) =>
+            {
+                Config.MonsterVolume = SoundMonsterBar.Value;
+                DXSoundManager.AdjustVolume();
+            };
+            SoundMonsterBar.MutedChanged += (o, e) =>
+            {
+                Config.MonsterVolumeMuted = SoundMonsterBar.Muted;
+                DXSoundManager.AdjustVolume();
+            };
+            soundVolumeSection.AddControl(CEnvir.Language.CommonControlConfigWindowSoundTabMonsterVolumeLabel, SoundMonsterBar);
+            
+            SoundMagicBar = new();
+            SoundMagicBar.ValueChanged += (o, e) =>
+            {
+                Config.MagicVolume = SoundMagicBar.Value;
+                DXSoundManager.AdjustVolume();
+            };
+            SoundMagicBar.MutedChanged += (o, e) =>
+            {
+                Config.MagicVolumeMuted = SoundMagicBar.Muted;
+                DXSoundManager.AdjustVolume();
+            };
+            soundVolumeSection.AddControl(CEnvir.Language.CommonControlConfigWindowSoundTabMagicVolumeLabel, SoundMagicBar);
 
-            label = new DXLabel
-            {
-                Text = CEnvir.Language.CommonControlConfigWindowSoundTabMusicVolumeLabel,
-                Outline = true,
-                Parent = SoundTab,
-            };
-            label.Location = new Point(104 - label.Size.Width, 60);
-
-            MusicVolumeBox = new DXNumberBox
-            {
-                Parent = SoundTab,
-                MinValue = 0,
-                MaxValue = 100,
-                Location = new Point(104, 60)
-            };
-
-            label = new DXLabel
-            {
-                Text = CEnvir.Language.CommonControlConfigWindowSoundTabPlayerVolumeLabel,
-                Outline = true,
-                Parent = SoundTab,
-            };
-            label.Location = new Point(104 - label.Size.Width, 85);
-
-            PlayerVolumeBox = new DXNumberBox
-            {
-                Parent = SoundTab,
-                MinValue = 0,
-                MaxValue = 100,
-                Location = new Point(104, 85)
-            };
-            label = new DXLabel
-            {
-                Text = CEnvir.Language.CommonControlConfigWindowSoundTabMonsterVolumeLabel,
-                Outline = true,
-                Parent = SoundTab,
-            };
-            label.Location = new Point(104 - label.Size.Width, 110);
-
-            MonsterVolumeBox = new DXNumberBox
-            {
-                Parent = SoundTab,
-                MinValue = 0,
-                MaxValue = 100,
-                Location = new Point(104, 110)
-            };
-
-            label = new DXLabel
-            {
-                Text = CEnvir.Language.CommonControlConfigWindowSoundTabMagicVolumeLabel,
-                Outline = true,
-                Parent = SoundTab,
-            };
-            label.Location = new Point(104 - label.Size.Width, 135);
-
-            SpellVolumeBox = new DXNumberBox
-            {
-                Parent = SoundTab,
-                MinValue = 0,
-                MaxValue = 100,
-                Location = new Point(104, 135)
-            };
-
+            #endregion
 
             #endregion
 
             #region Game
 
+            #region Settings
+
+
+            DXConfigSection gameSettingsSection = new(CEnvir.Language.CommonControlConfigWindowGameSectionSettingsLabel)
+            {
+                Columns = 2,
+                Parent = GameTab,
+            };
+            GameTab.AddSection(gameSettingsSection);
+
             ItemNameCheckBox = new DXCheckBox
             {
                 Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabItemNameLabel },
-                Parent = GameTab,
             };
-            ItemNameCheckBox.Location = new Point(120 - ItemNameCheckBox.Size.Width, 10);
+            ItemNameCheckBox.CheckedChanged += (o, e) => Config.ShowItemNames = ItemNameCheckBox.Checked;
+            gameSettingsSection.AddControl("", ItemNameCheckBox);
 
             MonsterNameCheckBox = new DXCheckBox
             {
                 Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabMonsterNameLabel },
-                Parent = GameTab,
             };
-            MonsterNameCheckBox.Location = new Point(120 - MonsterNameCheckBox.Size.Width, 35);
+            MonsterNameCheckBox.CheckedChanged += (o, e) => Config.ShowMonsterNames = MonsterNameCheckBox.Checked;
+            gameSettingsSection.AddControl("", MonsterNameCheckBox);
 
             PlayerNameCheckBox = new DXCheckBox
             {
                 Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabPlayerNameLabel },
-                Parent = GameTab,
             };
-            PlayerNameCheckBox.Location = new Point(120 - PlayerNameCheckBox.Size.Width, 60);
+            PlayerNameCheckBox.CheckedChanged += (o, e) => Config.ShowPlayerNames = PlayerNameCheckBox.Checked;
+            gameSettingsSection.AddControl("", PlayerNameCheckBox);
 
             UserHealthCheckBox = new DXCheckBox
             {
                 Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabUserHealthLabel },
-                Parent = GameTab,
             };
-            UserHealthCheckBox.Location = new Point(120 - UserHealthCheckBox.Size.Width, 85);
+            UserHealthCheckBox.CheckedChanged += (o, e) => Config.ShowUserHealth = UserHealthCheckBox.Checked;
+            gameSettingsSection.AddControl("", UserHealthCheckBox);
 
             MonsterHealthCheckBox = new DXCheckBox
             {
                 Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabMonsterHealthLabel },
-                Parent = GameTab,
             };
-            MonsterHealthCheckBox.Location = new Point(120 - MonsterHealthCheckBox.Size.Width, 110);
+            MonsterHealthCheckBox.CheckedChanged += (o, e) => Config.ShowMonsterHealth = MonsterHealthCheckBox.Checked;
+            gameSettingsSection.AddControl("", MonsterHealthCheckBox);
 
             DamageNumbersCheckBox = new DXCheckBox
             {
                 Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabDamageNumbersLabel },
-                Parent = GameTab,
             };
-            DamageNumbersCheckBox.Location = new Point(120 - DamageNumbersCheckBox.Size.Width, 135);
-
-            DrawParticlesCheckBox = new DXCheckBox
-            {
-                Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabDrawParticlesLabel },
-                Parent = GameTab,
-            };
-            DrawParticlesCheckBox.Location = new Point(120 - DrawParticlesCheckBox.Size.Width, 160);
-
-            DisplayHelmetCheckBox = new DXCheckBox
-            {
-                Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabDisplayHelmetLabel },
-                Parent = GameTab,
-            };
-            DisplayHelmetCheckBox.Location = new Point(120 - DisplayHelmetCheckBox.Size.Width, 185);
-            DisplayHelmetCheckBox.MouseClick += (o, e) =>
-            {
-                CEnvir.Enqueue(new C.HelmetToggle { HideHelmet = DisplayHelmetCheckBox.Checked });
-            };
-
-            HideChatBarCheckBox = new DXCheckBox
-            {
-                Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabHideChatBarLabel },
-                Parent = GameTab,
-                Hint = "Hide chat bar when not active"
-            };
-            HideChatBarCheckBox.Location = new Point(120 - HideChatBarCheckBox.Size.Width, 210);
-            HideChatBarCheckBox.MouseClick += (o, e) =>
-            {
-                if (HideChatBarCheckBox.Checked)
-                {
-                    GameScene.Game.ChatTextBox.Visible = true;
-                }
-            };
-
-            EscapeCloseAllCheckBox = new DXCheckBox
-            {
-                Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabEscapeCloseAllLabel },
-                Parent = GameTab,
-            };
-            EscapeCloseAllCheckBox.Location = new Point(270 - EscapeCloseAllCheckBox.Size.Width, 10);
-
-            ShiftOpenChatCheckBox = new DXCheckBox
-            {
-                Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabShiftOpenChatLabel },
-                Parent = GameTab,
-                Hint = CEnvir.Language.CommonControlConfigWindowGameTabShiftOpenChatHint
-            };
-            ShiftOpenChatCheckBox.Location = new Point(270 - ShiftOpenChatCheckBox.Size.Width, 35);
+            DamageNumbersCheckBox.CheckedChanged += (o, e) => Config.ShowDamageNumbers = DamageNumbersCheckBox.Checked;
+            gameSettingsSection.AddControl("", DamageNumbersCheckBox);
 
             RightClickDeTargetCheckBox = new DXCheckBox
             {
                 Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabRightClickDeTargetLabel },
-                Parent = GameTab,
                 Hint = CEnvir.Language.CommonControlConfigWindowGameTabRightClickDeTargetHint
             };
-            RightClickDeTargetCheckBox.Location = new Point(270 - RightClickDeTargetCheckBox.Size.Width, 60);
+            RightClickDeTargetCheckBox.CheckedChanged += (o, e) => Config.RightClickDeTarget = RightClickDeTargetCheckBox.Checked;
+            gameSettingsSection.AddControl("", RightClickDeTargetCheckBox);
 
             MonsterBoxVisibleCheckBox = new DXCheckBox
             {
                 Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabMonsterBoxVisibleLabel },
+            };
+            MonsterBoxVisibleCheckBox.CheckedChanged += (o, e) => Config.MonsterBoxVisible = MonsterBoxVisibleCheckBox.Checked;
+            gameSettingsSection.AddControl("", MonsterBoxVisibleCheckBox);
+
+            ShowTargetOutlineCheckBox = new DXCheckBox
+            {
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabShowTargetOutlineLabel },
+            };
+            ShowTargetOutlineCheckBox.CheckedChanged += (o, e) => Config.ShowTargetOutline = ShowTargetOutlineCheckBox.Checked;
+            gameSettingsSection.AddControl("", ShowTargetOutlineCheckBox);
+
+            ObservableCheckBox = new DXCheckBox
+            {
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabObservableLabel },
+            };
+            ObservableCheckBox.CheckedChanged += (o, e) =>
+            {
+                if (ObservableCheckBox.Checked == Observable) return;
+
+                if (GameScene.Game == null) return;
+                if (GameScene.Game.Observer) return;
+                if (!GameScene.Game.User.InSafeZone)
+                {
+                    GameScene.Game.ReceiveChat(CEnvir.Language.SpectatorModeWarningInSafezone, MessageType.System);
+                    ObservableCheckBox.Checked = Observable;
+                    return;
+                }
+
+                CEnvir.Enqueue(new C.ObservableSwitch { Allow = !Observable });
+            };
+            gameSettingsSection.AddControl("", ObservableCheckBox);
+
+            #endregion
+
+            #region Target Colours
+
+            DXConfigSection targetColoursSection = new(CEnvir.Language.CommonControlConfigWindowUISectionTargetColoursLabel)
+            {
+                Columns = 2,
                 Parent = GameTab,
             };
-            MonsterBoxVisibleCheckBox.Location = new Point(270 - MonsterBoxVisibleCheckBox.Size.Width, 85);
+            GameTab.AddSection(targetColoursSection);
 
-            LogChatCheckBox = new DXCheckBox
-            {
-                Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabLogChatLabel },
-                Parent = GameTab,
-            };
-            LogChatCheckBox.Location = new Point(270 - LogChatCheckBox.Size.Width, 110);
+            TargetMonsterLowLevelColourBox = new DXColourControl { AllowNoColour = true };
+            TargetMonsterLowLevelColourBox.BackColourChanged += (o, e) => Config.TargetMonsterLowLevelColour = TargetMonsterLowLevelColourBox.BackColour;
+            targetColoursSection.AddControl(CEnvir.Language.CommonControlConfigWindowTargetColoursTabMonsterLowLabel, TargetMonsterLowLevelColourBox);
 
-            DrawEffectsCheckBox = new DXCheckBox
-            {
-                Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabDrawEffectsLabel },
-                Parent = GameTab,
-            };
-            DrawEffectsCheckBox.Location = new Point(270 - DrawEffectsCheckBox.Size.Width, 135);
+            TargetMonsterSameLevelColourBox = new DXColourControl { AllowNoColour = true };
+            TargetMonsterSameLevelColourBox.BackColourChanged += (o, e) => Config.TargetMonsterSameLevelColour = TargetMonsterSameLevelColourBox.BackColour;
+            targetColoursSection.AddControl(CEnvir.Language.CommonControlConfigWindowTargetColoursTabMonsterSameLabel, TargetMonsterSameLevelColourBox);
 
-            DrawWeatherCheckBox = new DXCheckBox
-            {
-                Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabDrawWeatherLabel },
-                Parent = GameTab,
-            };
-            DrawWeatherCheckBox.Location = new Point(270 - DrawWeatherCheckBox.Size.Width, 160);
+            TargetMonsterHighLevelColourBox = new DXColourControl { AllowNoColour = true };
+            TargetMonsterHighLevelColourBox.BackColourChanged += (o, e) => Config.TargetMonsterHighLevelColour = TargetMonsterHighLevelColourBox.BackColour;
+            targetColoursSection.AddControl(CEnvir.Language.CommonControlConfigWindowTargetColoursTabMonsterHighLabel, TargetMonsterHighLevelColourBox);
 
-            KeyBindButton = new DXButton
+            TargetMonsterFriendlyColourBox = new DXColourControl { AllowNoColour = true };
+            TargetMonsterFriendlyColourBox.BackColourChanged += (o, e) => Config.TargetMonsterFriendlyColour = TargetMonsterFriendlyColourBox.BackColour;
+            targetColoursSection.AddControl(CEnvir.Language.CommonControlConfigWindowTargetColoursTabMonsterFriendlyLabel, TargetMonsterFriendlyColourBox);
+
+            TargetPlayerFriendlyColourBox = new DXColourControl { AllowNoColour = true };
+            TargetPlayerFriendlyColourBox.BackColourChanged += (o, e) => Config.TargetPlayerFriendlyColour = TargetPlayerFriendlyColourBox.BackColour;
+            targetColoursSection.AddControl(CEnvir.Language.CommonControlConfigWindowTargetColoursTabPlayerFriendlyLabel, TargetPlayerFriendlyColourBox);
+
+            TargetPlayerEnemyColourBox = new DXColourControl { AllowNoColour = true };
+            TargetPlayerEnemyColourBox.BackColourChanged += (o, e) => Config.TargetPlayerEnemyColour = TargetPlayerEnemyColourBox.BackColour;
+            targetColoursSection.AddControl(CEnvir.Language.CommonControlConfigWindowTargetColoursTabPlayerEnemyLabel, TargetPlayerEnemyColourBox);
+
+            TargetNPCColourBox = new DXColourControl { AllowNoColour = true };
+            TargetNPCColourBox.BackColourChanged += (o, e) => Config.TargetNPCColour = TargetNPCColourBox.BackColour;
+            targetColoursSection.AddControl(CEnvir.Language.CommonControlConfigWindowTargetColoursTabNPCLabel, TargetNPCColourBox);
+
+            ResetTargetColoursButton = new DXButton
             {
-                Parent = GameTab,
-                Location = new Point(190, 185),
                 Size = new Size(80, SmallButtonHeight),
                 ButtonType = ButtonType.SmallButton,
-                Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabKeyBindButtonLabel }
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowColoursTabResetColoursButtonLabel }
             };
-            KeyBindButton.MouseClick += (o, e) => KeyBindWindow.Visible = !KeyBindWindow.Visible;
+
+            ResetTargetColoursButton.MouseClick += (o, e) =>
+            {
+                TargetMonsterLowLevelColourBox.BackColour = Color.LimeGreen;
+                TargetMonsterSameLevelColourBox.BackColour = Color.Yellow;
+                TargetMonsterHighLevelColourBox.BackColour = Color.Red;
+                TargetMonsterFriendlyColourBox.BackColour = Color.Cyan;
+                TargetPlayerFriendlyColourBox.BackColour = Color.Cyan;
+                TargetPlayerEnemyColourBox.BackColour = Color.Red;
+                TargetNPCColourBox.BackColour = Color.Cyan;
+            };
+            targetColoursSection.AddControl("", ResetTargetColoursButton);
+            #endregion
 
             #endregion
 
             #region Network
+
+            DXConfigSection networkSettingsSection = new(CEnvir.Language.CommonControlConfigWindowNetworkSectionSettingsLabel)
+            {
+                Columns = 1,
+                Parent = NetworkTab,
+            };
+            NetworkTab.AddSection(networkSettingsSection);
 
             UseNetworkConfigCheckBox = new DXCheckBox
             {
@@ -519,15 +870,7 @@ namespace Client.Controls
                 Parent = NetworkTab,
                 Checked = Config.FullScreen,
             };
-            UseNetworkConfigCheckBox.Location = new Point(120 - UseNetworkConfigCheckBox.Size.Width, 10);
-
-            label = new DXLabel
-            {
-                Text = CEnvir.Language.CommonControlConfigWindowNetworkTabUseIPAddressLabel,
-                Outline = true,
-                Parent = NetworkTab,
-            };
-            label.Location = new Point(104 - label.Size.Width, 35);
+            networkSettingsSection.AddControl("", UseNetworkConfigCheckBox);
 
             IPAddressTextBox = new DXTextBox
             {
@@ -535,14 +878,7 @@ namespace Client.Controls
                 Size = new Size(100, 16),
                 Parent = NetworkTab,
             };
-
-            label = new DXLabel
-            {
-                Text = CEnvir.Language.CommonControlConfigWindowNetworkTabUsePortLabel,
-                Outline = true,
-                Parent = NetworkTab,
-            };
-            label.Location = new Point(104 - label.Size.Width, 60);
+            networkSettingsSection.AddControl(CEnvir.Language.CommonControlConfigWindowNetworkTabUseIPAddressLabel, IPAddressTextBox);
 
             PortBox = new DXNumberBox
             {
@@ -551,667 +887,186 @@ namespace Client.Controls
                 MaxValue = ushort.MaxValue,
                 Location = new Point(104, 60)
             };
+
+            networkSettingsSection.AddControl(CEnvir.Language.CommonControlConfigWindowNetworkTabUsePortLabel, PortBox);
+
+            #endregion
+
+            #region UI
+
+            #region Settings
+
+            DXConfigSection uiSettingsSection = new(CEnvir.Language.CommonControlConfigWindowUISectionSettingsLabel)
+            {
+                Columns = 2,
+                Parent = UITab,
+            };
+            UITab.AddSection(uiSettingsSection);
+
+            HideChatBarCheckBox = new DXCheckBox
+            {
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowUITabHideChatBarLabel },
+                Hint = "Hide chat bar when not active"
+            };
+            HideChatBarCheckBox.MouseClick += (o, e) =>
+            {
+                if (HideChatBarCheckBox.Checked)
+                {
+                    GameScene.Game.ChatTextBox.Visible = true;
+                }
+            };
+            HideChatBarCheckBox.CheckedChanged += (o, e) => Config.HideChatBar = HideChatBarCheckBox.Checked;
+            uiSettingsSection.AddControl("", HideChatBarCheckBox);
+
+            ShiftOpenChatCheckBox = new DXCheckBox
+            {
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowUITabShiftOpenChatLabel },
+                Hint = CEnvir.Language.CommonControlConfigWindowUITabShiftOpenChatHint
+            };
+            ShiftOpenChatCheckBox.CheckedChanged += (o, e) => Config.ShiftOpenChat = ShiftOpenChatCheckBox.Checked;
+            uiSettingsSection.AddControl("", ShiftOpenChatCheckBox);
+
+            EscapeCloseAllCheckBox = new DXCheckBox
+            {
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowUITabEscapeCloseAllLabel },
+            };
+            EscapeCloseAllCheckBox.CheckedChanged += (o, e) => Config.EscapeCloseAll = EscapeCloseAllCheckBox.Checked;
+            uiSettingsSection.AddControl("", EscapeCloseAllCheckBox);
+
+            LogChatCheckBox = new DXCheckBox
+            {
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowUITabLogChatLabel },
+            };
+            LogChatCheckBox.CheckedChanged += (o, e) => Config.LogChat = LogChatCheckBox.Checked;
+            uiSettingsSection.AddControl("", LogChatCheckBox);
+
+            KeyBindButton = new DXButton
+            {
+                Size = new Size(80, SmallButtonHeight),
+                ButtonType = ButtonType.SmallButton,
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowUITabKeyBindButtonLabel }
+            };
+            KeyBindButton.MouseClick += (o, e) => KeyBindWindow.Visible = !KeyBindWindow.Visible;
+            uiSettingsSection.AddControl("", KeyBindButton);
+
             #endregion
 
             #region Colours
 
-            label = new DXLabel
+            DXConfigSection uiColoursSection = new(CEnvir.Language.CommonControlConfigWindowUISectionColoursLabel)
             {
-                Text = CEnvir.Language.CommonControlConfigWindowColoursTabLocalChatLabel,
-                Outline = true,
-                Parent = ColourTab,
+                Columns = 2,
+                Parent = UITab,
             };
-            label.Location = new Point(90 - label.Size.Width, 10);
+            UITab.AddSection(uiColoursSection);
 
-            LocalForeColourBox = new DXColourControl
-            {
-                Parent = ColourTab,
-                Location = new Point(90, 10),
-                Size = new Size(20, label.Size.Height),
-            };
+            LocalColourBox = new DXColourControlPair();
+            LocalColourBox.ForeColourPairChanged += (o, e) => Config.LocalTextForeColour = LocalColourBox.ForeColourControl.BackColour;
+            LocalColourBox.BackColourPairChanged += (o, e) => Config.LocalTextBackColour = LocalColourBox.BackColourControl.BackColour;
+            uiColoursSection.AddControl(CEnvir.Language.CommonControlConfigWindowColoursTabLocalChatLabel, LocalColourBox);
 
-            LocalBackColourBox = new DXColourControl
-            {
-                Parent = ColourTab,
-                Location = new Point(110, 10),
-                Size = new Size(20, label.Size.Height),
-                AllowNoColour = true,
-            };
+            GMWhisperInColourBox = new DXColourControlPair();
+            GMWhisperInColourBox.ForeColourPairChanged += (o, e) => Config.GMWhisperInTextForeColour = GMWhisperInColourBox.ForeColourControl.BackColour;
+            GMWhisperInColourBox.BackColourPairChanged += (o, e) => Config.GMWhisperInTextBackColour = GMWhisperInColourBox.BackColourControl.BackColour;
+            uiColoursSection.AddControl(CEnvir.Language.CommonControlConfigWindowColoursTabGMWhisperInLabel, GMWhisperInColourBox);
 
-            label = new DXLabel
-            {
-                Text = CEnvir.Language.CommonControlConfigWindowColoursTabGMWhisperInLabel,
-                Outline = true,
-                Parent = ColourTab,
-            };
-            label.Location = new Point(220 - label.Size.Width, 10);
+            WhisperInColourBox = new DXColourControlPair();
+            WhisperInColourBox.ForeColourPairChanged += (o, e) => Config.WhisperInTextForeColour = WhisperInColourBox.ForeColourControl.BackColour;
+            WhisperInColourBox.BackColourPairChanged += (o, e) => Config.WhisperInTextBackColour = WhisperInColourBox.BackColourControl.BackColour;
+            uiColoursSection.AddControl(CEnvir.Language.CommonControlConfigWindowColoursTabWhisperInLabel, WhisperInColourBox);
 
-            GMWhisperInForeColourBox = new DXColourControl
-            {
-                Parent = ColourTab,
-                Location = new Point(220, 10),
-                Size = new Size(20, label.Size.Height),
-            };
+            WhisperOutColourBox = new DXColourControlPair();
+            WhisperOutColourBox.ForeColourPairChanged += (o, e) => Config.WhisperOutTextForeColour = WhisperOutColourBox.ForeColourControl.BackColour;
+            WhisperOutColourBox.BackColourPairChanged += (o, e) => Config.WhisperOutTextBackColour = WhisperOutColourBox.BackColourControl.BackColour;
+            uiColoursSection.AddControl(CEnvir.Language.CommonControlConfigWindowColoursTabWhisperOutLabel, WhisperOutColourBox);
 
-            GMWhisperInBackColourBox = new DXColourControl
-            {
-                Parent = ColourTab,
-                Location = new Point(240, 10),
-                Size = new Size(20, label.Size.Height),
-                AllowNoColour = true,
-            };
+            GroupColourBox = new DXColourControlPair();
+            GroupColourBox.ForeColourPairChanged += (o, e) => Config.GroupTextForeColour = GroupColourBox.ForeColourControl.BackColour;
+            GroupColourBox.BackColourPairChanged += (o, e) => Config.GroupTextBackColour = GroupColourBox.BackColourControl.BackColour;
+            uiColoursSection.AddControl(CEnvir.Language.CommonControlConfigWindowColoursTabGroupChatLabel, GroupColourBox);
 
-            label = new DXLabel
-            {
-                Text = CEnvir.Language.CommonControlConfigWindowColoursTabWhisperInLabel,
-                Outline = true,
-                Parent = ColourTab,
-            };
-            label.Location = new Point(90 - label.Size.Width, 35);
+            GuildColourBox = new DXColourControlPair();
+            GuildColourBox.ForeColourPairChanged += (o, e) => Config.GuildTextForeColour = GuildColourBox.ForeColourControl.BackColour;
+            GuildColourBox.BackColourPairChanged += (o, e) => Config.GuildTextBackColour = GuildColourBox.BackColourControl.BackColour;
+            uiColoursSection.AddControl(CEnvir.Language.CommonControlConfigWindowColoursTabGuildChatLabel, GuildColourBox);
 
-            WhisperInForeColourBox = new DXColourControl
-            {
-                Parent = ColourTab,
-                Location = new Point(90, 35),
-                Size = new Size(20, label.Size.Height),
-            };
+            ShoutColourBox = new DXColourControlPair();
+            ShoutColourBox.ForeColourPairChanged += (o, e) => Config.ShoutTextForeColour = ShoutColourBox.ForeColourControl.BackColour;
+            ShoutColourBox.BackColourPairChanged += (o, e) => Config.ShoutTextBackColour = ShoutColourBox.BackColourControl.BackColour;
+            uiColoursSection.AddControl(CEnvir.Language.CommonControlConfigWindowColoursTabShoutChatLabel, ShoutColourBox);
 
-            WhisperInBackColourBox = new DXColourControl
-            {
-                Parent = ColourTab,
-                Location = new Point(110, 35),
-                Size = new Size(20, label.Size.Height),
-                AllowNoColour = true,
-            };
+            GlobalColourBox = new DXColourControlPair();
+            GlobalColourBox.ForeColourPairChanged += (o, e) => Config.GlobalTextForeColour = GlobalColourBox.ForeColourControl.BackColour;
+            GlobalColourBox.BackColourPairChanged += (o, e) => Config.GlobalTextBackColour = GlobalColourBox.BackColourControl.BackColour;
+            uiColoursSection.AddControl(CEnvir.Language.CommonControlConfigWindowColoursTabGlobalChatLabel, GlobalColourBox);
 
-            label = new DXLabel
-            {
-                Text = CEnvir.Language.CommonControlConfigWindowColoursTabWhisperOutLabel,
-                Outline = true,
-                Parent = ColourTab,
-            };
-            label.Location = new Point(220 - label.Size.Width, 35);
+            ObserverColourBox = new DXColourControlPair();
+            ObserverColourBox.ForeColourPairChanged += (o, e) => Config.ObserverTextForeColour = ObserverColourBox.ForeColourControl.BackColour;
+            ObserverColourBox.BackColourPairChanged += (o, e) => Config.ObserverTextBackColour = ObserverColourBox.BackColourControl.BackColour;
+            uiColoursSection.AddControl(CEnvir.Language.CommonControlConfigWindowColoursTabObserverChatLabel, ObserverColourBox);
 
-            WhisperOutForeColourBox = new DXColourControl
-            {
-                Parent = ColourTab,
-                Location = new Point(220, 35),
-                Size = new Size(20, label.Size.Height),
-            };
+            HintColourBox = new DXColourControlPair();
+            HintColourBox.ForeColourPairChanged += (o, e) => Config.HintTextForeColour = HintColourBox.ForeColourControl.BackColour;
+            HintColourBox.BackColourPairChanged += (o, e) => Config.HintTextBackColour = HintColourBox.BackColourControl.BackColour;
+            uiColoursSection.AddControl(CEnvir.Language.CommonControlConfigWindowColoursTabHintTextLabel, HintColourBox);
 
-            WhisperOutBackColourBox = new DXColourControl
-            {
-                Parent = ColourTab,
-                Location = new Point(240, 35),
-                Size = new Size(20, label.Size.Height),
-                AllowNoColour = true,
-            };
+            SystemColourBox = new DXColourControlPair();
+            SystemColourBox.ForeColourPairChanged += (o, e) => Config.SystemTextForeColour = SystemColourBox.ForeColourControl.BackColour;
+            SystemColourBox.BackColourPairChanged += (o, e) => Config.SystemTextBackColour = SystemColourBox.BackColourControl.BackColour;
+            uiColoursSection.AddControl(CEnvir.Language.CommonControlConfigWindowColoursTabSystemTextLabel, SystemColourBox);
 
-            label = new DXLabel
-            {
-                Text = CEnvir.Language.CommonControlConfigWindowColoursTabGroupChatLabel,
-                Outline = true,
-                Parent = ColourTab,
-            };
-            label.Location = new Point(90 - label.Size.Width, 60);
+            GainsColourBox = new DXColourControlPair();
+            GainsColourBox.ForeColourPairChanged += (o, e) => Config.GainsTextForeColour = GainsColourBox.ForeColourControl.BackColour;
+            GainsColourBox.BackColourPairChanged += (o, e) => Config.GainsTextBackColour = GainsColourBox.BackColourControl.BackColour;
+            uiColoursSection.AddControl(CEnvir.Language.CommonControlConfigWindowColoursTabGainsTextLabel, GainsColourBox);
 
-            GroupForeColourBox = new DXColourControl
-            {
-                Parent = ColourTab,
-                Location = new Point(90, 60),
-                Size = new Size(20, label.Size.Height),
-            };
-
-            GroupBackColourBox = new DXColourControl
-            {
-                Parent = ColourTab,
-                Location = new Point(110, 60),
-                Size = new Size(20, label.Size.Height),
-                AllowNoColour = true,
-            };
-
-            label = new DXLabel
-            {
-                Text = CEnvir.Language.CommonControlConfigWindowColoursTabGuildChatLabel,
-                Outline = true,
-                Parent = ColourTab,
-            };
-            label.Location = new Point(220 - label.Size.Width, 60);
-
-            GuildForeColourBox = new DXColourControl
-            {
-                Parent = ColourTab,
-                Location = new Point(220, 60),
-                Size = new Size(20, label.Size.Height),
-            };
-
-            GuildBackColourBox = new DXColourControl
-            {
-                Parent = ColourTab,
-                Location = new Point(240, 60),
-                Size = new Size(20, label.Size.Height),
-                AllowNoColour = true,
-            };
-
-            label = new DXLabel
-            {
-                Text = CEnvir.Language.CommonControlConfigWindowColoursTabShoutChatLabel,
-                Outline = true,
-                Parent = ColourTab,
-            };
-            label.Location = new Point(90 - label.Size.Width, 85);
-
-            ShoutForeColourBox = new DXColourControl
-            {
-                Parent = ColourTab,
-                Location = new Point(90, 85),
-                Size = new Size(20, label.Size.Height),
-            };
-
-            ShoutBackColourBox = new DXColourControl
-            {
-                Parent = ColourTab,
-                Location = new Point(110, 85),
-                Size = new Size(20, label.Size.Height),
-                AllowNoColour = true,
-            };
-
-            label = new DXLabel
-            {
-                Text = CEnvir.Language.CommonControlConfigWindowColoursTabGlobalChatLabel,
-                Outline = true,
-                Parent = ColourTab,
-            };
-            label.Location = new Point(220 - label.Size.Width, 85);
-
-            GlobalForeColourBox = new DXColourControl
-            {
-                Parent = ColourTab,
-                Location = new Point(220, 85),
-                Size = new Size(20, label.Size.Height),
-            };
-
-            GlobalBackColourBox = new DXColourControl
-            {
-                Parent = ColourTab,
-                Location = new Point(240, 85),
-                Size = new Size(20, label.Size.Height),
-                AllowNoColour = true,
-            };
-
-            label = new DXLabel
-            {
-                Text = CEnvir.Language.CommonControlConfigWindowColoursTabObserverChatLabel,
-                Outline = true,
-                Parent = ColourTab,
-            };
-            label.Location = new Point(90 - label.Size.Width, 110);
-
-            ObserverForeColourBox = new DXColourControl
-            {
-                Parent = ColourTab,
-                Location = new Point(90, 110),
-                Size = new Size(20, label.Size.Height),
-            };
-
-            ObserverBackColourBox = new DXColourControl
-            {
-                Parent = ColourTab,
-                Location = new Point(110, 110),
-                Size = new Size(20, label.Size.Height),
-                AllowNoColour = true,
-            };
-
-            label = new DXLabel
-            {
-                Text = CEnvir.Language.CommonControlConfigWindowColoursTabHintTextLabel,
-                Outline = true,
-                Parent = ColourTab,
-            };
-            label.Location = new Point(220 - label.Size.Width, 110);
-
-            HintForeColourBox = new DXColourControl
-            {
-                Parent = ColourTab,
-                Location = new Point(220, 110),
-                Size = new Size(20, label.Size.Height),
-            };
-
-            HintBackColourBox = new DXColourControl
-            {
-                Parent = ColourTab,
-                Location = new Point(240, 110),
-                Size = new Size(20, label.Size.Height),
-                AllowNoColour = true,
-            };
-
-            label = new DXLabel
-            {
-                Text = CEnvir.Language.CommonControlConfigWindowColoursTabSystemTextLabel,
-                Outline = true,
-                Parent = ColourTab,
-            };
-            label.Location = new Point(90 - label.Size.Width, 135);
-
-            SystemForeColourBox = new DXColourControl
-            {
-                Parent = ColourTab,
-                Location = new Point(90, 135),
-                Size = new Size(20, label.Size.Height),
-            };
-
-            SystemBackColourBox = new DXColourControl
-            {
-                Parent = ColourTab,
-                Location = new Point(110, 135),
-                Size = new Size(20, label.Size.Height),
-                AllowNoColour = true,
-            };
-
-            label = new DXLabel
-            {
-                Text = CEnvir.Language.CommonControlConfigWindowColoursTabGainsTextLabel,
-                Outline = true,
-                Parent = ColourTab,
-            };
-            label.Location = new Point(220 - label.Size.Width, 135);
-
-            GainsForeColourBox = new DXColourControl
-            {
-                Parent = ColourTab,
-                Location = new Point(220, 135),
-                Size = new Size(20, label.Size.Height),
-            };
-
-            GainsBackColourBox = new DXColourControl
-            {
-                Parent = ColourTab,
-                Location = new Point(240, 135),
-                Size = new Size(20, label.Size.Height),
-                AllowNoColour = true,
-            };
-
-            label = new DXLabel
-            {
-                Text = CEnvir.Language.CommonControlConfigWindowColoursTabAnnouncementsLabel,
-                Outline = true,
-                Parent = ColourTab,
-            };
-            label.Location = new Point(90 - label.Size.Width, 160);
-
-            AnnouncementForeColourBox = new DXColourControl
-            {
-                Parent = ColourTab,
-                Location = new Point(90, 160),
-                Size = new Size(20, label.Size.Height),
-            };
-
-            AnnouncementBackColourBox = new DXColourControl
-            {
-                Parent = ColourTab,
-                Location = new Point(110, 160),
-                Size = new Size(20, label.Size.Height),
-                AllowNoColour = true,
-            };
+            AnnouncementColourBox = new DXColourControlPair();
+            AnnouncementColourBox.ForeColourPairChanged += (o, e) => Config.AnnouncementTextForeColour = AnnouncementColourBox.ForeColourControl.BackColour;
+            AnnouncementColourBox.BackColourPairChanged += (o, e) => Config.AnnouncementTextBackColour = AnnouncementColourBox.BackColourControl.BackColour;
+            uiColoursSection.AddControl(CEnvir.Language.CommonControlConfigWindowColoursTabAnnouncementsLabel, AnnouncementColourBox);
 
             ResetColoursButton = new DXButton
             {
-                Parent = ColourTab,
-                Location = new Point(180, 160),
                 Size = new Size(80, SmallButtonHeight),
                 ButtonType = ButtonType.SmallButton,
                 Label = { Text = CEnvir.Language.CommonControlConfigWindowColoursTabResetColoursButtonLabel }
             };
             ResetColoursButton.MouseClick += (o, e) =>
             {
-                LocalForeColourBox.BackColour = Color.White;
-                GMWhisperInForeColourBox.BackColour = Color.Red;
-                WhisperInForeColourBox.BackColour = Color.Cyan;
-                WhisperOutForeColourBox.BackColour = Color.Aquamarine;
-                GroupForeColourBox.BackColour = Color.Plum;
-                GuildForeColourBox.BackColour = Color.LightPink;
-                ShoutForeColourBox.BackColour = Color.Yellow;
-                GlobalForeColourBox.BackColour = Color.Lime;
-                ObserverForeColourBox.BackColour = Color.Silver;
-                HintForeColourBox.BackColour = Color.AntiqueWhite;
-                SystemForeColourBox.BackColour = Color.Red;
-                GainsForeColourBox.BackColour = Color.GreenYellow;
-                AnnouncementForeColourBox.BackColour = Color.DarkBlue;
+                LocalColourBox.ForeColourControl.BackColour = Color.White;
+                GMWhisperInColourBox.ForeColourControl.BackColour = Color.Red;
+                WhisperInColourBox.ForeColourControl.BackColour = Color.Cyan;
+                WhisperOutColourBox.ForeColourControl.BackColour = Color.Aquamarine;
+                GroupColourBox.ForeColourControl.BackColour = Color.Plum;
+                GuildColourBox.ForeColourControl.BackColour = Color.LightPink;
+                ShoutColourBox.ForeColourControl.BackColour = Color.Yellow;
+                GlobalColourBox.ForeColourControl.BackColour = Color.Lime;
+                ObserverColourBox.ForeColourControl.BackColour = Color.Silver;
+                HintColourBox.ForeColourControl.BackColour = Color.AntiqueWhite;
+                SystemColourBox.ForeColourControl.BackColour = Color.Red;
+                GainsColourBox.ForeColourControl.BackColour = Color.GreenYellow;
+                AnnouncementColourBox.ForeColourControl.BackColour = Color.DarkBlue;
 
-                LocalBackColourBox.BackColour = Color.FromArgb(0, 0, 0, 0);
-                GMWhisperInBackColourBox.BackColour = Color.FromArgb(255, 255, 255, 255);
-                WhisperInBackColourBox.BackColour = Color.FromArgb(0, 0, 0, 0);
-                WhisperOutBackColourBox.BackColour = Color.FromArgb(0, 0, 0, 0);
-                GroupBackColourBox.BackColour = Color.FromArgb(0, 0, 0, 0);
-                GuildBackColourBox.BackColour = Color.FromArgb(0, 0, 0, 0);
-                ShoutBackColourBox.BackColour = Color.FromArgb(0, 0, 0, 0);
-                GlobalBackColourBox.BackColour = Color.FromArgb(0, 0, 0, 0);
-                ObserverBackColourBox.BackColour = Color.FromArgb(0, 0, 0, 0);
-                HintBackColourBox.BackColour = Color.FromArgb(0, 0, 0, 0);
-                SystemBackColourBox.BackColour = Color.FromArgb(255, 255, 255, 255);
-                GainsBackColourBox.BackColour = Color.FromArgb(0, 0, 0, 0);
-                AnnouncementBackColourBox.BackColour = Color.FromArgb(255, 255, 255, 255);
+                LocalColourBox.BackColourControl.BackColour = Color.FromArgb(0, 0, 0, 0);
+                GMWhisperInColourBox.BackColourControl.BackColour = Color.FromArgb(255, 255, 255, 255);
+                WhisperInColourBox.BackColourControl.BackColour = Color.FromArgb(0, 0, 0, 0);
+                WhisperOutColourBox.BackColourControl.BackColour = Color.FromArgb(0, 0, 0, 0);
+                GroupColourBox.BackColourControl.BackColour = Color.FromArgb(0, 0, 0, 0);
+                GuildColourBox.BackColourControl.BackColour = Color.FromArgb(0, 0, 0, 0);
+                ShoutColourBox.BackColourControl.BackColour = Color.FromArgb(0, 0, 0, 0);
+                GlobalColourBox.BackColourControl.BackColour = Color.FromArgb(0, 0, 0, 0);
+                ObserverColourBox.BackColourControl.BackColour = Color.FromArgb(0, 0, 0, 0);
+                HintColourBox.BackColourControl.BackColour = Color.FromArgb(0, 0, 0, 0);
+                SystemColourBox.BackColourControl.BackColour = Color.FromArgb(255, 255, 255, 255);
+                GainsColourBox.BackColourControl.BackColour = Color.FromArgb(0, 0, 0, 0);
+                AnnouncementColourBox.BackColourControl.BackColour = Color.FromArgb(255, 255, 255, 255);
             };
+            uiColoursSection.AddControl("", ResetColoursButton);
 
             #endregion
 
-            SaveButton = new DXButton
-            {
-                Location = new Point(Size.Width - 190, Size.Height - 43),
-                Size = new Size(80, DefaultHeight),
-                Parent = this,
-                Label = { Text = CEnvir.Language.CommonControlApply }
-            };
-            SaveButton.MouseClick += SaveSettings;
-
-            CancelButton = new DXButton
-            {
-                Location = new Point(Size.Width - 100, Size.Height - 43),
-                Size = new Size(80, DefaultHeight),
-                Parent = this,
-                Label = { Text = CEnvir.Language.CommonControlCancel }
-            };
-            CancelButton.MouseClick += CancelSettings;
+            #endregion
         }
-
-        #region Methods
-        private void CancelSettings(object o, MouseEventArgs e)
-        {
-            Visible = false;
-        }
-        private void SaveSettings(object o, MouseEventArgs e)
-        {
-            if (Config.FullScreen != FullScreenCheckBox.Checked)
-            {
-                DXManager.ToggleFullScreen();
-            }
-
-            if (GameSizeComboBox.SelectedItem is Size && Config.GameSize != (Size)GameSizeComboBox.SelectedItem)
-            {
-                Config.GameSize = (Size)GameSizeComboBox.SelectedItem;
-
-                if (ActiveScene is GameScene)
-                {
-                    ActiveScene.Size = Config.GameSize;
-                    DXManager.SetResolution(ActiveScene.Size);
-                }
-            }
-
-            if (LanguageComboBox.SelectedItem is string && Config.Language != (string)LanguageComboBox.SelectedItem)
-            {
-                Config.Language = (string)LanguageComboBox.SelectedItem;
-
-                CEnvir.LoadLanguage();
-
-                if (CEnvir.Connection != null && CEnvir.Connection.ServerConnected)
-                    CEnvir.Enqueue(new C.SelectLanguage { Language = Config.Language });
-            }
-
-
-            if (Config.VSync != VSyncCheckBox.Checked)
-            {
-                Config.VSync = VSyncCheckBox.Checked;
-                DXManager.ResetDevice();
-            }
-
-            Config.LimitFPS = LimitFPSCheckBox.Checked;
-            Config.SmoothMove = SmoothMoveCheckBox.Checked;
-            Config.ClipMouse = ClipMouseCheckBox.Checked;
-            Config.DebugLabel = DebugLabelCheckBox.Checked;
-
-            DebugLabel.IsVisible = Config.DebugLabel;
-            PingLabel.IsVisible = Config.DebugLabel;
-
-            if (Config.SoundInBackground != BackgroundSoundBox.Checked)
-            {
-                Config.SoundInBackground = BackgroundSoundBox.Checked;
-
-                DXSoundManager.UpdateFlags();
-            }
-
-
-            bool volumeChanged = false;
-
-
-            if (Config.SystemVolume != SystemVolumeBox.Value)
-            {
-                Config.SystemVolume = (int)SystemVolumeBox.Value;
-                volumeChanged = true;
-            }
-
-
-            if (Config.MusicVolume != MusicVolumeBox.Value)
-            {
-                Config.MusicVolume = (int)MusicVolumeBox.Value;
-                volumeChanged = true;
-            }
-
-
-            if (Config.PlayerVolume != PlayerVolumeBox.Value)
-            {
-                Config.PlayerVolume = (int)PlayerVolumeBox.Value;
-                volumeChanged = true;
-            }
-
-            if (Config.MonsterVolume != MonsterVolumeBox.Value)
-            {
-                Config.MonsterVolume = (int)MonsterVolumeBox.Value;
-                volumeChanged = true;
-            }
-
-            if (Config.MagicVolume != SpellVolumeBox.Value)
-            {
-                Config.MagicVolume = (int)SpellVolumeBox.Value;
-                volumeChanged = true;
-            }
-
-            Config.ShowItemNames = ItemNameCheckBox.Checked;
-            Config.ShowMonsterNames = MonsterNameCheckBox.Checked;
-            Config.ShowPlayerNames = PlayerNameCheckBox.Checked;
-            Config.ShowUserHealth = UserHealthCheckBox.Checked;
-            Config.ShowMonsterHealth = MonsterHealthCheckBox.Checked;
-            Config.ShowDamageNumbers = DamageNumbersCheckBox.Checked;
-
-            Config.EscapeCloseAll = EscapeCloseAllCheckBox.Checked;
-            Config.ShiftOpenChat = ShiftOpenChatCheckBox.Checked;
-            Config.RightClickDeTarget = RightClickDeTargetCheckBox.Checked;
-            Config.MonsterBoxVisible = MonsterBoxVisibleCheckBox.Checked;
-            Config.LogChat = LogChatCheckBox.Checked;
-            Config.DrawEffects = DrawEffectsCheckBox.Checked;
-            Config.DrawParticles = DrawParticlesCheckBox.Checked;
-            Config.DrawWeather = DrawWeatherCheckBox.Checked;
-            Config.HideChatBar = HideChatBarCheckBox.Checked;
-
-            if (volumeChanged)
-                DXSoundManager.AdjustVolume();
-
-            Config.UseNetworkConfig = UseNetworkConfigCheckBox.Checked;
-            Config.IPAddress = IPAddressTextBox.TextBox.Text;
-            Config.Port = (int)PortBox.Value;
-
-
-            bool coloursChanged = false;
-
-            //Fore Colours
-
-            if (Config.LocalTextForeColour != LocalForeColourBox.BackColour)
-            {
-                Config.LocalTextForeColour = LocalForeColourBox.BackColour;
-                coloursChanged = true;
-            }
-
-            if (Config.GMWhisperInTextForeColour != GMWhisperInForeColourBox.BackColour)
-            {
-                Config.GMWhisperInTextForeColour = GMWhisperInForeColourBox.BackColour;
-                coloursChanged = true;
-            }
-
-            if (Config.WhisperInTextForeColour != WhisperInForeColourBox.BackColour)
-            {
-                Config.WhisperInTextForeColour = WhisperInForeColourBox.BackColour;
-                coloursChanged = true;
-            }
-
-            if (Config.WhisperOutTextForeColour != WhisperOutForeColourBox.BackColour)
-            {
-                Config.WhisperOutTextForeColour = WhisperOutForeColourBox.BackColour;
-                coloursChanged = true;
-            }
-
-            if (Config.GroupTextForeColour != GroupForeColourBox.BackColour)
-            {
-                Config.GroupTextForeColour = GroupForeColourBox.BackColour;
-                coloursChanged = true;
-            }
-
-            if (Config.GuildTextForeColour != GuildForeColourBox.BackColour)
-            {
-                Config.GuildTextForeColour = GuildForeColourBox.BackColour;
-                coloursChanged = true;
-            }
-
-            if (Config.ShoutTextForeColour != ShoutForeColourBox.BackColour)
-            {
-                Config.ShoutTextForeColour = ShoutForeColourBox.BackColour;
-                coloursChanged = true;
-            }
-
-            if (Config.GlobalTextForeColour != GlobalForeColourBox.BackColour)
-            {
-                Config.GlobalTextForeColour = GlobalForeColourBox.BackColour;
-                coloursChanged = true;
-            }
-
-            if (Config.ObserverTextForeColour != ObserverForeColourBox.BackColour)
-            {
-                Config.ObserverTextForeColour = ObserverForeColourBox.BackColour;
-                coloursChanged = true;
-            }
-
-            if (Config.HintTextForeColour != HintForeColourBox.BackColour)
-            {
-                Config.HintTextForeColour = HintForeColourBox.BackColour;
-                coloursChanged = true;
-            }
-
-            if (Config.SystemTextForeColour != SystemForeColourBox.BackColour)
-            {
-                Config.SystemTextForeColour = SystemForeColourBox.BackColour;
-                coloursChanged = true;
-            }
-
-            if (Config.GainsTextForeColour != GainsForeColourBox.BackColour)
-            {
-                Config.GainsTextForeColour = GainsForeColourBox.BackColour;
-                coloursChanged = true;
-            }
-
-            if (Config.AnnouncementTextForeColour != AnnouncementForeColourBox.BackColour)
-            {
-                Config.AnnouncementTextForeColour = AnnouncementForeColourBox.BackColour;
-                coloursChanged = true;
-            }
-
-            //Back Colours
-
-            if (Config.LocalTextBackColour != LocalBackColourBox.BackColour)
-            {
-                Config.LocalTextBackColour = LocalBackColourBox.BackColour;
-                coloursChanged = true;
-            }
-
-            if (Config.GMWhisperInTextBackColour != GMWhisperInBackColourBox.BackColour)
-            {
-                Config.GMWhisperInTextBackColour = GMWhisperInBackColourBox.BackColour;
-                coloursChanged = true;
-            }
-
-            if (Config.WhisperInTextBackColour != WhisperInBackColourBox.BackColour)
-            {
-                Config.WhisperInTextBackColour = WhisperInBackColourBox.BackColour;
-                coloursChanged = true;
-            }
-
-            if (Config.WhisperOutTextBackColour != WhisperOutBackColourBox.BackColour)
-            {
-                Config.WhisperOutTextBackColour = WhisperOutBackColourBox.BackColour;
-                coloursChanged = true;
-            }
-
-            if (Config.GroupTextBackColour != GroupBackColourBox.BackColour)
-            {
-                Config.GroupTextBackColour = GroupBackColourBox.BackColour;
-                coloursChanged = true;
-            }
-
-            if (Config.GuildTextBackColour != GuildBackColourBox.BackColour)
-            {
-                Config.GuildTextBackColour = GuildBackColourBox.BackColour;
-                coloursChanged = true;
-            }
-
-            if (Config.ShoutTextBackColour != ShoutBackColourBox.BackColour)
-            {
-                Config.ShoutTextBackColour = ShoutBackColourBox.BackColour;
-                coloursChanged = true;
-            }
-
-            if (Config.GlobalTextBackColour != GlobalBackColourBox.BackColour)
-            {
-                Config.GlobalTextBackColour = GlobalBackColourBox.BackColour;
-                coloursChanged = true;
-            }
-
-            if (Config.ObserverTextBackColour != ObserverBackColourBox.BackColour)
-            {
-                Config.ObserverTextBackColour = ObserverBackColourBox.BackColour;
-                coloursChanged = true;
-            }
-
-            if (Config.HintTextBackColour != HintBackColourBox.BackColour)
-            {
-                Config.HintTextBackColour = HintBackColourBox.BackColour;
-                coloursChanged = true;
-            }
-
-            if (Config.SystemTextBackColour != SystemBackColourBox.BackColour)
-            {
-                Config.SystemTextBackColour = SystemBackColourBox.BackColour;
-                coloursChanged = true;
-            }
-
-            if (Config.GainsTextBackColour != GainsBackColourBox.BackColour)
-            {
-                Config.GainsTextBackColour = GainsBackColourBox.BackColour;
-                coloursChanged = true;
-            }
-
-            if (Config.AnnouncementTextBackColour != AnnouncementBackColourBox.BackColour)
-            {
-                Config.AnnouncementTextBackColour = AnnouncementBackColourBox.BackColour;
-                coloursChanged = true;
-            }
-
-
-            if (coloursChanged && GameScene.Game != null)
-            {
-                foreach (ChatTab tab in ChatTab.Tabs)
-                    tab.UpdateColours();
-            }
-        }
-
-        public override void OnKeyDown(KeyEventArgs e)
-        {
-            base.OnKeyDown(e);
-
-            switch (e.KeyCode)
-            {
-                case Keys.Escape:
-                    Visible = false;
-                    break;
-            }
-        }
-        #endregion
 
         #region IDisposable
 
@@ -1223,6 +1078,21 @@ namespace Client.Controls
             {
                 if (ActiveConfig == this)
                     ActiveConfig = null;
+
+                if (TitleLabel != null)
+                {
+                    if (!TitleLabel.IsDisposed)
+                        TitleLabel.Dispose();
+                    TitleLabel = null;
+                }
+
+                if (CloseButton  != null)
+                {
+                    if (!CloseButton.IsDisposed)
+                        CloseButton.Dispose();
+
+                    CloseButton = null;
+                }
 
                 if (TabControl != null)
                 {
@@ -1301,6 +1171,23 @@ namespace Client.Controls
 
                     GameSizeComboBox = null;
                 }
+
+                if (DefaultMonitorComboBox != null)
+                {
+                    if (!DefaultMonitorComboBox.IsDisposed)
+                        DefaultMonitorComboBox.Dispose();
+
+                    DefaultMonitorComboBox = null;
+                }
+
+                if (RenderingPipelineComboBox != null)
+                {
+                    if (!RenderingPipelineComboBox.IsDisposed)
+                        RenderingPipelineComboBox.Dispose();
+
+                    RenderingPipelineComboBox = null;
+                }
+
                 if (LanguageComboBox != null)
                 {
                     if (!LanguageComboBox.IsDisposed)
@@ -1312,6 +1199,7 @@ namespace Client.Controls
                 #endregion
 
                 #region Sound
+
                 if (SoundTab != null)
                 {
                     if (!SoundTab.IsDisposed)
@@ -1320,44 +1208,44 @@ namespace Client.Controls
                     SoundTab = null;
                 }
 
-                if (SystemVolumeBox != null)
+                if (SoundSystemBar != null)
                 {
-                    if (!SystemVolumeBox.IsDisposed)
-                        SystemVolumeBox.Dispose();
+                    if (!SoundSystemBar.IsDisposed)
+                        SoundSystemBar.Dispose();
 
-                    SystemVolumeBox = null;
+                    SoundSystemBar = null;
                 }
 
-                if (MusicVolumeBox != null)
+                if (SoundMusicBar != null)
                 {
-                    if (!MusicVolumeBox.IsDisposed)
-                        MusicVolumeBox.Dispose();
+                    if (!SoundMusicBar.IsDisposed)
+                        SoundMusicBar.Dispose();
 
-                    MusicVolumeBox = null;
+                    SoundMusicBar = null;
                 }
 
-                if (PlayerVolumeBox != null)
+                if (SoundPlayerBar != null)
                 {
-                    if (!PlayerVolumeBox.IsDisposed)
-                        PlayerVolumeBox.Dispose();
+                    if (!SoundPlayerBar.IsDisposed)
+                        SoundPlayerBar.Dispose();
 
-                    PlayerVolumeBox = null;
+                    SoundPlayerBar = null;
                 }
 
-                if (MonsterVolumeBox != null)
+                if (SoundMonsterBar != null)
                 {
-                    if (!MonsterVolumeBox.IsDisposed)
-                        MonsterVolumeBox.Dispose();
+                    if (!SoundMonsterBar.IsDisposed)
+                        SoundMonsterBar.Dispose();
 
-                    MonsterVolumeBox = null;
+                    SoundMonsterBar = null;
                 }
 
-                if (SpellVolumeBox != null)
+                if (SoundMagicBar != null)
                 {
-                    if (!SpellVolumeBox.IsDisposed)
-                        SpellVolumeBox.Dispose();
+                    if (!SoundMagicBar.IsDisposed)
+                        SoundMagicBar.Dispose();
 
-                    SpellVolumeBox = null;
+                    SoundMagicBar = null;
                 }
 
                 if (BackgroundSoundBox != null)
@@ -1370,6 +1258,10 @@ namespace Client.Controls
                 #endregion
 
                 #region Game
+
+                _Observable = false;
+                ObserverableChanged = null;
+
                 if (GameTab != null)
                 {
                     if (!GameTab.IsDisposed)
@@ -1435,6 +1327,14 @@ namespace Client.Controls
                     DrawParticlesCheckBox = null;
                 }
 
+                if (DrawEffectsCheckBox != null)
+                {
+                    if (!DrawEffectsCheckBox.IsDisposed)
+                        DrawEffectsCheckBox.Dispose();
+
+                    DrawEffectsCheckBox = null;
+                }
+
 
                 if (DisplayHelmetCheckBox != null)
                 {
@@ -1493,6 +1393,36 @@ namespace Client.Controls
                     LogChatCheckBox = null;
                 }
 
+                if (DrawParticlesCheckBox != null)
+                {
+                    if (!DrawParticlesCheckBox.IsDisposed)
+                        DrawParticlesCheckBox.Dispose();
+
+                    DrawParticlesCheckBox = null;
+                }
+
+                if (DrawWeatherCheckBox != null)
+                {
+                    if (!DrawWeatherCheckBox.IsDisposed)
+                        DrawWeatherCheckBox.Dispose();
+
+                    DrawWeatherCheckBox = null;
+                }
+
+                if (ShowTargetOutlineCheckBox != null)
+                {
+                    if (!ShowTargetOutlineCheckBox.IsDisposed)
+                        ShowTargetOutlineCheckBox.Dispose();
+                    ShowTargetOutlineCheckBox = null;
+                }
+
+                if (ObservableCheckBox != null)
+                {
+                    if (!ObservableCheckBox.IsDisposed)
+                        ObservableCheckBox.Dispose();
+                    ObservableCheckBox = null;
+                }
+
                 if (KeyBindButton != null)
                 {
                     if (!KeyBindButton.IsDisposed)
@@ -1500,9 +1430,11 @@ namespace Client.Controls
 
                     KeyBindButton = null;
                 }
+
                 #endregion
 
                 #region Network
+
                 if (NetworkTab != null)
                 {
                     if (!NetworkTab.IsDisposed)
@@ -1537,126 +1469,678 @@ namespace Client.Controls
                 #endregion
 
                 #region Colours
-                if (ColourTab != null)
-                {
-                    if (!ColourTab.IsDisposed)
-                        ColourTab.Dispose();
 
-                    ColourTab = null;
+                if (UITab != null)
+                {
+                    if (!UITab.IsDisposed)
+                        UITab.Dispose();
+
+                    UITab = null;
                 }
 
-                if (LocalForeColourBox != null)
+                if (ResetColoursButton != null)
                 {
-                    if (!LocalForeColourBox.IsDisposed)
-                        LocalForeColourBox.Dispose();
+                    if (!ResetColoursButton.IsDisposed)
+                        ResetColoursButton.Dispose();
 
-                    LocalForeColourBox = null;
+                    ResetColoursButton = null;
                 }
 
-                if (GMWhisperInForeColourBox != null)
+                if (LocalColourBox != null)
                 {
-                    if (!GMWhisperInForeColourBox.IsDisposed)
-                        GMWhisperInForeColourBox.Dispose();
+                    if (!LocalColourBox.IsDisposed)
+                        LocalColourBox.Dispose();
 
-                    GMWhisperInForeColourBox = null;
+                    LocalColourBox = null;
                 }
 
-                if (WhisperInForeColourBox != null)
+                if (GMWhisperInColourBox != null)
                 {
-                    if (!WhisperInForeColourBox.IsDisposed)
-                        WhisperInForeColourBox.Dispose();
+                    if (!GMWhisperInColourBox.IsDisposed)
+                        GMWhisperInColourBox.Dispose();
 
-                    WhisperInForeColourBox = null;
+                    GMWhisperInColourBox = null;
                 }
 
-                if (WhisperOutForeColourBox != null)
+                if (WhisperInColourBox != null)
                 {
-                    if (!WhisperOutForeColourBox.IsDisposed)
-                        WhisperOutForeColourBox.Dispose();
+                    if (!WhisperInColourBox.IsDisposed)
+                        WhisperInColourBox.Dispose();
 
-                    WhisperOutForeColourBox = null;
+                    WhisperInColourBox = null;
                 }
 
-                if (GroupForeColourBox != null)
+                if (WhisperOutColourBox != null)
                 {
-                    if (!GroupForeColourBox.IsDisposed)
-                        GroupForeColourBox.Dispose();
+                    if (!WhisperOutColourBox.IsDisposed)
+                        WhisperOutColourBox.Dispose();
 
-                    GroupForeColourBox = null;
+                    WhisperOutColourBox = null;
                 }
 
-                if (GuildForeColourBox != null)
+                if (GroupColourBox != null)
                 {
-                    if (!GuildForeColourBox.IsDisposed)
-                        GuildForeColourBox.Dispose();
+                    if (!GroupColourBox.IsDisposed)
+                        GroupColourBox.Dispose();
 
-                    GuildForeColourBox = null;
+                    GroupColourBox = null;
                 }
 
-                if (ShoutForeColourBox != null)
+                if (GuildColourBox != null)
                 {
-                    if (!ShoutForeColourBox.IsDisposed)
-                        ShoutForeColourBox.Dispose();
+                    if (!GuildColourBox.IsDisposed)
+                        GuildColourBox.Dispose();
 
-                    ShoutForeColourBox = null;
+                    GuildColourBox = null;
                 }
 
-                if (GlobalForeColourBox != null)
+                if (ShoutColourBox != null)
                 {
-                    if (!GlobalForeColourBox.IsDisposed)
-                        GlobalForeColourBox.Dispose();
+                    if (!ShoutColourBox.IsDisposed)
+                        ShoutColourBox.Dispose();
 
-                    GlobalForeColourBox = null;
+                    ShoutColourBox = null;
                 }
 
-                if (ObserverForeColourBox != null)
+                if (GlobalColourBox != null)
                 {
-                    if (!ObserverForeColourBox.IsDisposed)
-                        ObserverForeColourBox.Dispose();
+                    if (!GlobalColourBox.IsDisposed)
+                        GlobalColourBox.Dispose();
 
-                    ObserverForeColourBox = null;
+                    GlobalColourBox = null;
                 }
 
-                if (HintForeColourBox != null)
+                if (ObserverColourBox != null)
                 {
-                    if (!HintForeColourBox.IsDisposed)
-                        HintForeColourBox.Dispose();
+                    if (!ObserverColourBox.IsDisposed)
+                        ObserverColourBox.Dispose();
 
-                    HintForeColourBox = null;
+                    ObserverColourBox = null;
                 }
 
-                if (SystemForeColourBox != null)
+                if (HintColourBox != null)
                 {
-                    if (!SystemForeColourBox.IsDisposed)
-                        SystemForeColourBox.Dispose();
+                    if (!HintColourBox.IsDisposed)
+                        HintColourBox.Dispose();
 
-                    SystemForeColourBox = null;
+                    HintColourBox = null;
                 }
 
-                if (GainsForeColourBox != null)
+                if (SystemColourBox != null)
                 {
-                    if (!GainsForeColourBox.IsDisposed)
-                        GainsForeColourBox.Dispose();
+                    if (!SystemColourBox.IsDisposed)
+                        SystemColourBox.Dispose();
 
-                    GainsForeColourBox = null;
+                    SystemColourBox = null;
                 }
+
+                if (GainsColourBox != null)
+                {
+                    if (!GainsColourBox.IsDisposed)
+                        GainsColourBox.Dispose();
+
+                    GainsColourBox = null;
+                }
+
+                if (AnnouncementColourBox != null)
+                {
+                    if (!AnnouncementColourBox.IsDisposed)
+                        AnnouncementColourBox.Dispose();
+
+                    AnnouncementColourBox = null;
+                }
+
+                
                 #endregion
 
-                if (SaveButton != null)
-                {
-                    if (!SaveButton.IsDisposed)
-                        SaveButton.Dispose();
+                #region Target Colours
 
-                    SaveButton = null;
+                if (TargetMonsterLowLevelColourBox != null)
+                {
+                    if (!TargetMonsterLowLevelColourBox.IsDisposed)
+                        TargetMonsterLowLevelColourBox.Dispose();
+
+                    TargetMonsterLowLevelColourBox = null;
                 }
 
-                if (CancelButton != null)
+                if (TargetMonsterSameLevelColourBox != null)
                 {
-                    if (!CancelButton.IsDisposed)
-                        CancelButton.Dispose();
+                    if (!TargetMonsterSameLevelColourBox.IsDisposed)
+                        TargetMonsterSameLevelColourBox.Dispose();
 
-                    CancelButton = null;
+                    TargetMonsterSameLevelColourBox = null;
                 }
+
+                if (TargetMonsterHighLevelColourBox != null)
+                {
+                    if (!TargetMonsterHighLevelColourBox.IsDisposed)
+                        TargetMonsterHighLevelColourBox.Dispose();
+
+                    TargetMonsterHighLevelColourBox = null;
+                }
+
+                if (TargetNPCColourBox != null)
+                {
+                    if (!TargetNPCColourBox.IsDisposed)
+                        TargetNPCColourBox.Dispose();
+
+                    TargetNPCColourBox = null;
+                }
+
+                if (TargetPlayerFriendlyColourBox != null)
+                {
+                    if (!TargetPlayerFriendlyColourBox.IsDisposed)
+                        TargetPlayerFriendlyColourBox.Dispose();
+                    TargetPlayerFriendlyColourBox = null;
+                }
+
+                if (TargetPlayerEnemyColourBox != null)
+                {
+                    if (!TargetPlayerEnemyColourBox.IsDisposed)
+                        TargetPlayerEnemyColourBox.Dispose();
+                    TargetPlayerEnemyColourBox = null;
+                }
+
+                if (ResetTargetColoursButton != null)
+                {
+                    if (!ResetTargetColoursButton.IsDisposed)
+                        ResetTargetColoursButton.Dispose();
+
+                    ResetTargetColoursButton = null;
+                }
+
+                #endregion
+            }
+        }
+
+        #endregion
+    }
+
+    public sealed class DXConfigTab : DXTab
+    {
+        public int ScrollOffsetY;
+
+        public List<DXConfigSection> Sections = [];
+
+        public DXConfigTab()
+        {
+            PassThrough = false;
+        }
+
+        public void AddSection(DXConfigSection newSection)
+        {
+            Sections.Add(newSection);
+
+            int y = 0;
+
+            foreach (var section in Sections)
+            {
+                section.Location = new Point(0, y);
+
+                y += section.Size.Height;
+            }
+        }
+
+        public override void OnMouseWheel(MouseEventArgs e)
+        {
+            base.OnMouseWheel(e);
+
+            var changed = e.Delta / SystemInformation.MouseWheelScrollDelta * 10;
+
+            var tempValue = ScrollOffsetY + changed;
+
+            var totalHeight = Sections.Sum(x => x.Size.Height) + 10;
+
+            var currentBottom = -tempValue + totalHeight;
+
+            if (currentBottom <= Size.Height || tempValue < 0)
+            {
+                return;
+            }
+
+            ScrollOffsetY = tempValue;
+
+            int y = -ScrollOffsetY;
+
+            foreach (DXControl control in Controls)
+            {
+                if (control is not DXConfigSection) continue;
+
+                control.Location = new Point(0, y);
+                y += control.Size.Height;
+            }
+        }
+
+        protected override void DrawChildControls()
+        {
+            foreach (DXConfigSection section in Sections)
+                DrawConfigChild(section);
+
+            foreach (DXControl control in Controls)
+            {
+                if (control is DXConfigSection) continue;
+
+                DrawConfigChild(control);
+            }
+        }
+
+        private static void DrawConfigChild(DXControl control)
+        {
+            if (control == null || !control.IsVisible || control.DisplayArea.Width <= 0 || control.DisplayArea.Height <= 0)
+                return;
+
+            control.Draw();
+        }
+
+        #region IDisposable
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                foreach (var section in Sections)
+                {
+                    if (section != null)
+                    {
+                        if (!section.IsDisposed)
+                            section.Dispose();
+                    }
+                }
+                Sections.Clear();
+            }
+        }
+
+        #endregion
+    }
+
+    public sealed class DXConfigSection : DXControl
+    {
+        public DXLabel TitleLabel;
+        public int Columns;
+
+        public DXImageControl HeaderImage, FooterImage;
+        public List<DXImageControl> BodyImages = new();
+        private int _activeBodyImageCount;
+
+        public List<ConfigControl> ConfigControls = new();
+
+        public class ConfigControl
+        {
+            public DXLabel Label { get; set; }
+            public DXControl Control { get; set; }
+        }
+
+        public DXConfigSection(string title)
+        {
+            Size = new Size(348, 30);
+            PassThrough = true;
+            ApplyRenderingMode();
+
+            HeaderImage = new DXImageControl
+            {
+                Index = 4750,
+                LibraryFile = LibraryFile.GameInter,
+                Parent = this,
+                IsControl = false,
+                PassThrough = true,
+                Location = new Point(0, 0)
+            };
+
+            for (int i = 0; i < 2; i++)
+            {
+                BodyImages.Add(new DXImageControl
+                {
+                    Index = 4751,
+                    LibraryFile = LibraryFile.GameInter,
+                    Parent = this,
+                    IsControl = false,
+                    PassThrough = true
+                });
+            }
+
+            FooterImage = new DXImageControl
+            {
+                Index = 4752,
+                LibraryFile = LibraryFile.GameInter,
+                Parent = this,
+                IsControl = false,
+                PassThrough = true,
+                Location = new Point(0, HeaderImage.Size.Height)
+            };
+
+            TitleLabel = new DXLabel
+            {
+                Text = title,
+                Parent = this,
+                Size = new Size(Size.Width, 20),
+                PassThrough = true,
+                AutoSize = false,
+                Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
+                DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
+            };
+
+            ApplyRenderingMode();
+        }
+
+        public void AddControl(string label, DXControl control)
+        {
+            control.Parent = this;
+
+            if (control is DXCheckBox cb)
+            {
+                cb.Label.ForeColour = Color.FromArgb(169, 124, 67);
+                cb.Label.Outline = true;
+            }
+
+            ConfigControls.Add(new ConfigControl
+            {
+                Label = new DXLabel
+                {
+                    Text = label,
+                    ForeColour = Color.FromArgb(169, 124, 67),
+                    Outline = true,
+                    Parent = this,
+                },
+                Control = control
+            });
+
+            ApplyRenderingMode();
+            UpdateControlLocations();
+        }
+
+        public void UpdateControlLocations()
+        {
+            const int sectionWidth = 348;
+            const int headerHeight = 25;
+            const int controlHeight = 20;
+            const int footerHeight = 5;
+
+            LayoutImages();
+
+            int y = headerHeight;
+
+            if (Columns == 1)
+            {
+                LayoutSingleColumnControls(ref y, controlHeight);
+            }
+            else if (Columns == 2)
+            {
+                LayoutTwoColumnControls(ref y, controlHeight);
+            }
+
+            Size = new Size(sectionWidth, y + footerHeight);
+        }
+
+        private void LayoutImages()
+        {
+            var imageY = HeaderImage.Size.Height;
+
+            int rowCount = (int)Math.Ceiling(ConfigControls.Count / (double)Columns);
+            int bodyCount = rowCount * 5;
+            _activeBodyImageCount = bodyCount;
+
+            HeaderImage.Location = new Point(0, 0);
+
+            for (int i = 0; i < bodyCount; i++)
+            {
+                if (BodyImages.Count < bodyCount)
+                {
+                    DXImageControl img;
+                    BodyImages.Add(img = new DXImageControl
+                    {
+                        Index = 4751,
+                        LibraryFile = LibraryFile.GameInter,
+                        Parent = this,
+                        IsControl = false,
+                        PassThrough = true,
+                    });
+
+                    var firstIndex = Controls.IndexOf(BodyImages[0]);
+
+                    Controls.Remove(img);
+                    Controls.Insert(firstIndex, img);
+                }
+
+                BodyImages[i].Location = new Point(0, imageY);
+
+                imageY += BodyImages[i].Size.Height;
+            }
+
+            FooterImage.Location = new Point(0, imageY);
+            ApplyRenderingMode();
+        }
+
+        protected override void OnBeforeDraw()
+        {
+            ApplyRenderingMode();
+            base.OnBeforeDraw();
+        }
+
+        private void ApplyRenderingMode()
+        {
+            bool useCachedTexture = RenderingPipelineManager.SupportsCachedRenderTargets;
+
+            DrawTexture = useCachedTexture;
+
+            if (HeaderImage != null) HeaderImage.Visible = !useCachedTexture;
+            if (FooterImage != null) FooterImage.Visible = !useCachedTexture;
+            if (TitleLabel != null) TitleLabel.Visible = !useCachedTexture;
+
+            for (int i = 0; i < BodyImages.Count; i++)
+                BodyImages[i].Visible = !useCachedTexture && i < _activeBodyImageCount;
+
+            foreach (ConfigControl control in ConfigControls)
+                control.Label.Visible = !useCachedTexture;
+        }
+
+        protected override void OnClearTexture()
+        {
+            if (!DrawTexture) return;
+
+            base.OnClearTexture();
+
+            DrawSectionBackgroundImage(HeaderImage);
+
+            foreach (DXImageControl image in BodyImages)
+                DrawSectionBackgroundImage(image);
+
+            DrawSectionBackgroundImage(FooterImage);
+
+            DrawSectionLabel(TitleLabel);
+
+            foreach (ConfigControl control in ConfigControls)
+                DrawSectionLabel(control.Label);
+        }
+
+        private static void DrawSectionBackgroundImage(DXImageControl image)
+        {
+            if (image?.Library == null || image.Index < 0) return;
+
+            if (!image.Library.TryGetTexture(image.Index, ImageType.Image, out MirImage mirImage, out RenderTexture texture, out Rectangle? sourceRectangle))
+                return;
+
+            Rectangle source = sourceRectangle ?? new Rectangle(0, 0, mirImage.Width, mirImage.Height);
+            if (source.Width <= 0 || source.Height <= 0) return;
+
+            RectangleF destination = new RectangleF(image.Location.X, image.Location.Y, source.Width, source.Height);
+            RenderingPipelineManager.DrawTexture(texture, source, destination, Color.White);
+        }
+
+        private static void DrawSectionLabel(DXLabel label)
+        {
+            if (label == null || label.Size.Width <= 0 || label.Size.Height <= 0) return;
+
+            label.DrawTextureTo(new RectangleF(label.Location.X, label.Location.Y, label.Size.Width, label.Size.Height));
+        }
+
+        private void LayoutSingleColumnControls(ref int y, int controlHeight)
+        {
+            foreach (var control in ConfigControls)
+            {
+                GetSingleColumnAlignment(control.Control, out int labelAlignX, out int controlAlignX);
+
+                control.Label.Location = new Point(DisplayArea.Right - labelAlignX - control.Label.Size.Width, y);
+
+                control.Control.Location = new Point(DisplayArea.Right - controlAlignX - control.Control.Size.Width, y);
+
+                y += controlHeight;
+            }
+        }
+
+        private void LayoutTwoColumnControls(ref int y, int controlHeight)
+        {
+            int labelAlignX = 175;
+            int controlAlignX = 25;
+
+            int rowItems = 0;
+            const int colOffset = 175;
+
+            foreach (var control in ConfigControls)
+            {
+                if (control.Control is DXColourControlPair || control.Control is DXColourControl)
+                {
+                    labelAlignX = 70;
+                }
+
+                bool isLeftColumn = rowItems == 0;
+                int columnOffset = isLeftColumn ? colOffset : 0;
+
+                control.Label.Location = new Point(DisplayArea.Right - labelAlignX - columnOffset - control.Label.Size.Width, y);
+
+                control.Control.Location = new Point(DisplayArea.Right - controlAlignX - columnOffset - control.Control.Size.Width, y);
+
+                rowItems++;
+
+                if (rowItems == 2)
+                {
+                    y += controlHeight;
+                    rowItems = 0;
+                }
+            }
+
+            // Handle last partial row
+            if (rowItems > 0)
+            {
+                y += controlHeight;
+            }
+        }
+
+        private void GetSingleColumnAlignment(DXControl control, out int labelAlignX, out int controlAlignX)
+        {
+            // Default alignment
+            labelAlignX = 230;
+            controlAlignX = 100;
+
+            if (control is DXSoundBar)
+            {
+                labelAlignX = 250;
+                controlAlignX = 70;
+            }
+            else if (control is DXCheckBox)
+            {
+                labelAlignX = 280;
+                controlAlignX = 100;
+            }
+            else if (control is DXButton)
+            {
+                labelAlignX = 0;
+                controlAlignX = (Size.Width - control.Size.Width) / 2;
+            }
+        }
+
+        protected override void DrawChildControls()
+        {
+            if (!DrawTexture)
+            {
+                base.DrawChildControls();
+                return;
+            }
+
+            foreach (ConfigControl control in ConfigControls)
+                DrawConfigChild(control.Control);
+
+            foreach (DXControl control in Controls)
+            {
+                if (control == HeaderImage || control == FooterImage || control == TitleLabel) continue;
+                if (control is DXImageControl image && BodyImages.Contains(image)) continue;
+                if (ConfigControls.Any(x => x.Label == control || x.Control == control)) continue;
+
+                DrawConfigChild(control);
+            }
+        }
+
+        private static void DrawConfigChild(DXControl control)
+        {
+            if (control == null || !control.IsVisible || control.DisplayArea.Width <= 0 || control.DisplayArea.Height <= 0)
+                return;
+
+            control.Draw();
+        }
+
+        #region IDisposable
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                if (TitleLabel != null)
+                {
+                    if (!TitleLabel.IsDisposed)
+                        TitleLabel.Dispose();
+
+                    TitleLabel = null;
+                }
+
+                if (HeaderImage != null)
+                {
+                    if (!HeaderImage.IsDisposed)
+                        HeaderImage.Dispose();
+
+                    HeaderImage = null;
+                }
+
+                foreach (var bodyImage in BodyImages)
+                {
+                    if (bodyImage != null)
+                    {
+                        if (!bodyImage.IsDisposed)
+                            bodyImage.Dispose();
+                    }
+                }
+                BodyImages.Clear();
+
+                if (FooterImage != null)
+                {
+                    if (!FooterImage.IsDisposed)
+                        FooterImage.Dispose();
+
+                    FooterImage = null;
+                }
+
+                foreach (var control in ConfigControls)
+                {
+                    if (control.Label != null)
+                    {
+                        if (!control.Label.IsDisposed)
+                            control.Label.Dispose();
+
+                        control.Label = null;
+                    }
+
+                    if (control.Control != null)
+                    {
+                        if (!control.Control.IsDisposed)
+                            control.Control.Dispose();
+
+                        control.Control = null;
+                    }
+                }
+
+                ConfigControls.Clear();
             }
         }
 

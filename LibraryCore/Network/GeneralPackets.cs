@@ -12,6 +12,7 @@
     public sealed class GoodVersion : Packet
     {
         public byte[] DatabaseKey { get; set; }
+        public string SystemDatabaseVersion { get; set; }
     }
     public sealed class PingResponse : Packet
     {

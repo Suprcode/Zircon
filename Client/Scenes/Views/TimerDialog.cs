@@ -215,19 +215,49 @@ namespace Client.Scenes.Views
                 default:
                 case 0:
                     _eggTimer.Visible = false;
-                    _eggTimer.Index = 960;
+                    _eggTimer.Index = 6600;
                     break;
                 case 1:
                     _eggTimer.Visible = true;
-                    _eggTimer.Index = 960;
+                    _eggTimer.Index = 6600;
                     break;
                 case 2:
                     _eggTimer.Visible = true;
-                    _eggTimer.Index = 440;
+                    _eggTimer.Index = 6600;
                     break;
             }
 
             _eggTimer.Loop = true;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (!disposing) return;
+
+            _timerStarted = false;
+            _timerCounter = 0;
+            CurrentTimer = null;
+            ActiveTimers.Clear();
+
+            if (_eggTimer != null && !_eggTimer.IsDisposed)
+                _eggTimer.Dispose();
+
+            if (_1000 != null && !_1000.IsDisposed)
+                _1000.Dispose();
+
+            if (_100 != null && !_100.IsDisposed)
+                _100.Dispose();
+
+            if (_10 != null && !_10.IsDisposed)
+                _10.Dispose();
+
+            if (_1 != null && !_1.IsDisposed)
+                _1.Dispose();
+
+            if (_colon != null && !_colon.IsDisposed)
+                _colon.Dispose();
         }
     }
 

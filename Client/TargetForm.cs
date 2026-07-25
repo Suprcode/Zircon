@@ -3,7 +3,6 @@ using Client.Envir;
 using Client.Models;
 using Client.Scenes;
 using Library;
-using SlimDX.Windows;
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -14,13 +13,15 @@ using Font = System.Drawing.Font;
 
 namespace Client
 {
-    public sealed class TargetForm : RenderForm
+    public sealed class TargetForm : Form
     {
         public bool Resizing { get; private set; }
 
-        public TargetForm() : base(Globals.ClientName)
+        public TargetForm()
         {
+            Text = Globals.ClientName;
             AutoScaleMode = AutoScaleMode.None;
+            BackColor = Color.Black;
 
             AutoScaleDimensions = new SizeF(96F, 96F);
 
@@ -31,6 +32,21 @@ namespace Client
             FormBorderStyle = (Config.FullScreen || Config.Borderless) ? FormBorderStyle.None : FormBorderStyle.FixedSingle;
 
             MaximizeBox = false;
+        }
+
+        protected override bool IsInputKey(Keys keyData)
+        {
+            if ((keyData & Keys.F10) == Keys.F10)
+            {
+                return true;
+            }
+
+            if ((keyData & Keys.Alt) == Keys.Alt)
+            {
+                return true;
+            }
+
+            return base.IsInputKey(keyData);
         }
 
         protected override void OnDeactivate(EventArgs e)
@@ -145,7 +161,7 @@ namespace Client
             {
                 if (e.Alt && e.KeyCode == Keys.Enter)
                 {
-                    DXManager.ToggleFullScreen();
+                    RenderingPipelineManager.ToggleFullScreen();
                     return;
                 }
 

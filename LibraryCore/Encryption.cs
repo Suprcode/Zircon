@@ -26,7 +26,7 @@ namespace Library
         private static bool IsEncrypted(Stream stream)
         {
             var buffer = new byte[21];
-            stream.Read(buffer, 0, 21);
+            stream.ReadExactly(buffer, 0, 21);
 
             var stringToCompare = Encoding.UTF8.GetString(buffer, 5, 16);
 
@@ -50,7 +50,7 @@ namespace Library
             if (isEncrypted)
             {
                 var iv = new byte[16];
-                stream.Read(iv, 0, 16);
+                stream.ReadExactly(iv, 0, 16);
 
                 var decryptor = _algorithm.CreateDecryptor(_cryptoKey, iv);
 

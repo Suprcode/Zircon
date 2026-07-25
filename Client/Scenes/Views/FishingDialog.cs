@@ -82,6 +82,7 @@ namespace Client.Scenes.Views
             Index = 220;
             Movable = true;
             Sort = true;
+            DropShadow = true;
 
             CloseButton = new DXButton
             {
@@ -106,6 +107,8 @@ namespace Client.Scenes.Views
                 GridType = GridType.Equipment,
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 221);
+            cell.MouseEnter += CharacterBox.Cell_MouseEnter;
+            cell.MouseLeave += CharacterBox.Cell_MouseLeave;
 
             CharacterBox.Grid[(int)EquipmentSlot.Float] = cell = new DXItemCell
             {
@@ -117,6 +120,8 @@ namespace Client.Scenes.Views
                 GridType = GridType.Equipment,
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 222);
+            cell.MouseEnter += CharacterBox.Cell_MouseEnter;
+            cell.MouseLeave += CharacterBox.Cell_MouseLeave;
 
             CharacterBox.Grid[(int)EquipmentSlot.Bait] = cell = new DXItemCell
             {
@@ -128,6 +133,8 @@ namespace Client.Scenes.Views
                 GridType = GridType.Equipment,
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 224);
+            cell.MouseEnter += CharacterBox.Cell_MouseEnter;
+            cell.MouseLeave += CharacterBox.Cell_MouseLeave;
 
             CharacterBox.Grid[(int)EquipmentSlot.Finder] = cell = new DXItemCell
             {
@@ -139,6 +146,8 @@ namespace Client.Scenes.Views
                 GridType = GridType.Equipment,
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 223);
+            cell.MouseEnter += CharacterBox.Cell_MouseEnter;
+            cell.MouseLeave += CharacterBox.Cell_MouseLeave;
 
             CharacterBox.Grid[(int)EquipmentSlot.Reel] = cell = new DXItemCell
             {
@@ -150,6 +159,8 @@ namespace Client.Scenes.Views
                 GridType = GridType.Equipment,
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 225);
+            cell.MouseEnter += CharacterBox.Cell_MouseEnter;
+            cell.MouseLeave += CharacterBox.Cell_MouseLeave;
         }
 
         #region Methods
@@ -369,11 +380,9 @@ namespace Client.Scenes.Views
 
                 if (percent == 0) return;
 
-                MirImage image = library.CreateImage(232, ImageType.Image);
+                if (!library.TryGetTexture(232, ImageType.Image, out MirImage image, out var texture, out var sourceRectangle)) return;
 
-                if (image == null) return;
-
-                PresentTexture(image.Image, this, new Rectangle(ProgressBar.DisplayArea.X, ProgressBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, ProgressBar);
+                PresentTexture(texture, sourceRectangle, this, new Rectangle(ProgressBar.DisplayArea.X, ProgressBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, ProgressBar);
             };
 
             MovingPointer = new DXImageControl

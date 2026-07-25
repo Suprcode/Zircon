@@ -1,6 +1,7 @@
-﻿using Client.Controls;
+using Client.Controls;
 using Client.Envir;
 using Client.Models;
+using Shared.Rendering;
 using Client.Scenes.Views.Character;
 using Client.UserModels;
 using Library;
@@ -36,6 +37,7 @@ namespace Client.Scenes.Views
 
         public DXImageControl MarriageIcon;
         public DXLabel MarriageLabel;
+        private DXControl FameControl;
 
         public DXButton CloseButton;
 
@@ -154,7 +156,15 @@ namespace Client.Scenes.Views
         {
             get
             {
-                return PlayerObject.CostumeShapeHideBody.Contains(Grid[(int)EquipmentSlot.Costume]?.Item?.Info.Shape ?? -1);
+                return Grid[(int)EquipmentSlot.Costume]?.Item?.Info != null;
+            }
+        }
+
+        private bool HideWeapon
+        {
+            get
+            {
+                return PlayerObject.CostumeShapeHideWeapon.Contains(Grid[(int)EquipmentSlot.Costume]?.Item?.Info.Shape ?? -1);
             }
         }
 
@@ -282,6 +292,7 @@ namespace Client.Scenes.Views
             Index = Inspect ? 115 : 110;
             Movable = true;
             Sort = true;
+            DropShadow = true;
 
             CloseButton = new DXButton
             {
@@ -397,6 +408,22 @@ namespace Client.Scenes.Views
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
                 Visible = false
             };
+
+            FameControl = new DXControl
+            {
+                Parent = CharacterTab,
+                Visible = true,
+                Size = new Size(34, 36),
+                Location = new Point(235, 16)
+            };
+            FameControl.MouseEnter += (o, e) =>
+            {
+                FameInfo info = Globals.FameInfoList.Binding.FirstOrDefault(x => x.Index == Fame);
+
+                GameScene.Game.MouseFame = info;
+            };
+            FameControl.MouseLeave += (o, e) => GameScene.Game.MouseFame = null;
+
 
             TabControl.SelectedTab = CharacterTab;
 
@@ -2436,6 +2463,7 @@ namespace Client.Scenes.Views
                 Label = { Text = CEnvir.Language.CharacterDisciplineTabButtonGainLabel },
                 Location = new Point(182, 266),
                 Size = new Size(120, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Enabled = false
             };
             DisciplineButton.MouseClick += (o, e) =>
@@ -2453,7 +2481,7 @@ namespace Client.Scenes.Views
             #endregion
         }
 
-        private void Cell_MouseLeave(object sender, EventArgs e)
+        internal void Cell_MouseLeave(object sender, EventArgs e)
         {
             foreach (var stat in DisplayStats.Keys)
                 DisplayStats[stat].ForeColour = Color.White;
@@ -2472,7 +2500,7 @@ namespace Client.Scenes.Views
             HandWeightLabel.ForeColour = Color.White;
         }
 
-        private void Cell_MouseEnter(object sender, EventArgs e)
+        internal void Cell_MouseEnter(object sender, EventArgs e)
         {
             DXItemCell cell = sender as DXItemCell;
 
@@ -2490,9 +2518,33 @@ namespace Client.Scenes.Views
                 foreach (var stat in DisadvantageStats.Keys)
                     DisadvantageStats[stat].ForeColour = HasStat(cell.Item, stat) ? Color.Orange : Color.White;
 
-                WearWeightLabel.ForeColour = cell.Item.Weight > 0 && (cell.Item.Info.ItemType != ItemType.Weapon && cell.Item.Info.ItemType != ItemType.Torch) ? Color.Orange : Color.White;
+                bool wearWeight = false, handWeight = false;
 
-                HandWeightLabel.ForeColour = cell.Item.Weight > 0 && (cell.Item.Info.ItemType == ItemType.Weapon || cell.Item.Info.ItemType == ItemType.Torch) ? Color.Orange : Color.White;
+                switch(cell.Item.Info.ItemType)
+                {
+                    case ItemType.Weapon:
+                    case ItemType.Torch:
+                    case ItemType.Shield:
+                        handWeight = true;
+                        break;
+                    case ItemType.Hook:
+                    case ItemType.Float:
+                    case ItemType.Reel:
+                        if (Equipment[(int)EquipmentSlot.Weapon]?.Info.ItemEffect != ItemEffect.FishingRod) break;
+                        handWeight = true;
+                        break;
+                    case ItemType.Bait:
+                    case ItemType.Finder:
+                        if (Equipment[(int)EquipmentSlot.Weapon]?.Info.ItemEffect != ItemEffect.FishingRod) break;
+                        wearWeight = true;
+                        break;
+                    default:
+                        wearWeight = true;
+                        break;
+                }
+
+                WearWeightLabel.ForeColour = wearWeight ? Color.Orange : Color.White;
+                HandWeightLabel.ForeColour = handWeight ? Color.Orange : Color.White;
             }
         }
 
@@ -2517,15 +2569,15 @@ namespace Client.Scenes.Views
                 MirImage image = FameEffectDecider.GetFameEffectImageOrNull(Fame, out int offSetX, out int offSetY);
                 if (image != null)
                 {
-                    bool oldBlend = DXManager.Blending;
-                    float oldRate = DXManager.BlendRate;
+                    bool oldBlend = RenderingPipelineManager.IsBlending();
+                    float oldRate = RenderingPipelineManager.GetBlendRate();
 
                     int x1 = 257 + offSetX;
                     int y1 = 76 + offSetY;
 
-                    DXManager.SetBlend(true, 0.8F);
+                    RenderingPipelineManager.SetBlend(true, 0.8F);
                     PresentTexture(image.Image, CharacterTab, new Rectangle(DisplayArea.X + x1 + image.OffSetX, DisplayArea.Y + y1 + image.OffSetY, image.Width, image.Height), ForeColour, this);
-                    DXManager.SetBlend(oldBlend, oldRate);
+                    RenderingPipelineManager.SetBlend(oldBlend, oldRate);
                 }
             }
 
@@ -2534,12 +2586,12 @@ namespace Client.Scenes.Views
                 MirImage image = EquipEffectDecider.GetEffectImageOrNull(armour, Gender);
                 if (image != null)
                 {
-                    bool oldBlend = DXManager.Blending;
-                    float oldRate = DXManager.BlendRate;
+                    bool oldBlend = RenderingPipelineManager.IsBlending();
+                    float oldRate = RenderingPipelineManager.GetBlendRate();
 
-                    DXManager.SetBlend(true, 0.8F);
+                    RenderingPipelineManager.SetBlend(true, 0.8F);
                     PresentTexture(image.Image, CharacterTab, new Rectangle(DisplayArea.X + x + image.OffSetX, DisplayArea.Y + y + image.OffSetY, image.Width, image.Height), ForeColour, this);
-                    DXManager.SetBlend(oldBlend, oldRate);
+                    RenderingPipelineManager.SetBlend(oldBlend, oldRate);
                 }
             }
 
@@ -2577,7 +2629,7 @@ namespace Client.Scenes.Views
                     library.Draw(armourIndex, DisplayArea.X + x, DisplayArea.Y + y, armour.Colour, true, 1F, ImageType.Overlay);
                 }
 
-                if (!HideBody)
+                if (!HideWeapon)
                 {
                     if (weapon != null)
                     {
@@ -2588,12 +2640,12 @@ namespace Client.Scenes.Views
                         MirImage image = EquipEffectDecider.GetEffectImageOrNull(weapon, Gender);
                         if (image != null)
                         {
-                            bool oldBlend = DXManager.Blending;
-                            float oldRate = DXManager.BlendRate;
+                            bool oldBlend = RenderingPipelineManager.IsBlending();
+                            float oldRate = RenderingPipelineManager.GetBlendRate();
 
-                            DXManager.SetBlend(true, 0.8F);
+                            RenderingPipelineManager.SetBlend(true, 0.8F);
                             PresentTexture(image.Image, CharacterTab, new Rectangle(DisplayArea.X + x + image.OffSetX, DisplayArea.Y + y + image.OffSetY, image.Width, image.Height), ForeColour, this);
-                            DXManager.SetBlend(oldBlend, oldRate);
+                            RenderingPipelineManager.SetBlend(oldBlend, oldRate);
                         }
                     }
 
@@ -2606,12 +2658,12 @@ namespace Client.Scenes.Views
                         MirImage image = EquipEffectDecider.GetEffectImageOrNull(shield, Gender);
                         if (image != null)
                         {
-                            bool oldBlend = DXManager.Blending;
-                            float oldRate = DXManager.BlendRate;
+                            bool oldBlend = RenderingPipelineManager.IsBlending();
+                            float oldRate = RenderingPipelineManager.GetBlendRate();
 
-                            DXManager.SetBlend(true, 0.8F);
+                            RenderingPipelineManager.SetBlend(true, 0.8F);
                             PresentTexture(image.Image, CharacterTab, new Rectangle(DisplayArea.X + x + image.OffSetX, DisplayArea.Y + y + image.OffSetY, image.Width, image.Height), ForeColour, this);
-                            DXManager.SetBlend(oldBlend, oldRate);
+                            RenderingPipelineManager.SetBlend(oldBlend, oldRate);
                         }
                     }
                 }
@@ -2716,12 +2768,12 @@ namespace Client.Scenes.Views
 
             if (image != null)
             {
-                bool oldBlend = DXManager.Blending;
-                float oldRate = DXManager.BlendRate;
+                bool oldBlend = RenderingPipelineManager.IsBlending();
+                float oldRate = RenderingPipelineManager.GetBlendRate();
 
-                DXManager.SetBlend(true, 0.8F);
+                RenderingPipelineManager.SetBlend(true, 0.8F);
                 PresentTexture(image.Image, CharacterTab, new Rectangle(cell.DisplayArea.X + image.OffSetX + x, cell.DisplayArea.Y + image.OffSetY + y, image.Width, image.Height), ForeColour, this);
-                DXManager.SetBlend(oldBlend, oldRate);
+                RenderingPipelineManager.SetBlend(oldBlend, oldRate);
             }
         }
 
@@ -2889,16 +2941,6 @@ namespace Client.Scenes.Views
                 DisciplineLevel.Index = 215;
                 DisciplineLevelLabel.Text = "0";
                 DisciplineExperienceLabel.Text = $"0/0";
-
-                List<MagicInfo> keys = new(DisciplineMagics.Keys);
-
-                foreach (var key in keys)
-                {
-                    DisciplineMagics[key].Dispose();
-                    DisciplineMagics[key] = null;
-                }
-
-                DisciplineMagics.Clear();
             }
             else
             {
@@ -2909,25 +2951,44 @@ namespace Client.Scenes.Views
                     DisciplineExperienceLabel.Text = $"{userDiscipline.Experience}/{nextLevel.RequiredExperience}";
                 else
                     DisciplineExperienceLabel.Text = $"{userDiscipline.Experience}/Max";
+            }
 
-                int x = 51;
+            int x = 51;
 
-                foreach (var magic in userDiscipline.Magics)
+            var mInfos = Globals.MagicInfoList.Binding
+                .Where(x => x.School == MagicSchool.Discipline && x.Class == GameScene.Game.User.Class)
+                .OrderBy(x => x.NeedLevel1)
+                .Take(4)
+                .ToList();
+
+            for (int i = 0; i < mInfos.Count; i++)
+            {
+                var info = mInfos[i];
+
+                var userInfo = userDiscipline?.Magics.FirstOrDefault(x => x.Info == info);
+
+                DisciplineMagicCell cell = null;
+
+                if (!DisciplineMagics.ContainsKey(info))
                 {
-                    if (!DisciplineMagics.ContainsKey(magic.Info))
+                    cell = new DisciplineMagicCell
                     {
-                        DisciplineMagicCell cell = new DisciplineMagicCell
-                        {
-                            Parent = DisciplineTab,
-                            Info = magic.Info,
-                            BackColour = Color.Empty,
-                            Location = new Point(x, 380)
-                        };
-                        DisciplineMagics[magic.Info] = cell;
-                    }
+                        Parent = DisciplineTab,
+                        Info = info,
+                        BackColour = Color.Empty,
+                        Location = new Point(x, 380)
+                    };
 
-                    x += 62;
+                    DisciplineMagics[info] = cell;
                 }
+                else
+                {
+                    cell = DisciplineMagics[info];
+                }
+
+                cell.Image.GrayScale = userInfo == null;
+
+                x += 62;
             }
         }
 
@@ -2950,7 +3011,6 @@ namespace Client.Scenes.Views
         }
 
         #endregion
-
 
         #region IDisposable
 
@@ -3040,6 +3100,13 @@ namespace Client.Scenes.Views
                     MarriageLabel = null;
                 }
 
+                if (FameControl != null)
+                {
+                    if (!FameControl.IsDisposed)
+                        FameControl.Dispose();
+
+                    FameControl = null;
+                }
 
                 if (StatsAttackTab != null)
                 {

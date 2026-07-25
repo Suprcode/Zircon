@@ -22,6 +22,15 @@ namespace Client.Envir.Translations
         public abstract string UnableToRefineIncorrectItem { get; set; }
         public abstract string UnableToRefineHasBeenLevelled { get; set; }
         public abstract string UnableToRefineNeedCorundumOre { get; set; }
+        public abstract string UnableToSocketNoTarget { get; set; }
+        public abstract string UnableToSocketNoMoreSockets { get; set; }
+        public abstract string UnableToSocketIncorrectTarget { get; set; }
+        public abstract string UnableToSocketIncorrectRarity { get; set; }
+        public abstract string UnableToSocketMissingItems { get; set; }
+        public abstract string UnableToSocketInvalidGem { get; set; }
+        public abstract string UnableToSocketNoAvailableSocket { get; set; }
+        public abstract string UnableToSocketMissingGems { get; set; }
+        public abstract string UnableToSocketMismatch { get; set; }
         public abstract string UnableToStoreInGuildStorage { get; set; }
         public abstract string OnlyBlackIronOreCanBeUsed { get; set; }
         public abstract string DoesntHaveSameStats { get; set; }
@@ -91,12 +100,19 @@ namespace Client.Envir.Translations
         public abstract string FilterConfigSaved { get; set; }
         public abstract string GroupMemberLimit { get; set; }
         public abstract string GroupNotLeader { get; set; }
+        public abstract string GroupAlreadyGrouped { get; set; }
+        public abstract string GroupSelf { get; set; }
+        public abstract string GroupLFGRequestDelay { get; set; }
+        public abstract string GroupLFGRequestSent { get; set; }
+        public abstract string GroupDialogNotAllowingGroupMessage { get; set; }
+        public abstract string GroupDialogCreateLFGButtonHint { get; set; }
         public abstract string MarketNoItemSelected { get; set; }
         public abstract string MarketInvalidPrice { get; set; }
         public abstract string BuySellOverweight { get; set; }
-        public abstract string BuySellNeedGold { get; set; }
+        public abstract string BuySellNeedCurrency { get; set; }
         public abstract string QuestSelectReward { get; set; }
         public abstract string CompanionNeedTicket { get; set; }
+        public abstract string CompanionNeedItem { get; set; }
         public abstract string RefineNeedIronOre { get; set; }
         public abstract string RefineNeedSilverOre { get; set; }
         public abstract string RefineNeedDiamond { get; set; }
@@ -115,6 +131,9 @@ namespace Client.Envir.Translations
         public abstract string CommonControlApply { get; set; }
         public abstract string CommonControlCancel { get; set; }
         public abstract string CommonControlClose { get; set; }
+        public abstract string CommonControlMiniMapSizeHint { get; set; }
+        public abstract string CommonControlMiniMapTransparencyHint { get; set; }
+        public abstract string CommonControlMiniMapBigMapHint { get; set; }
         public abstract string CommonControlConfirm { get; set; }
         public abstract string CommonControlExit { get; set; }
         public abstract string CommonControlNo { get; set; }
@@ -134,15 +153,28 @@ namespace Client.Envir.Translations
         public abstract string CommonControlConfigWindowSoundTabLabel { get; set; }
         public abstract string CommonControlConfigWindowGameTabLabel { get; set; }
         public abstract string CommonControlConfigWindowNetworkTabLabel { get; set; }
-        public abstract string CommonControlConfigWindowColoursTabLabel { get; set; }
+        public abstract string CommonControlConfigWindowUITabLabel { get; set; }
+        public abstract string CommonControlConfigWindowGraphicsSectionDisplayLabel { get; set; }
+        public abstract string CommonControlConfigWindowGraphicsSectionUsabilityLabel { get; set; }
+        public abstract string CommonControlConfigWindowGraphicsSectionEffectsLabel { get; set; }
+        public abstract string CommonControlConfigWindowSoundsSectionOptionsLabel { get; set; }
+        public abstract string CommonControlConfigWindowSoundsSectionVolumeLabel { get; set; }
+        public abstract string CommonControlConfigWindowGameSectionSettingsLabel { get; set; }
+        public abstract string CommonControlConfigWindowNetworkSectionSettingsLabel { get; set; }
+        public abstract string CommonControlConfigWindowUISectionSettingsLabel { get; set; }
+        public abstract string CommonControlConfigWindowUISectionColoursLabel { get; set; }
+        public abstract string CommonControlConfigWindowUISectionTargetColoursLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabFullScreenLabel { get; set; }
+        public abstract string CommonControlConfigWindowGraphicsTabBorderlessLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabGameSizeLabel { get; set; }
+        public abstract string CommonControlConfigWindowGraphicsTabDefaultMonitorLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabVSyncLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabLimitFPSLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabSmoothMoveLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabClipMouseLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabDebugLabelLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabLanguageLabel { get; set; }
+        public abstract string CommonControlConfigWindowGraphicsTabRenderingPipelineLabel { get; set; }
         public abstract string CommonControlConfigWindowSoundTabBackgroundSoundLabel { get; set; }
         public abstract string CommonControlConfigWindowSoundTabSystemVolumeLabel { get; set; }
         public abstract string CommonControlConfigWindowSoundTabMusicVolumeLabel { get; set; }
@@ -155,19 +187,21 @@ namespace Client.Envir.Translations
         public abstract string CommonControlConfigWindowGameTabUserHealthLabel { get; set; }
         public abstract string CommonControlConfigWindowGameTabMonsterHealthLabel { get; set; }
         public abstract string CommonControlConfigWindowGameTabDamageNumbersLabel { get; set; }
-        public abstract string CommonControlConfigWindowGameTabDrawParticlesLabel { get; set; }
-        public abstract string CommonControlConfigWindowGameTabDisplayHelmetLabel { get; set; }
-        public abstract string CommonControlConfigWindowGameTabHideChatBarLabel { get; set; }
-        public abstract string CommonControlConfigWindowGameTabEscapeCloseAllLabel { get; set; }
-        public abstract string CommonControlConfigWindowGameTabShiftOpenChatLabel { get; set; }
-        public abstract string CommonControlConfigWindowGameTabShiftOpenChatHint { get; set; }
+        public abstract string CommonControlConfigWindowGraphicsTabDrawParticlesLabel { get; set; }
+        public abstract string CommonControlConfigWindowGraphicsTabDisplayHelmetLabel { get; set; }
+        public abstract string CommonControlConfigWindowUITabHideChatBarLabel { get; set; }
+        public abstract string CommonControlConfigWindowUITabEscapeCloseAllLabel { get; set; }
+        public abstract string CommonControlConfigWindowUITabShiftOpenChatLabel { get; set; }
+        public abstract string CommonControlConfigWindowUITabShiftOpenChatHint { get; set; }
         public abstract string CommonControlConfigWindowGameTabRightClickDeTargetLabel { get; set; }
         public abstract string CommonControlConfigWindowGameTabRightClickDeTargetHint { get; set; }
         public abstract string CommonControlConfigWindowGameTabMonsterBoxVisibleLabel { get; set; }
-        public abstract string CommonControlConfigWindowGameTabLogChatLabel { get; set; }
-        public abstract string CommonControlConfigWindowGameTabDrawEffectsLabel { get; set; }
-        public abstract string CommonControlConfigWindowGameTabDrawWeatherLabel { get; set; }
-        public abstract string CommonControlConfigWindowGameTabKeyBindButtonLabel { get; set; }
+        public abstract string CommonControlConfigWindowUITabLogChatLabel { get; set; }
+        public abstract string CommonControlConfigWindowGraphicsTabDrawEffectsLabel { get; set; }
+        public abstract string CommonControlConfigWindowGraphicsTabDrawWeatherLabel { get; set; }
+        public abstract string CommonControlConfigWindowGameTabShowTargetOutlineLabel { get; set; }
+        public abstract string CommonControlConfigWindowGameTabObservableLabel { get; set; }
+        public abstract string CommonControlConfigWindowUITabKeyBindButtonLabel { get; set; }
         public abstract string CommonControlConfigWindowNetworkTabUseNetworkConfigLabel { get; set; }
         public abstract string CommonControlConfigWindowNetworkTabUseIPAddressLabel { get; set; }
         public abstract string CommonControlConfigWindowNetworkTabUsePortLabel { get; set; }
@@ -185,6 +219,13 @@ namespace Client.Envir.Translations
         public abstract string CommonControlConfigWindowColoursTabGainsTextLabel { get; set; }
         public abstract string CommonControlConfigWindowColoursTabAnnouncementsLabel { get; set; }
         public abstract string CommonControlConfigWindowColoursTabResetColoursButtonLabel { get; set; }
+        public abstract string CommonControlConfigWindowTargetColoursTabMonsterLowLabel { get; set; }
+        public abstract string CommonControlConfigWindowTargetColoursTabMonsterSameLabel { get; set; }
+        public abstract string CommonControlConfigWindowTargetColoursTabMonsterHighLabel { get; set; }
+        public abstract string CommonControlConfigWindowTargetColoursTabMonsterFriendlyLabel { get; set; }
+        public abstract string CommonControlConfigWindowTargetColoursTabNPCLabel { get; set; }
+        public abstract string CommonControlConfigWindowTargetColoursTabPlayerFriendlyLabel { get; set; }
+        public abstract string CommonControlConfigWindowTargetColoursTabPlayerEnemyLabel { get; set; }
         public abstract string CommonControlDXKeyBindWindowTitle { get; set; }
         public abstract string CommonControlDXKeyBindWindowTipLabel { get; set; }
         public abstract string CommonControlDXKeyBindWindowDefaultConfirmMessage { get; set; }
@@ -459,6 +500,8 @@ namespace Client.Envir.Translations
         public abstract string FortuneCheckerRowCheckButtonConfirmMessage { get; set; }
         public abstract string FortuneCheckerRowCheckButtonConfirmCaption { get; set; }
 
+        public abstract string HelpDialogTitle { get; set; }
+
         public abstract string GroupDialogTitle { get; set; }
         public abstract string GroupDialogAllowGroupButtonAllowingHint { get; set; }
         public abstract string GroupDialogAllowGroupButtonNotAllowingHint { get; set; }
@@ -560,6 +603,7 @@ namespace Client.Envir.Translations
 
         public abstract string MenuDialogTitle { get; set; }
         public abstract string MenuDialogSettingsButtonLabel { get; set; }
+        public abstract string MenuDialogHelpButtonLabel { get; set; }
         public abstract string MenuDialogGuildButtonLabel { get; set; }
         public abstract string MenuDialogStorageButtonLabel { get; set; }
         public abstract string MenuDialogRankingButtonLabel { get; set; }
@@ -567,6 +611,7 @@ namespace Client.Envir.Translations
         public abstract string MenuDialogLeaveButtonLabel { get; set; }
 
         public abstract string MenuDialogSettingsButtonHint { get; set; }
+        public abstract string MenuDialogHelpButtonHint { get; set; }
         public abstract string MenuDialogGuildButtonHint { get; set; }
         public abstract string MenuDialogStorageButtonHint { get; set; }
         public abstract string MenuDialogRankingButtonHint { get; set; }
@@ -597,59 +642,88 @@ namespace Client.Envir.Translations
         public abstract string MainPanelAgilityLabel { get; set; }
         public abstract string MainPanelAgilityHint { get; set; }
 
-        public abstract string MarketPlaceDialogTitle { get; set; }
-        public abstract string MarketPlaceDialogSearchTabLabel { get; set; }
-        public abstract string MarketPlaceDialogSearchTabNameLabel { get; set; }
-        public abstract string MarketPlaceDialogSearchTabItemLabel { get; set; }
-        public abstract string MarketPlaceDialogSearchTabSortLabel { get; set; }
-        public abstract string MarketPlaceDialogSearchTabSearchButtonLabel { get; set; }
-        public abstract string MarketPlaceDialogSearchTabClearButtonLabel { get; set; }
-        public abstract string MarketPlaceDialogSearchTabSaleHistoryLabel { get; set; }
-        public abstract string MarketPlaceDialogSearchTabSaleHistoryNumberSoldLabel { get; set; }
-        public abstract string MarketPlaceDialogSearchTabSaleHistoryLastPriceLabel { get; set; }
-        public abstract string MarketPlaceDialogSearchTabSaleHistoryAvgPriceLabel { get; set; }
-        public abstract string MarketPlaceDialogSearchTabMessageLabel { get; set; }
-        public abstract string MarketPlaceDialogSearchTabBuyingLabel { get; set; }
-        public abstract string MarketPlaceDialogSearchTabBuyingCountLabel { get; set; }
-        public abstract string MarketPlaceDialogSearchTabBuyingPriceLabel { get; set; }
-        public abstract string MarketPlaceDialogSearchTabBuyingTotalLabel { get; set; }
-        public abstract string MarketPlaceDialogSearchTabBuyingGuildLabel { get; set; }
-        public abstract string MarketPlaceDialogSearchTabBuyingBuyButtonLabel { get; set; }
-        public abstract string MarketPlaceDialogConsignTabLabel { get; set; }
-        public abstract string MarketPlaceDialogConsignTabStep1Label { get; set; }
-        public abstract string MarketPlaceDialogConsignTabStep1SelectItemLabel { get; set; }
-        public abstract string MarketPlaceDialogConsignTabStep1SaleHistoryLabel { get; set; }
-        public abstract string MarketPlaceDialogConsignTabStep1NumberSoldLabel { get; set; }
-        public abstract string MarketPlaceDialogConsignTabStep1LastPriceLabel { get; set; }
-        public abstract string MarketPlaceDialogConsignTabStep1AvgPriceLabel { get; set; }
-        public abstract string MarketPlaceDialogConsignTabStep2Label { get; set; }
-        public abstract string MarketPlaceDialogConsignTabStep2PriceLabel { get; set; }
-        public abstract string MarketPlaceDialogConsignTabStep3Label { get; set; }
-        public abstract string MarketPlaceDialogConsignTabStep4Label { get; set; }
-        public abstract string MarketPlaceDialogConsignTabStep4ConsignCostLabel { get; set; }
-        public abstract string MarketPlaceDialogConsignTabStep4ConsignGuildLabel { get; set; }
-        public abstract string MarketPlaceDialogConsignTabStep4ConsignButtonLabel { get; set; }
-        public abstract string MarketPlaceDialogConsignTabSearchingLabel { get; set; }
-        public abstract string MarketPlaceDialogConsignTabCancelListingCaption { get; set; }
-        public abstract string MarketPlaceDialogGameStoreTabLabel { get; set; }
-        public abstract string MarketPlaceDialogGameStoreTabNameLabel { get; set; }
-        public abstract string MarketPlaceDialogGameStoreTabItemLabel { get; set; }
-        public abstract string MarketPlaceDialogGameStoreTabSortLabel { get; set; }
-        public abstract string MarketPlaceDialogGameStoreTabSearchButtonLabel { get; set; }
-        public abstract string MarketPlaceDialogGameStoreTabClearButtonLabel { get; set; }
-        public abstract string MarketPlaceDialogGameStoreTabHuntGoldLabel { get; set; }
-        public abstract string MarketPlaceDialogGameStoreTabHuntGoldAmountLabel { get; set; }
-        public abstract string MarketPlaceDialogGameStoreTabGameGoldLabel { get; set; }
-        public abstract string MarketPlaceDialogGameStoreTabGameGoldAmountLabel { get; set; }
-        public abstract string MarketPlaceDialogGameStoreTabGameGoldRechargeButtonLabel { get; set; }
-        public abstract string MarketPlaceDialogGameStoreTabGameGoldRechargeButtonConfirmMessage { get; set; }
-        public abstract string MarketPlaceDialogGameStoreTabGameGoldRechargeButtonConfirmCaption { get; set; }
-        public abstract string MarketPlaceDialogGameStoreTabBuyingLabel { get; set; }
-        public abstract string MarketPlaceDialogGameStoreTabBuyingCountLabel { get; set; }
-        public abstract string MarketPlaceDialogGameStoreTabBuyingPriceLabel { get; set; }
-        public abstract string MarketPlaceDialogGameStoreTabBuyingTotalLabel { get; set; }
-        public abstract string MarketPlaceDialogGameStoreTabBuyingUseHuntGoldLabel { get; set; }
-        public abstract string MarketPlaceDialogGameStoreTabBuyingBuyButtonLabel { get; set; }
+        public abstract string GameStoreDialogTitle { get; set; }
+        public abstract string GameStoreDialogSearchButtonLabel { get; set; }
+        public abstract string GameStoreDialogHuntGoldLabel { get; set; }
+        public abstract string GameStoreDialogGameGoldLabel { get; set; }
+        public abstract string GameStoreDialogRechargeButtonLabel { get; set; }
+        public abstract string GameStoreDialogRechargeConfirmMessage { get; set; }
+        public abstract string GameStoreDialogRechargeConfirmCaption { get; set; }
+        public abstract string GameStoreDialogSortByLabel { get; set; }
+        public abstract string GameStoreDialogSortNameLabel { get; set; }
+        public abstract string GameStoreDialogSortHighestPriceLabel { get; set; }
+        public abstract string GameStoreDialogSortLowestPriceLabel { get; set; }
+        public abstract string GameStoreDialogSortFavouritesLabel { get; set; }
+        public abstract string GameStoreDialogCurrencyLabel { get; set; }
+        public abstract string GameStoreDialogTopFiveLabel { get; set; }
+        public abstract string GameStoreDialogFirstPlaceLabel { get; set; }
+        public abstract string GameStoreDialogSecondPlaceLabel { get; set; }
+        public abstract string GameStoreDialogThirdPlaceLabel { get; set; }
+        public abstract string GameStoreDialogFourthPlaceLabel { get; set; }
+        public abstract string GameStoreDialogFifthPlaceLabel { get; set; }
+        public abstract string GameStoreDialogUseGameGoldLabel { get; set; }
+        public abstract string GameStoreDialogUseHuntGoldLabel { get; set; }
+        public abstract string GameStoreDialogFavouritesLabel { get; set; }
+        public abstract string GameStoreDialogCategoriesLabel { get; set; }
+        public abstract string GameStoreDialogNewItemsLabel { get; set; }
+        public abstract string GameStoreDialogAllItemsLabel { get; set; }
+        public abstract string GameStoreDialogEquipmentLabel { get; set; }
+        public abstract string GameStoreDialogConsumablesLabel { get; set; }
+        public abstract string GameStoreDialogCosmeticsLabel { get; set; }
+        public abstract string GameStoreDialogOtherLabel { get; set; }
+        public abstract string GameStoreDialogPurchaseHint { get; set; }
+        public abstract string GameStoreDialogGiftHint { get; set; }
+        public abstract string GameStoreDialogFavouriteHint { get; set; }
+        public abstract string GameStoreDialogAddFavouriteHint { get; set; }
+        public abstract string GameStoreDialogRemoveFavouriteHint { get; set; }
+        public abstract string GameStoreDialogUnavailableLabel { get; set; }
+        public abstract string GameStoreDialogPurchaseConfirmMessage { get; set; }
+        public abstract string GameStoreDialogPurchaseConfirmCaption { get; set; }
+        public abstract string GameStoreDialogGiftPrompt { get; set; }
+        public abstract string GameStoreDialogGiftCaption { get; set; }
+        public abstract string GameStoreGiftSuccess { get; set; }
+        public abstract string GameStoreGiftNotAvailable { get; set; }
+        public abstract string GameStoreGiftInvalidRecipient { get; set; }
+        public abstract string GameStoreGiftCannotGiftSelf { get; set; }
+        public abstract string GameStoreGiftMailboxFull { get; set; }
+        public abstract string GameStoreGiftInsufficientFunds { get; set; }
+        public abstract string GameStoreGiftFailed { get; set; }
+
+        public abstract string ConsignmentDialogSortByLabel { get; set; }
+        public abstract string ConsignmentDialogTitle { get; set; }
+        public abstract string ConsignmentDialogItemTypesLabel { get; set; }
+        public abstract string ConsignmentDialogNameLabel { get; set; }
+        public abstract string ConsignmentDialogLevelLabel { get; set; }
+        public abstract string ConsignmentDialogPriceLabel { get; set; }
+        public abstract string ConsignmentDialogSellerLabel { get; set; }
+        public abstract string ConsignmentDialogConsignDateLabel { get; set; }
+        public abstract string ConsignmentDialogAllLabel { get; set; }
+        public abstract string ConsignmentDialogResultCount { get; set; }
+        public abstract string ConsignmentDialogBuyItemCaption { get; set; }
+        public abstract string ConsignmentDialogBuyConfirmMessage { get; set; }
+        public abstract string ConsignmentDialogBuyConfirmCaption { get; set; }
+        public abstract string ConsignmentDialogPricePrompt { get; set; }
+        public abstract string ConsignmentDialogConsignConfirmMessage { get; set; }
+        public abstract string ConsignmentDialogConsignConfirmCaption { get; set; }
+        public abstract string ConsignmentDialogLoadingLabel { get; set; }
+        public abstract string ConsignmentDialogItemSoldLabel { get; set; }
+        public abstract string ConsignmentDialogUsingGuildFunds { get; set; }
+        public abstract string ConsignmentDialogSearchTabLabel { get; set; }
+        public abstract string ConsignmentDialogConsignTabLabel { get; set; }
+        public abstract string ConsignmentDialogSearchButtonLabel { get; set; }
+        public abstract string ConsignmentDialogBuyButtonLabel { get; set; }
+        public abstract string ConsignmentDialogBuyGuildFundsLabel { get; set; }
+        public abstract string ConsignmentDialogConsignButtonLabel { get; set; }
+        public abstract string ConsignmentDialogConsignItemTitle { get; set; }
+        public abstract string ConsignmentDialogConsignGuildFundsLabel { get; set; }
+        public abstract string ConsignmentDialogCancelListingCaption { get; set; }
+        public abstract string ConsignmentDialogRemoveListingButtonLabel { get; set; }
+        public abstract string ConsignmentDialogShowSalesButtonLabel { get; set; }
+        public abstract string ConsignmentDialogSalesTitle { get; set; }
+        public abstract string ConsignmentDialogSalesLoadingLabel { get; set; }
+        public abstract string ConsignmentDialogSalesCountLabel { get; set; }
+        public abstract string ConsignmentDialogSalesLastPriceLabel { get; set; }
+        public abstract string ConsignmentDialogSalesAveragePriceLabel { get; set; }
 
         public abstract string MonsterDialogUndeadIconHint { get; set; }
         public abstract string MonsterDialogMortalIconHint { get; set; }
@@ -680,6 +754,12 @@ namespace Client.Envir.Translations
         public abstract string QuestDialogCurrentTab { get; set; }
         public abstract string QuestDialogAvailableTab { get; set; }
         public abstract string QuestDialogCompletedTab { get; set; }
+        public abstract string QuestDialogMilestonesTab { get; set; }
+        public abstract string QuestDialogMissionsTab { get; set; }
+        public abstract string QuestDialogMilestonesHideCompleteLabel { get; set; }
+        public abstract string QuestDialogMilestonesResetTitleButtonLabel { get; set; }
+        public abstract string QuestDialogMilestonesAllCategory { get; set; }
+        public abstract string QuestDialogMilestonesTitleAchievedLabel { get; set; }
         public abstract string QuestTabDetailsLabel { get; set; }
         public abstract string QuestTabShowQuestTrackerLabel { get; set; }
         public abstract string QuestTabTasksLabel { get; set; }
@@ -730,5 +810,10 @@ namespace Client.Envir.Translations
         public abstract string BundleConfirmRandomButtonLabel { get; set; }
         public abstract string BundleConfirmAllButtonLabel { get; set; }
         public abstract string BundleConfirmOneButtonLabel { get; set; }
+
+        public abstract string SocketDialogTitle { get; set; }
+        public abstract string SocketDialogStartButtonLabel { get; set; }
+        public abstract string SocketCombineDialogTitle { get; set; }
+        public abstract string SocketCombineDialogStartButtonLabel { get; set; }
     }
 }

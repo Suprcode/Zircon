@@ -14,6 +14,7 @@ namespace Client.Models
         private const float Gravity = 0.05f;        // Downward force applied per tick
         private const float SpringStrength = 0.15f;  // Pulling force between links
         private const float Damping = 0.9f;         // Velocity damping to stabilize motion
+        private const float AnchorOffsetY = 50f;    // Attach near the top of the target effect
 
         protected readonly MapObject _source;
         protected readonly MapObject _target;
@@ -105,6 +106,10 @@ namespace Client.Models
         {
             if (CEnvir.Now < StartTime || Library == null) return;
 
+            Size imageSize = Library.GetSize(StartIndex);
+            float originX = imageSize.Width / 2f;
+            float originY = imageSize.Height / 2f;
+
             // Draw chain segments between each pair of consecutive points
             for (int i = 0; i < _linkCount - 1; i++)
             {
@@ -119,17 +124,18 @@ namespace Client.Models
                 float stretchY = dist / LinkLength; // vertical stretch
                 float stretchX = 1f;                // no horizontal stretch
 
+                // DrawBlendScaled positions an image by its unscaled top-left corner.
+                // Convert the desired segment centre to that coordinate space.
+                float drawX = mid.X - originX;
+                float drawY = mid.Y - originY;
+
                 if (Blend)
                 {
-                    Library.DrawBlend(StartIndex, stretchX, stretchY, DrawColour, mid.X, mid.Y,
-                       (float)Math.Atan2(p2.Y - p1.Y, p2.X - p1.X) + MathF.PI / 2,
-                       Opacity, ImageType.Image, false, 0);
+                    Library.DrawBlendScaled(StartIndex, stretchX, stretchY, DrawColour, drawX, drawY, angle, Opacity, ImageType.Image, false, 0);
                 }
                 else
                 {
-                    Library.Draw(StartIndex, stretchX, stretchY, DrawColour, mid.X, mid.Y,
-                      (float)Math.Atan2(p2.Y - p1.Y, p2.X - p1.X) + MathF.PI / 2,
-                      Opacity, ImageType.Image, false, 0);
+                    Library.DrawBlendScaled(StartIndex, stretchX, stretchY, DrawColour, drawX, drawY, angle, Opacity, ImageType.Image, false, 0);
                 }
             }
         }
@@ -173,7 +179,7 @@ namespace Client.Models
                     - MapObject.User.MovingOffSet.X + obj.MovingOffSet.X + offset.X;
 
             float y = (obj.CurrentLocation.Y - MapObject.User.CurrentLocation.Y + MapObject.OffSetY) * MapObject.CellHeight
-                    - MapObject.User.MovingOffSet.Y + obj.MovingOffSet.Y + offset.Y;
+                    - MapObject.User.MovingOffSet.Y + obj.MovingOffSet.Y + offset.Y - AnchorOffsetY;
 
             return new Vector2(x, y);
         }

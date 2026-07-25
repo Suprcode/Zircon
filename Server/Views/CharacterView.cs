@@ -1,9 +1,8 @@
-﻿using DevExpress.XtraEditors;
-using Server.Envir;
+﻿using Server.Envir;
 
 namespace Server.Views
 {
-    public partial class CharacterView : XtraForm
+    public partial class CharacterView : DevExpress.XtraBars.Ribbon.RibbonForm
     {
         public CharacterView()
         {

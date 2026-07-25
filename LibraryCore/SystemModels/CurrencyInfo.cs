@@ -104,6 +104,11 @@ namespace Library.SystemModels
 
             ExchangeRate = 1M;
         }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 
     public sealed class CurrencyInfoImage : DBObject

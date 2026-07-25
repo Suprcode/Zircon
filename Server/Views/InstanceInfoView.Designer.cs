@@ -61,6 +61,7 @@
             ItemLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
             gridColumn15 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn16 = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn20 = new DevExpress.XtraGrid.Columns.GridColumn();
             ribbon = new DevExpress.XtraBars.Ribbon.RibbonControl();
             SaveDatabaseButton = new DevExpress.XtraBars.BarButtonItem();
             ImportButton = new DevExpress.XtraBars.BarButtonItem();
@@ -68,7 +69,7 @@
             ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             JsonImportExport = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
-            gridColumn20 = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn21 = new DevExpress.XtraGrid.Columns.GridColumn();
             ((System.ComponentModel.ISupportInitialize)InstanceMapGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)MapInfoLookUpEdit).BeginInit();
             ((System.ComponentModel.ISupportInitialize)InstanceInfoGridControl).BeginInit();
@@ -133,7 +134,7 @@
             InstanceInfoGridControl.Name = "InstanceInfoGridControl";
             InstanceInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { MapInfoLookUpEdit, RegionLookUpEdit, InstanceTypeImageComboBox, StatComboBox, ItemLookUpEdit });
             InstanceInfoGridControl.ShowOnlyPredefinedDetails = true;
-            InstanceInfoGridControl.Size = new System.Drawing.Size(1017, 328);
+            InstanceInfoGridControl.Size = new System.Drawing.Size(1003, 321);
             InstanceInfoGridControl.TabIndex = 2;
             InstanceInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { InstanceInfoStatsGridView, InstanceInfoGridView, InstanceMapGridView });
             // 
@@ -171,7 +172,7 @@
             // 
             // InstanceInfoGridView
             // 
-            InstanceInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn1, gridColumn6, gridColumn5, gridColumn17, gridColumn18, gridColumn3, gridColumn4, gridColumn7, gridColumn8, gridColumn10, gridColumn9, gridColumn11, gridColumn12, gridColumn13, gridColumn14, gridColumn15, gridColumn16, gridColumn20 });
+            InstanceInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn1, gridColumn6, gridColumn5, gridColumn17, gridColumn18, gridColumn3, gridColumn4, gridColumn7, gridColumn8, gridColumn10, gridColumn9, gridColumn11, gridColumn12, gridColumn13, gridColumn14, gridColumn15, gridColumn16, gridColumn20, gridColumn21 });
             InstanceInfoGridView.GridControl = InstanceInfoGridControl;
             InstanceInfoGridView.Name = "InstanceInfoGridView";
             InstanceInfoGridView.OptionsDetail.AllowExpandEmptyDetails = true;
@@ -260,7 +261,7 @@
             gridColumn10.FieldName = "ConnectRegion";
             gridColumn10.Name = "gridColumn10";
             gridColumn10.Visible = true;
-            gridColumn10.VisibleIndex = 16;
+            gridColumn10.VisibleIndex = 17;
             // 
             // RegionLookUpEdit
             // 
@@ -279,7 +280,7 @@
             gridColumn9.FieldName = "ReconnectRegion";
             gridColumn9.Name = "gridColumn9";
             gridColumn9.Visible = true;
-            gridColumn9.VisibleIndex = 17;
+            gridColumn9.VisibleIndex = 18;
             // 
             // gridColumn11
             // 
@@ -346,6 +347,14 @@
             gridColumn16.Visible = true;
             gridColumn16.VisibleIndex = 15;
             // 
+            // gridColumn20
+            // 
+            gridColumn20.Caption = "Allow Teleport";
+            gridColumn20.FieldName = "AllowTeleport";
+            gridColumn20.Name = "gridColumn20";
+            gridColumn20.Visible = true;
+            gridColumn20.VisibleIndex = 7;
+            // 
             // ribbon
             // 
             ribbon.ExpandCollapseItem.Id = 0;
@@ -354,7 +363,7 @@
             ribbon.MaxItemId = 4;
             ribbon.Name = "ribbon";
             ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] { ribbonPage1 });
-            ribbon.Size = new System.Drawing.Size(1017, 144);
+            ribbon.Size = new System.Drawing.Size(1003, 144);
             // 
             // SaveDatabaseButton
             // 
@@ -405,19 +414,18 @@
             JsonImportExport.Name = "JsonImportExport";
             JsonImportExport.Text = "Json";
             // 
-            // gridColumn20
+            // gridColumn21
             // 
-            gridColumn20.Caption = "Allow Teleport";
-            gridColumn20.FieldName = "AllowTeleport";
-            gridColumn20.Name = "gridColumn20";
-            gridColumn20.Visible = true;
-            gridColumn20.VisibleIndex = 7;
+            gridColumn21.FieldName = "ShowTimer";
+            gridColumn21.Name = "gridColumn21";
+            gridColumn21.Visible = true;
+            gridColumn21.VisibleIndex = 16;
             // 
             // InstanceInfoView
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(1017, 472);
+            ClientSize = new System.Drawing.Size(1003, 465);
             Controls.Add(InstanceInfoGridControl);
             Controls.Add(ribbon);
             Name = "InstanceInfoView";
@@ -477,5 +485,6 @@
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn18;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn19;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn20;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn21;
     }
 }

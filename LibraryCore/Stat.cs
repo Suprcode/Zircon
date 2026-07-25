@@ -98,7 +98,6 @@ namespace Library
                 writer.Write((int)pair.Key);
                 writer.Write(pair.Value);
             }
-
         }
 
         public string GetTitle(Stat stat, bool groupSpellPower = true)
@@ -325,7 +324,6 @@ namespace Library
             }
         }
 
-
         public string GetFormat(Stat stat)
         {
             Type type = stat.GetType();
@@ -509,7 +507,7 @@ namespace Library
     public enum Stat
     {
         [StatDescription(Title = "Base Health", Format = "{0:+#0;-#0;#0}", Mode = StatType.None)]
-        BaseHealth,
+        BaseHealth = 0,
         [StatDescription(Title = "Base Mana", Format = "{0:+#0;-#0;#0}", Mode = StatType.None)]
         BaseMana,
 
@@ -864,6 +862,9 @@ namespace Library
 
         [StatDescription(Title = "Elemental Swords", Format = "{0}", Mode = StatType.Text, UsageHint = "Used in Elemental Swords to track remaining swords")]
         ElementalSwords,
+
+        [StatDescription(Mode = StatType.None, ServerOnly = true)]
+        RoamDistance,
 
         [StatDescription(Title = "Throw Distance", Format = "{0}", Mode = StatType.Default, UsageHint = "1 to 4")]
         ThrowDistance = 200,

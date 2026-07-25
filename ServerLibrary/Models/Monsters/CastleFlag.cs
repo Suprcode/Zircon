@@ -4,6 +4,7 @@ using Library.SystemModels;
 using Server.DBModels;
 using Server.Envir;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using S = Library.Network.ServerPackets;
@@ -42,7 +43,7 @@ namespace Server.Models.Monsters
                 return false;
             }
 
-            var map = SEnvir.Maps.First(x => x.Key == castle.Map).Value;
+            var map = SEnvir.GetMap(castle.Map);
 
             if (!base.Spawn(map, new Point(flagInfo.X, flagInfo.Y)))
             {
@@ -295,7 +296,7 @@ namespace Server.Models.Monsters
 
                 Poison = Poison,
 
-                Buffs = Buffs.Where(x => x.Visible).Select(x => x.Type).ToList(),
+                Buffs = Buffs.Where(x => x.Visible).Select(x => new KeyValuePair<BuffType, int>(x.Type, x.Extra)).ToDictionary(),
 
                 Extra1 = _flag,
                 Colour = _colour

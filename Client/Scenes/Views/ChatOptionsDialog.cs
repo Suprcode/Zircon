@@ -1,4 +1,4 @@
-﻿using Client.Controls;
+using Client.Controls;
 using Client.Envir;
 using Client.UserModels;
 using Library;
@@ -26,19 +26,7 @@ namespace Client.Scenes.Views
             {
                 DXTabControl pnl = tab.Parent as DXTabControl;
 
-                if (Visible)
-                {
-                    foreach (var button in pnl.TabButtons)
-                    {
-                        button.Visible = true;
-                    }
-                }
-                else
-                {
-                    var panel = tab.Parent as DXTabControl;
-
-                    pnl.TabButtons[0].Visible = !(panel.TabButtons.Count == 1 && tab.Panel.HideTabCheckBox.Checked);
-                }
+                tab.TransparencyChanged();
             }
         }
 
@@ -74,6 +62,7 @@ namespace Client.Scenes.Views
                 Label = { Text = CEnvir.Language.ChatOptionsDialogButtonResetAll },
                 Parent = this,
                 Size = new Size(80, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Location = new Point(ClientArea.Right - 80 - 10, Size.Height - 43),
             };
             button.MouseClick += (o, e) =>
@@ -95,6 +84,7 @@ namespace Client.Scenes.Views
                 Label = { Text = CEnvir.Language.ChatOptionsDialogButtonSaveAll },
                 Parent = this,
                 Size = new Size(80, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Location = new Point(ClientArea.X, Size.Height - 43),
             };
             button.MouseClick += (o, e) =>
@@ -111,6 +101,7 @@ namespace Client.Scenes.Views
                 Label = { Text = CEnvir.Language.ChatOptionsDialogButtonReloadAll },
                 Parent = this,
                 Size = new Size(80, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Location = new Point(ClientArea.X + 85, Size.Height - 43),
             };
             button.MouseClick += (o, e) =>
@@ -185,17 +176,7 @@ namespace Client.Scenes.Views
             {
                 var pnl = tab.Parent as DXTabControl;
 
-                if (GameScene.Game.ChatOptionsBox.Visible)
-                {
-                    foreach (var button in pnl.TabButtons)
-                    {
-                        button.Visible = true;
-                    }
-                }
-                else
-                {
-                    pnl.TabButtons[0].Visible = !(pnl.TabButtons.Count == 1 && tab.Panel.HideTabCheckBox.Checked);
-                }
+                tab.TransparencyChanged();
             };
 
             panel.ReverseListCheckBox.CheckedChanged += (o, e1) =>

@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models
@@ -1031,6 +1032,8 @@ namespace Server.Models
                 cell = PetOwner.CurrentCell;
 
             Teleport(PetOwner.CurrentMap, cell.Location);
+
+            Target = null;
         }
         public virtual void ProcessRegen()
         {
@@ -1174,6 +1177,13 @@ namespace Server.Models
             RoamTime = SEnvir.Now + RoamDelay;
 
 
+            if (Target == null && TryGetRoamingReturnLocation(out Point returnLocation))
+            {
+                MoveTo(returnLocation);
+                return;
+            }
+
+
             foreach (MapObject ob in CurrentCell.Objects)
             {
                 if (ob == this || !ob.Blocking) continue;
@@ -1197,6 +1207,39 @@ namespace Server.Models
             else
                 Turn((MirDirection)SEnvir.Random.Next(8));
         }
+        private bool TryGetRoamingReturnLocation(out Point returnLocation)
+        {
+            returnLocation = Point.Empty;
+
+            int roamingDistance = Stats[Stat.RoamDistance];
+            MapRegion region = SpawnInfo?.Info.Region;
+
+            if (roamingDistance <= 0 || region?.PointList == null || region.PointList.Count == 0)
+                return false;
+
+            if (CurrentCell.Regions.Contains(region))
+                return false;
+
+            if (region.EdgePointList == null)
+                region.CreateEdgePoints();
+
+            int closestDistance = int.MaxValue;
+
+            foreach (Point point in region.EdgePointList)
+            {
+                int distance = Functions.Distance(CurrentLocation, point);
+
+                if (distance >= closestDistance) continue;
+
+                closestDistance = distance;
+                returnLocation = point;
+
+                if (closestDistance == 0) break;
+            }
+
+            return closestDistance > roamingDistance;
+        }
+
         public virtual void ProcessTarget()
         {
             if (Target == null) return;
@@ -2432,6 +2475,12 @@ namespace Server.Models
                 }
             }
 
+            if (attacker is PlayerObject playerAttacker)
+                playerAttacker.LogMilestone(MilestoneType.MonsterDamageDone, power, monster: MonsterInfo);
+
+            if (Dead && PetOwner == null && attacker is MonsterObject { PetOwner: not null } petAttacker)
+                petAttacker.PetOwner.LogMilestone(MilestoneType.MonsterPetKill, 1, monster: MonsterInfo);
+
             if (Dead) return power;
 
             if (CanAttackTarget(attacker) && PetOwner == null || Target == null)
@@ -2595,6 +2644,8 @@ namespace Server.Models
 
                     EXPOwner.GainExperience(exp, PlayerTagged, Level);
 
+                    EXPOwner.LogMilestone(MilestoneType.MonsterKill, 1, monster: MonsterInfo);
+
                     if (GrowthLevel > 0)
                         EXPOwner.GainDisciplineExperience(GrowthLevel);
                 }
@@ -2612,6 +2663,8 @@ namespace Server.Models
                         expfinal /= ExtraExperienceRate;
 
                     player.GainExperience(expfinal, PlayerTagged, Level);
+
+                    player.LogMilestone(MilestoneType.MonsterKill, 1, monster: MonsterInfo);
 
                     if (GrowthLevel > 0)
                         player.GainDisciplineExperience(GrowthLevel);
@@ -2643,6 +2696,8 @@ namespace Server.Models
                 rate *= 1M + (GrowthLevel * 10) / 100M;
 
             bool result = false;
+
+            bool companionAutoCollect = owner.Stats[Stat.CompanionCollection] > 0 && owner.Companion != null;
 
             List<UserItem> drops = null;
             foreach (DropInfo drop in MonsterInfo.Drops)
@@ -2726,7 +2781,7 @@ namespace Server.Models
                     item.AddStat(Stat.ItemIndex, drop.Item.Index, StatSource.Added);
                     item.StatsChanged();
 
-                    item.IsTemporary = true;
+                    item.SetTemporary(true);
 
                     if (NeedHarvest)
                     {
@@ -2753,7 +2808,7 @@ namespace Server.Models
 
                     ob.Spawn(CurrentMap, cell.Location);
 
-                    if (owner.Stats[Stat.CompanionCollection] > 0 && owner.Companion != null)
+                    if (companionAutoCollect)
                     {
                         ItemCheck check = new ItemCheck(ob.Item, ob.Item.Count, ob.Item.Flags,
                             ob.Item.ExpireTime);
@@ -2776,10 +2831,14 @@ namespace Server.Models
                 while (amount > 0)
                 {
                     UserItem item = SEnvir.CreateDropItem(drop.Item);
-                    item.Count = Math.Min(drop.Item.StackSize, amount);
+                    if (companionAutoCollect && drop.Item == SEnvir.GoldInfo)
+                        item.Count = amount;
+                    else
+                        item.Count = Math.Min(drop.Item.StackSize, amount);
+
                     amount -= item.Count;
 
-                    item.IsTemporary = true; //REMOVE ON Gain
+                    item.SetTemporary(true); //REMOVE ON Gain
 
                     if (NeedHarvest)
                     {
@@ -2822,7 +2881,7 @@ namespace Server.Models
 
                     ob.Spawn(CurrentMap, cell.Location);
 
-                    if (owner.Stats[Stat.CompanionCollection] > 0 && owner.Companion != null)
+                    if (companionAutoCollect)
                     {
                         long goldAmount = 0;
 
@@ -2890,7 +2949,7 @@ namespace Server.Models
                             item.UserTask = userTask;
                             item.Flags |= UserItemFlags.QuestItem;
 
-                            item.IsTemporary = true; //REMOVE ON Gain
+                            item.SetTemporary(true); //REMOVE ON Gain
 
                             if (NeedHarvest)
                             {
@@ -2929,7 +2988,7 @@ namespace Server.Models
 
                             userTask.Objects.Add(ob);
 
-                            if (owner.Stats[Stat.CompanionCollection] > 0 && owner.Companion != null)
+                            if (companionAutoCollect)
                             {
                                 long goldAmount = 0;
 
@@ -3057,7 +3116,7 @@ namespace Server.Models
             }
         }
 
-        public override BuffInfo BuffAdd(BuffType type, TimeSpan remainingTicks, Stats stats, bool visible, bool pause, TimeSpan tickRate, bool hidden = false)
+        public override BuffInfo BuffAdd(BuffType type, TimeSpan remainingTicks, Stats stats, bool visible, bool pause, TimeSpan tickRate, bool hidden = false, int extra = 0)
         {
             BuffInfo info = base.BuffAdd(type, remainingTicks, stats, visible, pause, tickRate);
 
@@ -3109,7 +3168,7 @@ namespace Server.Models
                 HalloweenEvent = HalloweenEventMob,
                 ChristmasEvent = ChristmasEventMob,
 
-                Buffs = Buffs.Where(x => x.Visible).Select(x => x.Type).ToList()
+                Buffs = Buffs.Where(x => x.Visible).Select(x => new KeyValuePair<BuffType, int>(x.Type, x.Extra)).ToDictionary()
             };
         }
         public override Packet GetDataPacket(PlayerObject ob)

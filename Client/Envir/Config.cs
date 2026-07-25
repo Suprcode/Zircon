@@ -1,4 +1,5 @@
-﻿using Library;
+﻿using Shared.Rendering;
+using Library;
 using System;
 using System.Drawing;
 
@@ -29,6 +30,10 @@ namespace Client.Envir
         public static bool LimitFPS { get; set; }
         public static bool ExtendedLogin { get; set; }
         public static Size GameSize { get; set; } = IntroSceneSize;
+        public static string DefaultMonitor { get; set; } = string.Empty;
+        public static string RenderingPipeline { get; set; } = RenderingPipelineIds.SilkDXD3D11;
+        public static bool UseZlAtlasPages { get; set; } = true;
+        public static bool UseD3D11SpriteBatch { get; set; } = false;
         public static TimeSpan CacheDuration { get; set; } = TimeSpan.FromMinutes(30);
         public static string FontName { get; set; } = "MS Sans Serif";
         public static string MapPath { get; set; } = @".\Map\";
@@ -44,10 +49,15 @@ namespace Client.Envir
         public static bool SoundInBackground { get; set; } = true;
         public static int SoundOverLap { get; set; } = 5;
         public static int SystemVolume { get; set; } = 25;
+        public static bool SystemVolumeMuted { get; set; } = false;
         public static int MusicVolume { get; set; } = 25;
+        public static bool MusicVolumeMuted { get; set; } = false;
         public static int PlayerVolume { get; set; } = 25;
+        public static bool PlayerVolumeMuted { get; set; } = false;
         public static int MonsterVolume { get; set; } = 25;
+        public static bool MonsterVolumeMuted { get; set; } = false;
         public static int MagicVolume { get; set; } = 25;
+        public static bool MagicVolumeMuted { get; set; } = false;
 
         [ConfigSection("Login")]
         public static bool RememberDetails { get; set; } = false;
@@ -58,6 +68,7 @@ namespace Client.Envir
         public static bool DrawEffects { get; set; } = true;
         public static bool DrawParticles { get; set; } = false;
         public static bool DrawWeather { get; set; } = true;
+        public static bool ShowTargetOutline { get; set; } = true;
         public static bool ShowItemNames { get; set; } = true;
         public static bool ShowMonsterNames { get; set; } = true;
         public static bool ShowPlayerNames { get; set; } = true;
@@ -109,5 +120,14 @@ namespace Client.Envir
         public static Color SystemTextBackColour { get; set; } = Color.FromArgb(200, 255, 255, 255);
         public static Color GainsTextBackColour { get; set; } = Color.FromArgb(0, 0, 0, 0);
         public static Color AnnouncementTextBackColour { get; set; } = Color.FromArgb(200, 255, 255, 255);
+
+        [ConfigSection("Target Colours")]
+        public static Color TargetMonsterLowLevelColour { get; set; } = Color.LimeGreen;
+        public static Color TargetMonsterSameLevelColour { get; set; } = Color.Yellow;
+        public static Color TargetMonsterHighLevelColour { get; set; } = Color.Red;
+        public static Color TargetMonsterFriendlyColour { get; set; } = Color.Cyan;
+        public static Color TargetPlayerFriendlyColour { get; set; } = Color.Cyan;
+        public static Color TargetPlayerEnemyColour { get; set; } = Color.Red;
+        public static Color TargetNPCColour { get; set; } = Color.Cyan;
     }
 }

@@ -1,7 +1,6 @@
 ﻿using Client.Envir;
+using Shared.Rendering;
 using Library;
-using SlimDX;
-using SlimDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -10,7 +9,18 @@ using System.Windows.Forms;
 //Cleaned
 namespace Client.Controls
 {
-    public class DXControl : IDisposable
+    public static class Constants
+    {
+        public static readonly Color ActiveTabColour = Color.White;
+        public static readonly Color InactiveTabColour = Color.FromArgb(123, 105, 66);
+        public static readonly Color PrimaryColour = Color.FromArgb(198, 166, 99);
+        public static readonly Color RowBackColour = Color.FromArgb(25, 20, 0);
+        public static readonly Color SelectedRowBackColour = Color.FromArgb(80, 80, 125);
+        public static readonly Color InactiveBorderColour = Color.FromArgb(99, 83, 50);
+        public static readonly Color WindowBackColour = Color.FromArgb(16, 8, 8);
+    }
+
+    public class DXControl : IDisposable, ITextureCacheItem
     {
         #region Static
         public static List<DXControl> MessageBoxList = new List<DXControl>();
@@ -70,10 +80,6 @@ namespace Client.Controls
 
         public static int DefaultHeight { get; }
         public static int TabHeight { get; }
-        public static int HeaderBarSize { get; }
-        public static int HeaderSize { get; }
-        public static int FooterSize { get; }
-        public static int NoFooterSize { get; }
         public static int SmallButtonHeight { get; }
 
         public static DXLabel DebugLabel, HintLabel, PingLabel;
@@ -119,18 +125,6 @@ namespace Client.Controls
             DefaultHeight = InterfaceLibrary.GetSize(16).Height;
             TabHeight = InterfaceLibrary.GetSize(19).Height;
             SmallButtonHeight = InterfaceLibrary.GetSize(41).Height;
-
-            HeaderBarSize = InterfaceLibrary.GetSize(0).Height;
-
-            HeaderSize = HeaderBarSize;
-            HeaderSize += InterfaceLibrary.GetSize(3).Height;
-
-            NoFooterSize = InterfaceLibrary.GetSize(2).Height;
-
-            FooterSize = HeaderBarSize;
-            FooterSize += InterfaceLibrary.GetSize(2).Height;
-            FooterSize += InterfaceLibrary.GetSize(10).Height;
-
         }
 
         #endregion
@@ -138,6 +132,47 @@ namespace Client.Controls
         #region Properties
 
         protected internal List<DXControl> Controls { get; private set; } = new List<DXControl>();
+
+        private sealed class CachedChildControlSegment
+        {
+            public int StartIndex;
+            public int EndIndex;
+            public RenderTargetResource RenderTarget;
+            public Size RenderTargetSize;
+            public bool TextureValid;
+        }
+
+        private readonly List<CachedChildControlSegment> _childRenderSegments = new List<CachedChildControlSegment>();
+        private bool _childRenderSegmentsValid;
+
+        public bool CacheChildControls
+        {
+            get => _CacheChildControls;
+            set
+            {
+                if (_CacheChildControls == value) return;
+
+                _CacheChildControls = value;
+                if (_CacheChildControls)
+                    InvalidateChildCache();
+                else
+                    ReleaseChildRenderTarget();
+            }
+        }
+        private bool _CacheChildControls;
+
+        public bool CacheInParent
+        {
+            get => _CacheInParent;
+            set
+            {
+                if (_CacheInParent == value) return;
+
+                _CacheInParent = value;
+                Parent?.InvalidateChildCache();
+            }
+        }
+        private bool _CacheInParent = true;
 
         #region AllowDragOut
 
@@ -158,6 +193,7 @@ namespace Client.Controls
         public event EventHandler<EventArgs> AllowDragOutChanged;
         public virtual void OnAllowDragOutChanged(bool oValue, bool nValue)
         {
+            UpdateClipAreaTree();
             AllowDragOutChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -207,6 +243,7 @@ namespace Client.Controls
         public virtual void OnBackColourChanged(Color oValue, Color nValue)
         {
             TextureValid = false;
+            InvalidateParentChildCache();
             BackColourChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -232,6 +269,7 @@ namespace Client.Controls
         public virtual void OnBorderChanged(bool oValue, bool nValue)
         {
             UpdateBorderInformation();
+            InvalidateParentChildCache();
             BorderChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -256,6 +294,7 @@ namespace Client.Controls
         public event EventHandler<EventArgs> BorderColourChanged;
         public virtual void OnBorderColourChanged(Color oValue, Color nValue)
         {
+            InvalidateParentChildCache();
             BorderColourChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -263,23 +302,27 @@ namespace Client.Controls
 
         #region BorderInformation
 
-        public Vector2[] BorderInformation
+        public LinePoint[] BorderInformation
         {
             get => _BorderInformation;
             set
             {
-                if (_BorderInformation == value) return;
+                if (_BorderInformation == value)
+                {
+                    return;
+                }
 
-                Vector2[] oldValue = _BorderInformation;
+                LinePoint[] oldValue = _BorderInformation;
                 _BorderInformation = value;
 
                 OnBorderInformationChanged(oldValue, value);
             }
         }
-        private Vector2[] _BorderInformation;
+        private LinePoint[] _BorderInformation;
         public event EventHandler<EventArgs> BorderInformationChanged;
-        public virtual void OnBorderInformationChanged(Vector2[] oValue, Vector2[] nValue)
+        public virtual void OnBorderInformationChanged(LinePoint[] oValue, LinePoint[] nValue)
         {
+            InvalidateParentChildCache();
             BorderInformationChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -304,6 +347,7 @@ namespace Client.Controls
         public event EventHandler<EventArgs> BorderSizeChanged;
         public virtual void OnBorderSizeChanged(float oValue, float nValue)
         {
+            InvalidateParentChildCache();
             BorderSizeChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -377,6 +421,7 @@ namespace Client.Controls
         public virtual void OnDrawTextureChanged(bool oValue, bool nValue)
         {
             TextureValid = false;
+            InvalidateParentChildCache();
             DrawTextureChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -398,13 +443,21 @@ namespace Client.Controls
             }
         }
         private Rectangle _DisplayArea;
+        public Rectangle ClipArea { get; private set; }
         public event EventHandler<EventArgs> DisplayAreaChanged;
         public virtual void OnDisplayAreaChanged(Rectangle oValue, Rectangle nValue)
         {
+            UpdateClipArea();
+
             foreach (DXControl control in Controls)
+            {
                 control.UpdateDisplayArea();
+                control.UpdateClipAreaTree();
+            }
 
             UpdateBorderInformation();
+            InvalidateChildCache();
+            Parent?.InvalidateChildCache();
             DisplayAreaChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -454,6 +507,7 @@ namespace Client.Controls
         public event EventHandler<EventArgs> ForeColourChanged;
         public virtual void OnForeColourChanged(Color oValue, Color nValue)
         {
+            InvalidateParentChildCache();
             ForeColourChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -540,6 +594,30 @@ namespace Client.Controls
 
         #endregion
 
+        #region HideWhenClipped
+
+        public bool HideWhenClipped
+        {
+            get => _HideWhenClipped;
+            set
+            {
+                if (_HideWhenClipped == value) return;
+
+                bool oldValue = _HideWhenClipped;
+                _HideWhenClipped = value;
+
+                OnHideWhenClippedChanged(oldValue, value);
+            }
+        }
+        private bool _HideWhenClipped;
+        public event EventHandler<EventArgs> HideWhenClippedChanged;
+        public virtual void OnHideWhenClippedChanged(bool oValue, bool nValue)
+        {
+            HideWhenClippedChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
         #region Location
 
         public Point Location
@@ -560,6 +638,7 @@ namespace Client.Controls
         public virtual void OnLocationChanged(Point oValue, Point nValue)
         {
             UpdateDisplayArea();
+            Parent?.InvalidateChildCache();
             LocationChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -680,6 +759,7 @@ namespace Client.Controls
         public event EventHandler<EventArgs> OpacityChanged;
         public virtual void OnOpacityChanged(float oValue, float nValue)
         {
+            InvalidateParentChildCache();
             OpacityChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -711,6 +791,8 @@ namespace Client.Controls
             CheckIsEnabled();
 
             UpdateDisplayArea();
+            oValue?.InvalidateChildCache();
+            nValue?.InvalidateChildCache();
 
             ParentChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -763,6 +845,8 @@ namespace Client.Controls
             UpdateDisplayArea();
             UpdateBorderInformation();
             TextureValid = false;
+            InvalidateChildCache();
+            Parent?.InvalidateChildCache();
 
             SizeChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -861,6 +945,7 @@ namespace Client.Controls
         public event EventHandler<EventArgs> TextChanged;
         public virtual void OnTextChanged(string oValue, string nValue)
         {
+            InvalidateParentChildCache();
             TextChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -886,6 +971,7 @@ namespace Client.Controls
         public virtual void OnVisibleChanged(bool oValue, bool nValue)
         {
             CheckIsVisible();
+            Parent?.InvalidateChildCache();
 
             VisibleChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -952,6 +1038,7 @@ namespace Client.Controls
             foreach (DXControl control in checks)
                 control.CheckIsVisible();
 
+            Parent?.InvalidateChildCache();
             IsVisibleChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -981,6 +1068,7 @@ namespace Client.Controls
             else
                 CEnvir.Target.ResumeLayout();
 
+            UpdateClipAreaTree();
             IsMovingChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -1016,31 +1104,42 @@ namespace Client.Controls
         public bool ResizeLeft, ResizeRight, ResizeUp, ResizeDown;
 
         #region Texture
+        private RenderTargetResource _controlRenderTarget;
         public bool TextureValid { get; set; }
-        public Texture ControlTexture { get; set; }
+        public RenderTexture ControlTexture { get; set; }
         public Size TextureSize { get; set; }
-        public Surface ControlSurface { get; set; }
+        public RenderSurface ControlSurface { get; private set; }
         public DateTime ExpireTime { get; protected set; }
+
+        public void RefreshTextureExpiry()
+        {
+            ExpireTime = CEnvir.Now + Config.CacheDuration;
+        }
 
         protected virtual void CreateTexture()
         {
-            if (ControlTexture == null || DisplayArea.Size != TextureSize)
+            if (!_controlRenderTarget.IsValid || !ControlTexture.IsValid || DisplayArea.Size != TextureSize)
             {
                 DisposeTexture();
                 TextureSize = DisplayArea.Size;
-                ControlTexture = new Texture(DXManager.Device, TextureSize.Width, TextureSize.Height, 1, Usage.RenderTarget, Format.A8R8G8B8, Pool.Default);
-                ControlSurface = ControlTexture.GetSurfaceLevel(0);
-                DXManager.ControlList.Add(this);
+                _controlRenderTarget = RenderingPipelineManager.CreateRenderTarget(TextureSize);
+
+                ControlTexture = _controlRenderTarget.Texture;
+                ControlSurface = _controlRenderTarget.Surface;
+                RenderingPipelineManager.RegisterControlCache(this);
             }
 
-            Surface previous = DXManager.CurrentSurface;
-            DXManager.SetSurface(ControlSurface);
+            if (!ControlSurface.IsValid)
+                throw new InvalidOperationException("Control surface is not available.");
 
-            DXManager.Device.Clear(ClearFlags.Target, BackColour, 0, 0);
+            RenderSurface previous = RenderingPipelineManager.GetCurrentSurface();
+            RenderingPipelineManager.SetSurface(ControlSurface);
+
+            RenderingPipelineManager.Clear(RenderClearFlags.Target, BackColour, 0, 0);
 
             OnClearTexture();
 
-            DXManager.SetSurface(previous);
+            RenderingPipelineManager.SetSurface(previous);
             TextureValid = true;
 
             ExpireTime = CEnvir.Now + Config.CacheDuration;
@@ -1050,27 +1149,21 @@ namespace Client.Controls
         }
         public virtual void DisposeTexture()
         {
-            if (ControlTexture != null)
+            if (_controlRenderTarget.IsValid)
             {
-                if (!ControlTexture.Disposed)
-                    ControlTexture.Dispose();
-
-                ControlTexture = null;
+                RenderingPipelineManager.ReleaseRenderTarget(_controlRenderTarget);
+                _controlRenderTarget = default;
             }
 
-            if (ControlSurface != null)
-            {
-                if (!ControlSurface.Disposed)
-                    ControlSurface.Dispose();
-
-                ControlSurface = null;
-            }
+            ControlTexture = default;
+            ControlSurface = default;
 
             TextureSize = Size.Empty;
             ExpireTime = DateTime.MinValue;
             TextureValid = false;
 
-            DXManager.ControlList.Remove(this);
+            RenderingPipelineManager.UnregisterControlCache(this);
+            ReleaseChildRenderTarget();
         }
         #endregion
 
@@ -1113,25 +1206,28 @@ namespace Client.Controls
         protected internal virtual void UpdateBorderInformation()
         {
             BorderInformation = null;
-            if (!Border || DisplayArea.Width == 0 || DisplayArea.Height == 0) return;
-            /*
-            BorderInformation = new[]
+            if (!Border || DisplayArea.Width == 0 || DisplayArea.Height == 0)
             {
-                new Vector2(DisplayArea.Left - 1, DisplayArea.Top - 1),
-                new Vector2(DisplayArea.Right, DisplayArea.Top - 1),
-                new Vector2(DisplayArea.Right, DisplayArea.Bottom),
-                new Vector2(DisplayArea.Left - 1, DisplayArea.Bottom),
-                new Vector2(DisplayArea.Left - 1, DisplayArea.Top - 1)
-            };
-            */
+                return;
+            }
+            /*
+BorderInformation = new[]
+{
+   new LinePoint(DisplayArea.Left - 1, DisplayArea.Top - 1),
+   new LinePoint(DisplayArea.Right, DisplayArea.Top - 1),
+   new LinePoint(DisplayArea.Right, DisplayArea.Bottom),
+   new LinePoint(DisplayArea.Left - 1, DisplayArea.Bottom),
+   new LinePoint(DisplayArea.Left - 1, DisplayArea.Top - 1)
+};
+*/
 
             BorderInformation = new[]
             {
-                new Vector2(0, 0),
-                new Vector2(Size.Width + 1, 0),
-                new Vector2(Size.Width + 1, Size.Height + 1),
-                new Vector2(0, Size.Height + 1),
-                new Vector2(0, 0)
+                new LinePoint(0, 0),
+                new LinePoint(Size.Width + 1, 0),
+                new LinePoint(Size.Width + 1, Size.Height + 1),
+                new LinePoint(0, Size.Height + 1),
+                new LinePoint(0, 0)
             };
         }
         protected internal virtual void CheckIsVisible()
@@ -1150,6 +1246,27 @@ namespace Client.Controls
                 area.Offset(Parent.DisplayArea.Location);
 
             DisplayArea = area;
+        }
+
+        protected internal void UpdateClipAreaTree()
+        {
+            UpdateClipArea();
+
+            foreach (DXControl control in Controls)
+                control.UpdateClipAreaTree();
+        }
+
+        private void UpdateClipArea()
+        {
+            Rectangle sceneArea = ActiveScene?.DisplayArea ?? DisplayArea;
+
+            if (Parent == null || Parent.IsMoving && Parent.AllowDragOut)
+            {
+                ClipArea = Rectangle.Intersect(sceneArea, DisplayArea);
+                return;
+            }
+
+            ClipArea = Rectangle.Intersect(Parent.ClipArea, DisplayArea);
         }
         public virtual void ResolutionChanged()
         {
@@ -1644,6 +1761,7 @@ namespace Client.Controls
         public virtual void Draw()
         {
             if (!IsVisible || DisplayArea.Width <= 0 || DisplayArea.Height <= 0) return;
+            if (HideWhenClipped && !ClipArea.Contains(DisplayArea)) return;
 
             OnBeforeDraw();
             DrawControl();
@@ -1667,29 +1785,310 @@ namespace Client.Controls
         }
         protected virtual void DrawBorder()
         {
-            if (!Border || BorderInformation == null) return;
+            if (!Border || BorderInformation == null)
+            {
+                return;
+            }
 
-            if (DXManager.Line.Width != BorderSize)
-                DXManager.Line.Width = BorderSize;
+            if (RenderingPipelineManager.GetLineWidth() != BorderSize)
+            {
+                RenderingPipelineManager.SetLineWidth(BorderSize);
+            }
 
-            Surface old = DXManager.CurrentSurface;
-            DXManager.SetSurface(DXManager.ScratchSurface);
+            Rectangle area = DisplayArea;
+            Rectangle clipArea = GetBorderClipArea();
 
-            DXManager.Device.Clear(ClearFlags.Target, 0, 0, 0);
+            DrawClippedHorizontalLine(area.Left - 1, area.Right, area.Top - 1, clipArea);
+            DrawClippedVerticalLine(area.Right, area.Top - 1, area.Bottom, clipArea);
+            DrawClippedHorizontalLine(area.Left - 1, area.Right, area.Bottom, clipArea);
+            DrawClippedVerticalLine(area.Left - 1, area.Top - 1, area.Bottom, clipArea);
+        }
 
-            DXManager.Line.Draw(BorderInformation, BorderColour);
+        private Rectangle GetBorderClipArea()
+        {
+            Rectangle sceneArea = ActiveScene?.DisplayArea ?? DisplayArea;
 
-            DXManager.SetSurface(old);
+            if (Parent == null || Parent.IsMoving && Parent.AllowDragOut)
+                return sceneArea;
 
-            PresentTexture(DXManager.ScratchTexture, Parent, Rectangle.Inflate(DisplayArea, 1, 1), Color.White, this);
+            return Parent.ClipArea;
+        }
+
+        private void DrawClippedHorizontalLine(int left, int right, int y, Rectangle clipArea)
+        {
+            if (y < clipArea.Top || y >= clipArea.Bottom) return;
+
+            int clippedLeft = Math.Max(left, clipArea.Left);
+            int clippedRight = Math.Min(right, clipArea.Right - 1);
+
+            if (clippedLeft > clippedRight) return;
+
+            RenderingPipelineManager.DrawLine(new[]
+            {
+                new LinePoint(clippedLeft, y),
+                new LinePoint(clippedRight, y)
+            }, BorderColour);
+        }
+
+        private void DrawClippedVerticalLine(int x, int top, int bottom, Rectangle clipArea)
+        {
+            if (x < clipArea.Left || x >= clipArea.Right) return;
+
+            int clippedTop = Math.Max(top, clipArea.Top);
+            int clippedBottom = Math.Min(bottom, clipArea.Bottom - 1);
+
+            if (clippedTop > clippedBottom) return;
+
+            RenderingPipelineManager.DrawLine(new[]
+            {
+                new LinePoint(x, clippedTop),
+                new LinePoint(x, clippedBottom)
+            }, BorderColour);
         }
 
         protected virtual void DrawChildControls()
         {
+            if (CacheChildControls && Controls.Count > 0 && RenderingPipelineManager.SupportsCachedRenderTargets)
+            {
+                DrawCachedChildControls();
+                return;
+            }
+
+            DrawChildControlsUncached();
+        }
+
+        protected void DrawChildControlsUncached()
+        {
             foreach (DXControl control in Controls)
             {
+                if (!control.IsVisible || control.DisplayArea.Width <= 0 || control.DisplayArea.Height <= 0)
+                    continue;
+
                 control.Draw();
             }
+        }
+
+        protected virtual bool ShouldCacheChildControl(DXControl control)
+        {
+            if (!IsControlCacheSafe(control))
+                return false;
+
+            foreach (DXControl child in control.Controls)
+            {
+                if (!IsControlTreeCacheSafe(child))
+                    return false;
+            }
+
+            return true;
+        }
+
+        private bool IsControlTreeCacheSafe(DXControl control)
+        {
+            if (!IsControlCacheSafe(control))
+                return false;
+
+            foreach (DXControl child in control.Controls)
+            {
+                if (!IsControlTreeCacheSafe(child))
+                    return false;
+            }
+
+            return true;
+        }
+
+        private bool IsControlCacheSafe(DXControl control)
+        {
+            if (!control.CacheInParent)
+                return false;
+
+            if (control.BeforeDraw != null || control.BeforeChildrenDraw != null || control.AfterDraw != null)
+                return false;
+
+            if (control is DXAnimatedControl)
+                return false;
+
+            if (control is DXImageControl imageControl && (imageControl.Blend || imageControl.ImageOpacity < 1F))
+                return false;
+
+            return true;
+        }
+
+        public void InvalidateChildCache()
+        {
+            _childRenderSegmentsValid = false;
+
+            foreach (CachedChildControlSegment segment in _childRenderSegments)
+                segment.TextureValid = false;
+
+            Parent?.InvalidateChildCache();
+        }
+
+        protected void InvalidateParentChildCache()
+        {
+            if (CacheInParent)
+                Parent?.InvalidateChildCache();
+        }
+
+        private void DrawCachedChildControls()
+        {
+            EnsureChildRenderSegments();
+
+            for (int i = 0; i < _childRenderSegments.Count; i++)
+            {
+                CachedChildControlSegment segment = _childRenderSegments[i];
+
+                if (!segment.RenderTarget.Texture.IsValid)
+                {
+                    DrawChildControlsUncached();
+                    return;
+                }
+
+                if (!segment.TextureValid)
+                    RenderChildControlSegment(segment);
+            }
+
+            int segmentIndex = 0;
+            for (int i = 0; i < Controls.Count; i++)
+            {
+                if (segmentIndex < _childRenderSegments.Count && _childRenderSegments[segmentIndex].StartIndex == i)
+                {
+                    CachedChildControlSegment segment = _childRenderSegments[segmentIndex++];
+                    PresentTexture(segment.RenderTarget.Texture, DisplayArea, Parent, DisplayArea, Color.White, this);
+                    i = segment.EndIndex;
+                    continue;
+                }
+
+                DXControl control = Controls[i];
+
+                if (!control.IsVisible || control.DisplayArea.Width <= 0 || control.DisplayArea.Height <= 0)
+                    continue;
+
+                if (ShouldCacheChildControl(control))
+                    continue;
+
+                control.Draw();
+            }
+        }
+
+        private void EnsureChildRenderSegments()
+        {
+            Size backBufferSize = RenderingPipelineManager.GetBackBufferSize();
+
+            if (_childRenderSegmentsValid && AllChildRenderSegmentsValid(backBufferSize))
+                return;
+
+            List<CachedChildControlSegment> oldSegments = new List<CachedChildControlSegment>(_childRenderSegments);
+            _childRenderSegments.Clear();
+
+            int cachedStart = -1;
+            for (int i = 0; i < Controls.Count; i++)
+            {
+                DXControl control = Controls[i];
+
+                if (!control.IsVisible || control.DisplayArea.Width <= 0 || control.DisplayArea.Height <= 0)
+                    continue;
+
+                if (ShouldCacheChildControl(control))
+                {
+                    if (cachedStart == -1)
+                        cachedStart = i;
+
+                    continue;
+                }
+
+                AddChildRenderSegment(oldSegments, cachedStart, i - 1, backBufferSize);
+                cachedStart = -1;
+            }
+
+            AddChildRenderSegment(oldSegments, cachedStart, Controls.Count - 1, backBufferSize);
+
+            foreach (CachedChildControlSegment segment in oldSegments)
+            {
+                if (segment.RenderTarget.IsValid)
+                    RenderingPipelineManager.ReleaseRenderTarget(segment.RenderTarget);
+            }
+
+            _childRenderSegmentsValid = true;
+        }
+
+        private bool AllChildRenderSegmentsValid(Size backBufferSize)
+        {
+            foreach (CachedChildControlSegment segment in _childRenderSegments)
+            {
+                if (!segment.RenderTarget.IsValid || segment.RenderTargetSize != backBufferSize)
+                    return false;
+            }
+
+            return true;
+        }
+
+        private void AddChildRenderSegment(List<CachedChildControlSegment> oldSegments, int startIndex, int endIndex, Size backBufferSize)
+        {
+            if (startIndex == -1 || endIndex < startIndex)
+                return;
+
+            CachedChildControlSegment segment = null;
+
+            for (int i = 0; i < oldSegments.Count; i++)
+            {
+                CachedChildControlSegment oldSegment = oldSegments[i];
+
+                if (oldSegment.RenderTarget.IsValid && oldSegment.RenderTargetSize == backBufferSize)
+                {
+                    segment = oldSegment;
+                    oldSegments.RemoveAt(i);
+                    break;
+                }
+            }
+
+            if (segment == null)
+            {
+                segment = new CachedChildControlSegment
+                {
+                    RenderTarget = RenderingPipelineManager.CreateRenderTarget(backBufferSize),
+                    RenderTargetSize = backBufferSize,
+                };
+            }
+
+            segment.StartIndex = startIndex;
+            segment.EndIndex = endIndex;
+            segment.TextureValid = false;
+            _childRenderSegments.Add(segment);
+        }
+
+        private void RenderChildControlSegment(CachedChildControlSegment segment)
+        {
+            RenderSurface oldSurface = RenderingPipelineManager.GetCurrentSurface();
+            RenderingPipelineManager.SetSurface(segment.RenderTarget.Surface);
+            RenderingPipelineManager.Clear(RenderClearFlags.Target, Color.FromArgb(0), 0, 0);
+
+            for (int i = segment.StartIndex; i <= segment.EndIndex; i++)
+            {
+                DXControl control = Controls[i];
+
+                if (!control.IsVisible || control.DisplayArea.Width <= 0 || control.DisplayArea.Height <= 0)
+                    continue;
+
+                if (!ShouldCacheChildControl(control))
+                    continue;
+
+                control.Draw();
+            }
+
+            RenderingPipelineManager.SetSurface(oldSurface);
+            segment.TextureValid = true;
+        }
+
+        private void ReleaseChildRenderTarget()
+        {
+            foreach (CachedChildControlSegment segment in _childRenderSegments)
+            {
+                if (segment.RenderTarget.IsValid)
+                    RenderingPipelineManager.ReleaseRenderTarget(segment.RenderTarget);
+            }
+
+            _childRenderSegments.Clear();
+            _childRenderSegmentsValid = false;
         }
 
         protected virtual void DrawControl()
@@ -1703,36 +2102,99 @@ namespace Client.Controls
                 if (!TextureValid) return;
             }
 
-            float oldOpacity = DXManager.Opacity;
+            float oldOpacity = RenderingPipelineManager.GetOpacity();
 
-            DXManager.SetOpacity(Opacity);
+            RenderingPipelineManager.SetOpacity(Opacity);
 
             PresentTexture(ControlTexture, Parent, DisplayArea, IsEnabled ? Color.White : Color.FromArgb(75, 75, 75), this);
 
-            DXManager.SetOpacity(oldOpacity);
+            RenderingPipelineManager.SetOpacity(oldOpacity);
 
             ExpireTime = CEnvir.Now + Config.CacheDuration;
         }
 
-        public static void PresentTexture(Texture texture, DXControl parent, Rectangle displayArea, Color colour, DXControl control, int offX = 0, int offY = 0, float scale = 1.0f)
+        public static void PresentTexture(RenderTexture texture, DXControl parent, Rectangle displayArea, Color colour, DXControl control, int offX = 0, int offY = 0, float scale = 1.0f, bool intersectParent = true)
         {
+            PresentTexture(texture, null, parent, displayArea, colour, control, offX, offY, scale, intersectParent);
+        }
+
+        public static void PresentTexture(RenderTexture texture, Rectangle? sourceRectangle, DXControl parent, Rectangle displayArea, Color colour, DXControl control, int offX = 0, int offY = 0, float scale = 1.0f, bool intersectParent = true)
+        {
+            if (!texture.IsValid)
+                return;
+
+            if (intersectParent && control != null && scale == 1.0f && offX == 0 && offY == 0)
+            {
+                Rectangle clippedArea = Rectangle.Intersect(control.ClipArea, displayArea);
+                if (clippedArea.Width <= 0 || clippedArea.Height <= 0)
+                    return;
+
+                Rectangle clippedTextureArea = new Rectangle(
+                    clippedArea.X - displayArea.X,
+                    clippedArea.Y - displayArea.Y,
+                    clippedArea.Width,
+                    clippedArea.Height);
+
+                if (clippedTextureArea.Width <= 0 || clippedTextureArea.Height <= 0)
+                    return;
+
+                if (sourceRectangle.HasValue)
+                {
+                    Rectangle source = sourceRectangle.Value;
+                    int sourceOffsetX = clippedTextureArea.X;
+                    int sourceOffsetY = clippedTextureArea.Y;
+
+                    clippedTextureArea = new Rectangle(
+                        source.X + sourceOffsetX,
+                        source.Y + sourceOffsetY,
+                        Math.Min(clippedTextureArea.Width, source.Width - sourceOffsetX),
+                        Math.Min(clippedTextureArea.Height, source.Height - sourceOffsetY));
+
+                    if (clippedTextureArea.Width <= 0 || clippedTextureArea.Height <= 0)
+                        return;
+                }
+
+                RenderingPipelineManager.DrawTexture(texture, clippedTextureArea, clippedArea, colour);
+                return;
+            }
+
+            float uiScale = 1f;// control.UiScale;
+            float finalScale = scale * uiScale;
+
+            Rectangle scaledArea = new Rectangle(
+                (int)(displayArea.X * uiScale),
+                (int)(displayArea.Y * uiScale),
+                (int)(displayArea.Width * uiScale),
+                (int)(displayArea.Height * uiScale));
+
             Rectangle bounds = ActiveScene.DisplayArea;
-            Rectangle textureArea = Rectangle.Intersect(bounds, displayArea);
+            Rectangle scaledTextureArea = Rectangle.Intersect(bounds, scaledArea);
 
             if (!control.IsMoving || !control.AllowDragOut)
+            {
                 while (parent != null)
                 {
                     if (parent.IsMoving && parent.AllowDragOut)
                     {
                         bounds = ActiveScene.DisplayArea;
-                        textureArea = Rectangle.Intersect(bounds, displayArea);
+                        if (intersectParent)
+                            scaledTextureArea = Rectangle.Intersect(bounds, scaledArea);
                         break;
                     }
 
-                    bounds = parent.DisplayArea;
-                    textureArea = Rectangle.Intersect(bounds, textureArea);
+                    var parentUiScale = 1f; //parent.UiScale;
 
-                    if (bounds.IntersectsWith(displayArea))
+                    Rectangle scaledParent = new Rectangle(
+                        (int)(parent.DisplayArea.X * parentUiScale),
+                        (int)(parent.DisplayArea.Y * parentUiScale),
+                        (int)(parent.DisplayArea.Width * parentUiScale),
+                        (int)(parent.DisplayArea.Height * parentUiScale));
+
+                    bounds = scaledParent;
+                    if (intersectParent)
+                        scaledTextureArea = Rectangle.Intersect(bounds, scaledTextureArea);
+
+                    if (bounds.IntersectsWith(scaledArea))
                     {
                         parent = parent.Parent;
                         continue;
@@ -1740,22 +2202,49 @@ namespace Client.Controls
 
                     return;
                 }
+            }
 
-            if (textureArea.IsEmpty) return;
+            if (scaledTextureArea.IsEmpty)
+            {
+                return;
+            }
 
-            textureArea.Location = new Point(textureArea.X - displayArea.X, textureArea.Y - displayArea.Y);
+            Rectangle textureArea = new Rectangle(
+                (int)((scaledTextureArea.X - scaledArea.X) / uiScale),
+                (int)((scaledTextureArea.Y - scaledArea.Y) / uiScale),
+                (int)(scaledTextureArea.Width / uiScale),
+                (int)(scaledTextureArea.Height / uiScale));
 
-            float fX = displayArea.X + textureArea.Location.X + offX;
-            float fY = displayArea.Y + textureArea.Location.Y + offY;
+            if (textureArea.Width <= 0 || textureArea.Height <= 0)
+                return;
 
-            fX /= scale;
-            fY /= scale;
+            if (sourceRectangle.HasValue)
+            {
+                Rectangle source = sourceRectangle.Value;
+                int sourceOffsetX = textureArea.X;
+                int sourceOffsetY = textureArea.Y;
 
-            DXManager.Sprite.Transform = Matrix.Scaling(scale, scale, 1);
+                textureArea = new Rectangle(
+                    source.X + sourceOffsetX,
+                    source.Y + sourceOffsetY,
+                    Math.Min(textureArea.Width, source.Width - sourceOffsetX),
+                    Math.Min(textureArea.Height, source.Height - sourceOffsetY));
 
-            DXManager.Sprite.Draw(texture, textureArea, Vector3.Zero, new Vector3(fX, fY, 0), colour);
+                if (textureArea.Width <= 0 || textureArea.Height <= 0)
+                    return;
+            }
 
-            DXManager.Sprite.Transform = Matrix.Identity;
+            float destinationX = scaledTextureArea.X + offX * uiScale;
+            float destinationY = scaledTextureArea.Y + offY * uiScale;
+            float destinationWidth = textureArea.Width * finalScale;
+            float destinationHeight = textureArea.Height * finalScale;
+
+            if (destinationWidth <= 0 || destinationHeight <= 0)
+                return;
+
+            RectangleF destinationRectangle = new RectangleF(destinationX, destinationY, destinationWidth, destinationHeight);
+
+            RenderingPipelineManager.DrawTexture(texture, textureArea, destinationRectangle, colour);
         }
 
         #endregion
@@ -1899,5 +2388,4 @@ namespace Client.Controls
 
         #endregion
     }
-
 }

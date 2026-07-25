@@ -67,7 +67,6 @@ namespace Client.Scenes.Views
             HasTopBorder = false;
             TitleLabel.Visible = false;
             CloseButton.Visible = false;
-
             AllowResize = true;
 
             Links = new ClientBeltLink[Globals.MaxBeltCount];

@@ -47,5 +47,10 @@ namespace Server.Views
         {
             JsonExporter.Export<NPCInfo>(NPCInfoGridView);
         }
+
+        private void InsertRowButton_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            SMain.InsertRowAfterFocusedObject<NPCInfo>(NPCInfoGridView);
+        }
     }
 }

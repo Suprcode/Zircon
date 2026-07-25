@@ -5,44 +5,44 @@ namespace Library
 {
     public enum MirGender : byte
     {
-        Male,
-        Female
+        Male = 0,
+        Female = 1
     }
 
     public enum MirClass : byte
     {
-        Warrior,
-        Wizard,
-        Taoist,
-        Assassin,
+        Warrior = 0,
+        Wizard = 1,
+        Taoist = 2,
+        Assassin = 3,
     }
 
     public enum AttackMode : byte
     {
         [Description("Attack: Peaceful")]
-        Peace,
+        Peace = 0,
         [Description("Attack: Group")]
-        Group,
+        Group = 1,
         [Description("Attack: Guild")]
-        Guild,
+        Guild = 2,
         [Description("Attack: War, Red, Brown")]
-        WarRedBrown,
+        WarRedBrown = 3,
         [Description("Attack: All")]
-        All
+        All = 4
     }
 
     public enum PetMode : byte
     {
         [Description("Pet: Move, Attack")]
-        Both,
+        Both = 0,
         [Description("Pet: Move")]
-        Move,
+        Move = 1,
         [Description("Pet: Attack")]
-        Attack,
+        Attack = 2,
         [Description("Pet: PvP")]
-        PvP,
+        PvP = 3,
         [Description("Pet: None")]
-        None,
+        None = 4,
     }
 
     public enum MirDirection : byte
@@ -119,6 +119,16 @@ namespace Library
         Head = 1,
         Back = 2,
         Food = 3,
+    }
+
+    public enum CompanionAction
+    {
+        None = 0,
+        Moving = 1,
+        Pickup = 2,
+        Hunger = 3,
+        Eating = 4,
+        Idle = 5
     }
 
     [Flags]
@@ -203,7 +213,13 @@ namespace Library
         AccessoryRefineCombItems,
         PartsStorage,
         Bundle,
-        LootBox
+        LootBox,
+        SocketTarget,
+        SocketGem,
+        SocketCombine1,
+        SocketCombine2,
+        SocketCombine3,
+        SocketCombineResult
     }
 
     public enum InventoryMode
@@ -242,6 +258,10 @@ namespace Library
         DeathDrops = 18,
 
         Fame = 19,
+
+        RedGem = 20,
+        BlueGem = 21,
+        CursedGem = 22,
 
         //War
         Defiance = 100,
@@ -352,6 +372,18 @@ namespace Library
         Castle = 3
     }
 
+    public enum DungeonMapRole : byte
+    {
+        Entrance = 0,
+        Lobby = 1,
+        Floor = 2,
+        SideRoom = 3,
+        Transition = 4,
+        Hub = 5,
+        Maze = 6,
+        BossFloor = 7
+    }
+
     public enum RegionType : byte
     {
         None = 0,
@@ -422,7 +454,9 @@ namespace Library
         Currency = 34,
         Bundle = 35,
         [Description("Loot Box")]
-        LootBox = 36
+        LootBox = 36,
+        [Description("Gem")]
+        SocketGem = 37
     }
 
     public enum MirAction : byte
@@ -442,7 +476,8 @@ namespace Library
         Mount,
         Mining,
         Fishing,
-        Taming
+        Taming,
+        Idle
     }
 
     public enum MirAnimation : byte
@@ -501,7 +536,6 @@ namespace Library
         TamingWait
     }
 
-
     public enum MessageAction
     {
         None,
@@ -546,7 +580,11 @@ namespace Library
         AccessoryRefine,
 
         RollDie,
-        RollYut
+        RollYut,
+
+        Consignment,
+        Socketing,
+        SocketCombine,
     }
 
     public enum MagicSchool
@@ -857,7 +895,7 @@ namespace Library
         //NF_StoneBuilding25 = 25,
         //NF_StoneBuilding26 = 26,
         NumaElite = 27,
-        //NF_Phantom = 28,
+        Phantom = 28,
         CrimsonNecromancer = 29,
 
         Chicken = 30,
@@ -933,12 +971,12 @@ namespace Library
         ZumaGuardian = 94,
         ZumaKing = 95,
         ArcherGuard = 96,
-        //NF_DemonGuardMace = 97,
-        //NF_DemonGuardSword = 98,
+        //NF_Blank97 = 97,
+        //NF_Blank98 = 98,
         Shinsu = 99, //Small
 
         Shinsu1 = 100, //Large
-        UmaMaceInfidel = 101,
+        //NF_SandGuard = 101,
         AquaLizard = 102,
         CorrosivePoisonSpitter = 103,
         SandShark = 104,
@@ -957,9 +995,9 @@ namespace Library
         ArachnidGazer = 116,
         RedMoonGuardian = 117,
         RedMoonProtector = 118,
-        //NF_RedMoonRedProtector = 119,
+        RedMoonRedProtector = 119,
 
-        //NF_RedMoonGrayProtector = 120,
+        RedMoonGrayProtector = 120,
         VenomousArachnid = 121,
         DarkArachnid = 122,
         ForestGuard = 123,
@@ -998,9 +1036,9 @@ namespace Library
         BoneBladesman = 153,
         BoneArcher = 154,
         MutantFlea = 155,
-        //NF_PurpleFlea = 156,
+        PurpleFlea = 156,
         BlasterMutantFlea = 157,
-        //NF_BlueBlasterMutantFlea = 158,
+        BlueBlasterMutantFlea = 158,
         PoisonousMutantFlea = 159,
 
         RazorTusk = 160,
@@ -1121,7 +1159,7 @@ namespace Library
         EnshrinementBox = 275,
         //NF_AssassinMale = 276,
         //NF_AssassinFemale = 277,
-        //NF_UmaMaceSoldier = 278,
+        UmaMaceInfidel = 278,
         //NF_Blank279 = 279,
 
         Salamander = 280,
@@ -1172,6 +1210,7 @@ namespace Library
 
         //Mon33
 
+        //Mon34
         Companion_Pig = 340,
         Companion_TuskLord = 341,
         Companion_SkeletonLord = 342,
@@ -1350,6 +1389,9 @@ namespace Library
         Tornado = 566,
 
         //Mon57
+        Companion_Dog = 570,
+        Companion_Jinchon = 571,
+        Companion_Dino = 572,
 
         //Mon58
 
@@ -1557,6 +1599,28 @@ namespace Library
         [Description("Lowest Price")]
         LowestPrice,
         Favourite
+    }
+
+    public enum GameStoreCategory : byte
+    {
+        All,
+        Favourites,
+        NewItems,
+        Equipment,
+        Consumables,
+        Cosmetics,
+        Other
+    }
+
+    public enum GameStoreGiftResult : byte
+    {
+        Success,
+        InvalidItem,
+        NotAvailable,
+        InvalidRecipient,
+        CannotGiftSelf,
+        MailboxFull,
+        InsufficientFunds
     }
 
     public enum DungeonFinderSort
@@ -1860,6 +1924,96 @@ namespace Library
         KillMonster = 0,
         GainItem = 1,
         Region = 2
+    }
+
+    public enum MilestoneGrade
+    {
+        Low = 1,
+        Medium = 2,
+        High = 3
+    }
+
+    public enum MilestoneType
+    {
+        Walk = 0,
+        Run = 1,
+        Ride = 2,
+        Harvest = 3,
+        Die = 4,
+        Level = 5, //Set
+        Marry = 6,
+        Divorce = 7,
+        Trade = 8,
+        Rebirth = 9, //Set
+        PKPoint = 10, //Set
+        Ranking = 11, //Set //Reverse
+
+        //Tracked by Item
+        ItemGain = 20,
+        ItemUse = 21,
+
+        //Tracked by Currency
+        CurrencyGain = 30,
+
+        //Tracked by Quest
+        QuestComplete = 40,
+
+        CompanionAdopt = 50,
+
+        //Tracked by Magic
+        SkillLearn = 60,
+        SkillLevel = 61, //Set
+
+        //Tracked by Monster
+        PetTame = 70,
+        PetSummon = 71,
+
+        GuildJoin = 80,
+        GuildCreate = 81,
+
+        GroupJoin = 90,
+        GroupCreate = 91,
+
+        MailSend = 100,
+
+        FriendAdd = 110, //Set
+
+        MineCast = 120,
+        MineCatch = 121, //Tracked by Item
+
+        FishingCast = 130,
+        FishingCatch = 131, //Tracked by Item
+        FishingFail = 132,
+        FishingPerfect = 134,
+
+        //Tracked by Instance
+        InstanceJoin = 140,
+
+        //Tracked by Region
+        Region = 150,
+
+        //Tracked by Item
+        ShopPurchase = 160,
+        ShopSell = 161,
+
+        //Tracked by Item
+        MarketConsign = 170,
+        MarketPurchase = 171,
+        MarketSell = 172,
+
+        //Tracked by Monster
+        MonsterKill = 180,
+        MonsterDeath = 181,
+        MonsterDamageDone = 182,
+        MonsterDamageTake = 183,
+        MonsterPetKill = 184,
+
+        //Tracked by Player
+        PlayerKill = 190,
+        PlayerDeath = 191,
+        PlayerDamageDone = 192,
+        PlayerDamageTake = 193,
+        PlayerPetKill = 194,
     }
 
     public enum MovementEffect
@@ -2293,6 +2447,10 @@ namespace Library
 
         QuestTake,
         QuestComplete,
+
+
+        GemStart,
+        GemCombine,
 
         #region Magics
 

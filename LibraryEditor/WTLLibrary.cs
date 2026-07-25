@@ -1,10 +1,12 @@
-﻿using ManagedSquish;
+using ManagedSquish;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace LibraryEditor
@@ -114,34 +116,42 @@ namespace LibraryEditor
             }
         }
 
-        public void ToMLibrary()
+        public void ToMLibrary(bool useBlackKeyTransparency = false, IProgress<LibraryProgress> progress = null, CancellationToken cancellationToken = default, LibraryConversionOptions conversionOptions = null)
         {
-            string fileName = Path.ChangeExtension(_fileName, ".Zl");
+            conversionOptions ??= LibraryConversionOptions.Default;
+            string fileName = Mir3Library.GetConvertedLibraryPath(_fileName);
+            string displayName = Path.GetFileName(_fileName);
 
             if (File.Exists(fileName))
                 File.Delete(fileName);
 
-            Mir3Library library = new Mir3Library(fileName)
+            Mir3Library library = new Mir3Library(fileName, useBlackKeyTransparency)
             {
                 Images = new List<Mir3Library.Mir3Image>(),
-                Version = Mir3Library.LIBRARY_VERSION
+                Version = Mir3Library.COMPRESSED_LIBRARY_VERSION,
+                ContainerCompression = conversionOptions.ContainerCompression
             };
 
             library.Images.AddRange(Enumerable.Repeat(new Mir3Library.Mir3Image(library.Version), Images.Length));
 
-            ParallelOptions options = new ParallelOptions { MaxDegreeOfParallelism = 8 };
+            ParallelOptions options = new ParallelOptions { MaxDegreeOfParallelism = 8, CancellationToken = cancellationToken };
+            int completed = 0;
 
             try
             {
                 Parallel.For(0, Images.Length, options, i =>
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     WTLImage image = Images[i];
                     WTLImage shadowimage = shadowLibrary != null && i < shadowLibrary.Images.Length ? shadowLibrary.Images[i] : null;
 
                     if (shadowimage != null && shadowimage.Length > 0)
-                        library.Images[i] = new Mir3Library.Mir3Image(image.Image, shadowimage.Image, image.MaskImage, library.Version) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = shadowimage.X, ShadowOffSetY = shadowimage.Y, ShadowType = shadowimage.Shadow };
+                        library.Images[i] = new Mir3Library.Mir3Image(image.Image, shadowimage.Image, image.MaskImage, library.Version, library.UseBlackKeyTransparency) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = shadowimage.X, ShadowOffSetY = shadowimage.Y, ShadowType = shadowimage.Shadow };
                     else
-                        library.Images[i] = new Mir3Library.Mir3Image(image.Image, null, image.MaskImage, library.Version) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY, ShadowType = image.Shadow };
+                        library.Images[i] = new Mir3Library.Mir3Image(image.Image, null, image.MaskImage, library.Version, library.UseBlackKeyTransparency) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY, ShadowType = image.Shadow };
+
+                    int value = System.Threading.Interlocked.Increment(ref completed);
+                    progress?.Report(new LibraryProgress($"Converting {displayName} ({value}/{Images.Length})", value, Images.Length));
                 });
             }
             catch (System.Exception)
@@ -150,6 +160,26 @@ namespace LibraryEditor
             }
             finally
             {
+                if (conversionOptions.BuildAtlasMetadata)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    ApplyIndividualStorageOptions(library, conversionOptions, progress, displayName, cancellationToken);
+
+                    bool buildShadowAtlas = conversionOptions.BuildShadowAtlasMetadata || library.CountAtlasLayerEntries(ZlAtlasLayer.Shadow) > 100;
+                    bool buildOverlayAtlas = conversionOptions.BuildOverlayAtlasMetadata || library.CountAtlasLayerEntries(ZlAtlasLayer.Overlay) > 100;
+                    library.BuildAtlasMetadata(conversionOptions.AtlasPageSize, 2, conversionOptions.AtlasGroupImageCount, conversionOptions.RuntimePreference, progress, displayName, true, buildShadowAtlas, buildOverlayAtlas);
+                }
+                else
+                {
+                    ApplyIndividualStorageOptions(library, conversionOptions, progress, displayName, cancellationToken);
+                }
+
+                cancellationToken.ThrowIfCancellationRequested();
+                progress?.Report(new LibraryProgress($"Saving {Path.GetFileName(fileName)}", 0, 0, true)
+                {
+                    CountText = "Writing compressed ZL v2 container",
+                    GroupText = "Saving and compressing payloads"
+                });
                 library.Save(fileName);
             }
 
@@ -160,6 +190,50 @@ namespace LibraryEditor
             //            System.Windows.Forms.MessageBoxIcon.Information,
             //                System.Windows.Forms.MessageBoxDefaultButton.Button1);
         }
+
+        private void ApplyIndividualStorageOptions(Mir3Library library, LibraryConversionOptions conversionOptions, IProgress<LibraryProgress> progress, string displayName, CancellationToken cancellationToken)
+        {
+            if (conversionOptions.IndividualRuntimePreference != ZlRuntimeTexturePreference.Source)
+            {
+                library.SetRuntimePreferenceForAllImages(conversionOptions.IndividualRuntimePreference, conversionOptions.StorePngSourceImages, progress, displayName, cancellationToken);
+                return;
+            }
+
+            int maximum = Images?.Length ?? 0;
+            for (int i = 0; i < maximum; i++)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                progress?.Report(new LibraryProgress($"Preserving source texture type for {displayName}", i + 1, maximum)
+                {
+                    CountText = $"Source texture {i + 1:N0} of {maximum:N0}",
+                    GroupText = conversionOptions.StorePngSourceImages
+                        ? "Storing PNG source + original runtime codec"
+                        : "Storing original runtime codec where possible"
+                });
+
+                Mir3Library.Mir3Image target = i < library.Images.Count ? library.Images[i] : null;
+                WTLImage source = Images[i];
+                if (target == null || source == null || source.Image == null)
+                    continue;
+
+                WTLImage shadow = shadowLibrary != null && i < shadowLibrary.Images.Length ? shadowLibrary.Images[i] : null;
+
+                ZlImageCodec imageCodec = source.SourceCodec ?? ZlImageCodec.Dxt5;
+                ZlImageCodec? shadowCodec = shadow?.SourceCodec;
+                ZlImageCodec? overlayCodec = source.MaskSourceCodec;
+
+                target.SetSourceTypeStorage(
+                    conversionOptions.StorePngSourceImages,
+                    imageCodec,
+                    source.SourcePayload,
+                    shadowCodec,
+                    shadow?.SourcePayload,
+                    overlayCodec,
+                    source.MaskSourcePayload);
+            }
+        }
+
         public void MergeToMLibrary(Mir3Library lib, int newImages)
         {
             int offset = lib.Images.Count;
@@ -176,9 +250,9 @@ namespace LibraryEditor
                     WTLImage shadowimage = shadowLibrary != null && i < shadowLibrary.Images.Length ? shadowLibrary.Images[i] : null;
 
                     if (shadowimage != null)
-                        lib.Images[i + offset] = new Mir3Library.Mir3Image(image.Image, shadowimage.Image, image.MaskImage, lib.Version) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY, ShadowType = image.Shadow };
+                        lib.Images[i + offset] = new Mir3Library.Mir3Image(image.Image, shadowimage.Image, image.MaskImage, lib.Version, lib.UseBlackKeyTransparency) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY, ShadowType = image.Shadow };
                     else
-                        lib.Images[i + offset] = new Mir3Library.Mir3Image(image.Image, null, image.MaskImage, lib.Version) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY, ShadowType = image.Shadow };
+                        lib.Images[i + offset] = new Mir3Library.Mir3Image(image.Image, null, image.MaskImage, lib.Version, lib.UseBlackKeyTransparency) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY, ShadowType = image.Shadow };
                 });
                 lib.AddBlanks(newImages);
             }
@@ -202,6 +276,10 @@ namespace LibraryEditor
         public bool IsNewVersion { get; }
         public byte ImageTextureType { get; }
         public byte MaskTextureType { get; }
+        public ZlImageCodec? SourceCodec { get; private set; }
+        public byte[] SourcePayload { get; private set; }
+        public ZlImageCodec? MaskSourceCodec { get; private set; }
+        public byte[] MaskSourcePayload { get; private set; }
 
         private byte[] _fBytes;
         public Bitmap Image;
@@ -253,7 +331,7 @@ namespace LibraryEditor
 
         public unsafe void CreateTexture(BinaryReader bReader)
         {
-            Image = ReadImage(bReader, Length, Width, Height, ImageTextureType);
+            Image = ReadImage(bReader, Length, Width, Height, ImageTextureType, false);
             if (HasMask)
             {
                 if (IsNewVersion)
@@ -276,11 +354,11 @@ namespace LibraryEditor
                     bReader.ReadByte(); //mask shadow
                 }
 
-                MaskImage = ReadImage(bReader, MaskLength, MaskWidth, MaskHeight, MaskTextureType);
+                MaskImage = ReadImage(bReader, MaskLength, MaskWidth, MaskHeight, MaskTextureType, true);
             }
         }
 
-        private unsafe Bitmap DecompressV1Texture(BinaryReader bReader, int imageLength, short outputWidth, short outputHeight)
+        private unsafe Bitmap DecompressV1Texture(BinaryReader bReader, int imageLength, short outputWidth, short outputHeight, bool isMask)
         {
             const int size = 8;
             int offset = 0, blockOffSet = 0;
@@ -291,6 +369,8 @@ namespace LibraryEditor
                 tWidth *= 2;
 
             _fBytes = bReader.ReadBytes(imageLength);
+            if (!isMask)
+                SourceCodec = ZlImageCodec.Dxt1;
 
             Bitmap output = new Bitmap(outputWidth, outputHeight);
             if (_fBytes.Length != imageLength) return null;
@@ -376,29 +456,19 @@ namespace LibraryEditor
         }
 
 
-        private unsafe Bitmap DecompressV2Texture(BinaryReader bReader, int imageLength, short outputWidth, short outputHeight, byte textureType)
+        private unsafe Bitmap DecompressV2Texture(BinaryReader bReader, int imageLength, short outputWidth, short outputHeight, byte textureType, bool isMask)
         {
             var buffer = bReader.ReadBytes(imageLength);
 
-            int w = Width + (4 - Width % 4) % 4;
-            int a = 1;
-            while (true)
-            {
-                a *= 2;
-                if (a >= w)
-                {
-                    w = a;
-                    break;
-                }
-            }
-            int h = Height + (4 - Height % 4) % 4;
-            int e = w * h / 2;
+            int textureWidth = NextPowerOfTwo(AlignToFour(Width));
+            int alignedHeight = AlignToFour(Height);
 
             SquishFlags type;
             switch (textureType)
             {
                 case 0:
                 case 1:
+                case 129: //Not a dxt image but need this here to not fall in to the NotImplementedException below
                     type = SquishFlags.Dxt1;
                     break;
                 case 3:
@@ -407,66 +477,135 @@ namespace LibraryEditor
                 case 5:
                     type = SquishFlags.Dxt5;
                     break;
+                case 128:
+                    type = SquishFlags.Dxt5;
+                    break;
                 default:
                     throw new NotImplementedException();
             }
 
             var decompressedBuffer = textureType != 128 ? Ionic.Zlib.DeflateStream.UncompressBuffer(buffer) : buffer;
-            Bitmap bitmap = new Bitmap(w, h, PixelFormat.Format32bppArgb);
 
-            if (MaskTextureType == 128)
+            // Recent WEMADE libraries can store an uncompressed BGRA texture while
+            // retaining the old DXT texture type in the image header.  These textures
+            // pad both dimensions to powers of two; treating their pixels as DXT
+            // blocks produces the characteristic coloured horizontal stripes.
+            int powerOfTwoHeight = NextPowerOfTwo(alignedHeight);
+            int powerOfTwoBgraLength = textureWidth * powerOfTwoHeight * 4;
+            bool isBgraTexture = textureType >= 128 || decompressedBuffer.Length == powerOfTwoBgraLength;
+            int textureHeight = decompressedBuffer.Length == powerOfTwoBgraLength
+                ? powerOfTwoHeight
+                : alignedHeight;
+
+            CaptureSourcePayload(isBgraTexture ? (byte)128 : textureType, decompressedBuffer, textureWidth, textureHeight, outputWidth, outputHeight, isMask);
+            using Bitmap bitmap = new Bitmap(textureWidth, textureHeight, PixelFormat.Format32bppArgb);
+            BitmapData data = bitmap.LockBits(
+                new Rectangle(0, 0, textureWidth, textureHeight),
+                ImageLockMode.WriteOnly,
+                PixelFormat.Format32bppArgb);
+
+            try
             {
-                for (int y = 0; y < h; y++)
+                if (isBgraTexture)
                 {
-                    for (int x = 0; x < w; x++)
+                    int requiredLength = textureWidth * textureHeight * 4;
+                    if (decompressedBuffer.Length < requiredLength)
+                        throw new InvalidDataException($"WTL BGRA texture is truncated. Expected {requiredLength} bytes, found {decompressedBuffer.Length}.");
+
+                    Marshal.Copy(decompressedBuffer, 0, data.Scan0, requiredLength);
+                }
+                else
+                {
+                    fixed (byte* source = decompressedBuffer)
+                        Squish.DecompressImage(data.Scan0, textureWidth, textureHeight, (IntPtr)source, type);
+
+                    byte* dest = (byte*)data.Scan0;
+                    for (int i = 0; i < textureWidth * textureHeight * 4; i += 4)
                     {
-                        var width = w * 4;
-
-                        int b = decompressedBuffer[(y * width) + (x * 4)];
-                        int g = decompressedBuffer[(y * width) + (x * 4) + 1];
-                        int r = decompressedBuffer[(y * width) + (x * 4) + 2];
-                        int al = decompressedBuffer[(y * width) + (x * 4) + 3];
-
-                        bitmap.SetPixel(x, y, Color.FromArgb(al, r, g, b));
+                        // Reverse red and blue after Squish's RGBA output.
+                        byte b = dest[i];
+                        dest[i] = dest[i + 2];
+                        dest[i + 2] = b;
                     }
                 }
             }
-            else
+            finally
             {
-                BitmapData data = bitmap.LockBits(
-                                new Rectangle(0, 0, w, h),
-                                ImageLockMode.WriteOnly,
-                                PixelFormat.Format32bppArgb
-                            );
-
-                fixed (byte* source = decompressedBuffer)
-                    Squish.DecompressImage(data.Scan0, w, h, (IntPtr)source, type);
-
-                byte* dest = (byte*)data.Scan0;
-
-                for (int i = 0; i < w * h * 4; i += 4)
-                {
-                    //Reverse Red/Blue
-                    byte b = dest[i];
-                    dest[i] = dest[i + 2];
-                    dest[i + 2] = b;
-                }
-
                 bitmap.UnlockBits(data);
             }
 
-            Rectangle cloneRect = new Rectangle(0, 0, outputWidth, outputHeight);
-            PixelFormat format = bitmap.PixelFormat;
-            Bitmap cloneBitmap = bitmap.Clone(cloneRect, format);
-
-            return cloneBitmap;
+            return bitmap.Clone(new Rectangle(0, 0, outputWidth, outputHeight), bitmap.PixelFormat);
         }
 
-        public unsafe Bitmap ReadImage(BinaryReader bReader, int imageLength, short outputWidth, short outputHeight, byte textureType)
+        private static int AlignToFour(int value) => value + (4 - value % 4) % 4;
+
+        private static int NextPowerOfTwo(int value)
+        {
+            int result = 1;
+            while (result < value)
+                result *= 2;
+
+            return result;
+        }
+
+        public unsafe Bitmap ReadImage(BinaryReader bReader, int imageLength, short outputWidth, short outputHeight, byte textureType, bool isMask)
         {
             return IsNewVersion
-                ? DecompressV2Texture(bReader, imageLength, outputWidth, outputHeight, textureType)
-                : DecompressV1Texture(bReader, imageLength, outputWidth, outputHeight);
+                ? DecompressV2Texture(bReader, imageLength, outputWidth, outputHeight, textureType, isMask)
+                : DecompressV1Texture(bReader, imageLength, outputWidth, outputHeight, isMask);
+        }
+
+        private void CaptureSourcePayload(byte textureType, byte[] payload, int textureWidth, int textureHeight, short outputWidth, short outputHeight, bool isMask)
+        {
+            ZlImageCodec? codec = GetSourceCodec(textureType);
+            if (!codec.HasValue)
+                return;
+
+            if (isMask)
+                MaskSourceCodec = codec.Value;
+            else
+                SourceCodec = codec.Value;
+
+            int expectedWidth = outputWidth + (4 - outputWidth % 4) % 4;
+            int expectedHeight = outputHeight + (4 - outputHeight % 4) % 4;
+            if (textureWidth != expectedWidth || textureHeight != expectedHeight)
+                return;
+
+            int expectedSize = GetSourcePayloadSize(textureWidth, textureHeight, codec.Value);
+            if (payload == null || payload.Length != expectedSize)
+                return;
+
+            byte[] copy = new byte[payload.Length];
+            Buffer.BlockCopy(payload, 0, copy, 0, payload.Length);
+
+            if (isMask)
+                MaskSourcePayload = copy;
+            else
+                SourcePayload = copy;
+        }
+
+        private static ZlImageCodec? GetSourceCodec(byte textureType)
+        {
+            return textureType switch
+            {
+                0 => ZlImageCodec.Dxt1,
+                1 => ZlImageCodec.Dxt1,
+                5 => ZlImageCodec.Dxt5,
+                128 => ZlImageCodec.Bgra32,
+                129 => ZlImageCodec.Dxt1,
+                _ => null,
+            };
+        }
+
+        private static int GetSourcePayloadSize(int width, int height, ZlImageCodec codec)
+        {
+            if (codec == ZlImageCodec.Bgra32)
+                return width * height * 4;
+
+            int blockWidth = Math.Max(1, (width + 3) / 4);
+            int blockHeight = Math.Max(1, (height + 3) / 4);
+            int blockBytes = codec == ZlImageCodec.Dxt1 ? 8 : 16;
+            return blockWidth * blockHeight * blockBytes;
         }
 
         private static void DecompressBlock(IList<byte> newPixels, byte[] block)

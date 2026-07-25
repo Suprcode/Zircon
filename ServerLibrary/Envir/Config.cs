@@ -30,6 +30,7 @@ namespace Server.Envir
         public static DateTime ReleaseDate { get; set; } = new DateTime(2017, 12, 22, 18, 00, 00, DateTimeKind.Utc);
         public static bool TestServer { get; set; } = false;
         public static string StarterGuildName { get; set; } = "Starter Guild";
+        public static bool LazyLoadMaps { get; set; } = true;
         public static DateTime EasterEventEnd { get; set; } = new DateTime(2018, 04, 09, 00, 00, 00, DateTimeKind.Utc);
         public static DateTime HalloweenEventEnd { get; set; } = new DateTime(2018, 11, 07, 00, 00, 00, DateTimeKind.Utc);
         public static DateTime ChristmasEventEnd { get; set; } = new DateTime(2019, 01, 03, 00, 00, 00, DateTimeKind.Utc);
@@ -121,6 +122,7 @@ namespace Server.Envir
         public static int DropDistance { get; set; } = 5;
         public static int DropLayers { get; set; } = 5;
         public static int TorchRate { get; set; } = 10;
+        public static int MaxGemPurity { get; set; } = 100;
         public static TimeSpan SpecialRepairDelay { get; set; } = TimeSpan.FromHours(8);
         public static int MaxLuck { get; set; } = 7;
         public static int MaxCurse { get; set; } = -10;
@@ -157,8 +159,10 @@ namespace Server.Envir
             {
                 if (File.Exists(VersionPath))
                     using (FileStream stream = File.OpenRead(VersionPath))
-                    using (MD5 md5 = MD5.Create())
-                        ClientHash = md5.ComputeHash(stream);
+                    using (SHA256 sha256 = SHA256.Create())
+                    {
+                        ClientHash = sha256.ComputeHash(stream);
+                    }
                 else ClientHash = null;
             }
             catch (Exception ex)

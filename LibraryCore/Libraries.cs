@@ -18,7 +18,7 @@ namespace Library
             [LibraryFile.EquipEffect_FullEx2] = @"Data\EquipEffect-FullEx2.Zl",
             [LibraryFile.EquipEffect_FullEx3] = @"Data\EquipEffect-FullEx3.Zl",
             [LibraryFile.ProgUse] = @"Data\ProgUse.Zl",
-            [LibraryFile.StoreItems] = @"Data\StoreItems.Zl",
+            [LibraryFile.StoreItem] = @"Data\StoreItem.Zl",
             [LibraryFile.Inventory] = @"Data\Inventory.Zl",
             [LibraryFile.Ground] = @"Data\Ground.Zl",
             [LibraryFile.NPC] = @"Data\NPC.Zl",
@@ -296,6 +296,7 @@ namespace Library
             [LibraryFile.Mon_54] = @"Data\Mon-54.Zl",
             [LibraryFile.Mon_55] = @"Data\Mon-55.Zl",
             [LibraryFile.Mon_56] = @"Data\Mon-56.Zl",
+            [LibraryFile.Mon_57] = @"Data\Mon-57.Zl",
 
             [LibraryFile.Magic] = @"Data\Magic.Zl",
             [LibraryFile.MagicEx] = @"Data\MagicEx.Zl",
@@ -472,7 +473,7 @@ namespace Library
         EquipEffect_FullEx2,
         EquipEffect_FullEx3,
         ProgUse,
-        StoreItems,
+        StoreItem,
         Inventory,
         Ground,
         NPC,
@@ -743,6 +744,7 @@ namespace Library
         Mon_54,
         Mon_55,
         Mon_56,
+        Mon_57,
 
         Magic,
         MagicEx,

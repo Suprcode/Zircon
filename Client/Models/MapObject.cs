@@ -6,8 +6,6 @@ using Client.Scenes.Views;
 using Library;
 using Library.Network.ClientPackets;
 using Library.SystemModels;
-using SlimDX;
-using SlimDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -60,8 +58,6 @@ namespace Client.Models
                 GameScene.Game.MapControl.TextureValid = false;
             }
         }
-
-        public static Texture ShadowTexture;
 
         public abstract ObjectType Race { get; }
         public virtual bool Blocking => Visible && !Dead;
@@ -136,6 +132,21 @@ namespace Client.Models
             }
         }
         private string _Caption;
+
+        public virtual Color CaptionOutlineColour
+        {
+            get { return _CaptionOutlineColour; }
+            set
+            {
+                if (_CaptionOutlineColour == value) return;
+
+                _CaptionOutlineColour = value;
+
+                NameChanged();
+            }
+        }
+        private Color _CaptionOutlineColour;
+
         public virtual string Title
         {
             get { return _Title; }
@@ -204,7 +215,7 @@ namespace Client.Models
         public List<DamageInfo> DamageList = new List<DamageInfo>();
         public List<MirEffect> Effects = new List<MirEffect>();
 
-        public List<BuffType> VisibleBuffs = new List<BuffType>();
+        public Dictionary<BuffType, int> VisibleBuffs = [];
         public PoisonType Poison;
 
         public int MoveDistance;
@@ -280,7 +291,18 @@ namespace Client.Models
         }
         private bool _Dead;
 
-        public virtual Stats Stats { get; set; }
+        public virtual Stats Stats
+        {
+            get => _Stats;
+            set
+            {
+                _Stats = value;
+                OnStatsChanged();
+            }
+        }
+        private Stats _Stats = new Stats();
+
+        protected virtual void OnStatsChanged() { }
 
         public bool Interupt;
         public MirAction CurrentAction;
@@ -317,6 +339,8 @@ namespace Client.Models
         public static int CellHeight => MapControl.CellHeight;
         public static int OffSetX => MapControl.OffSetX;
         public static int OffSetY => MapControl.OffSetY;
+        public static int PixelOffsetX => MapControl.PixelOffsetX;
+        public static int PixelOffsetY => MapControl.PixelOffsetY;
 
         public List<ObjectAction> ActionQueue = new List<ObjectAction>();
 
@@ -349,6 +373,8 @@ namespace Client.Models
 
             DrawX *= MapControl.CellWidth;
             DrawY *= MapControl.CellHeight;
+            DrawX += MapControl.PixelOffsetX;
+            DrawY += MapControl.PixelOffsetY;
 
             //if (this != User)
             {
@@ -370,7 +396,7 @@ namespace Client.Models
             if ((Poison & PoisonType.Paralysis) == PoisonType.Paralysis)
                 DrawColour = Color.DimGray;
 
-            if (Stats?[Stat.ClearRing] > 0 || VisibleBuffs.Contains(BuffType.Invisibility) || VisibleBuffs.Contains(BuffType.Cloak) || VisibleBuffs.Contains(BuffType.Transparency))
+            if (Stats?[Stat.ClearRing] > 0 || VisibleBuffs.ContainsKey(BuffType.Invisibility) || VisibleBuffs.ContainsKey(BuffType.Cloak) || VisibleBuffs.ContainsKey(BuffType.Transparency))
                 Opacity = 0.5f;
             else
                 Opacity = 1f;
@@ -466,7 +492,7 @@ namespace Client.Models
                 EndMagicEffect(MagicEffect.Neutralize);
             }
 
-            if (VisibleBuffs.Contains(BuffType.MagicShield))
+            if (VisibleBuffs.ContainsKey(BuffType.MagicShield))
             {
                 CreateMagicEffect(MagicEffect.MagicShield);
             }
@@ -475,7 +501,7 @@ namespace Client.Models
                 EndMagicEffect(MagicEffect.MagicShield);
             }
 
-            if (VisibleBuffs.Contains(BuffType.SuperiorMagicShield))
+            if (VisibleBuffs.ContainsKey(BuffType.SuperiorMagicShield))
             {
                 CreateMagicEffect(MagicEffect.SuperiorMagicShield);
             }
@@ -484,7 +510,7 @@ namespace Client.Models
                 EndMagicEffect(MagicEffect.SuperiorMagicShield);
             }
 
-            if (VisibleBuffs.Contains(BuffType.Developer))
+            if (VisibleBuffs.ContainsKey(BuffType.Developer))
             {
                 EndMagicEffect(MagicEffect.Ranking);
 
@@ -494,7 +520,7 @@ namespace Client.Models
             {
                 EndMagicEffect(MagicEffect.Developer);
 
-                if (VisibleBuffs.Contains(BuffType.Ranking))
+                if (VisibleBuffs.ContainsKey(BuffType.Ranking))
                 {
                     CreateMagicEffect(MagicEffect.Ranking);
                 }
@@ -504,7 +530,7 @@ namespace Client.Models
                 }
             }
 
-            if (VisibleBuffs.Contains(BuffType.ReflectDamage))
+            if (VisibleBuffs.ContainsKey(BuffType.ReflectDamage))
             {
                 CreateMagicEffect(MagicEffect.ReflectDamage);
             }
@@ -513,7 +539,7 @@ namespace Client.Models
                 EndMagicEffect(MagicEffect.ReflectDamage);
             }
 
-            if (VisibleBuffs.Contains(BuffType.LifeSteal))
+            if (VisibleBuffs.ContainsKey(BuffType.LifeSteal))
             {
                 CreateMagicEffect(MagicEffect.LifeSteal);
             }
@@ -522,7 +548,7 @@ namespace Client.Models
                 EndMagicEffect(MagicEffect.LifeSteal);
             }
 
-            if (VisibleBuffs.Contains(BuffType.CelestialLight))
+            if (VisibleBuffs.ContainsKey(BuffType.CelestialLight))
             {
                 CreateMagicEffect(MagicEffect.CelestialLight);
             }
@@ -531,7 +557,7 @@ namespace Client.Models
                 EndMagicEffect(MagicEffect.CelestialLight);
             }
 
-            if (VisibleBuffs.Contains(BuffType.FrostBite))
+            if (VisibleBuffs.ContainsKey(BuffType.FrostBite))
             {
                 CreateMagicEffect(MagicEffect.FrostBite);
             }
@@ -540,7 +566,7 @@ namespace Client.Models
                 EndMagicEffect(MagicEffect.FrostBite);
             }
 
-            if (VisibleBuffs.Contains(BuffType.ElementalSwords))
+            if (VisibleBuffs.ContainsKey(BuffType.ElementalSwords))
             {
                 CreateMagicEffect(MagicEffect.ElementalSwords);
             }
@@ -549,7 +575,7 @@ namespace Client.Models
                 EndMagicEffect(MagicEffect.ElementalSwords);
             }
 
-            if (VisibleBuffs.Contains(BuffType.DefensiveBlow))
+            if (VisibleBuffs.ContainsKey(BuffType.DefensiveBlow))
             {
                 CreateMagicEffect(MagicEffect.DefensiveBlow);
             }
@@ -764,7 +790,7 @@ namespace Client.Models
                             break;
 
                         #endregion
-       
+
                         #region Taecheon Sword
 
                         case MagicType.TaecheonSword:
@@ -1307,7 +1333,7 @@ namespace Client.Models
                         case MagicType.ExpelUndead:
                             foreach (MapObject attackTarget in AttackTargets)
                             {
-                                spell = new MirEffect(140, 5, TimeSpan.FromMilliseconds(100), LibraryFile.Magic, 50, 80, Globals.PhantomColour)
+                                spell = new MirEffect(140, 10, TimeSpan.FromMilliseconds(100), LibraryFile.Magic, 50, 80, Globals.PhantomColour)
                                 {
                                     Blend = true,
                                     Target = attackTarget,
@@ -1969,7 +1995,7 @@ namespace Client.Models
 
                                 spell.CompleteAction = () =>
                                 {
-                                    spell = new MirEffect(1870, 7, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 20, 80, Globals.NoneColour)
+                                    spell = new MirEffect(1870, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 20, 80, Globals.NoneColour)
                                     {
                                         Blend = true,
                                         MapTarget = point,
@@ -2793,7 +2819,7 @@ namespace Client.Models
                                         Target = attackTarget,
                                     });
                                     spell.Process();
-                                    
+
                                     DXSoundManager.Play(SoundIndex.FlamingDaggers);
                                 };
 
@@ -3229,10 +3255,10 @@ namespace Client.Models
                     }
                     break;
                 case MirAction.Standing:
-                    bool haselementalhurricane = VisibleBuffs.Contains(BuffType.ElementalHurricane);
-                    bool hasdragonrepulse = VisibleBuffs.Contains(BuffType.DragonRepulse);
+                    bool haselementalhurricane = VisibleBuffs.ContainsKey(BuffType.ElementalHurricane);
+                    bool hasdragonrepulse = VisibleBuffs.ContainsKey(BuffType.DragonRepulse);
 
-                    if (VisibleBuffs.Contains(BuffType.ElementalHurricane))
+                    if (VisibleBuffs.ContainsKey(BuffType.ElementalHurricane))
                     {
                         var effects = CreateMagicEffect(MagicEffect.ElementalHurricane);
 
@@ -3305,13 +3331,13 @@ namespace Client.Models
 
                     if (GameScene.Game.StruckEnabled)
                     {
-                        if (VisibleBuffs.Contains(BuffType.MagicShield))
+                        if (VisibleBuffs.ContainsKey(BuffType.MagicShield))
                             CreateMagicEffect(MagicEffect.MagicShieldStruck);
 
-                        if (VisibleBuffs.Contains(BuffType.SuperiorMagicShield))
+                        if (VisibleBuffs.ContainsKey(BuffType.SuperiorMagicShield))
                             CreateMagicEffect(MagicEffect.SuperiorMagicShieldStruck);
 
-                        if (VisibleBuffs.Contains(BuffType.CelestialLight))
+                        if (VisibleBuffs.ContainsKey(BuffType.CelestialLight))
                             CreateMagicEffect(MagicEffect.CelestialLightStruck);
 
                         AttackerID = (uint)action.Extra[0];
@@ -5205,13 +5231,13 @@ namespace Client.Models
 
             PlayStruckSound();
 
-            if (VisibleBuffs.Contains(BuffType.MagicShield))
+            if (VisibleBuffs.ContainsKey(BuffType.MagicShield))
                 CreateMagicEffect(MagicEffect.MagicShieldStruck);
 
-            if (VisibleBuffs.Contains(BuffType.SuperiorMagicShield))
+            if (VisibleBuffs.ContainsKey(BuffType.SuperiorMagicShield))
                 CreateMagicEffect(MagicEffect.SuperiorMagicShieldStruck);
 
-            if (VisibleBuffs.Contains(BuffType.CelestialLight))
+            if (VisibleBuffs.ContainsKey(BuffType.CelestialLight))
                 CreateMagicEffect(MagicEffect.CelestialLightStruck);
 
             var color = Functions.GetElementColour(element);
@@ -5276,6 +5302,63 @@ namespace Client.Models
             }
         }
 
+        #region Scaling
+
+        public float Scale
+        {
+            get { return _Scale; }
+            set { _Scale = value; }
+        }
+        private float _Scale = 1F;
+
+        public void SetScale(int sizePercent)
+        {
+            Scale = (100F + Math.Min(50, Math.Max(-50, sizePercent))) / 100F;
+        }
+
+        protected RectangleF GetScaledRectangle(RectangleF rectangle)
+        {
+            float centreX = DrawX + CellWidth / 2F;
+            float centreY = DrawY + CellHeight / 2F;
+
+            return new RectangleF(
+                centreX + (rectangle.X - centreX) * Scale,
+                centreY + (rectangle.Y - centreY) * Scale,
+                rectangle.Width * Scale,
+                rectangle.Height * Scale);
+        }
+
+        protected System.Numerics.Matrix3x2 GetScaledTransform(System.Numerics.Matrix3x2 transform)
+        {
+            float centreX = DrawX + CellWidth / 2F;
+            float centreY = DrawY + CellHeight / 2F;
+
+            transform.M11 *= Scale;
+            transform.M12 *= Scale;
+            transform.M21 *= Scale;
+            transform.M22 *= Scale;
+            transform.M31 = centreX + (transform.M31 - centreX) * Scale;
+            transform.M32 = centreY + (transform.M32 - centreY) * Scale;
+
+            return transform;
+        }
+
+        internal PointF GetScaledLibraryDrawLocation(MirImage image, ImageType imageType, float drawX, float drawY)
+        {
+            float offsetX = imageType == ImageType.Shadow ? image.ShadowOffSetX : image.OffSetX;
+            float offsetY = imageType == ImageType.Shadow ? image.ShadowOffSetY : image.OffSetY;
+            float pivotX = DrawX + CellWidth / 2F;
+            float pivotY = DrawY + CellHeight / 2F;
+            float imageCentreX = drawX + offsetX + image.Width / 2F;
+            float imageCentreY = drawY + offsetY + image.Height / 2F;
+
+            return new PointF(
+                drawX + (Scale - 1F) * (imageCentreX - pivotX),
+                drawY + (Scale - 1F) * (imageCentreY - pivotY));
+        }
+
+        #endregion
+
         public virtual void Draw()
         {
 
@@ -5306,6 +5389,7 @@ namespace Client.Models
                 Outline = true,
                 OutlineColour = Color.Black,
                 ForeColour = colour,
+                BackColour = Color.FromArgb(40, 0, 0, 0),
                 Text = cleanedText,
                 IsVisible = true,
                 DrawFormat = TextFormatFlags.WordBreak | TextFormatFlags.WordEllipsis,
@@ -5325,7 +5409,7 @@ namespace Client.Models
                     BackColour = Color.Empty,
                     ForeColour = NameColour,
                     Outline = true,
-                    OutlineColour = Color.Black,
+                    OutlineColour = CaptionOutlineColour,
                     Text = Caption,
                     IsControl = false,
                     IsVisible = true,
@@ -5488,7 +5572,7 @@ namespace Client.Models
             if (CEnvir.Now < DrawHealthTime)
                 y -= 20;
 
-            if (this == User && User.VisibleBuffs.Contains(BuffType.SuperiorMagicShield))
+            if (this == User && User.VisibleBuffs.ContainsKey(BuffType.SuperiorMagicShield))
                 y -= 10;
 
             if (Dead)
@@ -5517,35 +5601,44 @@ namespace Client.Models
         {
             if (Dead) return;
 
+            RenderTexture poisonTexture = RenderingPipelineManager.GetPoisonTexture();
+            Size poisonSize = RenderingPipelineManager.GetPoisonTextureSize();
+            Rectangle sourceRectangle = new Rectangle(Point.Empty, poisonSize);
+
             int count = 0;
 
             if ((Poison & PoisonType.Paralysis) == PoisonType.Paralysis)
             {
-                DXManager.Sprite.Draw(DXManager.PoisonTexture, Vector3.Zero, new Vector3(DrawX + count * 5, DrawY - 50, 0), Color.DimGray);
+                RectangleF destination = new RectangleF(DrawX + count * 5, DrawY - 50, poisonSize.Width, poisonSize.Height);
+                RenderingPipelineManager.DrawTexture(poisonTexture, sourceRectangle, destination, Color.DimGray);
                 count++;
             }
 
             if ((Poison & PoisonType.Slow) == PoisonType.Slow)
             {
-                DXManager.Sprite.Draw(DXManager.PoisonTexture, Vector3.Zero, new Vector3(DrawX + count * 5, DrawY - 50, 0), Color.CornflowerBlue);
+                RectangleF destination = new RectangleF(DrawX + count * 5, DrawY - 50, poisonSize.Width, poisonSize.Height);
+                RenderingPipelineManager.DrawTexture(poisonTexture, sourceRectangle, destination, Color.CornflowerBlue);
                 count++;
             }
 
             if ((Poison & PoisonType.Red) == PoisonType.Red)
             {
-                DXManager.Sprite.Draw(DXManager.PoisonTexture, Vector3.Zero, new Vector3(DrawX + count * 5, DrawY - 50, 0), Color.IndianRed);
+                RectangleF destination = new RectangleF(DrawX + count * 5, DrawY - 50, poisonSize.Width, poisonSize.Height);
+                RenderingPipelineManager.DrawTexture(poisonTexture, sourceRectangle, destination, Color.IndianRed);
                 count++;
             }
 
             if ((Poison & PoisonType.Green) == PoisonType.Green)
             {
-                DXManager.Sprite.Draw(DXManager.PoisonTexture, Vector3.Zero, new Vector3(DrawX + count * 5, DrawY - 50, 0), Color.SeaGreen);
+                RectangleF destination = new RectangleF(DrawX + count * 5, DrawY - 50, poisonSize.Width, poisonSize.Height);
+                RenderingPipelineManager.DrawTexture(poisonTexture, sourceRectangle, destination, Color.SeaGreen);
                 count++;
             }
 
             if (Poison.HasFlag(PoisonType.Burn) || Poison.HasFlag(PoisonType.HellFire))
             {
-                DXManager.Sprite.Draw(DXManager.PoisonTexture, Vector3.Zero, new Vector3(DrawX + count * 5, DrawY - 50, 0), Color.OrangeRed);
+                RectangleF destination = new RectangleF(DrawX + count * 5, DrawY - 50, poisonSize.Width, poisonSize.Height);
+                RenderingPipelineManager.DrawTexture(poisonTexture, sourceRectangle, destination, Color.OrangeRed);
             }
         }
 
@@ -5702,13 +5795,15 @@ namespace Client.Models
                     break;
                 case MagicEffect.ElementalSwords:
                     {
-                        if (Stats != null && Stats[Stat.ElementalSwords] > 0)
+                        if (VisibleBuffs.ContainsKey(BuffType.ElementalSwords))
                         {
-                            for (int i = 0; i < Stats[Stat.ElementalSwords]; i++)
+                            var swordCount = VisibleBuffs[BuffType.ElementalSwords];
+
+                            for (int i = 0; i < swordCount; i++)
                             {
                                 bool startAnim = false;
 
-                                if (Stats[Stat.ElementalSwords] == 5)
+                                if (swordCount == 5)
                                 {
                                     startAnim = true;
                                 }

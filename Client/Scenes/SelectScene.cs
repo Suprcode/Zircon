@@ -1,8 +1,8 @@
-﻿using Client.Controls;
+using Client.Controls;
 using Client.Envir;
+using Shared.Rendering;
 using Client.UserModels;
 using Library;
-using SlimDX;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -27,7 +27,7 @@ namespace Client.Scenes
 
         #endregion
 
-        public SelectScene(Size size) : base(size)
+        public SelectScene(Size size) : base(size, false)
         {
             if (Config.ExtendedLogin)
             {
@@ -95,7 +95,6 @@ namespace Client.Scenes
             CharacterAnimation.BeforeDraw += CharacterAnimation_BeforeDraw;
             CharacterAnimation.AfterDraw += CharacterAnimation_AfterDraw;
 
-
             ConfigButton = new DXButton
             {
                 LibraryFile = LibraryFile.GameInter,
@@ -109,6 +108,7 @@ namespace Client.Scenes
             {
                 Parent = this,
                 Visible = false,
+
                 NetworkTab = { Enabled = false, TabButton = { Visible = false } },
             };
             ConfigBox.Location = new Point((Size.Width - ConfigBox.Size.Width) / 2, (Size.Height - ConfigBox.Size.Height) / 2);
@@ -116,12 +116,14 @@ namespace Client.Scenes
             SelectBox = new SelectDialog
             {
                 Parent = this,
+                DropShadow = true
             };
             SelectBox.Location = new Point((Size.Width / 2 - SelectBox.Size.Width) / 2, (Size.Height - SelectBox.Size.Height) / 2);
 
             CharacterBox = new NewCharacterDialog
             {
                 Parent = this,
+                DropShadow = true
             };
             CharacterBox.Location = new Point((Size.Width - CharacterBox.Size.Width) / 2, (Size.Height - CharacterBox.Size.Height) / 2);
 
@@ -293,7 +295,7 @@ namespace Client.Scenes
 
             if (!CharacterAnimation.Loop)
             {
-                DXManager.SetBlend(true);
+                RenderingPipelineManager.SetBlend(true);
 
                 MirImage image = CharacterAnimation.Library?.GetImage(CharacterAnimation.Index);
 
@@ -311,8 +313,7 @@ namespace Client.Scenes
                 if (image != null)
                     PresentTexture(image.Image, CharacterAnimation.Parent, new Rectangle(x + image.OffSetX, y + image.OffSetY, image.Width, image.Height), Color.White, this);
 
-
-                DXManager.SetBlend(false);
+                RenderingPipelineManager.SetBlend(false);
             }
         }
         private void CharacterAnimation_BeforeDraw(object sender, EventArgs e)
@@ -501,6 +502,7 @@ namespace Client.Scenes
                     Label = { Text = CEnvir.Language.SelectStartButtonLabel },
                     Location = new Point((Size.Width - 260) / 4 + 10, Size.Height - 43),
                     Size = new Size(80, DefaultHeight),
+                    LabelStyle = ButtonLabelStyle.Gold,
                     Enabled = false,
                 };
                 StartButton.MouseClick += (o, e) => StartGame();
@@ -511,6 +513,7 @@ namespace Client.Scenes
                     Label = { Text = CEnvir.Language.SelectCreateButtonLabel },
                     Location = new Point((Size.Width - 260) / 4 * 2 + 90, Size.Height - 43),
                     Size = new Size(80, DefaultHeight),
+                    LabelStyle = ButtonLabelStyle.Gold,
                 };
                 CreateButton.MouseClick += CreateButton_MouseClick;
 
@@ -520,6 +523,7 @@ namespace Client.Scenes
                     Label = { Text = CEnvir.Language.SelectDeleteButtonLabel },
                     Location = new Point((Size.Width - 260) / 4 * 3 + 170, Size.Height - 43),
                     Size = new Size(80, DefaultHeight),
+                    LabelStyle = ButtonLabelStyle.Gold,
                     Enabled = false,
                 };
                 DeleteButton.MouseClick += DeleteButton_MouseClick;
@@ -975,6 +979,7 @@ namespace Client.Scenes
                     Label = { Text = CEnvir.Language.NewCharacterCreateButtonLabel },
                     Location = new Point((Size.Width - 80) / 2, Size.Height - 43),
                     Size = new Size(80, DefaultHeight),
+                    LabelStyle = ButtonLabelStyle.Gold,
                 };
                 CreateButton.MouseClick += (o, e) => Create();
 
@@ -989,7 +994,7 @@ namespace Client.Scenes
                     DrawTexture = true,
                     Size = new Size(200, 85),
                     Location = new Point(30, 40),
-                    BorderColour = Color.FromArgb(198, 166, 99),
+                    BorderColour = Constants.PrimaryColour,
                 };
 
                 DXLabel label = new DXLabel
@@ -1049,9 +1054,9 @@ namespace Client.Scenes
                     Size = new Size(80, 15),
                     Parent = panel,
                     Text = CEnvir.Language.NewCharacterSelectedClassLabel,
-                    BackColour = Color.FromArgb(16, 8, 8),
+                    BackColour = Constants.WindowBackColour,
                     Border = true,
-                    BorderColour = Color.FromArgb(198, 166, 99)
+                    BorderColour = Constants.PrimaryColour
 
                 };
                 SelectedClassLabel.Location = new Point((panel.Size.Width - SelectedClassLabel.Size.Width) / 2, panel.Size.Height - SelectedClassLabel.Size.Height - 5);
@@ -1068,7 +1073,7 @@ namespace Client.Scenes
                     DrawTexture = true,
                     Size = new Size(200, 85),
                     Location = new Point(30, 135),
-                    BorderColour = Color.FromArgb(198, 166, 99),
+                    BorderColour = Constants.PrimaryColour,
                 };
 
                 label = new DXLabel
@@ -1107,9 +1112,9 @@ namespace Client.Scenes
                     Size = new Size(80, 15),
                     Parent = panel,
                     Text = CEnvir.Language.NewCharacterSelectedGenderLabel,
-                    BackColour = Color.FromArgb(16, 8, 8),
+                    BackColour = Constants.WindowBackColour,
                     Border = true,
-                    BorderColour = Color.FromArgb(198, 166, 99)
+                    BorderColour = Constants.PrimaryColour
 
                 };
                 SelectedGenderLabel.Location = new Point((panel.Size.Width - SelectedGenderLabel.Size.Width) / 2, panel.Size.Height - SelectedGenderLabel.Size.Height - 5);
@@ -1127,7 +1132,7 @@ namespace Client.Scenes
                     DrawTexture = true,
                     Size = new Size(200, 330),
                     Location = new Point(30, 230),
-                    BorderColour = Color.FromArgb(198, 166, 99),
+                    BorderColour = Constants.PrimaryColour,
                 };
                 label = new DXLabel
                 {
@@ -1194,7 +1199,7 @@ namespace Client.Scenes
                     DrawTexture = true,
                     Size = new Size(190, panel.Size.Height - 5 - 100),
                     Location = new Point(5, 100),
-                    BorderColour = Color.FromArgb(198, 166, 99),
+                    BorderColour = Constants.PrimaryColour,
                 };
                 previewPanel.AfterDraw += PreviewPanel_AfterDraw;
 
@@ -1212,7 +1217,7 @@ namespace Client.Scenes
                 {
                     Location = new Point(75, 570),
                     Parent = this,
-                    BorderColour = Color.FromArgb(198, 166, 99),
+                    BorderColour = Constants.PrimaryColour,
                     Size = new Size(155, 20),
                 };
                 CharacterNameTextBox.TextBox.TextChanged += CharacterNameTextBox_TextChanged;
@@ -1294,7 +1299,7 @@ namespace Client.Scenes
                 CharacterNameValid = Globals.CharacterReg.IsMatch(CharacterNameTextBox.TextBox.Text);
 
                 if (string.IsNullOrEmpty(CharacterNameTextBox.TextBox.Text))
-                    CharacterNameTextBox.BorderColour = Color.FromArgb(198, 166, 99);
+                    CharacterNameTextBox.BorderColour = Constants.PrimaryColour;
                 else
                     CharacterNameTextBox.BorderColour = CharacterNameValid ? Color.Green : Color.Red;
 
@@ -1646,7 +1651,7 @@ namespace Client.Scenes
                 Border = true;
                 BackColour = Color.FromArgb(24, 12, 12);
                 DrawTexture = true;
-                BorderColour = Color.FromArgb(198, 166, 99);
+                BorderColour = Constants.PrimaryColour;
 
                 Size = new Size(280, 75);
 
@@ -1665,11 +1670,11 @@ namespace Client.Scenes
                     AutoSize = false,
                     Size = new Size(130, 15),
                     ForeColour = Color.White,
-                    BorderColour = Color.FromArgb(198, 166, 99),
+                    BorderColour = Constants.PrimaryColour,
                     Parent = this,
                     Location = new Point(135, 8),
                     Border = true,
-                    BackColour = Color.FromArgb(16, 8, 8),
+                    BackColour = Constants.WindowBackColour,
                     IsControl = false,
                 };
 
@@ -1687,11 +1692,11 @@ namespace Client.Scenes
                     AutoSize = false,
                     Size = new Size(53, 15),
                     ForeColour = Color.White,
-                    BorderColour = Color.FromArgb(198, 166, 99),
+                    BorderColour = Constants.PrimaryColour,
                     Parent = this,
                     Location = new Point(135, 28),
                     Border = true,
-                    BackColour = Color.FromArgb(16, 8, 8),
+                    BackColour = Constants.WindowBackColour,
                     IsControl = false,
                 };
 
@@ -1708,11 +1713,11 @@ namespace Client.Scenes
                     AutoSize = false,
                     Size = new Size(30, 15),
                     ForeColour = Color.White,
-                    BorderColour = Color.FromArgb(198, 166, 99),
+                    BorderColour = Constants.PrimaryColour,
                     Parent = this,
                     Location = new Point(235, 28),
                     Border = true,
-                    BackColour = Color.FromArgb(16, 8, 8),
+                    BackColour = Constants.WindowBackColour,
                     IsControl = false,
                 };
 
@@ -1729,11 +1734,11 @@ namespace Client.Scenes
                     AutoSize = false,
                     Size = new Size(130, 15),
                     ForeColour = Color.White,
-                    BorderColour = Color.FromArgb(198, 166, 99),
+                    BorderColour = Constants.PrimaryColour,
                     Parent = this,
                     Location = new Point(135, 48),
                     Border = true,
-                    BackColour = Color.FromArgb(16, 8, 8),
+                    BackColour = Constants.WindowBackColour,
                     IsControl = false,
                 };
 
@@ -1792,15 +1797,18 @@ namespace Client.Scenes
             protected internal override void UpdateBorderInformation()
             {
                 BorderInformation = null;
-                if (!Border || Size.Width == 0 || Size.Height == 0) return;
+                if (!Border || Size.Width == 0 || Size.Height == 0)
+                {
+                    return;
+                }
 
                 BorderInformation = new[]
                 {
-                    new Vector2(DisplayArea.Left, DisplayArea.Top),
-                    new Vector2(DisplayArea.Right - 1, DisplayArea.Top),
-                    new Vector2(DisplayArea.Right - 1, DisplayArea.Bottom - 1),
-                    new Vector2(DisplayArea.Left, DisplayArea.Bottom - 1),
-                    new Vector2(DisplayArea.Left, DisplayArea.Top)
+                    new LinePoint(DisplayArea.Left, DisplayArea.Top),
+                    new LinePoint(DisplayArea.Right - 1, DisplayArea.Top),
+                    new LinePoint(DisplayArea.Right - 1, DisplayArea.Bottom - 1),
+                    new LinePoint(DisplayArea.Left, DisplayArea.Bottom - 1),
+                    new LinePoint(DisplayArea.Left, DisplayArea.Top)
                 };
             }
 

@@ -1,10 +1,12 @@
 ﻿using DevExpress.XtraBars;
+using DevExpress.XtraEditors;
 using DevExpress.XtraEditors.Repository;
 using DevExpress.XtraGrid.Views.Grid;
 using Library;
 using Library.SystemModels;
 using System;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace Server.Views
 {
@@ -221,6 +223,11 @@ namespace Server.Views
         private void ExportButton_ItemClick(object sender, ItemClickEventArgs e)
         {
             JsonExporter.Export<MapInfo>(MapInfoGridView);
+        }
+
+        private void InsertRowButton_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            SMain.InsertRowAfterFocusedObject<MapInfo>(MapInfoGridView);
         }
     }
 }

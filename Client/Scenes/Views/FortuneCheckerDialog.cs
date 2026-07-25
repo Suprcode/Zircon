@@ -1,4 +1,4 @@
-﻿using Client.Controls;
+using Client.Controls;
 using Client.Envir;
 using Client.UserModels;
 using Library;
@@ -34,6 +34,7 @@ namespace Client.Scenes.Views
             //HasFooter = true;
             TitleLabel.Text = "Fortune Checker";
             SetClientSize(new Size(485, 551));
+            DropShadow = true;
 
             #region Search
 
@@ -43,7 +44,7 @@ namespace Client.Scenes.Views
                 Size = new Size(ClientArea.Width, 26),
                 Location = new Point(ClientArea.Left, ClientArea.Top),
                 Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99)
+                BorderColour = Constants.PrimaryColour
             };
 
             DXLabel label = new DXLabel
@@ -143,7 +144,6 @@ namespace Client.Scenes.Views
 
             #endregion
 
-
         }
 
         private void TextBox_KeyPress(object sender, KeyPressEventArgs e)
@@ -200,6 +200,67 @@ namespace Client.Scenes.Views
             }
 
         }
+        #region IDisposable
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                if (ItemNameBox != null)
+                {
+                    if (!ItemNameBox.IsDisposed)
+                        ItemNameBox.Dispose();
+
+                    ItemNameBox = null;
+                }
+
+                if (ItemTypeBox != null)
+                {
+                    if (!ItemTypeBox.IsDisposed)
+                        ItemTypeBox.Dispose();
+
+                    ItemTypeBox = null;
+                }
+
+                if (SearchScrollBar != null)
+                {
+                    if (!SearchScrollBar.IsDisposed)
+                        SearchScrollBar.Dispose();
+
+                    SearchScrollBar = null;
+                }
+
+                if (SearchButton != null)
+                {
+                    if (!SearchButton.IsDisposed)
+                        SearchButton.Dispose();
+
+                    SearchButton = null;
+                }
+
+                if (SearchRows != null)
+                {
+                    for (int i = 0; i < SearchRows.Length; i++)
+                    {
+                        if (SearchRows[i] == null) continue;
+
+                        if (!SearchRows[i].IsDisposed)
+                            SearchRows[i].Dispose();
+
+                        SearchRows[i] = null;
+                    }
+
+                    SearchRows = null;
+                }
+
+                SearchResults?.Clear();
+                SearchResults = null;
+            }
+        }
+
+        #endregion
         private void SearchScrollBar_ValueChanged(object sender, EventArgs e)
         {
             RefreshList();
@@ -230,8 +291,8 @@ namespace Client.Scenes.Views
         public event EventHandler<EventArgs> SelectedChanged;
         public void OnSelectedChanged(bool oValue, bool nValue)
         {
-            BackColour = Selected ? Color.FromArgb(80, 80, 125) : Color.FromArgb(25, 20, 0);
-            ItemCell.BorderColour = Selected ? Color.FromArgb(198, 166, 99) : Color.FromArgb(99, 83, 50);
+            BackColour = Selected ? Constants.SelectedRowBackColour : Constants.RowBackColour;
+            ItemCell.BorderColour = Selected ? Constants.PrimaryColour : Constants.InactiveBorderColour;
 
             SelectedChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -270,7 +331,7 @@ namespace Client.Scenes.Views
 
             NameLabel.Text = ItemInfo.ItemName;
 
-            NameLabel.ForeColour = Color.FromArgb(198, 166, 99);
+            NameLabel.ForeColour = Constants.PrimaryColour;
 
             GameScene.Game.FortuneDictionary.TryGetValue(ItemInfo, out Fortune);
 
@@ -317,7 +378,7 @@ namespace Client.Scenes.Views
             Size = new Size(465, 55);
 
             DrawTexture = true;
-            BackColour = Selected ? Color.FromArgb(80, 80, 125) : Color.FromArgb(25, 20, 0);
+            BackColour = Selected ? Constants.SelectedRowBackColour : Constants.RowBackColour;
 
             Visible = false;
 
@@ -486,6 +547,14 @@ namespace Client.Scenes.Views
                         ProgressLabel.Dispose();
 
                     ProgressLabel = null;
+                }
+
+                if (CheckButton != null)
+                {
+                    if (!CheckButton.IsDisposed)
+                        CheckButton.Dispose();
+
+                    CheckButton = null;
                 }
 
             }

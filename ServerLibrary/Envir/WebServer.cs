@@ -128,6 +128,13 @@ namespace Server.Envir
             expiredBuyListener?.Stop();
             expiredIPNListener?.Stop();
 
+            WebCommandQueue = null;
+            PaymentList.Clear();
+            HandledPayments.Clear();
+            while (Messages.TryDequeue(out _))
+            {
+            }
+
             if (log) SEnvir.Log("Web Server Stopped.");
         }
 
@@ -390,7 +397,14 @@ namespace Server.Envir
                 {
                     string data = "cmd=_notify-validate&" + rawMessage;
 
-                    using (var httpClient = new HttpClient())
+                    // Create a handler with explicit TLS settings
+                    var handler = new HttpClientHandler
+                    {
+                        SslProtocols = System.Security.Authentication.SslProtocols.Tls12
+                                     | System.Security.Authentication.SslProtocols.Tls13
+                    };
+
+                    using (HttpClient httpClient = new HttpClient(handler))
                     {
                         var content = new StringContent(data, Encoding.ASCII, "application/x-www-form-urlencoded");
                         var response = await httpClient.PostAsync(LiveURL, content);

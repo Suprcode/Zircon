@@ -1,4 +1,4 @@
-﻿using Client.Controls;
+using Client.Controls;
 using Client.Envir;
 using Client.UserModels;
 using Library;
@@ -48,6 +48,7 @@ namespace Client.Scenes.Views
             LibraryFile = LibraryFile.GameInter2;
             Index = 2900;
             Movable = false;
+            DropShadow = true;
 
             CloseButton = new DXButton
             {
@@ -143,6 +144,7 @@ namespace Client.Scenes.Views
                 Label = { Text = CEnvir.Language.LootBoxTakeItemsButtonLabel },
                 ButtonType = ButtonType.Default,
                 Size = new Size(100, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Enabled = false
             };
             TakeItemsButton.Location = new Point((DisplayArea.Width - TakeItemsButton.Size.Width) / 2, 245);
@@ -166,6 +168,7 @@ namespace Client.Scenes.Views
                 Label = { Text = CEnvir.Language.LootBoxConfirmChoiceButtonLabel },
                 ButtonType = ButtonType.Default,
                 Size = new Size(100, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Enabled = false
             };
             ConfirmChoiceButton.Location = new Point(DisplayArea.Width - TakeItemsButton.Size.Width - 15, 245);
@@ -412,6 +415,12 @@ namespace Client.Scenes.Views
                         ConfirmChoiceButton.Dispose();
 
                     ConfirmChoiceButton = null;
+                }
+
+                if (SelectedLootBox != null)
+                {
+                    SelectedLootBox.Locked = false;
+                    SelectedLootBox = null;
                 }
             }
         }

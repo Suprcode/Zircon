@@ -1,6 +1,8 @@
 ﻿using DevExpress.XtraBars;
+using Library;
 using Library.SystemModels;
 using System;
+using System.Linq;
 
 namespace Server.Views
 {
@@ -12,7 +14,10 @@ namespace Server.Views
 
             FishingInfoGridControl.DataSource = SMain.Session.GetCollection<FishingInfo>().Binding;
 
-            RegionLookUpEdit.DataSource = SMain.Session.GetCollection<MapRegion>().Binding;
+            RegionLookUpEdit.DataSource = SMain.Session.GetCollection<MapRegion>().Binding
+                .Where(x => x.RegionType == RegionType.None || x.RegionType == RegionType.Spawn)
+                .ToList();
+
             ItemLookUpEdit.DataSource = SMain.Session.GetCollection<ItemInfo>().Binding;
         }
 

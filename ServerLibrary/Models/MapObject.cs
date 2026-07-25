@@ -435,7 +435,9 @@ namespace Server.Models
                         player = (PlayerObject)this;
 
                         if (!player.InSafeZone || player.Companion.UserCompanion.Level < 15)
+                        {
                             player.Companion.UserCompanion.Hunger--;
+                        }
 
                         if (player.Companion.LevelInfo.MaxExperience > 0)
                         {
@@ -1397,7 +1399,7 @@ namespace Server.Models
             return result;
         }
 
-        public virtual BuffInfo BuffAdd(BuffType type, TimeSpan remainingTicks, Stats stats, bool visible, bool pause, TimeSpan tickRate, bool hidden = false)
+        public virtual BuffInfo BuffAdd(BuffType type, TimeSpan remainingTicks, Stats stats, bool visible, bool pause, TimeSpan tickRate, bool hidden = false, int extra = 0)
         {
             BuffRemove(type);
 
@@ -1407,6 +1409,7 @@ namespace Server.Models
 
             info.Type = type;
             info.Visible = visible;
+            info.Extra = extra;
 
             info.RemainingTime = remainingTicks;
             info.TickFrequency = tickRate;
@@ -1480,7 +1483,7 @@ namespace Server.Models
 
             if (!info.Visible) return info;
 
-            Broadcast(new S.ObjectBuffAdd { ObjectID = ObjectID, Type = type });
+            Broadcast(new S.ObjectBuffAdd { ObjectID = ObjectID, Type = type, Extra = extra });
 
             return info;
         }

@@ -91,6 +91,8 @@ namespace Server.Models.Magics
             ob.SummonLevel = Magic.Level * 2;
             ob.TameTime = SEnvir.Now.AddDays(365);
 
+            Player.LogMilestone(MilestoneType.PetSummon, 1, monster: ob.MonsterInfo);
+
             if (cell == null || cell.Movements != null || !ob.Spawn(cell.Map, cell.Location))
                 ob.Spawn(CurrentMap, CurrentLocation);
 

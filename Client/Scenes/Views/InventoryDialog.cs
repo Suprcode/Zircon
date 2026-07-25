@@ -1,4 +1,4 @@
-﻿using Client.Controls;
+using Client.Controls;
 using Client.Envir;
 using Client.Models;
 using Client.UserModels;
@@ -20,9 +20,7 @@ namespace Client.Scenes.Views
         public DXItemGrid Grid;
 
         public DXLabel TitleLabel, PrimaryCurrencyLabel, SecondaryCurrencyLabel, WeightLabel, WalletLabel, PrimaryCurrencyTitle, SecondaryCurrencyTitle;
-        public DXButton CloseButton, SortButton, TrashButton;
-
-        public DXButton SellButton;
+        public DXButton CloseButton, SortButton, TrashButton, SellButton;
 
         public List<DXItemCell> SelectedItems = new();
 
@@ -178,6 +176,7 @@ namespace Client.Scenes.Views
             Index = 130;
             Movable = true;
             Sort = true;
+            DropShadow = true;
 
             CloseButton = new DXButton
             {
@@ -195,7 +194,7 @@ namespace Client.Scenes.Views
                 Text = CEnvir.Language.InventoryDialogTitle,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -237,11 +236,9 @@ namespace Client.Scenes.Views
 
                 if (percent == 0) return;
 
-                MirImage image = library.CreateImage(360, ImageType.Image);
+                if (!library.TryGetTexture(360, ImageType.Image, out MirImage image, out var texture, out var sourceRectangle)) return;
 
-                if (image == null) return;
-
-                PresentTexture(image.Image, this, new Rectangle(WeightBar.DisplayArea.X, WeightBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, WeightBar);
+                PresentTexture(texture, sourceRectangle, this, new Rectangle(WeightBar.DisplayArea.X, WeightBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, WeightBar);
             };
 
             WeightLabel = new DXLabel
@@ -364,7 +361,6 @@ namespace Client.Scenes.Views
 
             if (cell == null || cell.Item == null) return;
             if ((cell.Item.Flags & UserItemFlags.Locked) == UserItemFlags.Locked) return;
-            if ((cell.Item.Flags & UserItemFlags.Bound) == UserItemFlags.Bound) return;
             if ((cell.Item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return;
 
             if (cell.GridType != GridType.Inventory) return;
@@ -401,10 +397,12 @@ namespace Client.Scenes.Views
 
                 long sum = 0;
                 int count = 0;
+                decimal exchangeRate = PrimaryCurrency.ExchangeRate <= 0M ? 1M : PrimaryCurrency.ExchangeRate;
+
                 foreach (DXItemCell itemCell in SelectedItems)
                 {
                     count++;
-                    sum += (long)(itemCell.Item.Price(itemCell.Item.Count) * PrimaryCurrency.ExchangeRate);
+                    sum += (long)(itemCell.Item.Price(itemCell.Item.Count) / exchangeRate);
                 }
 
                 SecondaryCurrencyLabel.Text = sum.ToString("#,##0");
@@ -700,6 +698,14 @@ namespace Client.Scenes.Views
                         TrashButton.Dispose();
 
                     TrashButton = null;
+                }
+
+                if (SellButton != null)
+                {
+                    if (!SellButton.IsDisposed)
+                        SellButton.Dispose();
+
+                    SellButton = null;
                 }
 
                 if (PrimaryCurrencyTitle != null)

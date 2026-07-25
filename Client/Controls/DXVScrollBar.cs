@@ -1,5 +1,6 @@
-﻿using Library;
-using SlimDX;
+using Client.Envir;
+using Shared.Rendering;
+using Library;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -151,12 +152,13 @@ namespace Client.Controls
 
         #endregion
 
-
         private int ScrollHeight => Size.Height - 50;
 
         public int Change = 10;
 
         public DXButton UpButton, DownButton, PositionBar;
+
+        public bool ShowBackgroundSlider { get; set; }
 
         public override void OnSizeChanged(Size oValue, Size nValue)
         {
@@ -175,7 +177,7 @@ namespace Client.Controls
         public DXVScrollBar()
         {
             Border = true;
-            BorderColour = Color.FromArgb(198, 166, 99);
+            BorderColour = Constants.PrimaryColour;
             DrawTexture = true;
             BackColour = Color.Black;
 
@@ -220,6 +222,69 @@ namespace Client.Controls
 
         #region Methods
 
+        protected override void DrawControl()
+        {
+            base.DrawControl();
+
+            DrawBackgroundSlider();
+        }
+
+        private void DrawBackgroundSlider()
+        {
+            if (!ShowBackgroundSlider)
+                return;
+
+            if (!CEnvir.LibraryList.TryGetValue(LibraryFile.Interface, out MirLibrary library)) return;
+
+            if (!library.TryGetTexture(59, ImageType.Image, out MirImage image, out var texture, out var sourceRectangle)) return;
+
+            const int sectionHeight = 20;
+
+            int topHeight = Math.Min(sectionHeight, Size.Height);
+            Rectangle source = GetSourceRectangle(sourceRectangle, 0, 0, image.Width, topHeight);
+            Rectangle destination = new(DisplayArea.X + 2, DisplayArea.Y, Size.Width, topHeight);
+
+            PresentTexture(texture, source, Parent, destination, Color.White, this);
+
+            int middleHeight = Math.Max(0, Size.Height - topHeight - sectionHeight);
+            int middleSourceHeight = Math.Max(0, image.Height - sectionHeight * 2);
+
+            if (middleHeight > 0 && middleSourceHeight > 0)
+            {
+                source = GetSourceRectangle(sourceRectangle, 0, sectionHeight, image.Width, middleSourceHeight);
+
+                int y = sectionHeight;
+                while (middleHeight > 0)
+                {
+                    int drawHeight = Math.Min(middleSourceHeight, middleHeight);
+                    destination = new Rectangle(DisplayArea.X + 2, DisplayArea.Y + y, Size.Width, drawHeight);
+
+                    PresentTexture(texture, new Rectangle(source.X, source.Y, source.Width, drawHeight), Parent, destination, Color.White, this);
+
+                    y += drawHeight;
+                    middleHeight -= drawHeight;
+                }
+            }
+
+            int bottomHeight = Math.Min(sectionHeight, Size.Height - topHeight);
+            if (bottomHeight > 0)
+            {
+                source = GetSourceRectangle(sourceRectangle, 0, image.Height - sectionHeight, image.Width, bottomHeight);
+                destination = new Rectangle(DisplayArea.X + 2, DisplayArea.Bottom - bottomHeight, Size.Width, bottomHeight);
+
+                PresentTexture(texture, source, Parent, destination, Color.White, this);
+            }
+        }
+
+        private static Rectangle GetSourceRectangle(Rectangle? baseSource, int x, int y, int width, int height)
+        {
+            if (!baseSource.HasValue)
+                return new Rectangle(x, y, width, height);
+
+            Rectangle source = baseSource.Value;
+            return new Rectangle(source.X + x, source.Y + y, width, height);
+        }
+
         private void UpdateScrollBar()
         {
             UpButton.Enabled = Value > MinValue;
@@ -241,19 +306,22 @@ namespace Client.Controls
         protected internal override void UpdateBorderInformation()
         {
             BorderInformation = null;
-            if (!Border || DisplayArea.Width == 0 || DisplayArea.Height == 0) return;
+            if (!Border || DisplayArea.Width == 0 || DisplayArea.Height == 0)
+            {
+                return;
+            }
 
             BorderInformation = new[]
             {
-                new Vector2(0, 0),
-                new Vector2(Size.Width + 1, 0),
-                new Vector2(Size.Width + 1, Size.Height + 1),
-                new Vector2(0, Size.Height + 1),
-                new Vector2(0, 0),
-                new Vector2(0,  14),
-                new Vector2(Size.Width + 1, 14),
-                new Vector2(Size.Width + 1, Size.Height - 13),
-                new Vector2(0, Size.Height - 13),
+                new LinePoint(0, 0),
+                new LinePoint(Size.Width + 1, 0),
+                new LinePoint(Size.Width + 1, Size.Height + 1),
+                new LinePoint(0, Size.Height + 1),
+                new LinePoint(0, 0),
+                new LinePoint(0, 14),
+                new LinePoint(Size.Width + 1, 14),
+                new LinePoint(Size.Width + 1, Size.Height - 13),
+                new LinePoint(0, Size.Height - 13),
 
             };
         }
@@ -271,7 +339,7 @@ namespace Client.Controls
         {
             base.OnMouseDown(e);
 
-            Value = (int)Math.Round((e.Location.Y - DisplayArea.Top - 32) * (MaxValue - MinValue - VisibleSize) / (float)ScrollHeight);
+            Value = (int)Math.Round((e.Location.Y - DisplayArea.Top - (PositionBar.Size.Height + (PositionBar.Size.Height / 2))) * (MaxValue - MinValue - VisibleSize) / (float)ScrollHeight);
         }
         public override void OnMouseWheel(MouseEventArgs e)
         {

@@ -1,4 +1,4 @@
-﻿using Client.Envir;
+using Client.Envir;
 using Client.UserModels;
 using Library;
 using System;
@@ -38,6 +38,7 @@ namespace Client.Controls
             HasFooter = true;
             TitleLabel.Text = CEnvir.Language.CommonControlDXKeyBindWindowTitle;
             Modal = true;
+            DropShadow = true;
             CloseButton.Visible = false;
 
             SetClientSize(new Size(430, 330));
@@ -61,6 +62,7 @@ namespace Client.Controls
             {
                 Location = new Point(Size.Width - 190, Size.Height - 43),
                 Size = new Size(80, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Parent = this,
                 Label = { Text = CEnvir.Language.CommonControlApply }
             };
@@ -70,6 +72,7 @@ namespace Client.Controls
             {
                 Location = new Point(Size.Width - 100, Size.Height - 43),
                 Size = new Size(80, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Parent = this,
                 Label = { Text = CEnvir.Language.CommonControlClose }
             };
@@ -79,6 +82,7 @@ namespace Client.Controls
             {
                 Location = new Point(ClientArea.X, Size.Height - 43),
                 Size = new Size(80, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Parent = this,
                 Label = { Text = CEnvir.Language.CommonControlDefaults }
             };
@@ -476,7 +480,7 @@ namespace Client.Controls
         public KeyBindTree()
         {
             Border = true;
-            BorderColour = Color.FromArgb(198, 166, 99);
+            BorderColour = Constants.PrimaryColour;
 
             ScrollBar = new DXVScrollBar
             {
@@ -571,6 +575,13 @@ namespace Client.Controls
             }
 
             UpdateScrollBar();
+            RefreshLineLayout();
+        }
+
+        private void RefreshLineLayout()
+        {
+            UpdateDisplayArea();
+            UpdateClipAreaTree();
         }
 
         #endregion
@@ -659,6 +670,8 @@ namespace Client.Controls
 
         public KeyBindTreeHeader()
         {
+            HideWhenClipped = true;
+
             ExpandButton = new DXButton
             {
                 Parent = this,
@@ -754,7 +767,7 @@ namespace Client.Controls
                 RefreshKeyLabel();
             }
 
-            BackColour = Selected ? Color.FromArgb(80, 80, 125) : Color.FromArgb(25, 20, 0);
+            BackColour = Selected ? Constants.SelectedRowBackColour : Constants.RowBackColour;
 
         }
 
@@ -800,9 +813,10 @@ namespace Client.Controls
         public KeyBindTreeEntry()
         {
             DrawTexture = true;
-            BackColour = Color.FromArgb(25, 20, 0);
+            HideWhenClipped = true;
+            BackColour = Constants.RowBackColour;
 
-            BorderColour = Color.FromArgb(198, 166, 99);
+            BorderColour = Constants.PrimaryColour;
 
 
             Actionlabel = new DXLabel
@@ -822,7 +836,7 @@ namespace Client.Controls
                 AutoSize = false,
                 Border = true,
                 BackColour = Color.Black,
-                BorderColour = Color.FromArgb(198, 166, 99),
+                BorderColour = Constants.PrimaryColour,
                 Size = new Size(125, 16),
                 DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
                 ForeColour = Color.White
@@ -845,7 +859,7 @@ namespace Client.Controls
                 AutoSize = false,
                 Border = true,
                 BackColour = Color.Black,
-                BorderColour = Color.FromArgb(198, 166, 99),
+                BorderColour = Constants.PrimaryColour,
                 Size = new Size(125, 16),
                 DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
                 ForeColour = Color.White

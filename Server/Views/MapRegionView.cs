@@ -58,5 +58,10 @@ namespace Server.Views
         {
             JsonExporter.Export<MapRegion>(MapRegionGridView);
         }
+
+        private void InsertRowButton_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            SMain.InsertRowAfterFocusedObject<MapRegion>(MapRegionGridView);
+        }
     }
 }

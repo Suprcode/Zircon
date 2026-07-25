@@ -1,6 +1,8 @@
 ﻿using DevExpress.XtraBars;
+using Library;
 using Library.SystemModels;
 using System;
+using System.Linq;
 
 namespace Server.Views
 {
@@ -15,6 +17,10 @@ namespace Server.Views
             CompanionSkillInfoGridControl.DataSource = SMain.Session.GetCollection<CompanionSkillInfo>().Binding;
 
             MonsterInfoLookUpEdit.DataSource = SMain.Session.GetCollection<MonsterInfo>().Binding;
+            CurrencyInfoLookUpEdit.DataSource = SMain.Session.GetCollection<CurrencyInfo>().Binding;
+            ItemInfoLookUpEdit.DataSource = SMain.Session.GetCollection<ItemInfo>().Binding;
+
+            CompanionActionImageComboBox.Items.AddEnum<CompanionAction>();
         }
 
         protected override void OnLoad(EventArgs e)
@@ -22,8 +28,20 @@ namespace Server.Views
             base.OnLoad(e);
 
             SMain.SetUpView(CompanionInfoGridView);
+            SMain.SetUpView(CompanionSpeechGridView);
             SMain.SetUpView(CompanionLevelInfoGridView);
             SMain.SetUpView(CompanionSkillInfoGridView);
+
+            var goldCurrency = SMain.Session.GetCollection<CurrencyInfo>().Binding.Where(x => x.Type == CurrencyType.Gold).FirstOrDefault();
+
+            if (goldCurrency == null) return;
+
+            var companions = SMain.Session.GetCollection<CompanionInfo>().Binding;
+
+            foreach (var companion in companions)
+                companion.Currency ??= goldCurrency;
+
+            CompanionInfoGridView.RefreshData();
         }
 
         private void SaveButton_ItemClick(object sender, ItemClickEventArgs e)

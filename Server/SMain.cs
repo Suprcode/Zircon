@@ -1,4 +1,5 @@
-﻿using DevExpress.XtraEditors;
+﻿using DevExpress.LookAndFeel;
+using DevExpress.XtraEditors;
 using DevExpress.XtraEditors.Repository;
 using DevExpress.XtraGrid.Columns;
 using DevExpress.XtraGrid.Views.Grid;
@@ -11,12 +12,13 @@ using Server.Envir;
 using Server.Views;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Net;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security;
+using System.Text.Json;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -26,14 +28,12 @@ namespace Server
     {
         public List<Control> Windows = new List<Control>();
         public static Session Session;
+        private static readonly string CacheFilePath = Path.Combine(Application.StartupPath, "Server.cache.json");
+        private static HashSet<Type> UserDatabaseReferenceTypes;
 
         public SMain()
         {
             InitializeComponent();
-
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls |
-                                                   SecurityProtocolType.Tls11 |
-                                                   SecurityProtocolType.Tls12;
         }
 
         private void SetupPlugin()
@@ -94,6 +94,8 @@ namespace Server
             if (Config.EncryptionEnabled)
                 Encryption.SetKey(SEnvir.CryptoKey);
 
+            LoadUserCache();
+
             ShowView(typeof(SystemLogView));
 
             Session = new Session(SessionMode.System)
@@ -133,9 +135,11 @@ namespace Server
             }
         }
 
-        protected override void OnClosing(CancelEventArgs e)
+        protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            base.OnClosing(e);
+            SaveUserCache();
+
+            base.OnFormClosing(e);
 
             Session.BackUpDelay = 0;
             Session?.Save(true);
@@ -281,6 +285,10 @@ namespace Server
         {
             ShowView(typeof(InstanceInfoView));
         }
+        private void DungeonInfoButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
+        {
+            ShowView(typeof(DungeonInfoView));
+        }
         private void MonsterInfoButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
         {
             ShowView(typeof(MonsterInfoView));
@@ -294,6 +302,110 @@ namespace Server
             view.OptionsSelection.MultiSelect = true;
             view.OptionsSelection.MultiSelectMode = GridMultiSelectMode.CellSelect;
         }
+
+        public static void InsertRowAfterFocusedObject<T>(GridView view) where T : DBObject, new()
+        {
+            var collection = Session.GetCollection<T>();
+            string title = $"Insert {typeof(T)}";
+
+            if (view.GetFocusedRow() is not T focusedObject)
+            {
+                XtraMessageBox.Show($"Please select a {typeof(T)} to insert after.", title, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            string description = focusedObject.ToString();
+
+            if (string.IsNullOrWhiteSpace(description))
+                description = focusedObject.Index.ToString();
+
+            DialogResult result = XtraMessageBox.Show($"Do you want to insert row after {description}?", title, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result != DialogResult.Yes) return;
+
+            bool shiftsExistingRows = collection.Binding.Any(x => x.Index > focusedObject.Index);
+
+            T newObject = Session.InsertObjectAfter<T>(focusedObject.Index);
+
+            if (shiftsExistingRows)
+                ShiftUserDatabaseReferencesAfterInsert<T>(focusedObject.Index);
+
+            view.RefreshData();
+
+            int bindingIndex = collection.Binding.IndexOf(newObject);
+            int rowHandle = view.GetRowHandle(bindingIndex);
+
+            view.FocusedRowHandle = rowHandle;
+            view.SelectRow(rowHandle);
+        }
+
+        private static void ShiftUserDatabaseReferencesAfterInsert<T>(int insertAfterIndex) where T : DBObject, new()
+        {
+            if (typeof(T).GetCustomAttribute<UserObjectAttribute>() != null) return;
+            if (!UserDatabaseReferencesType(typeof(T))) return;
+
+            Session userSession = new Session(SessionMode.Users)
+            {
+                BackUpDelay = Session.BackUpDelay,
+            };
+
+            userSession.Initialize(
+                Assembly.GetAssembly(typeof(ItemInfo)),
+                Assembly.GetAssembly(typeof(AccountInfo))
+            );
+
+            DBCollection<T> userCollection = userSession.GetCollection<T>();
+
+            // The users database only contains system objects that are referenced by
+            // user records. If it has no references above the insertion point, there
+            // is nothing to renumber and its collection index may legitimately be
+            // lower than the system database's index.
+            if (!userCollection.Binding.Any(x => x.Index > insertAfterIndex)) return;
+
+            userSession.InsertObjectAfter<T>(insertAfterIndex);
+            userSession.Save(true);
+        }
+
+        private static bool UserDatabaseReferencesType(Type type)
+        {
+            if (UserDatabaseReferenceTypes == null)
+                UserDatabaseReferenceTypes = GetUserDatabaseReferenceTypes();
+
+            return UserDatabaseReferenceTypes.Contains(type);
+        }
+
+        private static HashSet<Type> GetUserDatabaseReferenceTypes()
+        {
+            HashSet<Type> referenceTypes = [];
+
+            Assembly[] assemblies =
+            [
+                Assembly.GetAssembly(typeof(ItemInfo)),
+                Assembly.GetAssembly(typeof(AccountInfo))
+            ];
+
+            IEnumerable<Type> userTypes = assemblies
+                .Where(x => x != null)
+                .SelectMany(x => x.GetTypes())
+                .Where(x => x.IsSubclassOf(typeof(DBObject)) && x.GetCustomAttribute<UserObjectAttribute>() != null);
+
+            foreach (Type userType in userTypes)
+            {
+                PropertyInfo[] properties = userType.GetProperties(BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.SetProperty);
+
+                foreach (PropertyInfo property in properties)
+                {
+                    if (property.GetCustomAttribute<IgnorePropertyAttribute>() != null) continue;
+                    if (!property.PropertyType.IsSubclassOf(typeof(DBObject))) continue;
+                    if (property.PropertyType.GetCustomAttribute<UserObjectAttribute>() != null) continue;
+
+                    referenceTypes.Add(property.PropertyType);
+                }
+            }
+
+            return referenceTypes;
+        }
+
         private static void DeleteRows_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode != Keys.Delete) return;
@@ -426,6 +538,11 @@ namespace Server
             ShowView(typeof(CurrencyInfoView));
         }
 
+        private void HelpInfoButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
+        {
+            ShowView(typeof(HelpInfoView));
+        }
+
         private void CharacterInfoButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
         {
             ShowView(typeof(CharacterView));
@@ -462,9 +579,6 @@ namespace Server
         {
             ShowView(typeof(BaseStatView));
         }
-
-
-
 
         #region Idle Check
         private static bool AppStillIdle
@@ -524,6 +638,11 @@ namespace Server
             ShowView(typeof(QuestInfoView));
         }
 
+        private void MilestoneInfoButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
+        {
+            ShowView(typeof(MilestoneInfoView));
+        }
+
         private void CompanionInfoButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
         {
             ShowView(typeof(CompanionInfoView));
@@ -557,6 +676,11 @@ namespace Server
         private void DiagnosticButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
         {
             ShowView(typeof(DiagnosticView));
+        }
+
+        private void OrphanDiagnosticsButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
+        {
+            ShowView(typeof(OrphanDiagnosticView));
         }
 
         private void navBarItem3_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
@@ -602,6 +726,65 @@ namespace Server
         private void LootBoxInfoButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
         {
             ShowView(typeof(LootBoxInfoView));
+        }
+
+        private void LoadUserCache()
+        {
+            try
+            {
+                if (!File.Exists(CacheFilePath)) return;
+
+                var cache = JsonSerializer.Deserialize<ServerUserCache>(File.ReadAllText(CacheFilePath));
+
+                if (cache == null) return;
+
+                if (!string.IsNullOrEmpty(cache.SkinName))
+                {
+                    UserLookAndFeel.Default.SetSkinStyle(cache.SkinName);
+                    DLookAndFeel.LookAndFeel.SkinName = cache.SkinName;
+                }
+
+                WindowState = cache.Maximized ? FormWindowState.Maximized : FormWindowState.Normal;
+
+                if (cache.ExpandedGroups != null)
+                {
+                    foreach (DevExpress.XtraNavBar.NavBarGroup group in navBarControl1.Groups)
+                        group.Expanded = cache.ExpandedGroups.Contains(group.Name);
+                }
+            }
+            catch (Exception ex)
+            {
+                SEnvir.Log($"Failed to load UI cache: {ex}");
+            }
+        }
+
+        private void SaveUserCache()
+        {
+            try
+            {
+                var cache = new ServerUserCache
+                {
+                    SkinName = string.IsNullOrEmpty(UserLookAndFeel.Default.SkinName) ? DLookAndFeel.LookAndFeel.SkinName : UserLookAndFeel.Default.SkinName,
+                    ExpandedGroups = navBarControl1.Groups.Cast<DevExpress.XtraNavBar.NavBarGroup>().Where(x => x.Expanded).Select(x => x.Name).ToList(),
+                    Maximized = WindowState == FormWindowState.Maximized
+                };
+
+                File.WriteAllText(CacheFilePath, JsonSerializer.Serialize(cache, new JsonSerializerOptions
+                {
+                    WriteIndented = true
+                }));
+            }
+            catch (Exception ex)
+            {
+                SEnvir.Log($"Failed to save UI cache: {ex}");
+            }
+        }
+
+        private class ServerUserCache
+        {
+            public string SkinName { get; set; }
+            public List<string> ExpandedGroups { get; set; } = new List<string>();
+            public bool Maximized { get; set; }
         }
     }
 }
