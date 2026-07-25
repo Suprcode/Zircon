@@ -131,6 +131,13 @@ namespace Library.Network.ServerPackets
         public int MovementSpeed { get; set; } //1 time
         public int RequiredAccuracy { get; set; } //1 time
     }
+    public sealed class ObjectTaming : Packet
+    {
+        public uint ObjectID { get; set; }
+        public TamingState State { get; set; }
+        public MirDirection Direction { get; set; }
+        public uint TamingObjectID { get;set; }
+    }
     public sealed class ObjectMove : Packet
     {
         public uint ObjectID { get; set; }

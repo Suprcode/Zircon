@@ -643,14 +643,16 @@ namespace Client.Models
                     GameScene.Game.CanRun = false;
                     break;
                 case MirAction.Fishing:
-                    AttackTime = CEnvir.Now + TimeSpan.FromMilliseconds(Globals.AttackDelay);
+                    {
+                        AttackTime = CEnvir.Now + TimeSpan.FromMilliseconds(Globals.AttackDelay);
 
-                    var state = (FishingState)action.Extra[0];
-                    var floatLocation = (Point)action.Extra[1];
-                    var caughtFish = GameScene.Game.FishingCatchBox.CaughtFish;
+                        var state = (FishingState)action.Extra[0];
+                        var floatLocation = (Point)action.Extra[1];
+                        var caughtFish = GameScene.Game.FishingCatchBox.CaughtFish;
 
-                    CEnvir.Enqueue(new C.FishingCast { State = state, Direction = action.Direction, FloatLocation = floatLocation, CaughtFish = caughtFish });
-                    GameScene.Game.CanRun = false;
+                        CEnvir.Enqueue(new C.FishingCast { State = state, Direction = action.Direction, FloatLocation = floatLocation, CaughtFish = caughtFish });
+                        GameScene.Game.CanRun = false;
+                    }
                     break;
                 case MirAction.Mining:
                     attackDelay = Globals.AttackDelay - Stats[Stat.AttackSpeed] * Globals.ASpeedRate;
@@ -665,6 +667,16 @@ namespace Client.Models
 
                     CEnvir.Enqueue(new C.Mining { Direction = action.Direction });
                     GameScene.Game.CanRun = false;
+                    break;
+                case MirAction.Taming:
+                    {
+                        var state = (TamingState)action.Extra[0];
+                        var tamingObjectID = (uint)action.Extra[1];
+
+                        AttackTime = CEnvir.Now + TimeSpan.FromMilliseconds(Globals.AttackDelay);
+                        CEnvir.Enqueue(new C.Taming { State = state, Direction = action.Direction, ObjectID = tamingObjectID });
+                        GameScene.Game.CanRun = false;
+                    }
                     break;
                 default:
                     GameScene.Game.CanRun = false;

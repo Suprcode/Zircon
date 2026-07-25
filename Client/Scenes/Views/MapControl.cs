@@ -160,6 +160,10 @@ namespace Client.Scenes.Views
         public MirDirection FishingDirection;
         public bool AutoCast;
 
+        public TamingState TamingState;
+        public MonsterObject TamingObject;
+        public uint TamingObjectID;
+
         public Floor FLayer;
         public Light LLayer;
 
@@ -903,6 +907,7 @@ namespace Client.Scenes.Views
                         if (CEnvir.Shift && MapObject.TargetObject == null)
                         {
                             if (FishingState != FishingState.None) return;
+                            if (TamingState != TamingState.None) return;
 
                             if (CEnvir.Now > User.AttackTime && User.Horse == HorseType.None && !haselementalhurricane)
                                 MapObject.User.AttemptAction(new ObjectAction(MirAction.Attack, direction, MapObject.User.CurrentLocation, 0, MagicType.None, Element.None));
@@ -918,6 +923,7 @@ namespace Client.Scenes.Views
                             if (haselementalhurricane) return;
                             if (User.Horse != HorseType.None) return;
                             if (FishingState != FishingState.None) return;
+                            if (TamingState != TamingState.None) return;
 
                             if (weap?.Info.ItemEffect == ItemEffect.FishingRod && armour?.Info.ItemEffect == ItemEffect.FishingRobe)
                             {
@@ -932,6 +938,17 @@ namespace Client.Scenes.Views
                                     break;
                                 }
                             }
+                            else if (weap?.Info.ItemEffect == ItemEffect.TamingLasso && MapObject.TargetObject is MonsterObject target && !target.Dead && target.MonsterInfo.AI == 135)
+                            {
+                                var distance = Functions.Distance(MapObject.User.CurrentLocation, target.CurrentLocation);
+
+                                if (distance <= Globals.TamingDistance)
+                                {
+                                    TamingObject = target;
+                                    TamingState = TamingState.Cast;
+                                    break;
+                                }
+                            }
                             else
                             {
                                 MapObject.User.AttemptAction(new ObjectAction(MirAction.Harvest, direction, MapObject.User.CurrentLocation));
@@ -942,6 +959,12 @@ namespace Client.Scenes.Views
                         if (FishingState != FishingState.None)
                         {
                             FishingState = FishingState.Cancel;
+                            break;
+                        }
+
+                        if (TamingState != TamingState.None)
+                        {
+                            TamingState = TamingState.Cancel;
                             break;
                         }
 
@@ -991,6 +1014,12 @@ namespace Client.Scenes.Views
                         if (FishingState != FishingState.None)
                         {
                             FishingState = FishingState.Cancel;
+                            break;
+                        }
+
+                        if (TamingState != TamingState.None)
+                        {
+                            TamingState = TamingState.Cancel;
                             break;
                         }
 
@@ -1053,6 +1082,24 @@ namespace Client.Scenes.Views
                         MapObject.User.AttemptAction(new ObjectAction(MirAction.Fishing, FishingDirection, MapObject.User.CurrentLocation, FishingState, FloatLocation, MapObject.User.FishFound));
                     }
                 }
+
+                return;
+            }
+
+            if (TamingState != TamingState.None)
+            {
+                if (MapObject.TargetObject != null)
+                {
+                    TamingObjectID = MapObject.TargetObject.ObjectID;
+                    direction = Functions.DirectionFromPoint(MapObject.User.CurrentLocation, MapObject.TargetObject.CurrentLocation);
+                }
+
+                if (CEnvir.Now > User.AttackTime)
+                {
+                    MapObject.User.AttemptAction(new ObjectAction(MirAction.Taming, direction, MapObject.User.CurrentLocation, TamingState, TamingObjectID));
+                }
+
+                return;
             }
 
             if (MapObject.TargetObject == null || MapObject.TargetObject.Dead) return;
@@ -1120,7 +1167,6 @@ namespace Client.Scenes.Views
 
         public MirDirection MouseDirectionBest(MirDirection dir, int distance) //22.5 = 16
         {
-
             Point loc = Functions.Move(MapObject.User.CurrentLocation, dir, distance);
 
             if (loc.X >= 0 && loc.Y >= 0 && loc.X < Width && loc.Y < Height && !Cells[loc.X, loc.Y].Blocking()) return dir;

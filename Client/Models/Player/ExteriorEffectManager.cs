@@ -23,6 +23,7 @@ namespace Client.Models.Player
                 case MirAction.RangeAttack:
                 case MirAction.Spell:
                 case MirAction.Harvest:
+                case MirAction.Taming:
                 case MirAction.Struck:
                 case MirAction.Die:
                 case MirAction.Dead:
@@ -433,6 +434,8 @@ namespace Client.Models.Player
                 case MirAnimation.Combat2:
                     return indexStart + 640 + GameScene.Game.MapControl.Animation / animationSpeed % 5 + (int)direction * 10;
                 case MirAnimation.Combat3:
+                case MirAnimation.TamingCast:
+                case MirAnimation.TamingWait:
                     return indexStart + 722 + GameScene.Game.MapControl.Animation / animationSpeed % 4 + (int)direction * 10;
                 case MirAnimation.Combat4:
                     return indexStart + 800 + GameScene.Game.MapControl.Animation / animationSpeed % 6 + (int)direction * 10;

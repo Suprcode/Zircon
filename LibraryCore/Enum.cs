@@ -476,6 +476,7 @@ namespace Library
         Mount,
         Mining,
         Fishing,
+        Taming,
         Idle
     }
 
@@ -529,7 +530,10 @@ namespace Library
 
         FishingCast,
         FishingWait,
-        FishingReel
+        FishingReel,
+
+        TamingCast,
+        TamingWait
     }
 
     public enum MessageAction
@@ -851,6 +855,9 @@ namespace Library
 
         PinkFireBall = 530,
         GreenSludgeBall = 540,
+
+        RushingMount = 700,
+        AscendingMount = 701,
     }
 
     public enum MagicProperty
@@ -1781,6 +1788,7 @@ namespace Library
 
         FishingRod = 82,
         FishingRobe = 83,
+        TamingLasso = 84,
 
         StatExtractor = 90,
         SpiritBlade = 91,
@@ -2149,6 +2157,13 @@ namespace Library
         None,
         Cast,
         Reel,
+        Cancel
+    }
+
+    public enum TamingState : byte
+    {
+        None,
+        Cast,
         Cancel
     }
 

@@ -632,6 +632,8 @@ namespace Server.Models
                         PoisonFrequency = 5,
                         PoisonRate = 15,
                     };
+                case 135: //Wild Horse
+                    return new MonsterObject { MonsterInfo = monsterInfo, Passive = true };
 
                 case 1001:
                     return new CastleFlag { MonsterInfo = monsterInfo };

@@ -309,6 +309,8 @@ namespace Server.Envir.Translations
         public override string HorseDead { get; set; } = "You cannot ride your horse when dead.";
         public override string HorseOwner { get; set; } = "You do not own a horse to ride.";
         public override string HorseMap { get; set; } = "You cannot ride your horse on this map.";
+        public override string HorseTameInvalidTarget { get; set; } = "Target cannot be tamed.";
+        public override string HorseTameSuccess { get; set; } = "{0} has been tamed.";
 
         public override string InstanceNoAction { get; set; } = "Cannot perform this action whilst on an instance.";
         public override string InstanceInvalid { get; set; } = "You cannot move to instance.";

@@ -377,6 +377,10 @@ namespace Server.Models
                     PacketWaiting = false;
                     FishingCast((FishingState)action.Data[0], (MirDirection)action.Data[1], (Point)action.Data[2], (bool)action.Data[3]);
                     break;
+                case ActionType.Taming:
+                    PacketWaiting = false;
+                    Taming((TamingState)action.Data[0], (MirDirection)action.Data[1], (uint)action.Data[2]);
+                    break;
                 case ActionType.Attack:
                     PacketWaiting = false;
                     Attack((MirDirection)action.Data[0], (MagicType)action.Data[1]);
@@ -14072,6 +14076,17 @@ namespace Server.Models
             Broadcast(new S.ObjectMount { ObjectID = ObjectID, Horse = Horse });
         }
 
+        public void GiveHorse(HorseType horse)
+        {
+            Character.Account.Horse = horse;
+
+            RemoveMount();
+            RefreshStats();
+
+            if (Character.Account.Horse != HorseType.None)
+                Mount();
+        }
+
         public void FishingCast(FishingState state, MirDirection castDirection, Point floatLocation, bool caught = false)
         {
             if (SEnvir.Now < ActionTime || SEnvir.Now < AttackTime)
@@ -14331,6 +14346,140 @@ namespace Server.Models
 
             PauseBuffs();
         }
+
+        public void Taming(TamingState state, MirDirection direction, uint tamingObjectID)
+        {
+            if (SEnvir.Now < ActionTime || SEnvir.Now < AttackTime)
+            {
+                if (!PacketWaiting)
+                {
+                    ActionList.Add(new DelayedAction(ActionTime, ActionType.Taming, state, direction, tamingObjectID));
+                    PacketWaiting = true;
+                }
+                else
+                    Enqueue(new S.UserLocation { Direction = Direction, Location = CurrentLocation });
+
+                return;
+            }
+
+            MonsterObject mob = null;
+            _isTaming = false;
+
+            UserItem weapon = Equipment[(int)EquipmentSlot.Weapon];
+
+            if (state == TamingState.Cast)
+            {
+                mob = VisibleObjects.FirstOrDefault(x => x.ObjectID == tamingObjectID) as MonsterObject;
+
+                if (mob == null || mob.Dead || mob.MonsterInfo.AI != 135)
+                {
+                    mob = null;
+                    state = TamingState.Cancel;
+                }
+                else
+                {
+                    var distance = Functions.Distance(CurrentLocation, mob.CurrentLocation);
+
+                    if (weapon?.Info.ItemEffect != ItemEffect.TamingLasso || Horse != HorseType.None || distance > Globals.TamingDistance)
+                    {
+                        mob = null;
+                        state = TamingState.Cancel;
+                    }
+                    else
+                    {
+                        _isTaming = true;
+                    }
+                }
+            }
+
+            if (_isTaming)
+            {
+                DamageItem(GridType.Equipment, (int)EquipmentSlot.Weapon, 100);
+
+                if (weapon.CurrentDurability == 0 && weapon.Info.Durability > 0)
+                {
+                    mob = null;
+                    state = TamingState.Cancel;
+                }
+            }
+
+            _tamingTarget = mob;
+
+            Direction = direction;
+
+            ActionTime = SEnvir.Now + Globals.AttackTime;
+            AttackTime = SEnvir.Now.AddMilliseconds(Globals.AttackDelay);
+
+            Broadcast(new S.ObjectTaming
+            {
+                ObjectID = ObjectID,
+                State = state,
+                Direction = Direction,
+                TamingObjectID = _tamingTarget?.ObjectID ?? tamingObjectID
+            });
+        }
+
+        public void TamingSuccess(uint tamingObjectID)
+        {
+            MonsterObject target = _tamingTarget;
+
+            if (!_isTaming || target == null || target.ObjectID != tamingObjectID)
+                return;
+
+            if (Dead || Horse != HorseType.None || target.Node == null || target.Dead || !target.Visible ||
+                target.CurrentMap != CurrentMap || !VisibleObjects.Contains(target) || target.MonsterInfo.AI != 135 ||
+                Equipment[(int)EquipmentSlot.Weapon]?.Info.ItemEffect != ItemEffect.TamingLasso)
+            {
+                EndTaming(tamingObjectID);
+                return;
+            }
+
+            HorseType horse = target.MonsterInfo.Image switch
+            {
+                MonsterImage.WildBrownHorse => HorseType.Brown,
+                MonsterImage.WildWhiteHorse => HorseType.White,
+                MonsterImage.WildBlackHorse => HorseType.Black,
+                MonsterImage.WildRedHorse => HorseType.Red,
+                _ => HorseType.None,
+            };
+
+            if (horse == HorseType.None)
+            {
+                Connection.ReceiveChat(Connection.Language.HorseTameInvalidTarget, MessageType.System);
+                EndTaming(tamingObjectID);
+                return;
+            }
+
+            string monsterName = target.MonsterInfo.MonsterName;
+
+            target.Die();
+            target.Despawn();
+
+            EndTaming(tamingObjectID);
+            GiveHorse(horse);
+
+            Connection.ReceiveChat(string.Format(Connection.Language.HorseTameSuccess, monsterName), MessageType.System);
+        }
+
+        private void EndTaming(uint tamingObjectID)
+        {
+            _isTaming = false;
+            _tamingTarget = null;
+
+            if (ActionList.RemoveAll(static action => action.Type == ActionType.Taming) > 0)
+                PacketWaiting = false;
+
+            Broadcast(new S.ObjectTaming
+            {
+                ObjectID = ObjectID,
+                State = TamingState.Cancel,
+                Direction = Direction,
+                TamingObjectID = tamingObjectID,
+            });
+        }
+
+        private bool _isTaming;
+        private MonsterObject _tamingTarget;
 
         public void Move(MirDirection direction, int distance)
         {

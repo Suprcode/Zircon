@@ -443,11 +443,26 @@ namespace Server.Envir
 
             Player.Mount();
         }
+
         public void Process(C.FishingCast p)
         {
             if (Stage != GameStage.Game) return;
 
             Player.FishingCast(p.State, p.Direction, p.FloatLocation, p.CaughtFish);
+        }
+
+        public void Process(C.Taming p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.Taming(p.State, p.Direction, p.ObjectID);
+        }
+
+        public void Process(C.TamingSuccess p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.TamingSuccess(p.ObjectID);
         }
 
         public void Process(C.Attack p)

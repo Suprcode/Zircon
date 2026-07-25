@@ -850,6 +850,7 @@ namespace Client.Controls
                     }
 
                     if (GameScene.Game.MapControl.FishingState != FishingState.None) return;
+                    if (GameScene.Game.MapControl.TamingState != TamingState.None) return;
 
                     if (Item == null || (SelectedCell.Item.Info == Item.Info && SelectedCell.Item.Count < SelectedCell.Item.Info.StackSize))
                         SelectedCell.MoveItem(this);
@@ -907,6 +908,7 @@ namespace Client.Controls
             if (Item != null && (Item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return;
 
             if (GameScene.Game.MapControl.FishingState != FishingState.None) return;
+            if (GameScene.Game.MapControl.TamingState != TamingState.None) return;
 
             if (fromCell == SelectedCell) SelectedCell = null;
 
@@ -1540,7 +1542,10 @@ namespace Client.Controls
 
         public bool UseItem()
         {
-            if (Item == null || Locked || ReadOnly || SelectedCell == this || (!Linked && Link != null) || !GameScene.Game.CanUseItem(Item) || GameScene.Game.Observer || GameScene.Game.MapControl.FishingState != FishingState.None) return false;
+            if (Item == null || Locked || ReadOnly || SelectedCell == this || (!Linked && Link != null) || !GameScene.Game.CanUseItem(Item) || GameScene.Game.Observer) return false;
+
+            if (GameScene.Game.MapControl.FishingState != FishingState.None) return false;
+            if (GameScene.Game.MapControl.TamingState != TamingState.None) return false;
 
             if (GridType == GridType.Belt || GridType == GridType.Belt)
             {
@@ -2464,6 +2469,7 @@ namespace Client.Controls
                             if (Item == null) return;
 
                             if (GameScene.Game.MapControl.FishingState != FishingState.None) return;
+                            if (GameScene.Game.MapControl.TamingState != TamingState.None) return;
 
                             if (GameScene.Game.NPCRepairBox.Visible)
                             {

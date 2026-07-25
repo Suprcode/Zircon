@@ -4,6 +4,7 @@ using Client.Scenes;
 using Client.Scenes.Views;
 using Library;
 using Library.Network;
+using Library.Network.ClientPackets;
 using Library.SystemModels;
 using System;
 using System.Collections.Generic;
@@ -1107,6 +1108,52 @@ namespace Client.Envir
             GameScene.Game.FishingCatchBox.Update(p);
         }
 
+        public void Process(S.ObjectTaming p)
+        {
+            MapObject actor = null;
+            MapObject target = null;
+            bool findTarget = p.State == TamingState.Cast;
+
+            foreach (MapObject mapObject in GameScene.Game.MapControl.Objects)
+            {
+                if (mapObject.ObjectID == p.ObjectID)
+                    actor = mapObject;
+
+                if (findTarget && mapObject.ObjectID == p.TamingObjectID)
+                    target = mapObject;
+
+                if (actor != null && (!findTarget || target != null))
+                    break;
+            }
+
+            if (actor == null)
+                return;
+
+            actor.TamingObject = target;
+
+            if (actor == MapObject.User)
+            {
+                MapObject.User.ServerTime = DateTime.MinValue;
+
+                GameScene.Game.MapControl.TamingState =
+                    p.State == TamingState.Cancel ? TamingState.None : p.State;
+
+                MapObject.User.TamingState = p.State;
+
+                GameScene.Game.HorseTameBox?.SetTarget(
+                    p.State == TamingState.Cast ? target as MonsterObject : null);
+            }
+            else
+            {
+                actor.ActionQueue.Add(new ObjectAction(
+                    MirAction.Taming,
+                    p.Direction,
+                    actor.CurrentLocation,
+                    p.State,
+                    p.TamingObjectID));
+            }
+        }
+
         public void Process(S.ObjectStruck p)
         {
             foreach (MapObject ob in GameScene.Game.MapControl.Objects)
@@ -1120,6 +1167,9 @@ namespace Client.Envir
 
                     if (GameScene.Game.MapControl.FishingState != FishingState.None)
                         GameScene.Game.MapControl.FishingState = FishingState.Cancel;
+
+                    if (GameScene.Game.MapControl.TamingState != TamingState.None)
+                        GameScene.Game.MapControl.TamingState = TamingState.Cancel;
 
                     GameScene.Game.CanRun = false;
 

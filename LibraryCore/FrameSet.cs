@@ -67,7 +67,6 @@ namespace Library
                 [MirAnimation.CreepWalkFast] = new Frame(1760, 6, 10, TimeSpan.FromMilliseconds(100)), //Stealth Walk
                 [MirAnimation.CreepWalkSlow] = new Frame(1760, 6, 10, TimeSpan.FromMilliseconds(200)), //Stealth Walk
                 [MirAnimation.Pushed] = new Frame(240, 6, 10, TimeSpan.FromMilliseconds(50)) { Reversed = true, StaticSpeed = true },
-                //[MirAnimation.Pushed2] = new Frame(320, 6, 10, TimeSpan.FromMilliseconds(50)) { Reversed = true },
                 [MirAnimation.Stance] = new Frame(400, 3, 10, TimeSpan.FromMilliseconds(500)),
                 [MirAnimation.Harvest] = new Frame(480, 2, 10, TimeSpan.FromMilliseconds(300)),
                 [MirAnimation.Combat1] = new Frame(560, 5, 10, TimeSpan.FromMilliseconds(100)), //Proj Spell
@@ -101,6 +100,8 @@ namespace Library
                 [MirAnimation.ChannellingStart] = new Frame(560, 4, 10, TimeSpan.FromMilliseconds(100)), //Proj Spell (channelled)
                 [MirAnimation.ChannellingMiddle] = new Frame(563, 1, 10, TimeSpan.FromMilliseconds(1000)), //Proj Spell (channelled)
                 [MirAnimation.ChannellingEnd] = new Frame(0, 1, 10, TimeSpan.FromMilliseconds(60)), //Proj Spell (channelled)
+                [MirAnimation.TamingCast] = new Frame(720, 6, 10, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.TamingWait] = new Frame(725, 1, 10, TimeSpan.FromMilliseconds(100)),
                 //Repeated?
             };
 

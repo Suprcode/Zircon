@@ -237,6 +237,7 @@ namespace Client.Scenes
 
         public FishingDialog FishingBox;
         public FishingCatchDialog FishingCatchBox;
+        public HorseTameDialog HorseTameBox;
 
         public ClientUserItem[] Inventory = new ClientUserItem[Globals.InventorySize];
         public ClientUserItem[] Equipment = new ClientUserItem[Globals.EquipmentSize];
@@ -784,6 +785,12 @@ namespace Client.Scenes
             };
 
             FishingCatchBox = new FishingCatchDialog
+            {
+                Parent = this,
+                Visible = false,
+            };
+
+            HorseTameBox = new HorseTameDialog
             {
                 Parent = this,
                 Visible = false,
@@ -4958,6 +4965,14 @@ namespace Client.Scenes
                         FishingCatchBox.Dispose();
 
                     FishingCatchBox = null;
+                }
+
+                if (HorseTameBox != null)
+                {
+                    if (!HorseTameBox.IsDisposed)
+                        HorseTameBox.Dispose();
+
+                    HorseTameBox = null;
                 }
 
                 Inventory = null;

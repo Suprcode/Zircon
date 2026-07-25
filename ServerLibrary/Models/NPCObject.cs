@@ -124,13 +124,7 @@ namespace Server.Models
                         ob.Enqueue(changedResult);
                         break;
                     case NPCActionType.ChangeHorse:
-                        ob.Character.Account.Horse = (HorseType)action.IntParameter1;
-
-                        ob.RemoveMount();
-
-                        ob.RefreshStats();
-
-                        if (ob.Character.Account.Horse != HorseType.None) ob.Mount();
+                        ob.GiveHorse((HorseType)action.IntParameter1);
                         break;
                     case NPCActionType.GiveGold:
 

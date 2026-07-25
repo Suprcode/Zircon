@@ -89,6 +89,8 @@ namespace Library
             MagicRange = 10,
             MagicMaxLevel = 4,
 
+            TamingDistance = 9,
+
             InstanceUnloadTimeInMinutes = 5,
 
             DuraLossRate = 15,

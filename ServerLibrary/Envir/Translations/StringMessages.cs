@@ -326,6 +326,8 @@ namespace Server.Envir
         public abstract string HorseDead { get; set; }
         public abstract string HorseOwner { get; set; }
         public abstract string HorseMap { get; set; }
+        public abstract string HorseTameInvalidTarget { get; set; }
+        public abstract string HorseTameSuccess { get; set; }
 
         [ConfigSection("Instance")]
         public abstract string InstanceNoAction { get; set; }

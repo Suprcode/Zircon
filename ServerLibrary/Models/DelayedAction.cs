@@ -26,6 +26,7 @@ namespace Server.Models
         Harvest,
         Mining,
         Fishing,
+        Taming,
         Attack,
         Magic,
         RangeAttack,

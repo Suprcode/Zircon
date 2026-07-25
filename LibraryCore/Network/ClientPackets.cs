@@ -112,6 +112,18 @@ namespace Library.Network.ClientPackets
         public bool CaughtFish { get; set; }
     }
 
+    public sealed class Taming : Packet
+    {
+        public TamingState State { get; set; }
+        public uint ObjectID { get; set; }
+        public MirDirection Direction { get; set; }
+    }
+
+    public sealed class TamingSuccess : Packet
+    {
+        public uint ObjectID { get; set; }
+    }
+
     public sealed class Attack : Packet
     {
         public MirDirection Direction { get; set; }

@@ -16,8 +16,8 @@ namespace Client.Models
         private const float Damping = 0.9f;         // Velocity damping to stabilize motion
         private const float AnchorOffsetY = 50f;    // Attach near the top of the target effect
 
-        private readonly MapObject _source;
-        private readonly MapObject _target;
+        protected readonly MapObject _source;
+        protected readonly MapObject _target;
         private MirEffect _owner;
 
         private readonly List<Vector2> _positions = [];
@@ -26,25 +26,24 @@ namespace Client.Models
         private int _linkCount = 6;     // Starts with a default value; adjusts dynamically
         private bool _initialized;
 
-        public MirLineEffect(MapObject source, MapObject target, LibraryFile library, int startIndex)
+        public float ImageScale { get; }
+        protected int LinkCount => _linkCount;
+
+        public MirLineEffect(MapObject source, MapObject target, LibraryFile library, int startIndex, float imageScale = 1F)
             : base(startIndex, 1, TimeSpan.FromMilliseconds(100), library, 0, 0, Color.White)
         {
             _source = source;
             _target = target;
+            ImageScale = Math.Max(0.01F, imageScale);
 
             // Initialize chain links between source and target
             Point startLoc = _source.CurrentLocation;
             Point endLoc = _target.CurrentLocation;
 
-            for (int i = 0; i < _linkCount; i++)
-            {
-                float t = i / (float)(_linkCount - 1);
-                _positions.Add(new Vector2(
-                    Lerp(startLoc.X, endLoc.X, t),
-                    Lerp(startLoc.Y, endLoc.Y, t)
-                ));
-                _velocities.Add(Vector2.Zero);
-            }
+            RebuildPositions(
+                new Vector2(startLoc.X, startLoc.Y),
+                new Vector2(endLoc.X, endLoc.Y),
+                _linkCount);
         }
 
         public void SetOwner(MirEffect owner) => _owner = owner;
@@ -117,14 +116,15 @@ namespace Client.Models
                 Vector2 p2 = _positions[i + 1];
                 Vector2 mid = (p1 + p2) * 0.5f;
 
-                float angle = (float)Math.Atan2(p2.Y - p1.Y, p2.X - p1.X) + MathF.PI / 2;
+                Vector2 delta = p2 - p1;
+                float angle = MathF.Atan2(delta.Y, delta.X) + MathF.PI / 2;
 
                 // Use actual distance to compute scale
-                float dist = MathF.Sqrt(MathF.Pow(p2.X - p1.X, 2) + MathF.Pow(p2.Y - p1.Y, 2));
-                float stretchY = dist / LinkLength; // vertical stretch
-                float stretchX = 1f;                // no horizontal stretch
+                float dist = MathF.Sqrt(delta.X * delta.X + delta.Y * delta.Y);
+                float stretchY = dist / LinkLength;
+                float stretchX = ImageScale;
 
-                // DrawBlendScaled positions an image by its unscaled top-left corner.
+                // Scaled drawing positions an image by its unscaled top-left corner.
                 // Convert the desired segment centre to that coordinate space.
                 float drawX = mid.X - originX;
                 float drawY = mid.Y - originY;
@@ -135,7 +135,7 @@ namespace Client.Models
                 }
                 else
                 {
-                    Library.DrawBlendScaled(StartIndex, stretchX, stretchY, DrawColour, drawX, drawY, angle, Opacity, ImageType.Image, false, 0);
+                    Library.DrawScaled(StartIndex, stretchX, stretchY, DrawColour, drawX, drawY, angle, Opacity, ImageType.Image, false, 0);
                 }
             }
         }
@@ -150,10 +150,15 @@ namespace Client.Models
             float dy = end.Y - start.Y;
             float distance = MathF.Sqrt(dx * dx + dy * dy);
 
-            int desiredLinks = Math.Max(2, (int)MathF.Ceiling(distance / LinkLength));
+            int desiredLinks = Math.Max(2, (int)MathF.Ceiling(distance / (LinkLength * ImageScale)) + 1);
             if (desiredLinks == _linkCount) return;
 
-            _linkCount = desiredLinks;
+            RebuildPositions(start, end, desiredLinks);
+        }
+
+        private void RebuildPositions(Vector2 start, Vector2 end, int linkCount)
+        {
+            _linkCount = linkCount;
             _positions.Clear();
             _velocities.Clear();
 
@@ -168,23 +173,50 @@ namespace Client.Models
             }
         }
 
+        protected void CollapsePositions(Vector2 position)
+        {
+            for (int i = 0; i < _linkCount; i++)
+            {
+                _positions[i] = position;
+                _velocities[i] = Vector2.Zero;
+            }
+        }
+
+        protected void SetPosition(int index, Vector2 position)
+        {
+            if ((uint)index < (uint)_positions.Count)
+                _positions[index] = position;
+        }
+
         /// <summary>
         /// Converts a MapObject's position to world-space coordinates relative to the player.
         /// </summary>
-        private static Vector2 ToWorld(MapObject obj)
+        protected Vector2 ToWorld(MapObject obj)
         {
+            var offset = obj == _source ? SourceOffset() : TargetOffset();
+
             float x = (obj.CurrentLocation.X - MapObject.User.CurrentLocation.X + MapObject.OffSetX) * MapObject.CellWidth
-                    - MapObject.User.MovingOffSet.X + obj.MovingOffSet.X;
+                    - MapObject.User.MovingOffSet.X + obj.MovingOffSet.X + offset.X;
 
             float y = (obj.CurrentLocation.Y - MapObject.User.CurrentLocation.Y + MapObject.OffSetY) * MapObject.CellHeight
-                    - MapObject.User.MovingOffSet.Y + obj.MovingOffSet.Y - AnchorOffsetY;
+                    - MapObject.User.MovingOffSet.Y + obj.MovingOffSet.Y + offset.Y - AnchorOffsetY;
 
             return new Vector2(x, y);
         }
 
-        private static float Lerp(float a, float b, float t) => a + (b - a) * t;
+        protected virtual Point SourceOffset()
+        {
+            return new Point(0, -25);
+        }
 
-        private struct Vector2(float x, float y)
+        protected virtual Point TargetOffset()
+        {
+            return new Point(0, -25);
+        }
+
+        protected static float Lerp(float a, float b, float t) => a + (b - a) * t;
+
+        protected struct Vector2(float x, float y)
         {
             public float X = x, Y = y;
 
@@ -200,6 +232,160 @@ namespace Client.Models
     {
         public MirChainEffect(MapObject source, MapObject target) : base(source, target, LibraryFile.MagicEx7, 80)
         {
+        }
+    }
+
+    public class MirRopeEffect : MirLineEffect
+    {
+        public uint TargetObjectID { get; set; }
+
+        // Time for the throw animation (ms)
+        private const float LaunchDuration = 600f;
+
+        // Maximum height above the line between source and target
+        private const float ThrowArcHeight = 120f;
+
+        // Overshoot factor for final snap
+        private const float OvershootFactor = 1.15f;
+
+        private float _launchProgress;
+        private long _launchStartTime;
+        private bool _launchComplete;
+
+        public MirRopeEffect(MapObject source, MapObject target)
+            : base(source, target, LibraryFile.MagicEx7, 81, 0.5F)
+        {
+            // Start all rope points collapsed at source
+            var startPos = ToWorld(source);
+            CollapsePositions(startPos);
+
+            _launchStartTime = CEnvir.Now.Ticks;
+            _launchProgress = 0f;
+            _launchComplete = false;
+        }
+
+        public override void Process()
+        {
+            if (Target == null || Target.TamingState != TamingState.Cast)
+            {
+                Remove();
+                return;
+            }
+
+            if (!_launchComplete)
+            {
+                float elapsed = (CEnvir.Now.Ticks - _launchStartTime) / 10000f; // ms
+                _launchProgress = MathF.Min(1.2f, elapsed / LaunchDuration);
+
+                Vector2 startPos = ToWorld(_source);
+                Vector2 endPos = ToWorld(_target);
+
+                // Compute the current "in-flight" target end position (the rope tip)
+                Vector2 flyingTarget = ComputeThrownTarget(startPos, endPos, _launchProgress);
+
+                // Stretch rope links between source and flying target
+                for (int i = 0; i < LinkCount; i++)
+                {
+                    float segment = i / (float)(LinkCount - 1);
+                    Vector2 pos = new(
+                        Lerp(startPos.X, flyingTarget.X, segment),
+                        Lerp(startPos.Y, flyingTarget.Y, segment)
+                    );
+                    SetPosition(i, pos);
+                }
+
+                if (_launchProgress >= 1f)
+                    _launchComplete = true;
+            }
+            else
+            {
+                // Once rope lands, run the normal rope physics
+                base.Process();
+            }
+        }
+
+        /// <summary>
+        /// Computes the flying target's position based on a parabolic throw arc.
+        /// </summary>
+        private static Vector2 ComputeThrownTarget(Vector2 start, Vector2 end, float t)
+        {
+            // Horizontal and vertical interpolation base
+            float tx = EaseOutCubic(t);  // smooth horizontal movement
+            float x = Lerp(start.X, end.X, tx);
+
+            // Vertical parabolic arc
+            float ty = EaseOutQuad(t);
+            float y = Lerp(start.Y, end.Y, ty);
+
+            // Add upward arc (apex near mid-throw)
+            float heightFactor = MathF.Sin(MathF.Min(t, 1f) * MathF.PI);
+            y -= heightFactor * ThrowArcHeight;
+
+            // Overshoot slight forward motion beyond target for realism
+            if (t > 1f)
+            {
+                float overshoot = (t - 1f) * OvershootFactor * 0.5f;
+                x += (end.X - start.X) * overshoot;
+                y += (end.Y - start.Y) * overshoot * 0.2f;
+            }
+
+            return new Vector2(x, y);
+        }
+
+        /// <summary>
+        /// Smooth ease-out cubic curve.
+        /// </summary>
+        private static float EaseOutCubic(float t)
+        {
+            t = Math.Clamp(t, 0f, 1f);
+            float inverse = 1f - t;
+            return 1f - inverse * inverse * inverse;
+        }
+
+        /// <summary>
+        /// Smooth ease-out quadratic for vertical descent.
+        /// </summary>
+        private static float EaseOutQuad(float t)
+        {
+            t = Math.Clamp(t, 0f, 1f);
+            float inverse = 1f - t;
+            return 1f - inverse * inverse;
+        }
+
+        protected override Point SourceOffset()
+        {
+            Point delta = _source.Direction switch
+            {
+                MirDirection.Up => new Point(0, -50),
+                MirDirection.UpRight => new Point(40, -35),
+                MirDirection.Right => new Point(35, -15),
+                MirDirection.DownRight => new Point(27, -7),
+                MirDirection.Down => Point.Empty,
+                MirDirection.DownLeft => new Point(-17, -10),
+                MirDirection.Left => new Point(-25, -20),
+                MirDirection.UpLeft => new Point(-15, -40),
+                _ => Point.Empty,
+            };
+
+            return new Point(-10 + delta.X, 20 + delta.Y);
+        }
+
+        protected override Point TargetOffset()
+        {
+            Point delta = _target.Direction switch
+            {
+                MirDirection.Up => new Point(0, -50),
+                MirDirection.UpRight => new Point(25, -45),
+                MirDirection.UpLeft => new Point(-25, -45),
+                MirDirection.Right => new Point(40, -30),
+                MirDirection.Left => new Point(-40, -30),
+                MirDirection.DownRight => new Point(25, -10),
+                MirDirection.Down => new Point(-10, 10),
+                MirDirection.DownLeft => new Point(-25, -10),
+                _ => Point.Empty,
+            };
+
+            return new Point(8 + delta.X, 10 + delta.Y);
         }
     }
 }
