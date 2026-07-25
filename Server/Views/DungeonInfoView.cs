@@ -4,6 +4,7 @@ using DevExpress.XtraGrid.Views.Base;
 using DevExpress.XtraGrid.Views.Grid;
 using Library;
 using Library.SystemModels;
+using PluginCore;
 using System;
 using System.Linq;
 
@@ -21,6 +22,8 @@ namespace Server.Views
 
             DungeonMapGridView.CustomRowCellEditForEditing += DungeonMapGridView_CustomRowCellEditForEditing;
             DungeonMapGridView.ValidateRow += DungeonMapGridView_ValidateRow;
+
+            PluginGridActionBinder.Attach(DungeonInfoGridControl, DungeonInfoGridView, typeof(DungeonInfo), this);
         }
 
         protected override void OnLoad(EventArgs e)
