@@ -28,6 +28,7 @@ namespace Client.Scenes.Views
         private bool IsLarge, IsTransparent;
 
         public Dictionary<object, DXControl> MapInfoObjects = new Dictionary<object, DXControl>();
+        public List<AutoPathRouteControl> AutoPathRoutes = new List<AutoPathRouteControl>();
 
         public static float ScaleX, ScaleY;
 
@@ -40,6 +41,9 @@ namespace Client.Scenes.Views
 
             foreach (DXControl control in MapInfoObjects.Values)
                 control.Opacity = Opacity;
+
+            foreach (AutoPathRouteControl route in AutoPathRoutes)
+                route.Opacity = Opacity;
 
             if (Image != null)
             {
@@ -260,6 +264,51 @@ namespace Client.Scenes.Views
 
             foreach (ClientObjectData ob in GameScene.Game.DataDictionary.Values)
                 Update(ob);
+
+            RefreshAutoPathRoute();
+        }
+
+        public void RefreshAutoPathRoute()
+        {
+            foreach (AutoPathRouteControl route in AutoPathRoutes)
+            {
+                if (!route.IsDisposed)
+                    route.Dispose();
+            }
+            AutoPathRoutes.Clear();
+
+            MapInfo map = GameScene.Game.MapControl.MapInfo;
+            if (map == null || Image == null) return;
+
+            for (int i = 0; i < GameScene.Game.AutoPathRoutes.Count; i++)
+            {
+                AutoPathRoute route = GameScene.Game.AutoPathRoutes[i];
+                AutoPathRouteControl control = new AutoPathRouteControl
+                {
+                    Parent = Image,
+                    Opacity = Opacity,
+                };
+
+                control.SetRoute(
+                    route,
+                    i == 0,
+                    map,
+                    map,
+                    ScaleX,
+                    ScaleY);
+                AutoPathRoutes.Add(control);
+            }
+
+            UpdateAutoPathRouteProgress();
+        }
+
+        public void UpdateAutoPathRouteProgress()
+        {
+            if (AutoPathRoutes.Count == 0) return;
+
+            AutoPathRoutes[0].SetProgress(
+                GameScene.Game.AutoPathRouteProgressMapIndex,
+                GameScene.Game.AutoPathRouteProgressIndex);
         }
 
         public void Update(NPCInfo ob)
@@ -679,6 +728,17 @@ namespace Client.Scenes.Views
                 MapInfoObjects.Clear();
                 MapInfoObjects = null;
 
+                if (AutoPathRoutes != null)
+                {
+                    foreach (AutoPathRouteControl route in AutoPathRoutes)
+                    {
+                        if (!route.IsDisposed)
+                            route.Dispose();
+                    }
+
+                    AutoPathRoutes.Clear();
+                    AutoPathRoutes = null;
+                }
 
                 if (Image != null)
                 {

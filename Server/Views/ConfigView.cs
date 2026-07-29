@@ -138,6 +138,8 @@ namespace Server.Views
             DayCycleCountEdit.EditValue = Config.DayCycleCount;
             SkillExpEdit.EditValue = Config.SkillExp;
             AllowObservationEdit.EditValue = Config.AllowObservation;
+            AllowWaypointsEdit.EditValue = Config.AllowWaypoints;
+            MaxWaypointsEdit.EditValue = Config.MaxWaypoints;
             BrownDurationEdit.EditValue = Config.BrownDuration;
             PKPointRateEdit.EditValue = Config.PKPointRate;
             PKPointTickRateEdit.EditValue = Config.PKPointTickRate;
@@ -259,6 +261,8 @@ namespace Server.Views
             Config.DayCycleCount = (int)DayCycleCountEdit.EditValue;
             Config.SkillExp = (int)SkillExpEdit.EditValue;
             Config.AllowObservation = (bool)AllowObservationEdit.EditValue;
+            Config.AllowWaypoints = (bool)AllowWaypointsEdit.EditValue;
+            Config.MaxWaypoints = Math.Max(0, (int)MaxWaypointsEdit.EditValue);
             Config.BrownDuration = (TimeSpan)BrownDurationEdit.EditValue;
             Config.PKPointRate = (int)PKPointRateEdit.EditValue;
             Config.PKPointTickRate = (TimeSpan)PKPointTickRateEdit.EditValue;

@@ -392,7 +392,8 @@ namespace Library
         Connection = 2,
         Spawn = 3,
         Npc = 4,
-        SpawnConnection = 5
+        SpawnConnection = 5,
+        Path = 6
     }
 
     public enum ObjectType : byte
@@ -1924,7 +1925,7 @@ namespace Library
     {
         KillMonster = 0,
         GainItem = 1,
-        Region = 2
+        VisitRegion = 2
     }
 
     public enum MilestoneGrade

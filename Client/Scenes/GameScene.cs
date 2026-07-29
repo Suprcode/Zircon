@@ -19,7 +19,7 @@ using C = Library.Network.ClientPackets;
 //Cleaned
 namespace Client.Scenes
 {
-    public sealed class GameScene : DXScene
+    public sealed partial class GameScene : DXScene
     {
         #region Properties
         public static GameScene Game;
@@ -264,6 +264,10 @@ namespace Client.Scenes
             set
             {
                 if (_AutoRun == value) return;
+
+                if (value)
+                    CancelAutoPath();
+
                 _AutoRun = value;
 
                 ReceiveChat(value ? CEnvir.Language.GameSceneAutoRunOn : CEnvir.Language.GameSceneAutoRunOff, MessageType.Hint);
@@ -1114,7 +1118,10 @@ namespace Client.Scenes
                 CreateItemLabel();
             }
 
-            MapControl.ProcessInput();
+            ProcessAutoPathMove();
+
+            if (AutoPathRoute == null)
+                MapControl.ProcessInput();
 
             foreach (MapObject ob in MapControl.Objects)
                 ob.Process();
@@ -4187,7 +4194,7 @@ namespace Client.Scenes
                 case QuestTaskType.GainItem:
                     builder.AppendFormat("Collect {0} {1}", task.Amount, task.ItemParameter?.ItemName);
                     break;
-                case QuestTaskType.Region:
+                case QuestTaskType.VisitRegion:
                     builder.AppendFormat("Goto {0} in {1}", task.RegionParameter?.Description, task.RegionParameter?.Map.PlayerDescription);
                     break;
             }
@@ -4243,7 +4250,7 @@ namespace Client.Scenes
                     builder.Append(" (Completed)");
                 else
                 {
-                    if (task.Task != QuestTaskType.Region)
+                    if (task.Task != QuestTaskType.VisitRegion)
                     {
                         builder.Append($" ({userTask?.Amount ?? 0}/{task.Amount})");
                     }
@@ -4989,6 +4996,7 @@ namespace Client.Scenes
 
                 CanRun = false;
                 AutoRun = false;
+                ClearAutoPath();
                 _NPCID = 0;
                 _Companion = null;
                 _Partner = null;

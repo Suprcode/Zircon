@@ -82,6 +82,7 @@ namespace Server.Views
             gridColumn5 = new GridColumn();
             gridColumn24 = new GridColumn();
             gridColumn6 = new GridColumn();
+            colCanAutoPath = new GridColumn();
             gridColumn9 = new GridColumn();
             gridColumn10 = new GridColumn();
             colWeather = new GridColumn();
@@ -343,7 +344,7 @@ namespace Server.Views
             // 
             // MapInfoGridView
             // 
-            MapInfoGridView.Columns.AddRange(new GridColumn[] { colFileName, colDescription, colMiniMap, colLight, gridColumn12, colRequiredClass, colAllowRT, gridColumn13, gridColumn15, gridColumn16, gridColumn17, gridColumn5, gridColumn24, gridColumn6, gridColumn9, gridColumn10, colWeather, colBackground });
+            MapInfoGridView.Columns.AddRange(new GridColumn[] { colFileName, colDescription, colMiniMap, colLight, gridColumn12, colRequiredClass, colAllowRT, gridColumn13, gridColumn15, gridColumn16, gridColumn17, gridColumn5, gridColumn24, gridColumn6, colCanAutoPath, gridColumn9, gridColumn10, colWeather, colBackground });
             MapInfoGridView.GridControl = MapInfoGridControl;
             MapInfoGridView.Name = "MapInfoGridView";
             MapInfoGridView.OptionsDetail.AllowExpandEmptyDetails = true;
@@ -484,13 +485,21 @@ namespace Server.Views
             gridColumn6.Visible = true;
             gridColumn6.VisibleIndex = 14;
             gridColumn6.Width = 43;
-            // 
+            //
+            // colCanAutoPath
+            //
+            colCanAutoPath.FieldName = "CanAutoPath";
+            colCanAutoPath.Name = "colCanAutoPath";
+            colCanAutoPath.Visible = true;
+            colCanAutoPath.VisibleIndex = 15;
+            colCanAutoPath.Width = 43;
+            //
             // gridColumn9
             // 
             gridColumn9.FieldName = "Music";
             gridColumn9.Name = "gridColumn9";
             gridColumn9.Visible = true;
-            gridColumn9.VisibleIndex = 17;
+            gridColumn9.VisibleIndex = 18;
             gridColumn9.Width = 52;
             // 
             // gridColumn10
@@ -498,7 +507,7 @@ namespace Server.Views
             gridColumn10.FieldName = "CanMarriageRecall";
             gridColumn10.Name = "gridColumn10";
             gridColumn10.Visible = true;
-            gridColumn10.VisibleIndex = 15;
+            gridColumn10.VisibleIndex = 16;
             gridColumn10.Width = 43;
             // 
             // colWeather
@@ -522,7 +531,7 @@ namespace Server.Views
             colBackground.FieldName = "Background";
             colBackground.Name = "colBackground";
             colBackground.Visible = true;
-            colBackground.VisibleIndex = 16;
+            colBackground.VisibleIndex = 17;
             colBackground.Width = 40;
             // 
             // ribbon
@@ -692,6 +701,7 @@ namespace Server.Views
         private DevExpress.XtraEditors.Repository.RepositoryItemButtonEdit EditButtonEdit;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn5;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn6;
+        private DevExpress.XtraGrid.Columns.GridColumn colCanAutoPath;
         private DevExpress.XtraGrid.Views.Grid.GridView MiningGridView;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn7;
         private DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit ItemLookUpEdit;

@@ -90,6 +90,8 @@ namespace Client.Scenes.Views
 
             foreach (ClientObjectData ob in GameScene.Game.DataDictionary.Values)
                 Update(ob);
+
+            RefreshAutoPathRoute();
         }
 
         private Point GetUserCentredImageLocation(Point fallbackLocation)
@@ -180,6 +182,7 @@ namespace Client.Scenes.Views
         public static float ScaleX, ScaleY;
 
         public Dictionary<object, DXControl> MapInfoObjects = new Dictionary<object, DXControl>();
+        public List<AutoPathRouteControl> AutoPathRoutes = new List<AutoPathRouteControl>();
 
         public override void OnClientAreaChanged(Rectangle oValue, Rectangle nValue)
         {
@@ -209,6 +212,9 @@ namespace Client.Scenes.Views
 
             foreach (DXControl control in MapInfoObjects.Values)
                 control.Opacity = Opacity;
+
+            foreach (AutoPathRouteControl route in AutoPathRoutes)
+                route.Opacity = Opacity;
 
             if (Image != null)
             {
@@ -247,6 +253,7 @@ namespace Client.Scenes.Views
                 Clip = true
             };
             Image.MouseClick += Image_MouseClick;
+            Image.MouseDoubleClick += Image_MouseDoubleClick;
 
             RecenterButton = new DXButton
             {
@@ -271,8 +278,22 @@ namespace Client.Scenes.Views
                 int x = (int)((e.Location.X - Image.DisplayArea.X) / ScaleX);
                 int y = (int)((e.Location.Y - Image.DisplayArea.Y) / ScaleY);
 
+                GameScene.Game.CancelAutoPath();
                 CEnvir.Enqueue(new C.TeleportRing { Location = new Point(x, y), Index = SelectedInfo.Index });
             }
+        }
+
+        private void Image_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Left || SelectedInfo == null) return;
+
+            int x = (int)((e.Location.X - Image.DisplayArea.X) / ScaleX);
+            int y = (int)((e.Location.Y - Image.DisplayArea.Y) / ScaleY);
+            CEnvir.Enqueue(new C.AutoPathWaypoint
+            {
+                MapIndex = SelectedInfo.Index,
+                Location = new Point(x, y),
+            });
         }
 
         #region Methods
@@ -301,6 +322,7 @@ namespace Client.Scenes.Views
                 control = GameScene.Game.GetNPCControl(ob);
                 control.Parent = Image;
                 control.Opacity = Opacity;
+                AddAutoPathHandler(control, ob);
                 MapInfoObjects[ob] = control;
             }
             else if ((CurrentQuest)control.Tag == ob.CurrentQuest) return;
@@ -312,6 +334,7 @@ namespace Client.Scenes.Views
             control = GameScene.Game.GetNPCControl(ob);
             control.Parent = Image;
             control.Opacity = Opacity;
+            AddAutoPathHandler(control, ob);
             MapInfoObjects[ob] = control;
 
             Size size = GetMapSize(SelectedInfo.FileName);
@@ -338,6 +361,58 @@ namespace Client.Scenes.Views
             int y = (minY + maxY) / 2;
 
             control.Location = new Point((int)(ScaleX * x) - control.Size.Width / 2, (int)(ScaleY * y) - control.Size.Height / 2);
+        }
+
+        private static void AddAutoPathHandler(DXControl control, NPCInfo npc)
+        {
+            control.MouseDoubleClick += (o, e) =>
+            {
+                if (e.Button != MouseButtons.Left) return;
+
+                CEnvir.Enqueue(new C.AutoPathStart { NPCIndex = npc.Index });
+            };
+        }
+
+        public void RefreshAutoPathRoute()
+        {
+            foreach (AutoPathRouteControl route in AutoPathRoutes)
+            {
+                if (!route.IsDisposed)
+                    route.Dispose();
+            }
+            AutoPathRoutes.Clear();
+
+            if (SelectedInfo == null || Image == null) return;
+
+            for (int i = 0; i < GameScene.Game.AutoPathRoutes.Count; i++)
+            {
+                AutoPathRoute route = GameScene.Game.AutoPathRoutes[i];
+                AutoPathRouteControl control = new AutoPathRouteControl
+                {
+                    Parent = Image,
+                    Opacity = Opacity,
+                };
+
+                control.SetRoute(
+                    route,
+                    i == 0,
+                    SelectedInfo,
+                    GameScene.Game.MapControl.MapInfo,
+                    ScaleX,
+                    ScaleY);
+                AutoPathRoutes.Add(control);
+            }
+
+            UpdateAutoPathRouteProgress();
+        }
+
+        public void UpdateAutoPathRouteProgress()
+        {
+            if (AutoPathRoutes.Count == 0) return;
+
+            AutoPathRoutes[0].SetProgress(
+                GameScene.Game.AutoPathRouteProgressMapIndex,
+                GameScene.Game.AutoPathRouteProgressIndex);
         }
 
         public void Update(MovementInfo ob)
@@ -628,6 +703,18 @@ namespace Client.Scenes.Views
 
                 MapInfoObjects.Clear();
                 MapInfoObjects = null;
+
+                if (AutoPathRoutes != null)
+                {
+                    foreach (AutoPathRouteControl route in AutoPathRoutes)
+                    {
+                        if (!route.IsDisposed)
+                            route.Dispose();
+                    }
+
+                    AutoPathRoutes.Clear();
+                    AutoPathRoutes = null;
+                }
 
                 if (Image != null)
                 {

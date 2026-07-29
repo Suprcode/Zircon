@@ -100,6 +100,8 @@ namespace Server.Envir
         public static int DayCycleCount { get; set; } = 3;
         public static int SkillExp { get; set; } = 3;
         public static bool AllowObservation { get; set; } = true;
+        public static bool AllowWaypoints { get; set; } = true;
+        public static int MaxWaypoints { get; set; } = 5;
         public static TimeSpan BrownDuration { get; set; } = TimeSpan.FromSeconds(60);
         public static int PKPointRate { get; set; } = 50;
         public static TimeSpan PKPointTickRate { get; set; } = TimeSpan.FromSeconds(60);

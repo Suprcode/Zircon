@@ -4,6 +4,7 @@ using Library.SystemModels;
 using Server.DBModels;
 using Server.Envir.Translations;
 using Server.Models;
+using Server.Models.Players;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -436,6 +437,38 @@ namespace Server.Envir
               }*/
 
             Player.Move(p.Direction, p.Distance);
+        }
+        public void Process(C.AutoPathStart p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            NPCInfo npc = SEnvir.NPCInfoList.Binding.FirstOrDefault(x => x.Index == p.NPCIndex);
+            if (npc == null)
+            {
+                Player.Connection.ReceiveChat(Language.AutoPathNoRoute, MessageType.System);
+                return;
+            }
+
+            AutoPathService.Instance.TryStart(Player, npc);
+        }
+        public void Process(C.AutoPathWaypoint p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            MapInfo map = SEnvir.MapInfoList.Binding.FirstOrDefault(x => x.Index == p.MapIndex);
+            AutoPathService.Instance.TryAddWaypoint(Player, map, p.Location);
+        }
+        public void Process(C.AutoPathCancel p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            AutoPathService.Instance.Cancel(Player);
+        }
+        public void Process(C.AutoPathMoveStarted p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            AutoPathService.Instance.MoveStarted(Player);
         }
         public void Process(C.Mount p)
         {

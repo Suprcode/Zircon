@@ -1131,6 +1131,20 @@ namespace Library
         public bool Dead;
     }
 
+    public sealed class AutoPathRoute
+    {
+        public List<AutoPathRouteLeg> Legs { get; set; } = new List<AutoPathRouteLeg>();
+        public int DestinationMapIndex { get; set; }
+        public Point Destination { get; set; }
+        public int WaypointNumber { get; set; } = 1;
+    }
+
+    public sealed class AutoPathRouteLeg
+    {
+        public int MapIndex { get; set; }
+        public List<Point> Points { get; set; } = new List<Point>();
+    }
+
     public class ClientBlockInfo
     {
         public int Index { get; set; }

@@ -104,6 +104,21 @@ namespace Library.Network.ClientPackets
 
     public sealed class Mount : Packet { }
 
+    public sealed class AutoPathStart : Packet
+    {
+        public int NPCIndex { get; set; }
+    }
+
+    public sealed class AutoPathWaypoint : Packet
+    {
+        public int MapIndex { get; set; }
+        public Point Location { get; set; }
+    }
+
+    public sealed class AutoPathCancel : Packet { }
+
+    public sealed class AutoPathMoveStarted : Packet { }
+
     public sealed class FishingCast : Packet
     {
         public FishingState State { get; set; }

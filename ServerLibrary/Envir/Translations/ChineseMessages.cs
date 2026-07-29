@@ -326,6 +326,8 @@ namespace Server.Envir.Translations
         public override string HorseMap { get; set; } = "你所在的地图无法骑马";
         public override string HorseTameInvalidTarget { get; set; } = "该目标无法驯服。";
         public override string HorseTameSuccess { get; set; } = "{0} 已被驯服。";
+        public override string AutoPathNoRoute { get; set; } = "无法找到自动寻路路线。";
+        public override string AutoPathWaypointLimit { get; set; } = "无法添加更多路径点。";
         public override string InstanceNoAction { get; set; } = "Cannot perform this action whilst on an instance.";
         public override string InstanceInvalid { get; set; } = "You cannot move to instance.";
         public override string InstanceInsufficientLevel { get; set; } = "You must be between level {0} and {1} to join instance.";

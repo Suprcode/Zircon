@@ -180,6 +180,10 @@ namespace Server.Views
             BrownDurationEdit = new DevExpress.XtraEditors.TimeSpanEdit();
             labelControl24 = new DevExpress.XtraEditors.LabelControl();
             AllowObservationEdit = new DevExpress.XtraEditors.CheckEdit();
+            labelControlAllowWaypoints = new DevExpress.XtraEditors.LabelControl();
+            AllowWaypointsEdit = new DevExpress.XtraEditors.CheckEdit();
+            labelControlMaxWaypoints = new DevExpress.XtraEditors.LabelControl();
+            MaxWaypointsEdit = new DevExpress.XtraEditors.TextEdit();
             SkillExpEdit = new DevExpress.XtraEditors.TextEdit();
             labelControl53 = new DevExpress.XtraEditors.LabelControl();
             DayCycleCountEdit = new DevExpress.XtraEditors.TextEdit();
@@ -323,6 +327,8 @@ namespace Server.Views
             ((System.ComponentModel.ISupportInitialize)PKPointRateEdit.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)BrownDurationEdit.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)AllowObservationEdit.Properties).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)AllowWaypointsEdit.Properties).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)MaxWaypointsEdit.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)SkillExpEdit.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)DayCycleCountEdit.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)MaxLevelEdit.Properties).BeginInit();
@@ -1621,6 +1627,10 @@ namespace Server.Views
             xtraTabPage6.Controls.Add(BrownDurationEdit);
             xtraTabPage6.Controls.Add(labelControl24);
             xtraTabPage6.Controls.Add(AllowObservationEdit);
+            xtraTabPage6.Controls.Add(labelControlAllowWaypoints);
+            xtraTabPage6.Controls.Add(AllowWaypointsEdit);
+            xtraTabPage6.Controls.Add(labelControlMaxWaypoints);
+            xtraTabPage6.Controls.Add(MaxWaypointsEdit);
             xtraTabPage6.Controls.Add(SkillExpEdit);
             xtraTabPage6.Controls.Add(labelControl53);
             xtraTabPage6.Controls.Add(DayCycleCountEdit);
@@ -1847,6 +1857,44 @@ namespace Server.Views
             AllowObservationEdit.Properties.Caption = "";
             AllowObservationEdit.Size = new System.Drawing.Size(100, 19);
             AllowObservationEdit.TabIndex = 82;
+            //
+            // labelControlAllowWaypoints
+            //
+            labelControlAllowWaypoints.Location = new System.Drawing.Point(27, 228);
+            labelControlAllowWaypoints.Name = "labelControlAllowWaypoints";
+            labelControlAllowWaypoints.Size = new System.Drawing.Size(84, 13);
+            labelControlAllowWaypoints.TabIndex = 134;
+            labelControlAllowWaypoints.Text = "Allow Waypoints:";
+            //
+            // AllowWaypointsEdit
+            //
+            AllowWaypointsEdit.Location = new System.Drawing.Point(117, 225);
+            AllowWaypointsEdit.MenuManager = ribbon;
+            AllowWaypointsEdit.Name = "AllowWaypointsEdit";
+            AllowWaypointsEdit.Properties.Caption = "";
+            AllowWaypointsEdit.Size = new System.Drawing.Size(100, 19);
+            AllowWaypointsEdit.TabIndex = 133;
+            //
+            // labelControlMaxWaypoints
+            //
+            labelControlMaxWaypoints.Location = new System.Drawing.Point(32, 254);
+            labelControlMaxWaypoints.Name = "labelControlMaxWaypoints";
+            labelControlMaxWaypoints.Size = new System.Drawing.Size(79, 13);
+            labelControlMaxWaypoints.TabIndex = 136;
+            labelControlMaxWaypoints.Text = "Max Waypoints:";
+            //
+            // MaxWaypointsEdit
+            //
+            MaxWaypointsEdit.Location = new System.Drawing.Point(117, 251);
+            MaxWaypointsEdit.MenuManager = ribbon;
+            MaxWaypointsEdit.Name = "MaxWaypointsEdit";
+            MaxWaypointsEdit.Properties.Appearance.Options.UseTextOptions = true;
+            MaxWaypointsEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
+            MaxWaypointsEdit.Properties.Mask.EditMask = "n0";
+            MaxWaypointsEdit.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
+            MaxWaypointsEdit.Properties.Mask.UseMaskAsDisplayFormat = true;
+            MaxWaypointsEdit.Size = new System.Drawing.Size(100, 20);
+            MaxWaypointsEdit.TabIndex = 135;
             // 
             // SkillExpEdit
             // 
@@ -2505,62 +2553,62 @@ namespace Server.Views
             // 
             // labelControl92
             // 
-            labelControl92.Location = new System.Drawing.Point(21, 243);
+            labelControl92.Location = new System.Drawing.Point(333, 243);
             labelControl92.Name = "labelControl92";
             labelControl92.Size = new System.Drawing.Size(90, 13);
-            labelControl92.TabIndex = 133;
+            labelControl92.TabIndex = 137;
             labelControl92.Text = "Admin Start Modes";
             // 
             // labelControl93
             // 
-            labelControl93.Location = new System.Drawing.Point(47, 262);
+            labelControl93.Location = new System.Drawing.Point(359, 262);
             labelControl93.Name = "labelControl93";
             labelControl93.Size = new System.Drawing.Size(64, 13);
-            labelControl93.TabIndex = 134;
+            labelControl93.TabIndex = 138;
             labelControl93.Text = "Gamemaster:";
             // 
             // labelControl94
             // 
-            labelControl94.Location = new System.Drawing.Point(62, 287);
+            labelControl94.Location = new System.Drawing.Point(374, 287);
             labelControl94.Name = "labelControl94";
             labelControl94.Size = new System.Drawing.Size(49, 13);
-            labelControl94.TabIndex = 135;
+            labelControl94.TabIndex = 140;
             labelControl94.Text = "Observer:";
             // 
             // labelControl95
             // 
-            labelControl95.Location = new System.Drawing.Point(59, 313);
+            labelControl95.Location = new System.Drawing.Point(371, 313);
             labelControl95.Name = "labelControl95";
             labelControl95.Size = new System.Drawing.Size(52, 13);
-            labelControl95.TabIndex = 136;
+            labelControl95.TabIndex = 142;
             labelControl95.Text = "Superman:";
             // 
             // AdminGamemasterStartEdit
             // 
-            AdminGamemasterStartEdit.Location = new System.Drawing.Point(117, 259);
+            AdminGamemasterStartEdit.Location = new System.Drawing.Point(429, 259);
             AdminGamemasterStartEdit.MenuManager = ribbon;
             AdminGamemasterStartEdit.Name = "AdminGamemasterStartEdit";
             AdminGamemasterStartEdit.Properties.Caption = "";
             AdminGamemasterStartEdit.Size = new System.Drawing.Size(100, 19);
-            AdminGamemasterStartEdit.TabIndex = 137;
+            AdminGamemasterStartEdit.TabIndex = 139;
             // 
             // AdminObserverStartEdit
             // 
-            AdminObserverStartEdit.Location = new System.Drawing.Point(117, 284);
+            AdminObserverStartEdit.Location = new System.Drawing.Point(429, 284);
             AdminObserverStartEdit.MenuManager = ribbon;
             AdminObserverStartEdit.Name = "AdminObserverStartEdit";
             AdminObserverStartEdit.Properties.Caption = "";
             AdminObserverStartEdit.Size = new System.Drawing.Size(100, 19);
-            AdminObserverStartEdit.TabIndex = 138;
+            AdminObserverStartEdit.TabIndex = 141;
             // 
             // AdminSupermanStartEdit
             // 
-            AdminSupermanStartEdit.Location = new System.Drawing.Point(117, 310);
+            AdminSupermanStartEdit.Location = new System.Drawing.Point(429, 310);
             AdminSupermanStartEdit.MenuManager = ribbon;
             AdminSupermanStartEdit.Name = "AdminSupermanStartEdit";
             AdminSupermanStartEdit.Properties.Caption = "";
             AdminSupermanStartEdit.Size = new System.Drawing.Size(100, 19);
-            AdminSupermanStartEdit.TabIndex = 139;
+            AdminSupermanStartEdit.TabIndex = 143;
             // 
             // ConfigView
             // 
@@ -2653,6 +2701,8 @@ namespace Server.Views
             ((System.ComponentModel.ISupportInitialize)PKPointRateEdit.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)BrownDurationEdit.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)AllowObservationEdit.Properties).EndInit();
+            ((System.ComponentModel.ISupportInitialize)AllowWaypointsEdit.Properties).EndInit();
+            ((System.ComponentModel.ISupportInitialize)MaxWaypointsEdit.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)SkillExpEdit.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)DayCycleCountEdit.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)MaxLevelEdit.Properties).EndInit();
@@ -2843,6 +2893,10 @@ namespace Server.Views
         private DevExpress.XtraEditors.LabelControl labelControl67;
         private DevExpress.XtraEditors.LabelControl labelControl24;
         private DevExpress.XtraEditors.CheckEdit AllowObservationEdit;
+        private DevExpress.XtraEditors.LabelControl labelControlAllowWaypoints;
+        private DevExpress.XtraEditors.CheckEdit AllowWaypointsEdit;
+        private DevExpress.XtraEditors.LabelControl labelControlMaxWaypoints;
+        private DevExpress.XtraEditors.TextEdit MaxWaypointsEdit;
         private DevExpress.XtraEditors.LabelControl labelControl74;
         private DevExpress.XtraEditors.TimeSpanEdit HarvestDurationEdit;
         private DevExpress.XtraEditors.LabelControl labelControl75;

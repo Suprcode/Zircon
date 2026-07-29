@@ -329,6 +329,10 @@ namespace Server.Envir
         public abstract string HorseTameInvalidTarget { get; set; }
         public abstract string HorseTameSuccess { get; set; }
 
+        [ConfigSection("Auto Path")]
+        public abstract string AutoPathNoRoute { get; set; }
+        public abstract string AutoPathWaypointLimit { get; set; }
+
         [ConfigSection("Instance")]
         public abstract string InstanceNoAction { get; set; }
         public abstract string InstanceInvalid { get; set; }

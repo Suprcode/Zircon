@@ -395,6 +395,7 @@ namespace Client.Models
 
             GameScene.Game.MapControl.UpdateMapLocation();
             GameScene.Game.MapControl.FLayer.TextureValid = false;
+            GameScene.Game.UpdateAutoPathProgress();
         }
 
         public override void SetAction(ObjectAction action)
@@ -422,6 +423,27 @@ namespace Client.Models
             foreach (TimeSpan delay in CurrentFrame.Delays)
                 NextActionTime += delay;
         }
+
+        public bool TryStartAutoPathMove(MirDirection direction, Point location, int distance, TimeSpan slow)
+        {
+            if (!GameScene.Game.MoveFrame || CEnvir.Now < NextActionTime || CEnvir.Now < MoveTime || ActionQueue.Count > 0) return false;
+
+            ServerTime = DateTime.MinValue;
+            SetAction(new ObjectAction(MirAction.Moving, direction, location, distance, MagicType.None));
+            NextActionTime += slow;
+            CEnvir.Enqueue(new C.AutoPathMoveStarted());
+            GameScene.Game.CanRun = true;
+            return true;
+        }
+
+        public void ApplyAutoPathMapTransition(MirDirection direction, Point location, TimeSpan slow)
+        {
+            GameScene.Game.Displacement(direction, location, true);
+            NextActionTime += slow;
+            CEnvir.Enqueue(new C.AutoPathMoveStarted());
+            GameScene.Game.CanRun = true;
+        }
+
         public void AttemptAction(ObjectAction action)
         {
             if (CEnvir.Now < NextActionTime || ActionQueue.Count > 0) return;

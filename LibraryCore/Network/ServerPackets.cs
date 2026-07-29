@@ -6,6 +6,11 @@ using System.Linq;
 
 namespace Library.Network.ServerPackets
 {
+    public sealed class AutoPathChanged : Packet
+    {
+        public List<AutoPathRoute> Routes { get; set; }
+    }
+
     public sealed class NewAccount : Packet
     {
         public NewAccountResult Result { get; set; }
@@ -145,6 +150,7 @@ namespace Library.Network.ServerPackets
         public Point Location { get; set; }
         public int Distance { get; set; }
         public TimeSpan Slow { get; set; }
+        public bool MapChanged { get; set; }
     }
     public sealed class ObjectDash : Packet
     {
