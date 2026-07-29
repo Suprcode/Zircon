@@ -311,6 +311,8 @@ namespace Server.Envir.Translations
         public override string HorseMap { get; set; } = "You cannot ride your horse on this map.";
         public override string HorseTameInvalidTarget { get; set; } = "Target cannot be tamed.";
         public override string HorseTameSuccess { get; set; } = "{0} has been tamed.";
+        public override string AutoPathNoRoute { get; set; } = "No auto path route could be found.";
+        public override string AutoPathWaypointLimit { get; set; } = "You cannot add any more waypoints.";
 
         public override string InstanceNoAction { get; set; } = "Cannot perform this action whilst on an instance.";
         public override string InstanceInvalid { get; set; } = "You cannot move to instance.";

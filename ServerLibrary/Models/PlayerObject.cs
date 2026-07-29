@@ -7,6 +7,7 @@ using Server.Envir;
 using Server.Envir.Events.Triggers;
 using Server.Models.Magics;
 using Server.Models.Monsters;
+using Server.Models.Players;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -345,6 +346,8 @@ namespace Server.Models
             ProcessQuests();
 
             ProcessGroup();
+
+            AutoPathService.Instance.Process(this);
         }
         public override void ProcessAction(DelayedAction action)
         {
@@ -2781,6 +2784,8 @@ namespace Server.Models
 
             if (res)
             {
+                if (AutoPath != null) CancelAutoPath();
+
                 BuffRemove(BuffType.Cloak);
                 BuffRemove(BuffType.Transparency);
                 Companion?.Recall();
@@ -14572,7 +14577,7 @@ namespace Server.Models
             ActionTime = SEnvir.Now + Globals.MoveTime;
             MoveTime = SEnvir.Now + Globals.MoveTime;
 
-            var previousCell = CurrentCell;
+            Map previousMap = CurrentMap;
 
             PreventSpellCheck = true;
             CurrentCell = cell.GetMovement(this);
@@ -14591,7 +14596,15 @@ namespace Server.Models
                 ActionTime += slow;
             }
 
-            Broadcast(new S.ObjectMove { ObjectID = ObjectID, Direction = direction, Location = CurrentLocation, Slow = slow, Distance = distance });
+            Broadcast(new S.ObjectMove
+            {
+                ObjectID = ObjectID,
+                Direction = direction,
+                Location = CurrentLocation,
+                Slow = slow,
+                Distance = distance,
+                MapChanged = previousMap != CurrentMap,
+            });
             CheckSpellObjects();
         }
 

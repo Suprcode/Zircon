@@ -1003,7 +1003,7 @@ namespace Server.Envir
             {
                 foreach (QuestTask task in quest.Tasks)
                 {
-                    if (task.Task != QuestTaskType.Region) continue;
+                    if (task.Task != QuestTaskType.VisitRegion) continue;
                     if (task.RegionParameter == null) continue;
                     if (targetMap != null && task.RegionParameter.Map != targetMap) continue;
 

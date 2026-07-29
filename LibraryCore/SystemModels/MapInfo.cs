@@ -150,6 +150,21 @@ namespace Library.SystemModels
         }
         private bool _CanHorse;
 
+        public bool CanAutoPath
+        {
+            get { return _CanAutoPath; }
+            set
+            {
+                if (_CanAutoPath == value) return;
+
+                var oldValue = _CanAutoPath;
+                _CanAutoPath = value;
+
+                OnChanged(oldValue, value, "CanAutoPath");
+            }
+        }
+        private bool _CanAutoPath;
+
         public bool AllowTT
         {
             get { return _AllowTT; }

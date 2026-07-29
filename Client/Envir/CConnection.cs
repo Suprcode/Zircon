@@ -798,6 +798,10 @@ namespace Client.Envir
 
             MapObject.User.NameChanged();
         }
+        public void Process(S.AutoPathChanged p)
+        {
+            GameScene.Game.SetAutoPathRoutes(p.Routes);
+        }
         public void Process(S.DayChanged p)
         {
             GameScene.Game.DayTime = p.DayTime;
@@ -998,6 +1002,9 @@ namespace Client.Envir
         {
             if (MapObject.User.ObjectID == p.ObjectID && !GameScene.Game.Observer)
             {
+                if (GameScene.Game.TryQueueAutoPathMove(p.Direction, p.Location, p.Distance, p.Slow, p.MapChanged))
+                    return;
+
                 if (MapObject.User.CurrentLocation != p.Location || MapObject.User.Direction != p.Direction)
                     GameScene.Game.Displacement(p.Direction, p.Location);
 

@@ -592,6 +592,9 @@ namespace Client.Scenes.Views
 
             if (GameScene.Game.Observer) return;
 
+            if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Right)
+                GameScene.Game.CancelAutoPath();
+
             MapButtons |= e.Button;
 
             if (e.Button == MouseButtons.Right)

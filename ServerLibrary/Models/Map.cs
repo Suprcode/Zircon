@@ -622,7 +622,9 @@ namespace Server.Models
 
                 if (map == null) break;
 
-                Cell cell = map.GetCell(movement.DestinationRegion.PointList[SEnvir.Random.Next(movement.DestinationRegion.PointList.Count)]);
+                Point destination = movement.DestinationRegion.PointList[SEnvir.Random.Next(movement.DestinationRegion.PointList.Count)];
+
+                Cell cell = map.GetCell(destination);
 
                 if (cell == null) continue;
 
