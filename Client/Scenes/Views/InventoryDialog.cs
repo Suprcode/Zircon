@@ -540,6 +540,11 @@ namespace Client.Scenes.Views
 
         public void NormalMode()
         {
+            foreach (DXItemCell cell in SelectedItems.ToArray())
+                cell.Selected = false;
+
+            SelectedItems.Clear();
+
             SetPrimaryCurrency(null);
 
             SellableItemTypes.Clear();
