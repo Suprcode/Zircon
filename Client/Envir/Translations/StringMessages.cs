@@ -759,6 +759,8 @@ namespace Client.Envir.Translations
         public abstract string QuestDialogTitle { get; set; }
         public abstract string QuestDialogCurrentTab { get; set; }
         public abstract string QuestDialogAvailableTab { get; set; }
+        public abstract string QuestDialogOngoingQuestsLabel { get; set; }
+        public abstract string QuestDialogAvailableQuestsLabel { get; set; }
         public abstract string QuestDialogCompletedTab { get; set; }
         public abstract string QuestDialogMilestonesTab { get; set; }
         public abstract string QuestDialogMissionsTab { get; set; }

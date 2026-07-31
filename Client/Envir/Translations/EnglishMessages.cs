@@ -759,6 +759,8 @@ namespace Client.Envir.Translations
         public override string QuestDialogTitle { get; set; } = "Quest Log";
         public override string QuestDialogCurrentTab { get; set; } = "Current";
         public override string QuestDialogAvailableTab { get; set; } = "Available";
+        public override string QuestDialogOngoingQuestsLabel { get; set; } = "Ongoing Quests";
+        public override string QuestDialogAvailableQuestsLabel { get; set; } = "Available Quests";
         public override string QuestDialogCompletedTab { get; set; } = "Completed";
         public override string QuestDialogMilestonesTab { get; set; } = "Milestones";
         public override string QuestDialogMissionsTab { get; set; } = "Missions";

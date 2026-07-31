@@ -758,6 +758,8 @@ namespace Client.Envir.Translations
         public override string QuestDialogTitle { get; set; } = "任务日志";
         public override string QuestDialogCurrentTab { get; set; } = "当前的";
         public override string QuestDialogAvailableTab { get; set; } = "可用的";
+        public override string QuestDialogOngoingQuestsLabel { get; set; } = "进行中的任务";
+        public override string QuestDialogAvailableQuestsLabel { get; set; } = "可接任务";
         public override string QuestDialogCompletedTab { get; set; } = "完成的";
         public override string QuestDialogMilestonesTab { get; set; } = "Milestones";
         public override string QuestDialogMissionsTab { get; set; } = "Missions";
