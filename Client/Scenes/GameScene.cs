@@ -2879,7 +2879,7 @@ namespace Client.Scenes
             {
                 level = InspectBox.Level;
                 userClass = InspectBox.Class;
-                equipment = InspectBox.Equipment;
+                equipment = cell.ItemGrid ?? InspectBox.Equipment;
             }
             else
             {
