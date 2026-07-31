@@ -549,6 +549,24 @@ namespace Client.Scenes.Views
             CEnvir.Enqueue(new C.AutoPathStart { NPCIndex = npc.Index });
         }
 
+        public void SelectNPC(int index)
+        {
+            NPCInfo npc = _NPCEntries.FirstOrDefault(x => x.Index == index);
+            if (npc == null) return;
+
+            SideTabControl.SelectedTab = NPCTab;
+
+            int entryIndex = _NPCEntries.IndexOf(npc);
+            int visibleSize = Math.Max(1, NPCScrollBar.VisibleSize);
+
+            if (entryIndex < NPCScrollBar.Value)
+                NPCScrollBar.Value = entryIndex;
+            else if (entryIndex >= NPCScrollBar.Value + visibleSize)
+                NPCScrollBar.Value = entryIndex - visibleSize + 1;
+
+            SelectedNPC = npc;
+        }
+
         private void UpdateNPCSelection()
         {
             RefreshNPCList();
