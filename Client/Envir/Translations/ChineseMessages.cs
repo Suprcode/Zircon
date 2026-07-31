@@ -135,6 +135,9 @@ namespace Client.Envir.Translations
         public override string CommonControlMiniMapSizeHint { get; set; } = "切换小地图大小";
         public override string CommonControlMiniMapTransparencyHint { get; set; } = "切换小地图透明度";
         public override string CommonControlMiniMapBigMapHint { get; set; } = "打开或关闭大地图";
+        public override string BigMapRecenterLabel { get; set; } = "重新居中";
+        public override string BigMapNPCsTabLabel { get; set; } = "NPC";
+        public override string BigMapMonstersTabLabel { get; set; } = "怪物";
         public override string CommonControlConfirm { get; set; } = "确认";
         public override string CommonControlExit { get; set; } = "退出";
         public override string CommonControlNo { get; set; } = "否";
