@@ -505,6 +505,9 @@ namespace Client.Envir.Translations
 
         public abstract string HelpDialogTitle { get; set; }
 
+        public abstract string ItemLabelShowSetDetails { get; set; }
+        public abstract string ItemLabelHideSetDetails { get; set; }
+
         public abstract string GroupDialogTitle { get; set; }
         public abstract string GroupDialogAllowGroupButtonAllowingHint { get; set; }
         public abstract string GroupDialogAllowGroupButtonNotAllowingHint { get; set; }

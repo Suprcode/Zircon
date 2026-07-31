@@ -508,6 +508,9 @@ namespace Client.Envir.Translations
 
         public override string HelpDialogTitle { get; set; } = "Help";
 
+        public override string ItemLabelShowSetDetails { get; set; } = "Show Set Details";
+        public override string ItemLabelHideSetDetails { get; set; } = "Hide Set Details";
+
         public override string GroupDialogTitle { get; set; } = "Group";
         public override string GroupDialogAllowGroupButtonAllowingHint { get; set; } = "Group Status: Allowing";
         public override string GroupDialogAllowGroupButtonNotAllowingHint { get; set; } = "Group Status: Not Allowing";

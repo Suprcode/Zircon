@@ -507,6 +507,9 @@ namespace Client.Envir.Translations
 
         public override string HelpDialogTitle { get; set; } = "Help";
 
+        public override string ItemLabelShowSetDetails { get; set; } = "显示套装详情";
+        public override string ItemLabelHideSetDetails { get; set; } = "隐藏套装详情";
+
         public override string GroupDialogTitle { get; set; } = "编组";
         public override string GroupDialogAllowGroupButtonAllowingHint { get; set; } = "编组状态: 允许";
         public override string GroupDialogAllowGroupButtonNotAllowingHint { get; set; } = "编组状态: 禁止";

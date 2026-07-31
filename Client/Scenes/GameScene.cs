@@ -87,6 +87,7 @@ namespace Client.Scenes
 
         public MapObject MagicObject, MouseObject, TargetObject, FocusObject;
         public DXControl ItemLabel, MagicLabel, FameLabel;
+        private bool _showItemSetDetails;
 
         #region MouseItem
 
@@ -1223,6 +1224,15 @@ namespace Client.Scenes
 
             switch (e.KeyCode)
             {
+                case Keys.Menu:
+                case Keys.LMenu:
+                case Keys.RMenu:
+                    if (MouseItem?.Info.Set == null) break;
+
+                    _showItemSetDetails = !_showItemSetDetails;
+                    CreateItemLabel();
+                    e.Handled = true;
+                    return;
                 case Keys.Escape:
                     MonsterBox.Monster = null;
                     e.Handled = true;
@@ -1758,7 +1768,17 @@ namespace Client.Scenes
             if (MouseItem.Info.Set != null)
             {
                 builder.StartSection();
-                AddSetItemInfo(builder, MouseItem.Info.Set);
+                builder.AddIconLine(
+                    _showItemSetDetails ? CEnvir.Language.ItemLabelHideSetDetails : CEnvir.Language.ItemLabelShowSetDetails,
+                    Color.FromArgb(150, 135, 105),
+                    LibraryFile.GameInter,
+                    9080);
+
+                if (_showItemSetDetails)
+                {
+                    builder.StartSection();
+                    AddSetItemInfo(builder, MouseItem.Info.Set);
+                }
             }
 
             if ((MouseItem.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage)
