@@ -2909,8 +2909,6 @@ namespace Client.Scenes
                 builder.AddLine("    " + info.ItemName, hasPart ? Color.LimeGreen : Color.Gray);
             }
 
-            builder.AddLine("Set Bonus:", Color.LimeGreen);
-
             foreach (SetInfoStat stat in set.SetStats)
             {
                 if (level < stat.Level) continue;
@@ -2934,10 +2932,18 @@ namespace Client.Scenes
                 setBonus[stat.Stat] += stat.Amount;
             }
 
+            bool setBonusTitleAdded = false;
+
             foreach (KeyValuePair<Stat, int> pair in setBonus.Values)
             {
                 string text = setBonus.GetDisplay(pair.Key);
                 if (text == null) continue;
+
+                if (!setBonusTitleAdded)
+                {
+                    builder.AddLine("Set Bonus:", Color.LimeGreen);
+                    setBonusTitleAdded = true;
+                }
 
                 builder.AddLine("    " + text, hasFullSet ? Color.LimeGreen : Color.Gray);
             }
