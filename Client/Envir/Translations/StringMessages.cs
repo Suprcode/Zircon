@@ -135,8 +135,8 @@ namespace Client.Envir.Translations
         public abstract string CommonControlMiniMapTransparencyHint { get; set; }
         public abstract string CommonControlMiniMapBigMapHint { get; set; }
         public abstract string BigMapRecenterLabel { get; set; }
-        public abstract string BigMapNPCsTabLabel { get; set; }
-        public abstract string BigMapMonstersTabLabel { get; set; }
+        public abstract string BigMapNPCTabLabel { get; set; }
+        public abstract string BigMapMonsterTabLabel { get; set; }
         public abstract string CommonControlConfirm { get; set; }
         public abstract string CommonControlExit { get; set; }
         public abstract string CommonControlNo { get; set; }

@@ -135,8 +135,8 @@ namespace Client.Envir.Translations
         public override string CommonControlMiniMapTransparencyHint { get; set; } = "Toggle Transparency";
         public override string CommonControlMiniMapBigMapHint { get; set; } = "Toggle Big Map";
         public override string BigMapRecenterLabel { get; set; } = "Recenter";
-        public override string BigMapNPCsTabLabel { get; set; } = "NPCs";
-        public override string BigMapMonstersTabLabel { get; set; } = "Monsters";
+        public override string BigMapNPCTabLabel { get; set; } = "NPC";
+        public override string BigMapMonsterTabLabel { get; set; } = "Monster";
         public override string CommonControlConfirm { get; set; } = "Confirm";
         public override string CommonControlExit { get; set; } = "Exit";
         public override string CommonControlNo { get; set; } = "No";

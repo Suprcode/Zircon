@@ -335,7 +335,7 @@ namespace Client.Scenes.Views
                 Parent = SideTabControl,
                 MinimumTabWidth = 100,
                 BackColour = Color.Empty,
-                TabButton = { Label = { Text = CEnvir.Language.BigMapNPCsTabLabel } },
+                TabButton = { Label = { Text = CEnvir.Language.BigMapNPCTabLabel } },
             };
 
             MonsterTab = new DXTab
@@ -343,7 +343,7 @@ namespace Client.Scenes.Views
                 Parent = SideTabControl,
                 MinimumTabWidth = 100,
                 BackColour = Color.Empty,
-                TabButton = { Label = { Text = CEnvir.Language.BigMapMonstersTabLabel } },
+                TabButton = { Label = { Text = CEnvir.Language.BigMapMonsterTabLabel } },
             };
 
             NPCRows = CreateRows(NPCTab);

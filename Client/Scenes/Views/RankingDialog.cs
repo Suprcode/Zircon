@@ -929,7 +929,7 @@ namespace Client.Scenes.Views
 
         private void InspectPanel_BeforeChildrenDraw(object sender, EventArgs e)
         {
-            if (GameScene.Game == null || SelectedRow == null) return;
+            if (GameScene.Game == null || _SelectedRank == null) return;
 
             int x = 100;
             int y = 290;
