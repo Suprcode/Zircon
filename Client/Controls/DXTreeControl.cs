@@ -266,6 +266,8 @@ namespace Client.Controls
 
         public DXTreeRow()
         {
+            CacheInParent = false;
+
             ExpandButton = new DXButton
             {
                 Parent = this,
