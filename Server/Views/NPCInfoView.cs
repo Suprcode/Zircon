@@ -22,6 +22,7 @@ namespace Server.Views
             RequiredClassImageComboBox.Items.AddEnum<RequiredClass>();
             RequirementImageComboBox.Items.AddEnum<NPCRequirementType>();
             MapIconImageComboBox.Items.AddEnum<MapIcon>();
+            CategoryImageComboBox.Items.AddEnum<NPCCategory>();
 
             DaysOfWeekImageComboBox.Items.AddEnum<DaysOfWeek>();
         }

@@ -196,7 +196,7 @@ namespace Client.Scenes.Views
 
         public static float ScaleX, ScaleY;
         private Size _MapClientSize;
-        private readonly List<NPCInfo> _NPCEntries = new List<NPCInfo>();
+        private readonly List<BigMapNPCListEntry> _NPCEntries = new List<BigMapNPCListEntry>();
         private readonly List<MonsterInfo> _MonsterEntries = new List<MonsterInfo>();
 
         private NPCInfo SelectedNPC
@@ -333,7 +333,7 @@ namespace Client.Scenes.Views
             NPCTab = new DXTab
             {
                 Parent = SideTabControl,
-                MinimumTabWidth = 100,
+                MinimumTabWidth = 104,
                 BackColour = Color.Empty,
                 TabButton = { Label = { Text = CEnvir.Language.BigMapNPCTabLabel } },
             };
@@ -341,7 +341,7 @@ namespace Client.Scenes.Views
             MonsterTab = new DXTab
             {
                 Parent = SideTabControl,
-                MinimumTabWidth = 100,
+                MinimumTabWidth = 104,
                 BackColour = Color.Empty,
                 TabButton = { Label = { Text = CEnvir.Language.BigMapMonsterTabLabel } },
             };
@@ -458,10 +458,18 @@ namespace Client.Scenes.Views
 
             if (SelectedInfo != null)
             {
-                _NPCEntries.AddRange(Globals.NPCInfoList.Binding
-                    .Where(x => x.Region?.Map == SelectedInfo)
-                    .OrderBy(x => x.NPCName, StringComparer.CurrentCultureIgnoreCase)
-                    .ThenBy(x => x.Index));
+                foreach (IGrouping<NPCCategory, NPCInfo> group in Globals.NPCInfoList.Binding
+                             .Where(x => x.Region?.Map == SelectedInfo)
+                             .GroupBy(x => x.Category)
+                             .OrderBy(x => (int)x.Key))
+                {
+                    _NPCEntries.Add(new BigMapNPCListEntry(group.Key));
+
+                    _NPCEntries.AddRange(group
+                        .OrderBy(GetNPCDisplayName, StringComparer.CurrentCultureIgnoreCase)
+                        .ThenBy(x => x.Index)
+                        .Select(x => new BigMapNPCListEntry(x)));
+                }
 
                 _MonsterEntries.AddRange(SelectedInfo.Regions
                     .SelectMany(x => x.Respawns)
@@ -510,9 +518,16 @@ namespace Client.Scenes.Views
                 int index = NPCScrollBar.Value + i;
                 bool hasEntry = index < _NPCEntries.Count;
 
-                NPCRows[i].Entry = hasEntry ? _NPCEntries[index] : null;
-                NPCRows[i].DisplayText = hasEntry ? _NPCEntries[index].NPCName : string.Empty;
-                NPCRows[i].Selected = hasEntry && _NPCEntries[index] == SelectedNPC;
+                BigMapNPCListEntry entry = hasEntry ? _NPCEntries[index] : null;
+
+                NPCRows[i].Entry = entry?.NPC;
+                NPCRows[i].Heading = entry?.IsHeading == true;
+                NPCRows[i].DisplayText = entry == null
+                    ? string.Empty
+                    : entry.IsHeading
+                        ? entry.Category.ToString()
+                        : GetNPCDisplayName(entry.NPC);
+                NPCRows[i].Selected = entry?.NPC != null && entry.NPC == SelectedNPC;
                 NPCRows[i].Visible = i < visibleRows;
             }
         }
@@ -536,9 +551,9 @@ namespace Client.Scenes.Views
 
         private void NPCRow_MouseClick(object sender, MouseEventArgs e)
         {
-            if (e.Button != MouseButtons.Left || sender is not BigMapListRow row) return;
+            if (e.Button != MouseButtons.Left || sender is not BigMapListRow row || row.Entry is not NPCInfo npc) return;
 
-            SelectedNPC = row.Entry as NPCInfo;
+            SelectedNPC = npc;
         }
 
         private void NPCRow_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -551,12 +566,12 @@ namespace Client.Scenes.Views
 
         public void SelectNPC(int index)
         {
-            NPCInfo npc = _NPCEntries.FirstOrDefault(x => x.Index == index);
-            if (npc == null) return;
+            BigMapNPCListEntry entry = _NPCEntries.FirstOrDefault(x => x.NPC?.Index == index);
+            if (entry == null) return;
 
             SideTabControl.SelectedTab = NPCTab;
 
-            int entryIndex = _NPCEntries.IndexOf(npc);
+            int entryIndex = _NPCEntries.IndexOf(entry);
             int visibleSize = Math.Max(1, NPCScrollBar.VisibleSize);
 
             if (entryIndex < NPCScrollBar.Value)
@@ -564,7 +579,12 @@ namespace Client.Scenes.Views
             else if (entryIndex >= NPCScrollBar.Value + visibleSize)
                 NPCScrollBar.Value = entryIndex - visibleSize + 1;
 
-            SelectedNPC = npc;
+            SelectedNPC = entry.NPC;
+        }
+
+        private static string GetNPCDisplayName(NPCInfo npc)
+        {
+            return npc?.NPCName?.Replace('_', ' ') ?? string.Empty;
         }
 
         private void UpdateNPCSelection()
@@ -1185,10 +1205,41 @@ namespace Client.Scenes.Views
         #endregion
     }
 
+    internal sealed class BigMapNPCListEntry
+    {
+        public NPCCategory Category { get; }
+        public NPCInfo NPC { get; }
+        public bool IsHeading => NPC == null;
+
+        public BigMapNPCListEntry(NPCCategory category)
+        {
+            Category = category;
+        }
+
+        public BigMapNPCListEntry(NPCInfo npc)
+        {
+            NPC = npc;
+            Category = npc.Category;
+        }
+    }
+
     public sealed class BigMapListRow : DXControl
     {
         public object Entry;
         public DXLabel NameLabel;
+
+        public bool Heading
+        {
+            get => _Heading;
+            set
+            {
+                if (_Heading == value) return;
+
+                _Heading = value;
+                UpdateColours();
+            }
+        }
+        private bool _Heading;
 
         public string DisplayText
         {
@@ -1208,7 +1259,7 @@ namespace Client.Scenes.Views
                 if (_Selected == value) return;
 
                 _Selected = value;
-                BackColour = Selected ? Constants.SelectedRowBackColour : Constants.RowBackColour;
+                UpdateColours();
             }
         }
         private bool _Selected;
@@ -1224,6 +1275,22 @@ namespace Client.Scenes.Views
                 Location = new Point(5, 3),
                 IsControl = false,
             };
+
+            UpdateColours();
+        }
+
+        private void UpdateColours()
+        {
+            BackColour = Heading
+                ? Constants.WindowBackColour
+                : Selected
+                    ? Constants.SelectedRowBackColour
+                    : Constants.RowBackColour;
+
+            if (NameLabel == null) return;
+
+            NameLabel.ForeColour = Heading ? Color.White : Constants.PrimaryColour;
+            NameLabel.Location = new Point(Heading ? 5 : 10, 3);
         }
 
         protected override void Dispose(bool disposing)
@@ -1233,6 +1300,7 @@ namespace Client.Scenes.Views
             if (!disposing) return;
 
             Entry = null;
+            _Heading = false;
             _Selected = false;
 
             if (NameLabel != null)

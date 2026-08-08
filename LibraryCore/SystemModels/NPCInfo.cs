@@ -70,6 +70,21 @@ namespace Library.SystemModels
         }
         private int _FaceImage;
 
+        public NPCCategory Category
+        {
+            get { return _Category; }
+            set
+            {
+                if (_Category == value) return;
+
+                var oldValue = _Category;
+                _Category = value;
+
+                OnChanged(oldValue, value, "Category");
+            }
+        }
+        private NPCCategory _Category;
+
         public int GoodsIndex
         {
             get { return _GoodsIndex; }
