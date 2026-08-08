@@ -143,6 +143,8 @@ namespace Client.Scenes.Views
             CurrentTab = new QuestTab
             {
                 TabButton = { Label = { Text = CEnvir.Language.QuestDialogCurrentTab } },
+                QuestCountTitleLabel = { Text = CEnvir.Language.QuestDialogOngoingQuestsLabel },
+                QuestCountLabel = { Text = "0" },
                 Parent = TabControl,
                 Border = false,
                 ChoiceGrid = { ReadOnly = true },
@@ -158,6 +160,8 @@ namespace Client.Scenes.Views
             AvailableTab = new QuestTab
             {
                 TabButton = { Label = { Text = CEnvir.Language.QuestDialogAvailableTab } },
+                QuestCountTitleLabel = { Text = CEnvir.Language.QuestDialogAvailableQuestsLabel },
+                QuestCountLabel = { Text = "0" },
                 Parent = TabControl,
                 Border = false,
                 ShowTrackerBox = { Visible = false },
@@ -607,7 +611,7 @@ namespace Client.Scenes.Views
         public DXVScrollBar ScrollBar, DescriptionScrollBar;
 
         public DXControl DescriptionContainer;
-        public DXLabel QuestLabel, TasksLabel, DescriptionLabel, EndLabel, StartLabel;
+        public DXLabel QuestLabel, TasksLabel, DescriptionLabel, EndLabel, StartLabel, QuestCountTitleLabel, QuestCountLabel;
 
         public DXButton AbandonButton;
 
@@ -661,6 +665,28 @@ namespace Client.Scenes.Views
             };
 
             Tree.SelectedEntryChanged += (o, e) => SelectedQuest = Tree.SelectedEntry;
+
+            QuestCountLabel = new DXLabel
+            {
+                AutoSize = false,
+                Size = new Size(50, 15),
+                Parent = this,
+                Outline = true,
+                IsControl = false,
+                DrawFormat = TextFormatFlags.HorizontalCenter,
+                Location = new Point(10, 402),
+            };
+
+            QuestCountTitleLabel = new DXLabel
+            {
+                AutoSize = false,
+                Size = new Size(170, 15),
+                Parent = this,
+                Outline = true,
+                IsControl = false,
+                DrawFormat = TextFormatFlags.HorizontalCenter,
+                Location = new Point(72, 402),
+            };
 
             AlertIcon = new DXImageControl
             {
@@ -827,6 +853,7 @@ namespace Client.Scenes.Views
                 GameScene.Game.BigMapBox.Visible = true;
                 GameScene.Game.BigMapBox.Opacity = 1F;
                 GameScene.Game.BigMapBox.SelectedInfo = SelectedQuest.QuestInfo.StartNPC.Region.Map;
+                GameScene.Game.BigMapBox.SelectNPC(SelectedQuest.QuestInfo.StartNPC.Index);
                 GameScene.Game.BigMapBox.PlayLocatorAnim(SelectedQuest.QuestInfo.StartNPC.Index);
             };
 
@@ -856,6 +883,7 @@ namespace Client.Scenes.Views
                 GameScene.Game.BigMapBox.Visible = true;
                 GameScene.Game.BigMapBox.Opacity = 1F;
                 GameScene.Game.BigMapBox.SelectedInfo = SelectedQuest.QuestInfo.FinishNPC.Region.Map;
+                GameScene.Game.BigMapBox.SelectNPC(SelectedQuest.QuestInfo.FinishNPC.Index);
                 GameScene.Game.BigMapBox.PlayLocatorAnim(SelectedQuest.QuestInfo.FinishNPC.Index);
             };
 
@@ -914,6 +942,8 @@ namespace Client.Scenes.Views
         public void UpdateQuestTree()
         {
             NeedUpdate = false;
+
+            QuestCountLabel.Text = string.IsNullOrEmpty(QuestCountTitleLabel.Text) ? string.Empty : Quests.Count.ToString();
 
             Tree.TreeList.Clear();
 
@@ -1047,6 +1077,22 @@ namespace Client.Scenes.Views
                         StartLabel.Dispose();
 
                     StartLabel = null;
+                }
+
+                if (QuestCountTitleLabel != null)
+                {
+                    if (!QuestCountTitleLabel.IsDisposed)
+                        QuestCountTitleLabel.Dispose();
+
+                    QuestCountTitleLabel = null;
+                }
+
+                if (QuestCountLabel != null)
+                {
+                    if (!QuestCountLabel.IsDisposed)
+                        QuestCountLabel.Dispose();
+
+                    QuestCountLabel = null;
                 }
 
                 if (AbandonButton != null)

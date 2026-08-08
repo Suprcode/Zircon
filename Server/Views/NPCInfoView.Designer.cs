@@ -49,6 +49,8 @@
             gridColumn1 = new DevExpress.XtraGrid.Columns.GridColumn();
             RegionLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
             colFaceImage = new DevExpress.XtraGrid.Columns.GridColumn();
+            colCategory = new DevExpress.XtraGrid.Columns.GridColumn();
+            CategoryImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
             colMapIcon = new DevExpress.XtraGrid.Columns.GridColumn();
             colGoodsIndex = new DevExpress.XtraGrid.Columns.GridColumn();
             MapIconImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
@@ -72,6 +74,7 @@
             ((System.ComponentModel.ISupportInitialize)NPCInfoGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)PageLookUpEdit).BeginInit();
             ((System.ComponentModel.ISupportInitialize)RegionLookUpEdit).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)CategoryImageComboBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)MapIconImageComboBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)ribbon).BeginInit();
             ((System.ComponentModel.ISupportInitialize)ItemInfoLookUpEdit).BeginInit();
@@ -169,7 +172,7 @@
             NPCInfoGridControl.MainView = NPCInfoGridView;
             NPCInfoGridControl.MenuManager = ribbon;
             NPCInfoGridControl.Name = "NPCInfoGridControl";
-            NPCInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { RegionLookUpEdit, PageLookUpEdit, RequiredClassImageComboBox, RequirementImageComboBox, QuestInfoLookUpEdit, DaysOfWeekImageComboBox, ItemInfoLookUpEdit, MapIconImageComboBox });
+            NPCInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { RegionLookUpEdit, PageLookUpEdit, RequiredClassImageComboBox, RequirementImageComboBox, QuestInfoLookUpEdit, DaysOfWeekImageComboBox, ItemInfoLookUpEdit, MapIconImageComboBox, CategoryImageComboBox });
             NPCInfoGridControl.ShowOnlyPredefinedDetails = true;
             NPCInfoGridControl.Size = new System.Drawing.Size(736, 413);
             NPCInfoGridControl.TabIndex = 2;
@@ -177,7 +180,7 @@
             // 
             // NPCInfoGridView
             // 
-            NPCInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colNPCName, colImage, colEntryPage, gridColumn1, colFaceImage, colMapIcon, colGoodsIndex });
+            NPCInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colNPCName, colImage, colEntryPage, gridColumn1, colFaceImage, colCategory, colMapIcon, colGoodsIndex });
             NPCInfoGridView.GridControl = NPCInfoGridControl;
             NPCInfoGridView.Name = "NPCInfoGridView";
             NPCInfoGridView.OptionsDetail.AllowExpandEmptyDetails = true;
@@ -244,6 +247,21 @@
             colFaceImage.Name = "colFaceImage";
             colFaceImage.Visible = true;
             colFaceImage.VisibleIndex = 4;
+            //
+            // colCategory
+            //
+            colCategory.Caption = "Category";
+            colCategory.ColumnEdit = CategoryImageComboBox;
+            colCategory.FieldName = "Category";
+            colCategory.Name = "colCategory";
+            colCategory.Visible = true;
+            colCategory.VisibleIndex = 5;
+            //
+            // CategoryImageComboBox
+            //
+            CategoryImageComboBox.AutoHeight = false;
+            CategoryImageComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
+            CategoryImageComboBox.Name = "CategoryImageComboBox";
             // 
             // colMapIcon
             // 
@@ -251,14 +269,14 @@
             colMapIcon.FieldName = "MapIcon";
             colMapIcon.Name = "colMapIcon";
             colMapIcon.Visible = true;
-            colMapIcon.VisibleIndex = 5;
+            colMapIcon.VisibleIndex = 6;
             // 
             // colGoodsIndex
             // 
             colGoodsIndex.FieldName = "GoodsIndex";
             colGoodsIndex.Name = "colGoodsIndex";
             colGoodsIndex.Visible = true;
-            colGoodsIndex.VisibleIndex = 6;
+            colGoodsIndex.VisibleIndex = 7;
             // 
             // MapIconImageComboBox
             // 
@@ -373,6 +391,7 @@
             ((System.ComponentModel.ISupportInitialize)NPCInfoGridView).EndInit();
             ((System.ComponentModel.ISupportInitialize)PageLookUpEdit).EndInit();
             ((System.ComponentModel.ISupportInitialize)RegionLookUpEdit).EndInit();
+            ((System.ComponentModel.ISupportInitialize)CategoryImageComboBox).EndInit();
             ((System.ComponentModel.ISupportInitialize)MapIconImageComboBox).EndInit();
             ((System.ComponentModel.ISupportInitialize)ribbon).EndInit();
             ((System.ComponentModel.ISupportInitialize)ItemInfoLookUpEdit).EndInit();
@@ -406,6 +425,8 @@
         private DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox DaysOfWeekImageComboBox;
         private DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit ItemInfoLookUpEdit;
         private DevExpress.XtraGrid.Columns.GridColumn colFaceImage;
+        private DevExpress.XtraGrid.Columns.GridColumn colCategory;
+        private DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox CategoryImageComboBox;
         private DevExpress.XtraBars.BarButtonItem barButtonItem1;
         private DevExpress.XtraBars.BarButtonItem ExportButton;
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup JsonImportExport;

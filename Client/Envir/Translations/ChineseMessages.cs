@@ -135,6 +135,9 @@ namespace Client.Envir.Translations
         public override string CommonControlMiniMapSizeHint { get; set; } = "切换小地图大小";
         public override string CommonControlMiniMapTransparencyHint { get; set; } = "切换小地图透明度";
         public override string CommonControlMiniMapBigMapHint { get; set; } = "打开或关闭大地图";
+        public override string BigMapRecenterLabel { get; set; } = "重新居中";
+        public override string BigMapNPCTabLabel { get; set; } = "NPC";
+        public override string BigMapMonsterTabLabel { get; set; } = "怪物";
         public override string CommonControlConfirm { get; set; } = "确认";
         public override string CommonControlExit { get; set; } = "退出";
         public override string CommonControlNo { get; set; } = "否";
@@ -504,6 +507,9 @@ namespace Client.Envir.Translations
 
         public override string HelpDialogTitle { get; set; } = "Help";
 
+        public override string ItemLabelShowSetDetails { get; set; } = "显示套装详情";
+        public override string ItemLabelHideSetDetails { get; set; } = "隐藏套装详情";
+
         public override string GroupDialogTitle { get; set; } = "编组";
         public override string GroupDialogAllowGroupButtonAllowingHint { get; set; } = "编组状态: 允许";
         public override string GroupDialogAllowGroupButtonNotAllowingHint { get; set; } = "编组状态: 禁止";
@@ -752,6 +758,8 @@ namespace Client.Envir.Translations
         public override string QuestDialogTitle { get; set; } = "任务日志";
         public override string QuestDialogCurrentTab { get; set; } = "当前的";
         public override string QuestDialogAvailableTab { get; set; } = "可用的";
+        public override string QuestDialogOngoingQuestsLabel { get; set; } = "进行中的任务";
+        public override string QuestDialogAvailableQuestsLabel { get; set; } = "可接任务";
         public override string QuestDialogCompletedTab { get; set; } = "完成的";
         public override string QuestDialogMilestonesTab { get; set; } = "Milestones";
         public override string QuestDialogMissionsTab { get; set; } = "Missions";

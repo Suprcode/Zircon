@@ -134,6 +134,9 @@ namespace Client.Envir.Translations
         public override string CommonControlMiniMapSizeHint { get; set; } = "Toggle Size";
         public override string CommonControlMiniMapTransparencyHint { get; set; } = "Toggle Transparency";
         public override string CommonControlMiniMapBigMapHint { get; set; } = "Toggle Big Map";
+        public override string BigMapRecenterLabel { get; set; } = "Recenter";
+        public override string BigMapNPCTabLabel { get; set; } = "NPC";
+        public override string BigMapMonsterTabLabel { get; set; } = "Monster";
         public override string CommonControlConfirm { get; set; } = "Confirm";
         public override string CommonControlExit { get; set; } = "Exit";
         public override string CommonControlNo { get; set; } = "No";
@@ -505,6 +508,9 @@ namespace Client.Envir.Translations
 
         public override string HelpDialogTitle { get; set; } = "Help";
 
+        public override string ItemLabelShowSetDetails { get; set; } = "Show Set Details";
+        public override string ItemLabelHideSetDetails { get; set; } = "Hide Set Details";
+
         public override string GroupDialogTitle { get; set; } = "Group";
         public override string GroupDialogAllowGroupButtonAllowingHint { get; set; } = "Group Status: Allowing";
         public override string GroupDialogAllowGroupButtonNotAllowingHint { get; set; } = "Group Status: Not Allowing";
@@ -753,6 +759,8 @@ namespace Client.Envir.Translations
         public override string QuestDialogTitle { get; set; } = "Quest Log";
         public override string QuestDialogCurrentTab { get; set; } = "Current";
         public override string QuestDialogAvailableTab { get; set; } = "Available";
+        public override string QuestDialogOngoingQuestsLabel { get; set; } = "Ongoing Quests";
+        public override string QuestDialogAvailableQuestsLabel { get; set; } = "Available Quests";
         public override string QuestDialogCompletedTab { get; set; } = "Completed";
         public override string QuestDialogMilestonesTab { get; set; } = "Milestones";
         public override string QuestDialogMissionsTab { get; set; } = "Missions";

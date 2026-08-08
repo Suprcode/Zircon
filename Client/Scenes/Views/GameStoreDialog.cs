@@ -791,6 +791,7 @@ namespace Client.Scenes.Views
         public GameStoreItem()
         {
             Size = new Size(200, 78);
+            Visible = false;
 
             HoverImage = new DXImageControl
             {

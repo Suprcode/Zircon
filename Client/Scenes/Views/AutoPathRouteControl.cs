@@ -198,7 +198,7 @@ namespace Client.Scenes.Views
         private Point GetWaypoint()
         {
             return _Route.DestinationMapIndex == _DisplayedMap.Index
-                ? _Route.Destination
+                ? _Route.DisplayDestination
                 : _Leg.Points[_Leg.Points.Count - 1];
         }
 

@@ -134,6 +134,9 @@ namespace Client.Envir.Translations
         public abstract string CommonControlMiniMapSizeHint { get; set; }
         public abstract string CommonControlMiniMapTransparencyHint { get; set; }
         public abstract string CommonControlMiniMapBigMapHint { get; set; }
+        public abstract string BigMapRecenterLabel { get; set; }
+        public abstract string BigMapNPCTabLabel { get; set; }
+        public abstract string BigMapMonsterTabLabel { get; set; }
         public abstract string CommonControlConfirm { get; set; }
         public abstract string CommonControlExit { get; set; }
         public abstract string CommonControlNo { get; set; }
@@ -502,6 +505,9 @@ namespace Client.Envir.Translations
 
         public abstract string HelpDialogTitle { get; set; }
 
+        public abstract string ItemLabelShowSetDetails { get; set; }
+        public abstract string ItemLabelHideSetDetails { get; set; }
+
         public abstract string GroupDialogTitle { get; set; }
         public abstract string GroupDialogAllowGroupButtonAllowingHint { get; set; }
         public abstract string GroupDialogAllowGroupButtonNotAllowingHint { get; set; }
@@ -753,6 +759,8 @@ namespace Client.Envir.Translations
         public abstract string QuestDialogTitle { get; set; }
         public abstract string QuestDialogCurrentTab { get; set; }
         public abstract string QuestDialogAvailableTab { get; set; }
+        public abstract string QuestDialogOngoingQuestsLabel { get; set; }
+        public abstract string QuestDialogAvailableQuestsLabel { get; set; }
         public abstract string QuestDialogCompletedTab { get; set; }
         public abstract string QuestDialogMilestonesTab { get; set; }
         public abstract string QuestDialogMissionsTab { get; set; }

@@ -74,7 +74,8 @@ namespace Server.Models.Players
 
                 if (node.Map == destination.Map)
                 {
-                    HashSet<Point> targets = GetDestinationTargets(actor, map, destination);
+                    NPCObject destinationNPC = GetDestinationNPC(actor, map, destination);
+                    HashSet<Point> targets = GetDestinationTargets(map, destination, destinationNPC);
                     if (TryFindPreferredPath(actor, map, node.Location, targets,
                             avoidObjectsOnMap, out List<Point> finalPath))
                     {
@@ -97,6 +98,7 @@ namespace Server.Models.Players
                                     Legs = legs,
                                     DestinationMapIndex = node.Map.Index,
                                     Destination = finalPath[finalPath.Count - 1],
+                                    DisplayDestination = GetDisplayDestination(destination, map, destinationNPC, finalPath[finalPath.Count - 1]),
                                 },
                                 CurrentPath = legs[0].Points,
                                 ChangesMap = node.Previous != null,
@@ -317,18 +319,17 @@ namespace Server.Models.Players
             return (destination.RequiredClass & required) == required;
         }
 
-        private static HashSet<Point> GetDestinationTargets(MapObject actor, Map map, AutoPathDestination destination)
+        private static NPCObject GetDestinationNPC(MapObject actor, Map map, AutoPathDestination destination)
         {
-            if (destination.NPC != null)
-            {
-                NPCObject npc = actor.CurrentMap == map
-                    ? map.NPCs.FirstOrDefault(x =>
-                        x.NPCInfo == destination.NPC && x.Visible)
-                    : null;
+            if (destination.NPC == null || actor.CurrentMap != map) return null;
 
-                if (npc != null)
-                    return GetAdjacentPoints(map, npc.CurrentLocation);
-            }
+            return map.NPCs.FirstOrDefault(x => x.NPCInfo == destination.NPC && x.Visible);
+        }
+
+        private static HashSet<Point> GetDestinationTargets(Map map, AutoPathDestination destination, NPCObject destinationNPC)
+        {
+            if (destinationNPC != null)
+                return GetAdjacentPoints(map, destinationNPC.CurrentLocation);
 
             if (destination.Region != null)
             {
@@ -353,6 +354,22 @@ namespace Server.Models.Players
 
             return region.PointList ??
                    (IEnumerable<Point>)region.GetPoints(map.Width);
+        }
+
+        private static Point GetDisplayDestination(AutoPathDestination destination, Map map, NPCObject destinationNPC, Point routeDestination)
+        {
+            if (destinationNPC != null) return destinationNPC.CurrentLocation;
+            if (destination.NPC == null || destination.Region == null) return routeDestination;
+
+            List<Point> points = GetRegionPoints(destination.Region, map).ToList();
+            if (points.Count == 0) return routeDestination;
+
+            int minX = points.Min(x => x.X);
+            int maxX = points.Max(x => x.X);
+            int minY = points.Min(x => x.Y);
+            int maxY = points.Max(x => x.Y);
+
+            return new Point((minX + maxX) / 2, (minY + maxY) / 2);
         }
 
         private static HashSet<Point> GetAdjacentPoints(Map map, Point centre)
