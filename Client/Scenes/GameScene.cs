@@ -1133,24 +1133,7 @@ namespace Client.Scenes
             for (int i = MapControl.ParticleEffects.Count - 1; i >= 0; i--)
                 MapControl.ParticleEffects[i].Process();
 
-            if (ItemLabel != null && !ItemLabel.IsDisposed)
-            {
-                int x = CEnvir.MouseLocation.X + 15, y = CEnvir.MouseLocation.Y;
-
-                if (x + ItemLabel.Size.Width > Size.Width + Location.X)
-                    x = Size.Width - ItemLabel.Size.Width + Location.X;
-
-                if (y + ItemLabel.Size.Height > Size.Height + Location.Y)
-                    y = Size.Height - ItemLabel.Size.Height + Location.Y;
-
-                if (x < Location.X)
-                    x = Location.X;
-
-                if (y <= Location.Y)
-                    y = Location.Y;
-
-                ItemLabel.Location = new Point(x, y);
-            }
+            UpdateItemLabelLocation();
 
             if (MagicLabel != null && !MagicLabel.IsDisposed)
             {
@@ -1698,6 +1681,7 @@ namespace Client.Scenes
                 AddItemLabelDescription(builder, displayInfo);
                 builder.Complete();
                 ItemLabel = builder.Label;
+                UpdateItemLabelLocation();
                 return;
             }
 
@@ -1814,6 +1798,28 @@ namespace Client.Scenes
 
             builder.Complete();
             ItemLabel = builder.Label;
+            UpdateItemLabelLocation();
+        }
+
+        private void UpdateItemLabelLocation()
+        {
+            if (ItemLabel == null || ItemLabel.IsDisposed) return;
+
+            int x = CEnvir.MouseLocation.X + 15, y = CEnvir.MouseLocation.Y;
+
+            if (x + ItemLabel.Size.Width > Size.Width + Location.X)
+                x = Size.Width - ItemLabel.Size.Width + Location.X;
+
+            if (y + ItemLabel.Size.Height > Size.Height + Location.Y)
+                y = Size.Height - ItemLabel.Size.Height + Location.Y;
+
+            if (x < Location.X)
+                x = Location.X;
+
+            if (y <= Location.Y)
+                y = Location.Y;
+
+            ItemLabel.Location = new Point(x, y);
         }
 
         private void CreateFameLabel()
