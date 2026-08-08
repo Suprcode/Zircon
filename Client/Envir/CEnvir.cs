@@ -33,7 +33,9 @@ namespace Client.Envir
         private static int FPSCounter;
         private static int FPSCount;
         private static readonly long LimitFPSTicks = Stopwatch.Frequency / 60;
+        private static readonly long SimulationStepTicks = Stopwatch.Frequency / 60;
         private static long _nextLimitedFrameTicks;
+        private static long _nextSimulationTicks;
 
         public static int DPSCounter;
         private static int DPSCount;
@@ -160,7 +162,8 @@ namespace Client.Envir
             if (RenderingPipelineManager.ApplyPendingPipelineSwitch())
                 return;
 
-            UpdateGame();
+            UpdateRealtime();
+            UpdateSimulation();
             RenderGame();
 
             if (Config.LimitFPS)
@@ -195,7 +198,7 @@ namespace Client.Envir
             _nextLimitedFrameTicks += LimitFPSTicks;
         }
 
-        private static void UpdateGame()
+        private static void UpdateRealtime()
         {
             Now = Time.Now;
             DXControl.ActiveScene?.OnMouseMove(new MouseEventArgs(MouseButtons.None, 0, MouseLocation.X, MouseLocation.Y, 0));
@@ -211,7 +214,6 @@ namespace Client.Envir
             }
 
             Connection?.Process();
-            DXControl.ActiveScene?.Process();
 
             string debugText = $"FPS: {FPSCount}";
 
@@ -331,6 +333,18 @@ namespace Client.Envir
             {
                 DXControl.HintLabel.Text = null;
             }
+        }
+        private static void UpdateSimulation()
+        {
+            long now = Stopwatch.GetTimestamp();
+
+            if (_nextSimulationTicks == 0 || _nextSimulationTicks < now - SimulationStepTicks * 4)
+                _nextSimulationTicks = now;
+
+            if (now < _nextSimulationTicks) return;
+
+            DXControl.ActiveScene?.Process();
+            _nextSimulationTicks += SimulationStepTicks;
         }
         private static void RenderGame()
         {
