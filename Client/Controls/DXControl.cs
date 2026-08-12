@@ -2302,8 +2302,10 @@ BorderInformation = new[]
                 _Movable = false;
                 _IgnoreMoveBounds = false;
                 _Opacity = 0F;
-                _Parent?.Controls.Remove(this);
+                DXControl parent = _Parent;
+                parent?.Controls.Remove(this);
                 _Parent = null;
+                parent?.InvalidateChildCache();
                 _PassThrough = false;
                 _Size = Size.Empty;
                 _Sort = false;
