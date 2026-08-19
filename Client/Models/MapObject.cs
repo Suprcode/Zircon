@@ -700,8 +700,6 @@ namespace Client.Models
                     }
                     break;
             }
-            x -= x % 2;
-            y -= y % 2;
 
             if (CurrentFrame.Reversed)
             {

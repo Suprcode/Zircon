@@ -625,6 +625,11 @@ namespace Shared.Rendering
             _spriteShaderEffect = new SpriteShaderEffectRequest(SpriteShaderEffectKind.Grayscale);
         }
 
+        public static void EnableSolidShadowFillEffect(float opacity)
+        {
+            _spriteShaderEffect = new SpriteShaderEffectRequest(SpriteShaderEffectKind.SolidShadowFill, Math.Clamp(opacity, 0F, 1F));
+        }
+
         public static void EnableDropShadowEffect(Color colour, float width, float startOpacity, RectangleF? visibleBounds = null)
         {
             _spriteShaderEffect = new SpriteShaderEffectRequest(new DropShadowEffectSettings(colour, width, startOpacity, visibleBounds));
@@ -1171,19 +1176,22 @@ namespace Shared.Rendering
         internal readonly struct SpriteShaderEffectRequest
         {
             public SpriteShaderEffectKind Kind { get; }
+            public float Amount { get; }
             public OutlineEffectSettings Outline { get; }
             public DropShadowEffectSettings DropShadow { get; }
 
             public SpriteShaderEffectRequest(OutlineEffectSettings outline)
             {
                 Kind = SpriteShaderEffectKind.Outline;
+                Amount = 0F;
                 Outline = outline;
                 DropShadow = default;
             }
 
-            public SpriteShaderEffectRequest(SpriteShaderEffectKind kind)
+            public SpriteShaderEffectRequest(SpriteShaderEffectKind kind, float amount = 0F)
             {
                 Kind = kind;
+                Amount = amount;
                 Outline = default;
                 DropShadow = default;
             }
@@ -1191,6 +1199,7 @@ namespace Shared.Rendering
             public SpriteShaderEffectRequest(DropShadowEffectSettings dropShadow)
             {
                 Kind = SpriteShaderEffectKind.DropShadow;
+                Amount = 0F;
                 Outline = default;
                 DropShadow = dropShadow;
             }
@@ -1200,7 +1209,8 @@ namespace Shared.Rendering
         {
             Outline,
             Grayscale,
-            DropShadow
+            DropShadow,
+            SolidShadowFill
         }
     }
 }

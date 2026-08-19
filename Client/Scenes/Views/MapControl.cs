@@ -167,6 +167,9 @@ namespace Client.Scenes.Views
         public Floor FLayer;
         public Light LLayer;
 
+        public bool ShadowPixelShaderEnabled { get; set; } = true;
+        public float ShadowPixelShaderOpacity { get; set; } = 0.4F;
+
         public Cell[,] Cells;
         public int Width, Height;
 
@@ -340,6 +343,30 @@ namespace Client.Scenes.Views
             PresentTexture(texture, sourceRectangle, Parent, DisplayArea, Color.White, this, 0, 0, 1F);
         }
 
+        private void DrawMapImage(MirLibrary library, int index, float x, float y, float opacity = 1F)
+        {
+            if (!ShadowPixelShaderEnabled)
+            {
+                library.Draw(index, x, y, Color.White, false, opacity, ImageType.Image);
+                return;
+            }
+
+            RenderingPipelineManager.EnableSolidShadowFillEffect(ShadowPixelShaderOpacity);
+            library.Draw(index, x, y, Color.White, false, opacity, ImageType.Image);
+        }
+
+        private void DrawMapImageBlend(MirLibrary library, int index, float x, float y, float rate)
+        {
+            if (!ShadowPixelShaderEnabled)
+            {
+                library.DrawBlend(index, x, y, Color.White, false, rate, ImageType.Image);
+                return;
+            }
+
+            RenderingPipelineManager.EnableSolidShadowFillEffect(ShadowPixelShaderOpacity);
+            library.DrawBlend(index, x, y, Color.White, false, rate, ImageType.Image);
+        }
+
         private void DrawObjects()
         {
             int minX = Math.Max(0, User.CurrentLocation.X - OffSetX - 4), maxX = Math.Min(Width - 1, User.CurrentLocation.X + OffSetX + 4);
@@ -382,13 +409,13 @@ namespace Client.Scenes.Views
                         if ((s.Width != CellWidth || s.Height != CellHeight) && (s.Width != CellWidth * 2 || s.Height != CellHeight * 2))
                         {
                             if (!blend)
-                                cell.MiddleLibrary.Draw(index, drawX, drawY - s.Height, Color.White, false, 1F, ImageType.Image);
+                                DrawMapImage(cell.MiddleLibrary, index, drawX, drawY - s.Height);
                             else
-                                cell.MiddleLibrary.DrawBlend(index, drawX, drawY - s.Height, Color.White, false, 0.5F, ImageType.Image);
+                                DrawMapImageBlend(cell.MiddleLibrary, index, drawX, drawY - s.Height, 0.5F);
                         }
                         else
                         {
-                            cell.MiddleLibrary.Draw(index, drawX, drawY - s.Height, Color.White, false, 1F, ImageType.Image);
+                            DrawMapImage(cell.MiddleLibrary, index, drawX, drawY - s.Height);
                         }
                     }
 
@@ -415,19 +442,21 @@ namespace Client.Scenes.Views
                         if (!cellSized)
                         {
                             if (!blend)
-                                cell.FrontLibrary.Draw(index, drawX, drawY - s.Height, Color.White, false, 1F, ImageType.Image);
+                                DrawMapImage(cell.FrontLibrary, index, drawX, drawY - s.Height);
                             else
-                                cell.FrontLibrary.DrawBlend(index, drawX, drawY - s.Height, Color.White, false, 0.5F, ImageType.Image);
+                                DrawMapImageBlend(cell.FrontLibrary, index, drawX, drawY - s.Height, 0.5F);
                         }
                         else
                         {
                             if (!blend)
-                                cell.FrontLibrary.Draw(index, drawX, drawY - CellHeight, Color.White, false, 1F, ImageType.Image);
+                                DrawMapImage(cell.FrontLibrary, index, drawX, drawY - CellHeight);
                             else
-                                cell.FrontLibrary.DrawBlend(index, drawX, drawY - CellHeight, Color.White, false, 0.5F, ImageType.Image);
+                                DrawMapImageBlend(cell.FrontLibrary, index, drawX, drawY - CellHeight, 0.5F);
                         }
                     }
                 }
+
+                RenderingPipelineManager.DisableSpriteShaderEffect();
 
                 foreach (MapObject ob in Objects)
                 {
@@ -1506,47 +1535,9 @@ namespace Client.Scenes.Views
                     }
                 }
 
-                for (int y = minY; y <= maxY; y++)
-                {
-                    int drawY = (y - User.CurrentLocation.Y + OffSetY + 1) * CellHeight + PixelOffsetY - User.MovingOffSet.Y - User.ShakeScreenOffset.Y;
-
-                    for (int x = minX; x <= maxX; x++)
-                    {
-                        int drawX = (x - User.CurrentLocation.X + OffSetX) * CellWidth + PixelOffsetX - User.MovingOffSet.X - User.ShakeScreenOffset.X;
-
-                        Cell cell = GameScene.Game.MapControl.Cells[x, y];
-
-                        MirLibrary library;
-                        LibraryFile file;
-
-                        if (Libraries.KROrder.TryGetValue(cell.MiddleFile, out file) && file != LibraryFile.Tilesc && CEnvir.LibraryList.TryGetValue(file, out library))
-                        {
-                            int index = cell.MiddleImage - 1;
-
-                            if (cell.MiddleAnimationFrame > 1 && cell.MiddleAnimationFrame < 255)
-                                continue;//   index += GameScene.Game.MapControl.Animation % cell.MiddleAnimationFrame;
-
-                            Size s = library.GetSize(index);
-
-                            if ((s.Width == CellWidth && s.Height == CellHeight) || (s.Width == CellWidth * 2 && s.Height == CellHeight * 2))
-                                library.Draw(index, drawX, drawY - CellHeight, Color.White, false, 1F, ImageType.Image);
-                        }
-
-
-                        if (Libraries.KROrder.TryGetValue(cell.FrontFile, out file) && file != LibraryFile.Tilesc && CEnvir.LibraryList.TryGetValue(file, out library))
-                        {
-                            int index = cell.FrontImage - 1;
-
-                            if (cell.FrontAnimationFrame > 1 && cell.FrontAnimationFrame < 255)
-                                continue;//  index += GameScene.Game.MapControl.Animation % cell.FrontAnimationFrame;
-
-                            Size s = library.GetSize(index);
-
-                            if ((s.Width == CellWidth && s.Height == CellHeight) || (s.Width == CellWidth * 2 && s.Height == CellHeight * 2))
-                                library.Draw(index, drawX, drawY - CellHeight, Color.White, false, 1F, ImageType.Image);
-                        }
-                    }
-                }
+                // Middle and front images, including cell-sized images, are already
+                // rendered in DrawObjects. Drawing them here as well would duplicate
+                // semi-transparent shader output and make resolved shadows too dark.
             }
 
             public override void Draw()

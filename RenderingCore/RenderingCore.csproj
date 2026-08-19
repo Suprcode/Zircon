@@ -21,6 +21,7 @@
     <None Update="Rendering\SilkD3D11\Shaders\DropShadowD3D11.hlsl" CopyToOutputDirectory="PreserveNewest" />
     <None Update="Rendering\SilkD3D11\Shaders\GrayscaleD3D11.hlsl" CopyToOutputDirectory="PreserveNewest" />
     <None Update="Rendering\SilkD3D11\Shaders\OutlineD3D11.hlsl" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Rendering\SilkD3D11\Shaders\SolidShadowFillD3D11.hlsl" CopyToOutputDirectory="PreserveNewest" />
     <None Update="Rendering\SilkD3D11\Shaders\SpriteD3D11.hlsl" CopyToOutputDirectory="PreserveNewest" />
     <None Update="Rendering\SilkVulkan\Shaders\Line.frag" CopyToOutputDirectory="PreserveNewest" />
     <None Update="Rendering\SilkVulkan\Shaders\Line.vert" CopyToOutputDirectory="PreserveNewest" />

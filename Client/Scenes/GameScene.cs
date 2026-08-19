@@ -1205,6 +1205,14 @@ namespace Client.Scenes
 
             if (e.Handled) return;
 
+            if (e.Control && e.Shift && e.KeyCode == Keys.F12)
+            {
+                MapControl.ShadowPixelShaderEnabled = !MapControl.ShadowPixelShaderEnabled;
+                ReceiveChat($"Shadow pixel shader: {(MapControl.ShadowPixelShaderEnabled ? "ON" : "OFF")}", MessageType.System);
+                e.Handled = true;
+                return;
+            }
+
             switch (e.KeyCode)
             {
                 case Keys.Menu:

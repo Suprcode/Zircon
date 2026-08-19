@@ -9,6 +9,8 @@ struct VS_INPUT
     float2 Tex : TEXCOORD0;
     float4 Col : COLOR0;
     float TexIndex : TEXCOORD1;
+    float4 Source : TEXCOORD2;
+    float2 TextureSize : TEXCOORD3;
 };
 
 struct PS_INPUT
@@ -18,6 +20,8 @@ struct PS_INPUT
     float4 Col : COLOR0;
     float TexIndex : TEXCOORD1;
     float2 ScreenPos : TEXCOORD2;
+    nointerpolation float4 Source : TEXCOORD3;
+    nointerpolation float2 TextureSize : TEXCOORD4;
 };
 
 Texture2D shaderTextures[32] : register(t0);
@@ -31,6 +35,8 @@ PS_INPUT VS(VS_INPUT input)
     output.Col = input.Col;
     output.TexIndex = input.TexIndex;
     output.ScreenPos = input.Pos;
+    output.Source = input.Source;
+    output.TextureSize = input.TextureSize;
     return output;
 }
 

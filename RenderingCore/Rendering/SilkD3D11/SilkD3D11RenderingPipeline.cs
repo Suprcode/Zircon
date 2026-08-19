@@ -34,6 +34,7 @@ namespace Shared.Rendering.SilkD3D11
         private const string OutlineShaderFileName = "OutlineD3D11.hlsl";
         private const string GrayscaleShaderFileName = "GrayscaleD3D11.hlsl";
         private const string DropShadowShaderFileName = "DropShadowD3D11.hlsl";
+        private const string SolidShadowFillShaderFileName = "SolidShadowFillD3D11.hlsl";
         private static readonly Size MinimumResolution = new(1024, 768);
 
         [ComImport]
@@ -107,6 +108,7 @@ namespace Shared.Rendering.SilkD3D11
         private ComPtr<ID3D11PixelShader> _outlinePixelShader;
         private ComPtr<ID3D11PixelShader> _grayscalePixelShader;
         private ComPtr<ID3D11PixelShader> _dropShadowPixelShader;
+        private ComPtr<ID3D11PixelShader> _solidShadowFillPixelShader;
         private ComPtr<ID3D11InputLayout> _inputLayout;
         private ComPtr<ID3D11Buffer> _vertexBuffer;
         private ComPtr<ID3D11Buffer> _matrixBuffer;
@@ -684,6 +686,7 @@ namespace Shared.Rendering.SilkD3D11
             _vertexBuffer.Dispose();
             _inputLayout.Dispose();
             _dropShadowPixelShader.Dispose();
+            _solidShadowFillPixelShader.Dispose();
             _grayscalePixelShader.Dispose();
             _outlinePixelShader.Dispose();
             _pixelShader.Dispose();
@@ -714,6 +717,9 @@ namespace Shared.Rendering.SilkD3D11
                         break;
                     case RenderingPipelineManager.SpriteShaderEffectKind.Grayscale:
                         effect = new SpriteEffect(SpriteEffectMode.Grayscale, 0, resource.Size, Vector4.Zero, null);
+                        break;
+                    case RenderingPipelineManager.SpriteShaderEffectKind.SolidShadowFill:
+                        effect = new SpriteEffect(SpriteEffectMode.SolidShadowFill, request.Value.Amount, resource.Size, Vector4.Zero, null);
                         break;
                     case RenderingPipelineManager.SpriteShaderEffectKind.DropShadow:
                         RenderingPipelineManager.DropShadowEffectSettings shadow = request.Value.DropShadow;
@@ -880,7 +886,8 @@ namespace Shared.Rendering.SilkD3D11
             if (!HasCompatibleBatchEffect(first.Effect, next.Effect))
                 return false;
 
-            if (first.Effect.HasValue || next.Effect.HasValue)
+            if ((first.Effect.HasValue || next.Effect.HasValue) &&
+                first.Effect?.Mode != SpriteEffectMode.SolidShadowFill)
                 return ReferenceEquals(first.Texture, next.Texture);
 
             return true;
@@ -899,7 +906,12 @@ namespace Shared.Rendering.SilkD3D11
             if (!first.HasValue || !next.HasValue)
                 return false;
 
-            return first.Value.Mode == SpriteEffectMode.Grayscale && next.Value.Mode == SpriteEffectMode.Grayscale;
+            if (first.Value.Mode != next.Value.Mode)
+                return false;
+
+            return first.Value.Mode == SpriteEffectMode.Grayscale ||
+                   (first.Value.Mode == SpriteEffectMode.SolidShadowFill &&
+                    Math.Abs(first.Value.Amount - next.Value.Amount) <= float.Epsilon);
         }
 
         private void DrawSolidRectangle(RectangleF rectangle, GdiColor colour, float opacity)
@@ -1189,29 +1201,34 @@ namespace Shared.Rendering.SilkD3D11
             byte[] outlineBlob = CompileShaderFromFile(OutlineShaderFileName, "PS_OUTLINE", "ps_5_0");
             byte[] grayscaleBlob = CompileShaderFromFile(GrayscaleShaderFileName, "PS_GRAY", "ps_5_0");
             byte[] shadowBlob = CompileShaderFromFile(DropShadowShaderFileName, "PS_SHADOW", "ps_5_0");
+            byte[] solidShadowFillBlob = CompileShaderFromFile(SolidShadowFillShaderFileName, "PS_SOLID_SHADOW", "ps_5_0");
 
             ID3D11VertexShader* vertexShader = null;
             ID3D11PixelShader* pixelShader = null;
             ID3D11PixelShader* outlinePixelShader = null;
             ID3D11PixelShader* grayscalePixelShader = null;
             ID3D11PixelShader* dropShadowPixelShader = null;
+            ID3D11PixelShader* solidShadowFillPixelShader = null;
             fixed (byte* vsPointer = vsBlob)
             fixed (byte* psPointer = psBlob)
             fixed (byte* outlinePointer = outlineBlob)
             fixed (byte* grayscalePointer = grayscaleBlob)
             fixed (byte* shadowPointer = shadowBlob)
+            fixed (byte* solidShadowFillPointer = solidShadowFillBlob)
             {
                 Check(_device.CreateVertexShader(vsPointer, (nuint)vsBlob.Length, (ID3D11ClassLinkage*)null, &vertexShader), "create D3D11 vertex shader");
                 Check(_device.CreatePixelShader(psPointer, (nuint)psBlob.Length, (ID3D11ClassLinkage*)null, &pixelShader), "create D3D11 pixel shader");
                 Check(_device.CreatePixelShader(outlinePointer, (nuint)outlineBlob.Length, (ID3D11ClassLinkage*)null, &outlinePixelShader), "create D3D11 outline shader");
                 Check(_device.CreatePixelShader(grayscalePointer, (nuint)grayscaleBlob.Length, (ID3D11ClassLinkage*)null, &grayscalePixelShader), "create D3D11 grayscale shader");
                 Check(_device.CreatePixelShader(shadowPointer, (nuint)shadowBlob.Length, (ID3D11ClassLinkage*)null, &dropShadowPixelShader), "create D3D11 shadow shader");
+                Check(_device.CreatePixelShader(solidShadowFillPointer, (nuint)solidShadowFillBlob.Length, (ID3D11ClassLinkage*)null, &solidShadowFillPixelShader), "create D3D11 solid shadow fill shader");
             }
             _vertexShader = new ComPtr<ID3D11VertexShader>(vertexShader);
             _pixelShader = new ComPtr<ID3D11PixelShader>(pixelShader);
             _outlinePixelShader = new ComPtr<ID3D11PixelShader>(outlinePixelShader);
             _grayscalePixelShader = new ComPtr<ID3D11PixelShader>(grayscalePixelShader);
             _dropShadowPixelShader = new ComPtr<ID3D11PixelShader>(dropShadowPixelShader);
+            _solidShadowFillPixelShader = new ComPtr<ID3D11PixelShader>(solidShadowFillPixelShader);
 
             CreateInputLayout(vsBlob);
             CreateBuffer((uint)(sizeof(SpriteVertex) * MaxVertices), BindFlag.VertexBuffer, ref _vertexBuffer);
@@ -1296,14 +1313,16 @@ namespace Shared.Rendering.SilkD3D11
             byte* color = (byte*)Marshal.StringToHGlobalAnsi("COLOR");
             try
             {
-                InputElementDesc* elements = stackalloc InputElementDesc[4];
+                InputElementDesc* elements = stackalloc InputElementDesc[6];
                 elements[0] = new InputElementDesc(position, 0, Format.FormatR32G32Float, 0, 0, InputClassification.PerVertexData, 0);
                 elements[1] = new InputElementDesc(texcoord, 0, Format.FormatR32G32Float, 0, 8, InputClassification.PerVertexData, 0);
                 elements[2] = new InputElementDesc(color, 0, Format.FormatR32G32B32A32Float, 0, 16, InputClassification.PerVertexData, 0);
                 elements[3] = new InputElementDesc(texcoord, 1, Format.FormatR32Float, 0, 32, InputClassification.PerVertexData, 0);
+                elements[4] = new InputElementDesc(texcoord, 2, Format.FormatR32G32B32A32Float, 0, 36, InputClassification.PerVertexData, 0);
+                elements[5] = new InputElementDesc(texcoord, 3, Format.FormatR32G32Float, 0, 52, InputClassification.PerVertexData, 0);
                 ID3D11InputLayout* inputLayout = null;
                 fixed (byte* vsPointer = vsBlob)
-                    Check(_device.CreateInputLayout(elements, 4, vsPointer, (nuint)vsBlob.Length, &inputLayout), "create D3D11 input layout");
+                    Check(_device.CreateInputLayout(elements, 6, vsPointer, (nuint)vsBlob.Length, &inputLayout), "create D3D11 input layout");
                 _inputLayout = new ComPtr<ID3D11InputLayout>(inputLayout);
             }
             finally
@@ -1529,13 +1548,15 @@ namespace Shared.Rendering.SilkD3D11
             Vector2 p2 = Vector2.Transform(new Vector2(right, bottom), item.Transform);
             Vector2 p3 = Vector2.Transform(new Vector2(left, bottom), item.Transform);
             Vector4 colour = ToPremultipliedVector(item.Colour, item.Opacity);
+            Vector4 sourceUv = ToSourceUv(item.Source, item.Texture.Size);
+            Vector2 textureSize = new(item.Texture.Size.Width, item.Texture.Size.Height);
 
-            vertices[0] = new SpriteVertex(p0, new Vector2(u1, v1), colour, textureIndex);
-            vertices[1] = new SpriteVertex(p1, new Vector2(u2, v1), colour, textureIndex);
-            vertices[2] = new SpriteVertex(p2, new Vector2(u2, v2), colour, textureIndex);
+            vertices[0] = new SpriteVertex(p0, new Vector2(u1, v1), colour, textureIndex, sourceUv, textureSize);
+            vertices[1] = new SpriteVertex(p1, new Vector2(u2, v1), colour, textureIndex, sourceUv, textureSize);
+            vertices[2] = new SpriteVertex(p2, new Vector2(u2, v2), colour, textureIndex, sourceUv, textureSize);
             vertices[3] = vertices[0];
             vertices[4] = vertices[2];
-            vertices[5] = new SpriteVertex(p3, new Vector2(u1, v2), colour, textureIndex);
+            vertices[5] = new SpriteVertex(p3, new Vector2(u1, v2), colour, textureIndex, sourceUv, textureSize);
         }
 
         private EffectConstants CreateEffectConstants(SpriteBatchItem item)
@@ -1570,6 +1591,7 @@ namespace Shared.Rendering.SilkD3D11
                 SpriteEffectMode.Grayscale => _grayscalePixelShader,
                 SpriteEffectMode.Outline => _outlinePixelShader,
                 SpriteEffectMode.DropShadow => _dropShadowPixelShader,
+                SpriteEffectMode.SolidShadowFill => _solidShadowFillPixelShader,
                 _ => _pixelShader
             };
         }
@@ -1717,13 +1739,17 @@ namespace Shared.Rendering.SilkD3D11
             public readonly Vector2 TexCoord;
             public readonly Vector4 Colour;
             public readonly float TextureIndex;
+            public readonly Vector4 SourceUv;
+            public readonly Vector2 TextureSize;
 
-            public SpriteVertex(Vector2 position, Vector2 texCoord, Vector4 colour, float textureIndex)
+            public SpriteVertex(Vector2 position, Vector2 texCoord, Vector4 colour, float textureIndex, Vector4 sourceUv, Vector2 textureSize)
             {
                 Position = position;
                 TexCoord = texCoord;
                 Colour = colour;
                 TextureIndex = textureIndex;
+                SourceUv = sourceUv;
+                TextureSize = textureSize;
             }
         }
 

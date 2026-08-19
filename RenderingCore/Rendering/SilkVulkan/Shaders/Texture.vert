@@ -4,6 +4,7 @@ layout(location = 1) in vec4 iPositionY;
 layout(location = 2) in vec4 iTexCoordU;
 layout(location = 3) in vec4 iTexCoordV;
 layout(location = 4) in vec4 iColour;
+layout(location = 5) in vec4 iSource;
 layout(push_constant) uniform PushConstants
 {
     vec2 uViewport;
@@ -15,6 +16,7 @@ layout(push_constant) uniform PushConstants
 layout(location = 0) out vec2 vTexCoord;
 layout(location = 1) out vec4 vColour;
 layout(location = 2) out vec2 vScreenPos;
+layout(location = 3) flat out vec4 vSource;
 void main()
 {
     int corner = gl_VertexIndex == 0 ? 0 :
@@ -29,4 +31,5 @@ void main()
     vTexCoord = vec2(iTexCoordU[corner], iTexCoordV[corner]);
     vColour = iColour;
     vScreenPos = position;
+    vSource = iSource;
 }

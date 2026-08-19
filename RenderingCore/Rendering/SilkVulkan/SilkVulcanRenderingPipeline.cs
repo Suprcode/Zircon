@@ -108,6 +108,8 @@ namespace Shared.Rendering.SilkVulkan
         private SilkVulkanRenderTarget _spriteBatchTarget;
         private ClientBlendMode _spriteBatchBlendMode;
         private float _spriteBatchBlendRate;
+        private SpriteEffectMode _spriteBatchEffectMode;
+        private float _spriteBatchEffectAmount;
         private ulong _spriteBatchOffset;
         private uint _spriteBatchInstanceCount;
         private readonly DisplayModeManager _displayMode = new DisplayModeManager();
@@ -1047,6 +1049,10 @@ namespace Shared.Rendering.SilkVulkan
                         DrawSpriteImmediate(resource, blendMode, GetBlendConstantRate(blendMode), p0, p1, p2, p3, u0, u1, v0, v1, vertexColour,
                             CreateTexturePushConstants(SpriteEffectMode.Grayscale, sourceUv, Vector4.Zero, 0F, resource.Size));
                         return;
+                    case SpriteShaderEffectKind.SolidShadowFill:
+                        QueueSprite(resource, blendMode, GetBlendConstantRate(blendMode), p0, p1, p2, p3, u0, u1, v0, v1, vertexColour,
+                            SpriteEffectMode.SolidShadowFill, effect.Value.Amount);
+                        return;
                     case SpriteShaderEffectKind.Outline:
                         OutlineEffectSettings outline = effect.Value.Outline;
                         float thickness = Math.Max(0.5F, outline.Thickness);
@@ -1858,7 +1864,7 @@ namespace Shared.Rendering.SilkVulkan
                 };
 
                 VertexInputBindingDescription binding = CreateVertexInputBinding(vertexInputKind);
-                VertexInputAttributeDescription* attributes = stackalloc VertexInputAttributeDescription[5];
+                VertexInputAttributeDescription* attributes = stackalloc VertexInputAttributeDescription[6];
                 uint attributeCount = CreateVertexInputAttributes(vertexInputKind, attributes);
 
                 PipelineVertexInputStateCreateInfo vertexInput = new PipelineVertexInputStateCreateInfo
@@ -1997,8 +2003,15 @@ namespace Shared.Rendering.SilkVulkan
                 Format = Format.R32G32B32A32Sfloat,
                 Offset = 64
             };
+            attributes[5] = new VertexInputAttributeDescription
+            {
+                Binding = 0,
+                Location = 5,
+                Format = Format.R32G32B32A32Sfloat,
+                Offset = 80
+            };
 
-            return 5;
+            return 6;
         }
 
         private PipelineColorBlendAttachmentState CreateBlendAttachment(ClientBlendMode blendMode)
@@ -2517,13 +2530,15 @@ namespace Shared.Rendering.SilkVulkan
             TransitionTexture(_activeCommandBuffer, resource, VkImageLayout.ShaderReadOnlyOptimal, AccessFlags.ColorAttachmentWriteBit, AccessFlags.ShaderReadBit, PipelineStageFlags.ColorAttachmentOutputBit, PipelineStageFlags.FragmentShaderBit);
         }
 
-        private void QueueSprite(SilkVulkanTextureResource resource, ClientBlendMode blendMode, float blendRate, Vector2 p0, Vector2 p1, Vector2 p2, Vector2 p3, float u0, float u1, float v0, float v1, Vector4 colour)
+        private void QueueSprite(SilkVulkanTextureResource resource, ClientBlendMode blendMode, float blendRate, Vector2 p0, Vector2 p1, Vector2 p2, Vector2 p3, float u0, float u1, float v0, float v1, Vector4 colour, SpriteEffectMode effectMode = SpriteEffectMode.None, float effectAmount = 0F)
         {
             if (_spriteBatchInstanceCount > 0 &&
                 (_spriteBatchTexture != resource ||
                  _spriteBatchTarget != _currentTarget ||
                  _spriteBatchBlendMode != blendMode ||
                  _spriteBatchBlendRate != blendRate ||
+                 _spriteBatchEffectMode != effectMode ||
+                 Math.Abs(_spriteBatchEffectAmount - effectAmount) > float.Epsilon ||
                  _spriteBatchInstanceCount >= MaxSpriteBatchInstances))
             {
                 FlushSpriteBatch();
@@ -2539,6 +2554,8 @@ namespace Shared.Rendering.SilkVulkan
                 _spriteBatchTarget = _currentTarget;
                 _spriteBatchBlendMode = blendMode;
                 _spriteBatchBlendRate = blendRate;
+                _spriteBatchEffectMode = effectMode;
+                _spriteBatchEffectAmount = effectAmount;
                 _spriteBatchOffset = offset;
             }
 
@@ -2547,7 +2564,8 @@ namespace Shared.Rendering.SilkVulkan
                 new Vector4(p0.Y, p1.Y, p2.Y, p3.Y),
                 new Vector4(u0, u1, u1, u0),
                 new Vector4(v0, v0, v1, v1),
-                colour);
+                colour,
+                new Vector4(Math.Min(u0, u1), Math.Min(v0, v1), Math.Max(u0, u1), Math.Max(v0, v1)));
 
             _spriteBatchInstanceCount++;
         }
@@ -2569,7 +2587,8 @@ namespace Shared.Rendering.SilkVulkan
                 new Vector4(p0.Y, p1.Y, p2.Y, p3.Y),
                 new Vector4(u0, u1, u1, u0),
                 new Vector4(v0, v0, v1, v1),
-                colour);
+                colour,
+                push.SourceUv);
 
             BindTexturePipeline(blendMode, blendRate);
             BindTexture(resource);
@@ -2601,7 +2620,7 @@ namespace Shared.Rendering.SilkVulkan
                 Colour = new Vector4(IsNativeCompressedTexture(_spriteBatchTexture.Format) ? 1F : 0F, 0F, 0F, 0F),
                 SourceUv = new Vector4(0F, 0F, 1F, 1F),
                 OutlineColour = Vector4.Zero,
-                Effect = Vector4.Zero
+                Effect = new Vector4((float)_spriteBatchEffectMode, _spriteBatchEffectAmount, _spriteBatchTexture.Size.Width, _spriteBatchTexture.Size.Height)
             };
             _vk.CmdPushConstants(_activeCommandBuffer, _texturePipelineLayout, ShaderStageFlags.VertexBit | ShaderStageFlags.FragmentBit, 0, (uint)sizeof(PushConstants), &push);
 
@@ -2617,6 +2636,8 @@ namespace Shared.Rendering.SilkVulkan
             _spriteBatchTarget = null;
             _spriteBatchBlendMode = ClientBlendMode.NONE;
             _spriteBatchBlendRate = 0F;
+            _spriteBatchEffectMode = SpriteEffectMode.None;
+            _spriteBatchEffectAmount = 0F;
             _spriteBatchOffset = 0;
             _spriteBatchInstanceCount = 0;
         }
@@ -3339,14 +3360,16 @@ namespace Shared.Rendering.SilkVulkan
             public Vector4 TexCoordU;
             public Vector4 TexCoordV;
             public Vector4 Colour;
+            public Vector4 SourceUv;
 
-            public SpriteInstance(Vector4 positionX, Vector4 positionY, Vector4 texCoordU, Vector4 texCoordV, Vector4 colour)
+            public SpriteInstance(Vector4 positionX, Vector4 positionY, Vector4 texCoordU, Vector4 texCoordV, Vector4 colour, Vector4 sourceUv)
             {
                 PositionX = positionX;
                 PositionY = positionY;
                 TexCoordU = texCoordU;
                 TexCoordV = texCoordV;
                 Colour = colour;
+                SourceUv = sourceUv;
             }
         }
 
