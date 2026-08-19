@@ -187,6 +187,7 @@ namespace Client.Envir.Translations
         public abstract string CommonControlConfigWindowGameTabItemNameLabel { get; set; }
         public abstract string CommonControlConfigWindowGameTabMonsterNameLabel { get; set; }
         public abstract string CommonControlConfigWindowGameTabPlayerNameLabel { get; set; }
+        public abstract string CommonControlConfigWindowGameTabNPCNameLabel { get; set; }
         public abstract string CommonControlConfigWindowGameTabUserHealthLabel { get; set; }
         public abstract string CommonControlConfigWindowGameTabMonsterHealthLabel { get; set; }
         public abstract string CommonControlConfigWindowGameTabDamageNumbersLabel { get; set; }

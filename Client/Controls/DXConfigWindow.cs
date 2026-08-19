@@ -30,7 +30,7 @@ namespace Client.Controls
         public DXSoundBar SoundMusicBar, SoundSystemBar, SoundPlayerBar, SoundMonsterBar, SoundMagicBar;
 
         //Game
-        private DXCheckBox ItemNameCheckBox, MonsterNameCheckBox, PlayerNameCheckBox, UserHealthCheckBox, MonsterHealthCheckBox, DamageNumbersCheckBox,
+        private DXCheckBox ItemNameCheckBox, MonsterNameCheckBox, PlayerNameCheckBox, NPCNameCheckBox, UserHealthCheckBox, MonsterHealthCheckBox, DamageNumbersCheckBox,
             EscapeCloseAllCheckBox, ShiftOpenChatCheckBox, RightClickDeTargetCheckBox, MonsterBoxVisibleCheckBox, LogChatCheckBox, DrawEffectsCheckBox,
             DrawParticlesCheckBox, DrawWeatherCheckBox, ShowTargetOutlineCheckBox, ObservableCheckBox;
         public DXCheckBox DisplayHelmetCheckBox, HideChatBarCheckBox;
@@ -125,6 +125,7 @@ namespace Client.Controls
             ItemNameCheckBox.Checked = Config.ShowItemNames;
             MonsterNameCheckBox.Checked = Config.ShowMonsterNames;
             PlayerNameCheckBox.Checked = Config.ShowPlayerNames;
+            NPCNameCheckBox.Checked = Config.ShowNPCNames;
             UserHealthCheckBox.Checked = Config.ShowUserHealth;
             MonsterHealthCheckBox.Checked = Config.ShowMonsterHealth;
             DamageNumbersCheckBox.Checked = Config.ShowDamageNumbers;
@@ -730,6 +731,13 @@ namespace Client.Controls
             PlayerNameCheckBox.CheckedChanged += (o, e) => Config.ShowPlayerNames = PlayerNameCheckBox.Checked;
             gameSettingsSection.AddControl("", PlayerNameCheckBox);
 
+            NPCNameCheckBox = new DXCheckBox
+            {
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabNPCNameLabel },
+            };
+            NPCNameCheckBox.CheckedChanged += (o, e) => Config.ShowNPCNames = NPCNameCheckBox.Checked;
+            gameSettingsSection.AddControl("", NPCNameCheckBox);
+
             UserHealthCheckBox = new DXCheckBox
             {
                 Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabUserHealthLabel },
@@ -1292,6 +1300,14 @@ namespace Client.Controls
                         PlayerNameCheckBox.Dispose();
 
                     PlayerNameCheckBox = null;
+                }
+
+                if (NPCNameCheckBox != null)
+                {
+                    if (!NPCNameCheckBox.IsDisposed)
+                        NPCNameCheckBox.Dispose();
+
+                    NPCNameCheckBox = null;
                 }
 
                 if (UserHealthCheckBox != null)

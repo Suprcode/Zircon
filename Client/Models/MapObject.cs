@@ -4,7 +4,6 @@ using Client.Models.Particles;
 using Client.Scenes;
 using Client.Scenes.Views;
 using Library;
-using Library.Network.ClientPackets;
 using Library.SystemModels;
 using System;
 using System.Collections.Generic;

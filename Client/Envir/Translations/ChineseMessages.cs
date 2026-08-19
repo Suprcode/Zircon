@@ -188,6 +188,7 @@ namespace Client.Envir.Translations
         public override string CommonControlConfigWindowGameTabItemNameLabel { get; set; } = "物品显名";
         public override string CommonControlConfigWindowGameTabMonsterNameLabel { get; set; } = "怪物显名";
         public override string CommonControlConfigWindowGameTabPlayerNameLabel { get; set; } = "人物显名";
+        public override string CommonControlConfigWindowGameTabNPCNameLabel { get; set; } = "NPC Names";
         public override string CommonControlConfigWindowGameTabUserHealthLabel { get; set; } = "玩家状态";
         public override string CommonControlConfigWindowGameTabMonsterHealthLabel { get; set; } = "怪物状态";
         public override string CommonControlConfigWindowGameTabDamageNumbersLabel { get; set; } = "Dmg Numbers";

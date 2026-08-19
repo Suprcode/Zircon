@@ -72,6 +72,7 @@ namespace Client.Envir
         public static bool ShowItemNames { get; set; } = true;
         public static bool ShowMonsterNames { get; set; } = true;
         public static bool ShowPlayerNames { get; set; } = true;
+        public static bool ShowNPCNames { get; set; } = true;
         public static bool ShowUserHealth { get; set; } = true;
         public static bool ShowMonsterHealth { get; set; } = true;
         public static bool ShowDamageNumbers { get; set; } = true;

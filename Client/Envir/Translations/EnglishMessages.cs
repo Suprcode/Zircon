@@ -189,6 +189,7 @@ namespace Client.Envir.Translations
         public override string CommonControlConfigWindowGameTabItemNameLabel { get; set; } = "Item Names";
         public override string CommonControlConfigWindowGameTabMonsterNameLabel { get; set; } = "Monster Names";
         public override string CommonControlConfigWindowGameTabPlayerNameLabel { get; set; } = "Player Names";
+        public override string CommonControlConfigWindowGameTabNPCNameLabel { get; set; } = "NPC Names";
         public override string CommonControlConfigWindowGameTabUserHealthLabel { get; set; } = "User Health";
         public override string CommonControlConfigWindowGameTabMonsterHealthLabel { get; set; } = "Monster Health";
         public override string CommonControlConfigWindowGameTabDamageNumbersLabel { get; set; } = "Dmg Numbers";

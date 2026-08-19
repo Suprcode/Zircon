@@ -272,6 +272,7 @@ namespace Client.Scenes.Views
                         if (!Config.ShowItemNames || ob.CurrentLocation == MapLocation) continue;
                         break;
                     case ObjectType.NPC:
+                        if (!Config.ShowNPCNames) continue;
                         break;
                     case ObjectType.Spell:
                         break;
