@@ -63,28 +63,11 @@ int ShadowSupport(vec4 candidate, vec4 reference)
     return IsSimilarShadow(candidate, reference) ? 1 : 0;
 }
 
-vec4 MakeShadowCoverage(vec4 first, vec4 second, vec4 third, vec4 fourth, float shadowOpacity)
+vec4 MakeShadowPixel(vec4 shadow, float coverage, float shadowOpacity)
 {
-    float alphaSum = first.a + second.a + third.a + fourth.a;
-    float alpha = alphaSum * shadowOpacity * 0.25;
-    vec3 colour;
-    if (pushConstants.uTint.x > 0.5)
-    {
-        colour = (first.rgb * first.a + second.rgb * second.a + third.rgb * third.a + fourth.rgb * fourth.a) /
-                 max(alphaSum, 0.001);
-    }
-    else
-    {
-        colour = (first.rgb + second.rgb + third.rgb + fourth.rgb) * shadowOpacity * 0.25;
-    }
-
-    return vec4(colour, alpha);
-}
-
-vec4 MakeCoveredShadow(vec4 center, float shadowOpacity)
-{
-    vec3 colour = pushConstants.uTint.x > 0.5 ? center.rgb : center.rgb * shadowOpacity;
-    return vec4(colour, center.a * shadowOpacity);
+    float opacity = clamp(coverage, 0.0, 1.0) * shadowOpacity;
+    vec3 colour = pushConstants.uTint.x > 0.5 ? shadow.rgb : shadow.rgb * opacity;
+    return vec4(colour, shadow.a * opacity);
 }
 
 vec4 FillShadowHatch(vec2 uv)
@@ -104,50 +87,36 @@ vec4 FillShadowHatch(vec2 uv)
 
     if (centerTransparent)
     {
-        bool missingLeft = pixel.x == sourceMin.x;
-        bool missingRight = pixel.x == sourceMax.x;
-        bool missingUp = pixel.y == sourceMin.y;
-        bool missingDown = pixel.y == sourceMax.y;
-        int missingCount = (missingLeft ? 1 : 0) + (missingRight ? 1 : 0) +
-                           (missingUp ? 1 : 0) + (missingDown ? 1 : 0);
-        if (missingCount > 1)
+        vec4 left = LoadSourcePixel(pixel + ivec2(-1, 0), sourceMin, sourceMax);
+        vec4 right = LoadSourcePixel(pixel + ivec2(1, 0), sourceMin, sourceMax);
+        vec4 up = LoadSourcePixel(pixel + ivec2(0, -1), sourceMin, sourceMax);
+        vec4 down = LoadSourcePixel(pixel + ivec2(0, 1), sourceMin, sourceMax);
+
+        vec4 reference = IsDarkShadow(left) ? left :
+                         IsDarkShadow(right) ? right :
+                         IsDarkShadow(up) ? up : down;
+        if (!IsDarkShadow(reference))
             return center;
 
-        vec4 reference = vec4(0.0);
-        bool hasReference = false;
-        vec4 left = reference;
-        vec4 right = reference;
-        vec4 up = reference;
-        vec4 down = reference;
+        bool shadowLeft = IsSimilarShadow(left, reference);
+        bool shadowRight = IsSimilarShadow(right, reference);
+        bool shadowUp = IsSimilarShadow(up, reference);
+        bool shadowDown = IsSimilarShadow(down, reference);
+        int support = (shadowLeft ? 1 : 0) + (shadowRight ? 1 : 0) +
+                      (shadowUp ? 1 : 0) + (shadowDown ? 1 : 0);
 
-        if (!missingLeft)
-        {
-            left = LoadSourcePixel(pixel + ivec2(-1, 0), sourceMin, sourceMax);
-            if (!IsDarkShadow(left)) return center;
-            reference = left;
-            hasReference = true;
-        }
-        if (!missingRight)
-        {
-            right = LoadSourcePixel(pixel + ivec2(1, 0), sourceMin, sourceMax);
-            if (!IsDarkShadow(right) || (hasReference && !IsSimilar(right, reference))) return center;
-            if (!hasReference) { reference = right; hasReference = true; }
-        }
-        if (!missingUp)
-        {
-            up = LoadSourcePixel(pixel + ivec2(0, -1), sourceMin, sourceMax);
-            if (!IsDarkShadow(up) || (hasReference && !IsSimilar(up, reference))) return center;
-            if (!hasReference) { reference = up; hasReference = true; }
-        }
-        if (!missingDown)
-        {
-            down = LoadSourcePixel(pixel + ivec2(0, 1), sourceMin, sourceMax);
-            if (!IsDarkShadow(down) || (hasReference && !IsSimilar(down, reference))) return center;
-            if (!hasReference) { reference = down; hasReference = true; }
-        }
+        if (support < 2)
+            return center;
 
-        return MakeShadowCoverage(missingLeft ? reference : left, missingRight ? reference : right,
-                                  missingUp ? reference : up, missingDown ? reference : down, shadowOpacity);
+        vec4 shadow = ((shadowLeft ? left : vec4(0.0)) + (shadowRight ? right : vec4(0.0)) +
+                       (shadowUp ? up : vec4(0.0)) + (shadowDown ? down : vec4(0.0))) / float(support);
+
+        int shapeSupport = support;
+        shapeSupport += pixel.x == sourceMin.x ? 1 : 0;
+        shapeSupport += pixel.x == sourceMax.x ? 1 : 0;
+        shapeSupport += pixel.y == sourceMin.y ? 1 : 0;
+        shapeSupport += pixel.y == sourceMax.y ? 1 : 0;
+        return MakeShadowPixel(shadow, float(min(shapeSupport, 4)) * 0.25, shadowOpacity);
     }
 
     vec4 left = LoadSourcePixel(pixel + ivec2(-1, 0), sourceMin, sourceMax);
@@ -164,14 +133,26 @@ vec4 FillShadowHatch(vec2 uv)
     vec4 bottomLeft = LoadSourcePixel(pixel + ivec2(-1, 1), sourceMin, sourceMax);
     vec4 bottomRight = LoadSourcePixel(pixel + ivec2(1, 1), sourceMin, sourceMax);
 
-    bool diagonalA = IsSimilarShadow(topLeft, center) && IsSimilarShadow(bottomRight, center);
-    bool diagonalB = IsSimilarShadow(topRight, center) && IsSimilarShadow(bottomLeft, center);
-    bool edgeDiagonal =
-        (pixel.x == sourceMin.x && IsSimilarShadow(topRight, center) && IsSimilarShadow(bottomRight, center)) ||
-        (pixel.x == sourceMax.x && IsSimilarShadow(topLeft, center) && IsSimilarShadow(bottomLeft, center)) ||
-        (pixel.y == sourceMin.y && IsSimilarShadow(bottomLeft, center) && IsSimilarShadow(bottomRight, center)) ||
-        (pixel.y == sourceMax.y && IsSimilarShadow(topLeft, center) && IsSimilarShadow(topRight, center));
-    if (!diagonalA && !diagonalB && !edgeDiagonal)
+    int diagonalSupport = 0;
+    diagonalSupport += ShadowSupport(topLeft, center);
+    diagonalSupport += ShadowSupport(topRight, center);
+    diagonalSupport += ShadowSupport(bottomLeft, center);
+    diagonalSupport += ShadowSupport(bottomRight, center);
+
+    if (diagonalSupport > 0)
+    {
+        diagonalSupport += pixel.x == sourceMin.x || pixel.y == sourceMin.y ? 1 : 0;
+        diagonalSupport += pixel.x == sourceMax.x || pixel.y == sourceMin.y ? 1 : 0;
+        diagonalSupport += pixel.x == sourceMin.x || pixel.y == sourceMax.y ? 1 : 0;
+        diagonalSupport += pixel.x == sourceMax.x || pixel.y == sourceMax.y ? 1 : 0;
+        diagonalSupport = min(diagonalSupport, 4);
+    }
+
+    if (diagonalSupport >= 2)
+    {
+        return MakeShadowPixel(center, (1.0 + float(diagonalSupport)) * 0.2, shadowOpacity);
+    }
+    else
     {
         int support = 0;
         support += ShadowSupport(LoadSourcePixel(pixel + ivec2(-2, 0), sourceMin, sourceMax), center);
@@ -183,12 +164,9 @@ vec4 FillShadowHatch(vec2 uv)
         support += ShadowSupport(LoadSourcePixel(pixel + ivec2(-2, 2), sourceMin, sourceMax), center);
         support += ShadowSupport(LoadSourcePixel(pixel + ivec2(2, 2), sourceMin, sourceMax), center);
 
-        float coverage = shadowOpacity * (support == 0 ? 0.25 : (support == 1 ? 0.5 : 1.0));
-        vec3 colour = pushConstants.uTint.x > 0.5 ? center.rgb : center.rgb * coverage;
-        return vec4(colour, center.a * coverage);
+        float coverage = max(0.25, (1.0 + float(support)) / 9.0);
+        return MakeShadowPixel(center, coverage, shadowOpacity);
     }
-
-    return MakeCoveredShadow(center, shadowOpacity);
 }
 
 void main()

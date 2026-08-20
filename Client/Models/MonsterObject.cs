@@ -2586,6 +2586,8 @@ namespace Client.Models
 
         public void DrawShadow(int x, int y)
         {
+            float shadowOpacity = ObjectShadowOpacity;
+
             switch (Image)
             {
                 case MonsterImage.None:
@@ -2598,12 +2600,12 @@ namespace Client.Models
                 case MonsterImage.SabukGateWest:
                     break;
                 case MonsterImage.LobsterLord:
-                    BodyLibrary.Draw(BodyFrame, x, y, Color.White, true, 0.5f, ImageType.Shadow, Scale);
-                    BodyLibrary.Draw(BodyFrame + 1000, x, y, Color.White, true, 0.5f, ImageType.Shadow, Scale);
-                    BodyLibrary.Draw(BodyFrame + 2000, x, y, Color.White, true, 0.5f, ImageType.Shadow, Scale);
+                    BodyLibrary.Draw(BodyFrame, x, y, Color.White, true, shadowOpacity, ImageType.Shadow, Scale);
+                    BodyLibrary.Draw(BodyFrame + 1000, x, y, Color.White, true, shadowOpacity, ImageType.Shadow, Scale);
+                    BodyLibrary.Draw(BodyFrame + 2000, x, y, Color.White, true, shadowOpacity, ImageType.Shadow, Scale);
                     break;
                 default:
-                    BodyLibrary.Draw(BodyFrame, x, y, Color.White, true, 0.5f, ImageType.Shadow, Scale);
+                    BodyLibrary.Draw(BodyFrame, x, y, Color.White, true, shadowOpacity, ImageType.Shadow, Scale);
                     break;
             }
         }

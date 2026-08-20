@@ -267,6 +267,7 @@ namespace Client.Models
 
         public int Light;
         public float Opacity = 1F;
+        protected static float ObjectShadowOpacity => GameScene.ShadowOpacity;
         public Color LightColour = Globals.NoneColour;
 
         public Dictionary<MagicEffect, List<MirEffect>> MagicEffects = new Dictionary<MagicEffect, List<MirEffect>>();

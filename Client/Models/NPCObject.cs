@@ -165,7 +165,7 @@ namespace Client.Models
 
         private void DrawShadow()
         {
-            BodyLibrary.Draw(BodyFrame, DrawX, DrawY, Color.White, true, 0.5f, ImageType.Shadow);
+            BodyLibrary.Draw(BodyFrame, DrawX, DrawY, Color.White, true, ObjectShadowOpacity, ImageType.Shadow);
         }
         private void DrawBody(bool mouseOver = false)
         {

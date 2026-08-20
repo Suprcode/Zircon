@@ -491,9 +491,9 @@ namespace Shared.Rendering
                                 TextureFilterMode oldTextureFilter = RenderingPipelineManager.GetTextureFilter();
 
                                 RenderingPipelineManager.SetTextureFilter(TextureFilterMode.None);
-                                if (oldOpacity != 0.5F)
+                                if (oldOpacity != opacity)
                                 {
-                                    RenderingPipelineManager.SetOpacity(0.5F);
+                                    RenderingPipelineManager.SetOpacity(opacity);
                                 }
 
                                 RenderingPipelineManager.DrawTexture(renderTexture, null, transform, System.Numerics.Vector3.Zero, System.Numerics.Vector3.Zero, Color.Black);
@@ -505,9 +505,9 @@ namespace Shared.Rendering
                                 image.ExpireTime = GetNow() + GetCacheDuration();
                                 break;
                             case 50:
-                                if (oldOpacity != 0.5F)
+                                if (oldOpacity != opacity)
                                 {
-                                    RenderingPipelineManager.SetOpacity(0.5F);
+                                    RenderingPipelineManager.SetOpacity(opacity);
                                 }
 
                                 Rectangle fallbackSource = new Rectangle(0, 0, image.Width, image.Height);
@@ -639,7 +639,7 @@ namespace Shared.Rendering
                                         TextureFilterMode oldTextureFilter = RenderingPipelineManager.GetTextureFilter();
 
                                         RenderingPipelineManager.SetTextureFilter(TextureFilterMode.None);
-                                        if (oldOpacity != 0.5F) RenderingPipelineManager.SetOpacity(0.5F);
+                                        if (oldOpacity != opacity) RenderingPipelineManager.SetOpacity(opacity);
 
                                         RenderingPipelineManager.DrawTexture(renderTexture, null, transform, System.Numerics.Vector3.Zero, System.Numerics.Vector3.Zero, Color.Black);
                                         DrawCounted?.Invoke();
@@ -652,7 +652,7 @@ namespace Shared.Rendering
                                     }
                                 case 50:
                                     {
-                                        if (oldOpacity != 0.5F) RenderingPipelineManager.SetOpacity(0.5F);
+                                        if (oldOpacity != opacity) RenderingPipelineManager.SetOpacity(opacity);
 
                                         scaling = Matrix3x2.CreateScale(scale);
                                         translation = Matrix3x2.CreateTranslation(x + (image.Width / 2), y + (image.Height / 2));

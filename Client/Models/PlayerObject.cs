@@ -1326,16 +1326,17 @@ namespace Client.Models
             RenderingPipelineManager.SetTextureFilter(TextureFilterMode.None);
 
             float oldOpacity = RenderingPipelineManager.GetOpacity();
-            if (oldOpacity != 0.5F)
+            float shadowOpacity = ObjectShadowOpacity;
+            if (oldOpacity != shadowOpacity)
             {
-                RenderingPipelineManager.SetOpacity(0.5F);
+                RenderingPipelineManager.SetOpacity(shadowOpacity);
             }
 
             RenderingPipelineManager.DrawTexture(scratchTexture, scratchSource, transform, System.Numerics.Vector3.Zero, System.Numerics.Vector3.Zero, Color.Black);
 
             RenderingPipelineManager.SetTextureFilter(TextureFilterMode.Point);
 
-            if (0.5F != oldOpacity)
+            if (shadowOpacity != oldOpacity)
             {
                 RenderingPipelineManager.SetOpacity(oldOpacity);
             }
@@ -1354,7 +1355,7 @@ namespace Client.Models
         {
             if (library == null) return;
 
-            library.DrawShadow(frame, DrawX, DrawY, Color.Black, true, 0.5F, Scale,
+            library.DrawShadow(frame, DrawX, DrawY, Color.Black, true, ObjectShadowOpacity, Scale,
                 DrawX + CellWidth / 2F, DrawY + CellHeight / 2F);
         }
 
