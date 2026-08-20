@@ -380,7 +380,7 @@ namespace Client.Scenes
 
         public static float CalculateShadowOpacity(float dayTime)
         {
-            if (!Config.DynamicShadow)
+            if (!Config.DynamicShadows)
                 return DayShadowOpacity;
 
             float daylight = Math.Clamp(dayTime, 0F, 1F);
