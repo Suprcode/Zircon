@@ -369,6 +369,8 @@ namespace Client.Controls
             };
             BorderlessCheckbox.CheckedChanged += (o, e) =>
             {
+                if (Config.Borderless == BorderlessCheckbox.Checked) return;
+
                 Config.Borderless = BorderlessCheckbox.Checked;
                 RenderingPipelineManager.ResetDevice();
             };
@@ -387,6 +389,8 @@ namespace Client.Controls
                 var renderingPipeline = RenderingPipelineManager.SupportsMultiplePipelines
                        ? RenderingPipelineComboBox.SelectedItem as string
                        : RenderingPipelineManager.DefaultPipelineIdentifier;
+
+                if (string.Equals(Config.RenderingPipeline, renderingPipeline, StringComparison.OrdinalIgnoreCase)) return;
 
                 Config.RenderingPipeline = renderingPipeline;
                 RenderingPipelineManager.RequestSwitchPipeline(renderingPipeline);
@@ -412,7 +416,9 @@ namespace Client.Controls
             };
             GameSizeComboBox.SelectedItemChanged += (o, e) => 
             {
-                Config.GameSize = (Size)GameSizeComboBox.SelectedItem;
+                if (GameSizeComboBox.SelectedItem is not Size gameSize || Config.GameSize == gameSize) return;
+
+                Config.GameSize = gameSize;
 
                 if (ActiveScene is GameScene)
                 {
@@ -445,6 +451,8 @@ namespace Client.Controls
                 if (DefaultMonitorComboBox.SelectedItem is not DisplayMonitorInfo monitor)
                     return;
 
+                if (monitor.Equals(RenderingPipelineManager.GetSelectedMonitor())) return;
+
                 RenderingPipelineManager.SelectMonitor(monitor.Index);
             };
 
@@ -465,6 +473,8 @@ namespace Client.Controls
             };
             VSyncCheckBox.CheckedChanged += (o, e) =>
             {
+                if (Config.VSync == VSyncCheckBox.Checked) return;
+
                 Config.VSync = VSyncCheckBox.Checked;
                 RenderingPipelineManager.ResetDevice();
             };
@@ -524,7 +534,9 @@ namespace Client.Controls
             };
             LanguageComboBox.SelectedItemChanged += (o, e) =>
             {
-                Config.Language = (string)LanguageComboBox.SelectedItem;
+                if (LanguageComboBox.SelectedItem is not string language || string.Equals(Config.Language, language, StringComparison.Ordinal)) return;
+
+                Config.Language = language;
 
                 CEnvir.LoadLanguage();
 
