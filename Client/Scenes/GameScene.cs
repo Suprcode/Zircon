@@ -378,18 +378,26 @@ namespace Client.Scenes
 
         public static float ShadowOpacity = DayShadowOpacity;
 
-        public static float CalculateShadowOpacity(float dayTime)
+        public static float CalculateShadowOpacity(float dayTime, LightSetting lightSetting)
         {
             if (!Config.DynamicShadows)
                 return DayShadowOpacity;
 
-            float daylight = Math.Clamp(dayTime, 0F, 1F);
+            float daylight = lightSetting switch
+            {
+                LightSetting.Light => 1F,
+                LightSetting.Night => 0F,
+                LightSetting.Twilight => 100F / 255F,
+                _ => Math.Clamp(dayTime, 0F, 1F),
+            };
+
             return NightShadowOpacity + (DayShadowOpacity - NightShadowOpacity) * daylight;
         }
 
         public void UpdateShadowOpacity()
         {
-            float newOpacity = CalculateShadowOpacity(DayTime);
+            LightSetting lightSetting = MapControl?.MapInfo?.Light ?? LightSetting.Default;
+            float newOpacity = CalculateShadowOpacity(DayTime, lightSetting);
             int oldOpacityLevel = (int)Math.Round(ShadowOpacity * 255F);
             int newOpacityLevel = (int)Math.Round(newOpacity * 255F);
 

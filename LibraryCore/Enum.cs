@@ -1452,7 +1452,28 @@ namespace Library
         ForestWalkway3,
         Star,
         Lock,
-        Boat
+        Boat,
+
+        StairsUp2 = 200,
+        StairsDown2,
+        Ladder,
+        Trapdoor,
+        RopeBridge,
+        TeleportPortal,
+        Lift,
+        MineTunnel,
+        WellShaft,
+        DoorwayRight,
+        DragonGate,
+        CrystalCavern,
+        RuneMonolith,
+        MagicMirror,
+        FloatingIslandLift,
+        MoonGate,
+        SpellbookPortal,
+        TreeHollow,
+        PhoenicGate,
+        FaerieMushroomRing
     }
 
     public enum NPCCategory
