@@ -131,13 +131,9 @@ int ShadowSupport(float4 candidate, float4 reference)
     return IsSimilarShadow(candidate, reference) ? 1 : 0;
 }
 
-float4 MakeShadowCoverage(float4 first, float4 second, float4 third, float4 fourth, float shadowOpacity)
+float4 MakeShadowPixel(float4 shadow, float coverage, float shadowOpacity)
 {
-    float alphaSum = first.a + second.a + third.a + fourth.a;
-    float alpha = alphaSum * shadowOpacity * 0.25;
-    float3 colour = (first.rgb * first.a + second.rgb * second.a + third.rgb * third.a + fourth.rgb * fourth.a) /
-                    max(alphaSum, 0.001);
-    return float4(colour, alpha);
+    return float4(shadow.rgb, shadow.a * saturate(coverage) * shadowOpacity);
 }
 
 float4 FillShadowHatch(uint textureIndex, float2 uv, float4 spriteSource, float2 spriteTextureSize, float shadowOpacity)
@@ -157,50 +153,43 @@ float4 FillShadowHatch(uint textureIndex, float2 uv, float4 spriteSource, float2
 
     if (centerTransparent)
     {
-        bool missingLeft = pixel.x == sourceMin.x;
-        bool missingRight = pixel.x == sourceMax.x;
-        bool missingUp = pixel.y == sourceMin.y;
-        bool missingDown = pixel.y == sourceMax.y;
-        int missingCount = (missingLeft ? 1 : 0) + (missingRight ? 1 : 0) +
-                           (missingUp ? 1 : 0) + (missingDown ? 1 : 0);
-        if (missingCount > 1)
+        float4 left = LoadSourcePixel(textureIndex, pixel + int2(-1, 0), sourceMin, sourceMax);
+        float4 right = LoadSourcePixel(textureIndex, pixel + int2(1, 0), sourceMin, sourceMax);
+        float4 up = LoadSourcePixel(textureIndex, pixel + int2(0, -1), sourceMin, sourceMax);
+        float4 down = LoadSourcePixel(textureIndex, pixel + int2(0, 1), sourceMin, sourceMax);
+
+        float4 reference = IsDarkShadow(left) ? left :
+                           IsDarkShadow(right) ? right :
+                           IsDarkShadow(up) ? up : down;
+        if (!IsDarkShadow(reference))
             return center;
 
-        float4 reference = float4(0, 0, 0, 0);
-        bool hasReference = false;
-        float4 left = reference;
-        float4 right = reference;
-        float4 up = reference;
-        float4 down = reference;
+        bool shadowLeft = IsSimilarShadow(left, reference);
+        bool shadowRight = IsSimilarShadow(right, reference);
+        bool shadowUp = IsSimilarShadow(up, reference);
+        bool shadowDown = IsSimilarShadow(down, reference);
+        int support = (shadowLeft ? 1 : 0) + (shadowRight ? 1 : 0) +
+                      (shadowUp ? 1 : 0) + (shadowDown ? 1 : 0);
 
-        if (!missingLeft)
-        {
-            left = LoadSourcePixel(textureIndex, pixel + int2(-1, 0), sourceMin, sourceMax);
-            if (!IsDarkShadow(left)) return center;
-            reference = left;
-            hasReference = true;
-        }
-        if (!missingRight)
-        {
-            right = LoadSourcePixel(textureIndex, pixel + int2(1, 0), sourceMin, sourceMax);
-            if (!IsDarkShadow(right) || (hasReference && !IsSimilar(right, reference))) return center;
-            if (!hasReference) { reference = right; hasReference = true; }
-        }
-        if (!missingUp)
-        {
-            up = LoadSourcePixel(textureIndex, pixel + int2(0, -1), sourceMin, sourceMax);
-            if (!IsDarkShadow(up) || (hasReference && !IsSimilar(up, reference))) return center;
-            if (!hasReference) { reference = up; hasReference = true; }
-        }
-        if (!missingDown)
-        {
-            down = LoadSourcePixel(textureIndex, pixel + int2(0, 1), sourceMin, sourceMax);
-            if (!IsDarkShadow(down) || (hasReference && !IsSimilar(down, reference))) return center;
-            if (!hasReference) { reference = down; hasReference = true; }
-        }
+        // A transparent checker sample has four possible shadow samples on the
+        // opposite parity. Two are enough to establish a real hatch edge; the
+        // fraction that remain is the reconstructed silhouette coverage.
+        if (support < 2)
+            return center;
 
-        return MakeShadowCoverage(missingLeft ? reference : left, missingRight ? reference : right,
-                                  missingUp ? reference : up, missingDown ? reference : down, shadowOpacity);
+        float4 shadow = ((shadowLeft ? left : 0) + (shadowRight ? right : 0) +
+                         (shadowUp ? up : 0) + (shadowDown ? down : 0)) / support;
+
+        // A source-rectangle boundary is a batching/atlas boundary, not a
+        // shadow silhouette. Once the local checker pattern is established,
+        // extrapolate its missing samples so neighbouring map tiles do not get
+        // a feathered line between them.
+        int shapeSupport = support;
+        shapeSupport += pixel.x == sourceMin.x ? 1 : 0;
+        shapeSupport += pixel.x == sourceMax.x ? 1 : 0;
+        shapeSupport += pixel.y == sourceMin.y ? 1 : 0;
+        shapeSupport += pixel.y == sourceMax.y ? 1 : 0;
+        return MakeShadowPixel(shadow, min(shapeSupport, 4) * 0.25, shadowOpacity);
     }
 
     float4 left = LoadSourcePixel(textureIndex, pixel + int2(-1, 0), sourceMin, sourceMax);
@@ -217,14 +206,29 @@ float4 FillShadowHatch(uint textureIndex, float2 uv, float4 spriteSource, float2
     float4 bottomLeft = LoadSourcePixel(textureIndex, pixel + int2(-1, 1), sourceMin, sourceMax);
     float4 bottomRight = LoadSourcePixel(textureIndex, pixel + int2(1, 1), sourceMin, sourceMax);
 
-    bool diagonalA = IsSimilarShadow(topLeft, center) && IsSimilarShadow(bottomRight, center);
-    bool diagonalB = IsSimilarShadow(topRight, center) && IsSimilarShadow(bottomLeft, center);
-    bool edgeDiagonal =
-        (pixel.x == sourceMin.x && IsSimilarShadow(topRight, center) && IsSimilarShadow(bottomRight, center)) ||
-        (pixel.x == sourceMax.x && IsSimilarShadow(topLeft, center) && IsSimilarShadow(bottomLeft, center)) ||
-        (pixel.y == sourceMin.y && IsSimilarShadow(bottomLeft, center) && IsSimilarShadow(bottomRight, center)) ||
-        (pixel.y == sourceMax.y && IsSimilarShadow(topLeft, center) && IsSimilarShadow(topRight, center));
-    if (!diagonalA && !diagonalB && !edgeDiagonal)
+    int diagonalSupport = 0;
+    diagonalSupport += ShadowSupport(topLeft, center);
+    diagonalSupport += ShadowSupport(topRight, center);
+    diagonalSupport += ShadowSupport(bottomLeft, center);
+    diagonalSupport += ShadowSupport(bottomRight, center);
+
+    if (diagonalSupport > 0)
+    {
+        diagonalSupport += pixel.x == sourceMin.x || pixel.y == sourceMin.y ? 1 : 0;
+        diagonalSupport += pixel.x == sourceMax.x || pixel.y == sourceMin.y ? 1 : 0;
+        diagonalSupport += pixel.x == sourceMin.x || pixel.y == sourceMax.y ? 1 : 0;
+        diagonalSupport += pixel.x == sourceMax.x || pixel.y == sourceMax.y ? 1 : 0;
+        diagonalSupport = min(diagonalSupport, 4);
+    }
+
+    if (diagonalSupport >= 2)
+    {
+        // On this checker parity the 3x3 footprint contains the center and four
+        // diagonals. Averaging their binary shape coverage feathers only the
+        // silhouette; a fully surrounded hatch pixel remains unchanged.
+        return MakeShadowPixel(center, (1.0 + diagonalSupport) * 0.2, shadowOpacity);
+    }
+    else
     {
         // At the silhouette the final covered hatch pixel may have no immediate
         // diagonal partner. Confirm it against the same two-pixel hatch grid so
@@ -239,13 +243,11 @@ float4 FillShadowHatch(uint textureIndex, float2 uv, float4 spriteSource, float2
         support += ShadowSupport(LoadSourcePixel(textureIndex, pixel + int2(-2, 2), sourceMin, sourceMax), center);
         support += ShadowSupport(LoadSourcePixel(textureIndex, pixel + int2(2, 2), sourceMin, sourceMax), center);
 
-        // Isolated specks and single-neighbour tips are feathered. Two or more
-        // same-grid neighbours are a normal checker boundary.
-        float coverage = shadowOpacity * (support == 0 ? 0.25 : (support == 1 ? 0.5 : 1.0));
-        return float4(center.rgb, center.a * coverage);
+        // The wider footprint handles narrow tips and diagonal endings without
+        // letting a lone opaque checker pixel survive at full strength.
+        float coverage = max(0.25, (1.0 + support) / 9.0);
+        return MakeShadowPixel(center, coverage, shadowOpacity);
     }
-
-    return float4(center.rgb, center.a * shadowOpacity);
 }
 
 float4 PS_SOLID_SHADOW(PS_INPUT input) : SV_Target

@@ -1083,7 +1083,9 @@ namespace Shared.Rendering.SilkVulkan
 
                         Color outlineColour = outline.Colour;
                         Vector4 outlineVector = ToColourVector(outlineColour);
-                        DrawSpriteImmediate(resource, blendMode, GetBlendConstantRate(blendMode), op0, op1, op2, op3, ou0, ou1, ov0, ov1, vertexColour,
+                        // Keep the outline independent from the base sprite's highlight blend.
+                        // The Direct3D pipelines render this pass at full strength as well.
+                        DrawSpriteImmediate(resource, ClientBlendMode.NONE, 1F, op0, op1, op2, op3, ou0, ou1, ov0, ov1, Vector4.One,
                             CreateTexturePushConstants(SpriteEffectMode.Outline, sourceUv, outlineVector, thickness, resource.Size));
                         break;
                     case SpriteShaderEffectKind.DropShadow:

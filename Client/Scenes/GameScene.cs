@@ -373,6 +373,32 @@ namespace Client.Scenes
         }
         private bool _HermitEnabled;
 
+        public const float NightShadowOpacity = 0.2F;
+        public const float DayShadowOpacity = 0.5F;
+
+        public static float ShadowOpacity = DayShadowOpacity;
+
+        public static float CalculateShadowOpacity(float dayTime)
+        {
+            if (!Config.DynamicShadow)
+                return DayShadowOpacity;
+
+            float daylight = Math.Clamp(dayTime, 0F, 1F);
+            return NightShadowOpacity + (DayShadowOpacity - NightShadowOpacity) * daylight;
+        }
+
+        public void UpdateShadowOpacity()
+        {
+            float newOpacity = CalculateShadowOpacity(DayTime);
+            int oldOpacityLevel = (int)Math.Round(ShadowOpacity * 255F);
+            int newOpacityLevel = (int)Math.Round(newOpacity * 255F);
+
+            ShadowOpacity = newOpacity;
+
+            if (oldOpacityLevel != newOpacityLevel && MapControl != null)
+                MapControl.TextureValid = false;
+        }
+
         public float DayTime
         {
             get => _DayTime;
@@ -381,6 +407,7 @@ namespace Client.Scenes
                 if (_DayTime == value) return;
 
                 _DayTime = value;
+                UpdateShadowOpacity();
                 MapControl.LLayer.UpdateLights();
             }
         }
@@ -455,6 +482,7 @@ namespace Client.Scenes
                 Parent = this,
                 Size = Size,
             };
+            UpdateShadowOpacity();
             MapControl.MouseWheel += (o, e) =>
             {
                 foreach (ChatTab tab in ChatTab.Tabs)

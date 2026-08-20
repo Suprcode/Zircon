@@ -22,7 +22,7 @@ namespace Client.Controls
         public DXConfigTab GraphicsTab, SoundTab, GameTab, NetworkTab, UITab;
 
         //Graphics
-        public DXCheckBox FullScreenCheckBox, BorderlessCheckbox, VSyncCheckBox, LimitFPSCheckBox, ClipMouseCheckBox, DebugLabelCheckBox, SmoothMoveCheckBox;
+        public DXCheckBox FullScreenCheckBox, BorderlessCheckbox, VSyncCheckBox, LimitFPSCheckBox, ClipMouseCheckBox, DebugLabelCheckBox, SmoothMoveCheckBox, DynamicShadowCheckBox;
         private DXComboBox GameSizeComboBox, DefaultMonitorComboBox, LanguageComboBox, RenderingPipelineComboBox;
 
         //Sound
@@ -101,6 +101,7 @@ namespace Client.Controls
             VSyncCheckBox.Checked = Config.VSync;
             LimitFPSCheckBox.Checked = Config.LimitFPS;
             SmoothMoveCheckBox.Checked = Config.SmoothMove;
+            DynamicShadowCheckBox.Checked = Config.DynamicShadow;
             ClipMouseCheckBox.Checked = Config.ClipMouse;
             DebugLabelCheckBox.Checked = Config.DebugLabel;
             LanguageComboBox.ListBox.SelectItem(Config.Language);
@@ -582,6 +583,19 @@ namespace Client.Controls
                 CEnvir.Enqueue(new C.HelmetToggle { HideHelmet = DisplayHelmetCheckBox.Checked });
             };
             displayEffectsSection.AddControl("", DisplayHelmetCheckBox);
+
+            DynamicShadowCheckBox = new DXCheckBox
+            {
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabDynamicShadowLabel },
+            };
+            DynamicShadowCheckBox.CheckedChanged += (o, e) =>
+            {
+                if (Config.DynamicShadow == DynamicShadowCheckBox.Checked) return;
+
+                Config.DynamicShadow = DynamicShadowCheckBox.Checked;
+                GameScene.Game?.UpdateShadowOpacity();
+            };
+            displayEffectsSection.AddControl("", DynamicShadowCheckBox);
 
             #endregion
 
@@ -1156,6 +1170,13 @@ namespace Client.Controls
                         SmoothMoveCheckBox.Dispose();
 
                     SmoothMoveCheckBox = null;
+                }
+                if (DynamicShadowCheckBox != null)
+                {
+                    if (!DynamicShadowCheckBox.IsDisposed)
+                        DynamicShadowCheckBox.Dispose();
+
+                    DynamicShadowCheckBox = null;
                 }
                 if (ClipMouseCheckBox != null)
                 {
