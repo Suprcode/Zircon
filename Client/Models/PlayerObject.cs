@@ -611,7 +611,9 @@ namespace Client.Models
                     if (Horse != HorseType.None)
                         animation = MirAnimation.HorseWalking;
 
-                    if ((MagicType)action.Extra[1] == MagicType.ShoulderDash || (MagicType)action.Extra[1] == MagicType.Assault)
+                    if ((MagicType)action.Extra[1] == MagicType.DragonCharge)
+                        animation = Horse != HorseType.None ? MirAnimation.HorseRunning : MirAnimation.Running;
+                    else if ((MagicType)action.Extra[1] == MagicType.ShoulderDash || (MagicType)action.Extra[1] == MagicType.Assault)
                         animation = MirAnimation.Combat8;
                     else if (VisibleBuffs.ContainsKey(BuffType.Cloak))
                         animation = VisibleBuffs.ContainsKey(BuffType.GhostWalk) ? MirAnimation.CreepWalkFast : MirAnimation.CreepWalkSlow;
@@ -785,6 +787,7 @@ namespace Client.Models
                         case MirAnimation.HorseWalking:
                         case MirAnimation.HorseRunning:
                         case MirAnimation.HorseStruck:
+                        case MirAnimation.HorseLeaping:
                             ArmourShift = 80;
                             break;
                         case MirAnimation.FishingCast:
@@ -1028,6 +1031,7 @@ namespace Client.Models
                 case MirAnimation.HorseWalking:
                 case MirAnimation.HorseRunning:
                 case MirAnimation.HorseStruck:
+                case MirAnimation.HorseLeaping:
 
                     switch (HorseShape)
                     {
@@ -1235,6 +1239,7 @@ namespace Client.Models
                     case MirAnimation.HorseWalking:
                     case MirAnimation.HorseRunning:
                     case MirAnimation.HorseStruck:
+                    case MirAnimation.HorseLeaping:
                         switch (HorseShape)
                         {
                             default:
@@ -1263,6 +1268,7 @@ namespace Client.Models
                 case MirAnimation.HorseWalking:
                 case MirAnimation.HorseRunning:
                 case MirAnimation.HorseStruck:
+                case MirAnimation.HorseLeaping:
 
                     switch (HorseShape)
                     {
@@ -1536,6 +1542,7 @@ namespace Client.Models
                 case MirAnimation.HorseWalking:
                 case MirAnimation.HorseRunning:
                 case MirAnimation.HorseStruck:
+                case MirAnimation.HorseLeaping:
                     return true;
                 default:
                     return false;

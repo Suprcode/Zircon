@@ -38,7 +38,7 @@
             JsonImportExport = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             MagicImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
             SchoolImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
-            ClassImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
+            RequiredClassImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
             MagicInfoGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
             gridColumn15 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn1 = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -66,7 +66,7 @@
             ((System.ComponentModel.ISupportInitialize)ribbon).BeginInit();
             ((System.ComponentModel.ISupportInitialize)MagicImageComboBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)SchoolImageComboBox).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)ClassImageComboBox).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)RequiredClassImageComboBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)MagicInfoGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)MagicInfoGridControl).BeginInit();
             ((System.ComponentModel.ISupportInitialize)PropertyImageComboBox).BeginInit();
@@ -143,11 +143,11 @@
             SchoolImageComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
             SchoolImageComboBox.Name = "SchoolImageComboBox";
             // 
-            // ClassImageComboBox
+            // RequiredClassImageComboBox
             // 
-            ClassImageComboBox.AutoHeight = false;
-            ClassImageComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
-            ClassImageComboBox.Name = "ClassImageComboBox";
+            RequiredClassImageComboBox.AutoHeight = false;
+            RequiredClassImageComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
+            RequiredClassImageComboBox.Name = "RequiredClassImageComboBox";
             // 
             // MagicInfoGridView
             // 
@@ -194,8 +194,8 @@
             // 
             // gridColumn4
             // 
-            gridColumn4.ColumnEdit = ClassImageComboBox;
-            gridColumn4.FieldName = "Class";
+            gridColumn4.ColumnEdit = RequiredClassImageComboBox;
+            gridColumn4.FieldName = "RequiredClass";
             gridColumn4.Name = "gridColumn4";
             gridColumn4.Visible = true;
             gridColumn4.VisibleIndex = 5;
@@ -318,7 +318,7 @@
             MagicInfoGridControl.MainView = MagicInfoGridView;
             MagicInfoGridControl.MenuManager = ribbon;
             MagicInfoGridControl.Name = "MagicInfoGridControl";
-            MagicInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { MagicImageComboBox, SchoolImageComboBox, ClassImageComboBox, PropertyImageComboBox });
+            MagicInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { MagicImageComboBox, SchoolImageComboBox, RequiredClassImageComboBox, PropertyImageComboBox });
             MagicInfoGridControl.Size = new System.Drawing.Size(896, 395);
             MagicInfoGridControl.TabIndex = 2;
             MagicInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { MagicInfoGridView });
@@ -351,7 +351,7 @@
             ((System.ComponentModel.ISupportInitialize)ribbon).EndInit();
             ((System.ComponentModel.ISupportInitialize)MagicImageComboBox).EndInit();
             ((System.ComponentModel.ISupportInitialize)SchoolImageComboBox).EndInit();
-            ((System.ComponentModel.ISupportInitialize)ClassImageComboBox).EndInit();
+            ((System.ComponentModel.ISupportInitialize)RequiredClassImageComboBox).EndInit();
             ((System.ComponentModel.ISupportInitialize)MagicInfoGridView).EndInit();
             ((System.ComponentModel.ISupportInitialize)MagicInfoGridControl).EndInit();
             ((System.ComponentModel.ISupportInitialize)PropertyImageComboBox).EndInit();
@@ -367,7 +367,7 @@
         private DevExpress.XtraBars.BarButtonItem SaveButton;
         private DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox MagicImageComboBox;
         private DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox SchoolImageComboBox;
-        private DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox ClassImageComboBox;
+        private DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox RequiredClassImageComboBox;
         private DevExpress.XtraGrid.Views.Grid.GridView MagicInfoGridView;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn15;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn1;

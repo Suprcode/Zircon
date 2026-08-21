@@ -1,4 +1,5 @@
 ﻿using MirDB;
+using System.Text.Json.Serialization;
 
 namespace Library.SystemModels
 {
@@ -35,20 +36,29 @@ namespace Library.SystemModels
         }
         private MagicType _Magic;
 
-        public MirClass Class
+        public RequiredClass RequiredClass
         {
-            get { return _Class; }
+            get { return _RequiredClass; }
             set
             {
-                if (_Class == value) return;
+                if (_RequiredClass == value) return;
 
-                var oldValue = _Class;
-                _Class = value;
+                var oldValue = _RequiredClass;
+                _RequiredClass = value;
 
-                OnChanged(oldValue, value, "Class");
+                OnChanged(oldValue, value, "RequiredClass");
             }
         }
-        private MirClass _Class;
+        private RequiredClass _RequiredClass;
+
+        [JsonIgnore]
+        [MigrationProperty("Class")]
+        public byte LegacyClass
+        {
+            get { return _LegacyClass; }
+            set { _LegacyClass = value; }
+        }
+        private byte _LegacyClass;
 
         public MagicSchool School
         {
@@ -307,9 +317,51 @@ namespace Library.SystemModels
         }
         private string _Description;
 
+        protected internal override void OnCreated()
+        {
+            base.OnCreated();
+
+            RequiredClass = RequiredClass.All;
+        }
+
+        protected internal override void OnLoaded()
+        {
+            base.OnLoaded();
+
+            if (MigrationApplied)
+                RequiredClass = LegacyClassToRequiredClass(LegacyClass);
+        }
+
         public override string ToString()
         {
             return Name;
+        }
+
+        public bool MatchesClass(MirClass @class)
+        {
+            RequiredClass required = @class switch
+            {
+                MirClass.Warrior => RequiredClass.Warrior,
+                MirClass.Wizard => RequiredClass.Wizard,
+                MirClass.Taoist => RequiredClass.Taoist,
+                MirClass.Assassin => RequiredClass.Assassin,
+                _ => RequiredClass.None,
+            };
+
+            return required != RequiredClass.None && (RequiredClass & required) == required;
+        }
+
+        private static RequiredClass LegacyClassToRequiredClass(byte legacyClass)
+        {
+            return legacyClass switch
+            {
+                0 => RequiredClass.Warrior,
+                1 => RequiredClass.Wizard,
+                2 => RequiredClass.Taoist,
+                3 => RequiredClass.Assassin,
+                4 => RequiredClass.All,
+                _ => RequiredClass.None,
+            };
         }
     }
 }

@@ -168,7 +168,7 @@ namespace Client.Scenes.Views
             {
                 var hasMagic = MapObject.User.Magics.TryGetValue(magic, out ClientUserMagic userMagic);
 
-                if (!hasMagic && (magic.Class != MapObject.User.Class || magic.School == MagicSchool.None || magic.School == MagicSchool.Discipline)) continue;
+                if (!hasMagic && (!magic.MatchesClass(MapObject.User.Class) || magic.School == MagicSchool.None || magic.School == MagicSchool.Discipline)) continue;
 
                 if (hasMagic && userMagic.ItemRequired)
                 {
@@ -353,6 +353,8 @@ namespace Client.Scenes.Views
                     TabButton.PressedIndex = 171;
                     break;
                 case MagicSchool.Horse:
+                    TabButton.ImageOffset = new Point(0, -4);
+                    TabButton.IntersectParent = false;
                     TabButton.Index = 172;
                     TabButton.HoverIndex = 173;
                     TabButton.PressedIndex = 173;
@@ -988,6 +990,9 @@ namespace Client.Scenes.Views
                     break;
                 case MagicSchool.Assassination:
                     index = 892;
+                    break;
+                case MagicSchool.Horse:
+                    index = 815;
                     break;
                 case MagicSchool.None:
                     break;

@@ -1170,25 +1170,7 @@ namespace Client.Scenes
                 MapControl.ParticleEffects[i].Process();
 
             UpdateItemLabelLocation();
-
-            if (MagicLabel != null && !MagicLabel.IsDisposed)
-            {
-                int x = CEnvir.MouseLocation.X + 15, y = CEnvir.MouseLocation.Y;
-
-                if (x + MagicLabel.Size.Width > Size.Width + Location.X)
-                    x = Size.Width - MagicLabel.Size.Width + Location.X;
-
-                if (y + MagicLabel.Size.Height > Size.Height + Location.Y)
-                    y = Size.Height - MagicLabel.Size.Height + Location.Y;
-
-                if (x < Location.X)
-                    x = Location.X;
-
-                if (y <= Location.Y)
-                    y = Location.Y;
-
-                MagicLabel.Location = new Point(x, y);
-            }
+            UpdateMagicLabelLocation();
 
             if (FameLabel != null && !FameLabel.IsDisposed)
             {
@@ -1964,9 +1946,31 @@ namespace Client.Scenes
 
             builder.Complete();
             MagicLabel = builder.Label;
+            UpdateMagicLabelLocation();
 
             if (disciplineSkill)
                 MagicLabel.BorderColour = Color.LimeGreen;
+        }
+
+        private void UpdateMagicLabelLocation()
+        {
+            if (MagicLabel == null || MagicLabel.IsDisposed) return;
+
+            int x = CEnvir.MouseLocation.X + 15, y = CEnvir.MouseLocation.Y;
+
+            if (x + MagicLabel.Size.Width > Size.Width + Location.X)
+                x = Size.Width - MagicLabel.Size.Width + Location.X;
+
+            if (y + MagicLabel.Size.Height > Size.Height + Location.Y)
+                y = Size.Height - MagicLabel.Size.Height + Location.Y;
+
+            if (x < Location.X)
+                x = Location.X;
+
+            if (y <= Location.Y)
+                y = Location.Y;
+
+            MagicLabel.Location = new Point(x, y);
         }
 
         private static Size GetItemLabelImageSize(ClientUserItem item)
@@ -3001,7 +3005,7 @@ namespace Client.Scenes
 
         public void UseMagic(SpellKey key)
         {
-            if (Game.Observer || User == null || User.Horse != HorseType.None || MagicBarBox == null) return;
+            if (Game.Observer || User == null || MagicBarBox == null) return;
 
             ClientUserMagic magic = null;
 
@@ -3031,6 +3035,10 @@ namespace Client.Scenes
             }
 
             if (magic == null) return;
+
+            bool horseMagic = magic.Info.School == MagicSchool.Horse;
+
+            if (horseMagic != (User.Horse != HorseType.None)) return;
 
             if (magic.ItemRequired)
             {
@@ -3217,6 +3225,7 @@ namespace Client.Scenes
             switch (magic.Info.Magic)
             {
                 case MagicType.ShoulderDash:
+                case MagicType.DragonCharge:
                     if (CEnvir.Now < User.ServerTime) return;
                     if ((User.Poison & PoisonType.WraithGrip) == PoisonType.WraithGrip) return;
 
@@ -3448,6 +3457,7 @@ namespace Client.Scenes
                 case MagicType.Containment:
                 case MagicType.FourWheels:
                 case MagicType.CrescentMoon:
+                case MagicType.RisingStrike:
                     break;
 
                 case MagicType.SwiftBlade:

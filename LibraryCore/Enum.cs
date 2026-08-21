@@ -518,6 +518,7 @@ namespace Library
         HorseWalking,
         HorseRunning,
         HorseStruck,
+        HorseLeaping,
 
         StoneStanding,
 
@@ -857,8 +858,8 @@ namespace Library
         PinkFireBall = 530,
         GreenSludgeBall = 540,
 
-        RushingMount = 700,
-        AscendingMount = 701,
+        DragonCharge = 700,
+        RisingStrike = 701,
     }
 
     public enum MagicProperty
@@ -1594,6 +1595,8 @@ namespace Library
 
         Ranking,
         Developer,
+
+        DragonCharge,
     }
 
     public enum MarketPlaceSort
@@ -2711,6 +2714,9 @@ namespace Library
         PoisonCloud,
         FourWheels,
         CrescentMoon,
+
+        DragonCharge,
+        RisingStrike,
 
         #endregion
 

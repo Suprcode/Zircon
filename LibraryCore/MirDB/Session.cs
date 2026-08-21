@@ -114,6 +114,12 @@ namespace MirDB
 
             foreach (KeyValuePair<Type, ADBCollection> pair in Collections)
                 pair.Value.OnLoaded();
+
+            bool migrationPending = Collections.Values.Any(x => !x.ReadOnly && x.HasMigrations() &&
+                (x.IsSystemData ? (Mode & SessionMode.System) == SessionMode.System : (Mode & SessionMode.Users) == SessionMode.Users));
+
+            if (migrationPending)
+                Save(true);
         }
 
         private void InitializeSystem()

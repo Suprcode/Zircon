@@ -355,6 +355,9 @@ namespace Client.Envir
             [SoundIndex.FourWheels] = new DXSound(SoundPath + @"40360.wav", SoundType.Magic),
             [SoundIndex.CrescentMoon] = new DXSound(SoundPath + @"40370.wav", SoundType.Magic),
 
+            [SoundIndex.DragonCharge] = new DXSound(SoundPath + @"42402.wav", SoundType.Magic),
+            [SoundIndex.RisingStrike] = new DXSound(SoundPath + @"43592.wav", SoundType.Magic),
+
             #endregion
 
             #region Monsters

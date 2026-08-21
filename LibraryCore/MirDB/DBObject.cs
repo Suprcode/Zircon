@@ -46,6 +46,8 @@ namespace MirDB
         [IgnoreProperty]
         protected internal bool IsModified { get; private set; }
 
+        internal bool MigrationApplied { get; private set; }
+
         private MemoryStream SaveMemoryStream;
         private BinaryWriter SaveBinaryWriter;
         protected internal byte[] RawData;
@@ -106,12 +108,14 @@ namespace MirDB
                     else if (dbValue.PropertyType == dbValue.Property.PropertyType)
                     {
                         dbValue.Property.SetValue(this, value);
+                        MigrationApplied |= dbValue.IsMigration;
                         continue;
                     }
 
                     try
                     {
                         dbValue.Property.SetValue(this, Convert.ChangeType(value, dbValue.PropertyType));
+                        MigrationApplied |= dbValue.IsMigration;
                     }
                     catch { }
                 }
@@ -176,6 +180,7 @@ namespace MirDB
         protected virtual void OnSaved()
         {
             IsModified = false;
+            MigrationApplied = false;
         }
         protected internal virtual void OnDeleted()
         {

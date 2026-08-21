@@ -1228,8 +1228,15 @@ namespace Client.Envir
                 {
                     ob.StanceTime = CEnvir.Now.AddSeconds(3);
 
-                    for (int i = 1; i <= p.Distance; i++)
-                        ob.ActionQueue.Add(new ObjectAction(MirAction.Moving, p.Direction, Functions.Move(p.Location, p.Direction, i - p.Distance), 1, p.Magic));
+                    if (p.Continuous)
+                    {
+                        ob.ActionQueue.Add(new ObjectAction(MirAction.Moving, p.Direction, p.Location, p.Distance, p.Magic));
+                    }
+                    else
+                    {
+                        for (int i = 1; i <= p.Distance; i++)
+                            ob.ActionQueue.Add(new ObjectAction(MirAction.Moving, p.Direction, Functions.Move(p.Location, p.Direction, i - p.Distance), 1, p.Magic));
+                    }
                 }
                 else if (ob == MapObject.User)
                 {

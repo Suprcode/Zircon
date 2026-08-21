@@ -340,6 +340,9 @@ namespace Library
                 case MagicType.CrushingWave:
                     return MirAnimation.Combat3;
 
+                case MagicType.RisingStrike:
+                    return MirAnimation.HorseLeaping;
+
                 default:
                     throw new NotImplementedException();
             }

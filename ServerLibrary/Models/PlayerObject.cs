@@ -130,7 +130,7 @@ namespace Server.Models
 
         public override bool CanMove => base.CanMove && !Fishing;
         public override bool CanAttack => base.CanAttack && Horse == HorseType.None;
-        public override bool CanCast => base.CanCast && Horse == HorseType.None && !Fishing;
+        public override bool CanCast => base.CanCast && !Fishing;
 
         private bool HideHead
         {
@@ -14744,7 +14744,9 @@ namespace Server.Models
                 return;
             }
 
-            if (!CanCast)
+            bool horseMagic = magicObject.Magic.Info.School == MagicSchool.Horse;
+
+            if (!CanCast || horseMagic != (Horse != HorseType.None))
             {
                 Enqueue(new S.UserLocation { Direction = Direction, Location = CurrentLocation });
                 return;
@@ -17305,7 +17307,7 @@ namespace Server.Models
             uFocus.Level = nextLevel.Level;
 
             var mInfos = SEnvir.MagicInfoList.Binding
-                .Where(x => x.School == MagicSchool.Discipline && x.Class == Class)
+                .Where(x => x.School == MagicSchool.Discipline && x.MatchesClass(Class))
                 .OrderBy(x => x.NeedLevel1)
                 .Take(4);
 

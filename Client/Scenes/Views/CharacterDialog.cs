@@ -2956,7 +2956,7 @@ namespace Client.Scenes.Views
             int x = 51;
 
             var mInfos = Globals.MagicInfoList.Binding
-                .Where(x => x.School == MagicSchool.Discipline && x.Class == GameScene.Game.User.Class)
+                .Where(x => x.School == MagicSchool.Discipline && x.MatchesClass(GameScene.Game.User.Class))
                 .OrderBy(x => x.NeedLevel1)
                 .Take(4)
                 .ToList();

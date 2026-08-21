@@ -24,6 +24,17 @@ namespace MirDB
     }
 
     [AttributeUsage(AttributeTargets.Property)]
+    public class MigrationPropertyAttribute : Attribute
+    {
+        public string PropertyName { get; }
+
+        public MigrationPropertyAttribute(string propertyName)
+        {
+            PropertyName = propertyName;
+        }
+    }
+
+    [AttributeUsage(AttributeTargets.Property)]
     public class AssociationAttribute : Attribute
     {
         public string Identity { get; }

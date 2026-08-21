@@ -3210,6 +3210,7 @@ namespace Client.Models
             CurrentLocation = action.Location;
 
             EndMagicEffect(MagicEffect.Assault);
+            EndMagicEffect(MagicEffect.DragonCharge);
             EndMagicEffect(MagicEffect.HundredFist);
 
             List<uint> targets;
@@ -3246,6 +3247,9 @@ namespace Client.Models
                         case MagicType.Assault:
                             DXSoundManager.Play(SoundIndex.AssaultStart);
                             CreateMagicEffect(MagicEffect.Assault);
+                            break;
+                        case MagicType.DragonCharge:
+                            CreateMagicEffect(MagicEffect.DragonCharge);
                             break;
                         case MagicType.HundredFist:
                             CreateMagicEffect(MagicEffect.HundredFist);
@@ -3696,6 +3700,19 @@ namespace Client.Models
                                 Direction = action.Direction,
                             });
                             DXSoundManager.Play(SoundIndex.SeismicSlam);
+                            break;
+
+                        #endregion
+
+                        #region Rising Strike
+
+                        case MagicType.RisingStrike:
+                            Effects.Add(new MirEffect(800, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx9, 0, 0, Globals.NoneColour)
+                            {
+                                Blend = true,
+                                MapTarget = CurrentLocation,
+                            });
+                            DXSoundManager.Play(SoundIndex.RisingStrike);
                             break;
 
                         #endregion
@@ -5789,6 +5806,19 @@ namespace Client.Models
                             Loop = true,
                             Direction = Direction,
                         });
+                    }
+                    break;
+                case MagicEffect.DragonCharge:
+                    {
+                        effects.Add(new MirEffect(600, 12, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx9, 0, 0, Globals.NoneColour)
+                        {
+                            Blend = true,
+                            Target = this,
+                            Loop = true,
+                            Direction = Direction,
+                            Skip = 20,
+                        });
+                        DXSoundManager.Play(SoundIndex.DragonCharge);
                     }
                     break;
                 case MagicEffect.ElementalSwords:

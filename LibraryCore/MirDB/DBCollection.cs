@@ -128,6 +128,15 @@ namespace MirDB
             return false;
         }
 
+        internal override bool HasMigrations()
+        {
+            foreach (T ob in Binding)
+                if (!ob.IsTemporary && ob.MigrationApplied)
+                    return true;
+
+            return false;
+        }
+
         internal override void SaveObjects()
         {
             if (ReadOnly || SaveList != null) return;

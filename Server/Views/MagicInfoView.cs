@@ -16,7 +16,7 @@ namespace Server.Views
             MagicImageComboBox.Items.AddEnum<MagicType>();
             SchoolImageComboBox.Items.AddEnum<MagicSchool>();
             PropertyImageComboBox.Items.AddEnum<MagicProperty>();
-            ClassImageComboBox.Items.AddEnum<MirClass>();
+            RequiredClassImageComboBox.Items.AddEnum<RequiredClass>();
         }
 
 

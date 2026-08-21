@@ -159,6 +159,7 @@ namespace Library.Network.ServerPackets
         public Point Location { get; set; }
         public int Distance { get; set; }
         public MagicType Magic { get; set; }
+        public bool Continuous { get; set; }
     }
     public sealed class ObjectPushed : Packet
     {

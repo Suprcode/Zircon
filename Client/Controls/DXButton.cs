@@ -59,6 +59,7 @@ namespace Client.Controls
         public virtual void OnPressedChanged(bool oValue, bool nValue)
         {
             UpdateForeColour();
+            UpdateDisplayArea();
 
             PressedChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -229,6 +230,7 @@ namespace Client.Controls
         #endregion
 
         public DXLabel Label { get; private set; }
+        public Point ImageOffset { get; set; }
 
         public override void OnIsEnabledChanged(bool oValue, bool nValue)
         {
@@ -281,6 +283,21 @@ namespace Client.Controls
         protected internal override void UpdateDisplayArea()
         {
             Rectangle area = new Rectangle(Location, Size);
+
+            area.Offset(ImageOffset);
+
+            if (UseOffSet && Library != null)
+            {
+                int index = Index;
+
+                if (HoverIndex > 0 && MouseControl == this && IsEnabled && CanBePressed)
+                    index = HoverIndex;
+
+                if (PressedIndex > 0 && Pressed && IsEnabled)
+                    index = PressedIndex;
+
+                area.Offset(Library.GetOffSet(index));
+            }
 
             if (Parent != null)
                 area.Offset(Parent.DisplayArea.Location);
@@ -339,7 +356,7 @@ namespace Client.Controls
                 RenderingPipelineManager.SetOpacity(Opacity);
             }
 
-            PresentTexture(texture, sourceRectangle, Parent, DisplayArea, ForeColour, this, 0, Pressed ? 1 : 0);
+            PresentTexture(texture, sourceRectangle, Parent, DisplayArea, ForeColour, this, 0, Pressed ? 1 : 0, 1F, IntersectParent);
 
             if (Blend)
             {

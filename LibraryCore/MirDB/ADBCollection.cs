@@ -20,6 +20,7 @@ namespace Library.MirDB
         public bool RaisePropertyChanges { get; set; }
 
         internal abstract bool HasChanges();
+        internal abstract bool HasMigrations();
         internal abstract void Load(byte[] data, DBMapping mapping);
         internal abstract void SaveObjects();
         internal abstract byte[] GetSaveData();

@@ -474,6 +474,7 @@ namespace Client.Models.Player
                 case MirAnimation.Dead:
                     return indexStart + 1929 + GameScene.Game.MapControl.Animation / animationSpeed % 1 + (int)direction * 10;
                 case MirAnimation.HorseStanding:
+                case MirAnimation.HorseLeaping:
                     return indexStart + 2240 + GameScene.Game.MapControl.Animation / animationSpeed % 4 + (int)direction * 10;
                 case MirAnimation.HorseWalking:
                     return indexStart + 2320 + GameScene.Game.MapControl.Animation / animationSpeed % 6 + (int)direction * 10;

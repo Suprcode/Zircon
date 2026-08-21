@@ -198,6 +198,7 @@ namespace MirDB
         public string PropertyName { get; }
         public Type PropertyType { get; }
         public PropertyInfo Property { get; }
+        public bool IsMigration { get; }
 
         public DBValue(BinaryReader reader, Type type)
         {
@@ -206,6 +207,19 @@ namespace MirDB
 
 
             PropertyInfo property = type?.GetProperty(PropertyName);
+
+            if (property == null && type != null)
+            {
+                foreach (PropertyInfo candidate in type.GetProperties())
+                {
+                    MigrationPropertyAttribute migration = candidate.GetCustomAttribute<MigrationPropertyAttribute>();
+                    if (migration?.PropertyName != PropertyName) continue;
+
+                    property = candidate;
+                    IsMigration = true;
+                    break;
+                }
+            }
 
             if (property != null)
                 if (property.GetCustomAttribute<IgnorePropertyAttribute>() != null) return;
