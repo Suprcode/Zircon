@@ -1138,6 +1138,8 @@ namespace Library.Network.ServerPackets
     {
         public int Index { get; set; }
         public string Owner { get; set; }
+        public int Flag { get; set; }
+        public Color Colour { get; set; }
     }
 
     public sealed class GuildConquestStarted : Packet

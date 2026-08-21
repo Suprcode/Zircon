@@ -28,6 +28,8 @@ namespace Client.Models
         public int BodyShape;
         public int BodyFrame => DrawFrame + BodyShape * BodyOffSet;
 
+        public CastleInfo Castle;
+        public Color CastleFlagColour = Color.White;
 
         public NPCObject(S.ObjectNPC info)
         {
@@ -50,7 +52,22 @@ namespace Client.Models
             }
 
             NameColour = Color.Lime;
-            BodyShape = NPCInfo.Image;
+            int castleIndex = NPCInfo.Image - 1000;
+
+            if (castleIndex >= 0 && castleIndex < CEnvir.CastleInfoList.Binding.Count)
+            {
+                Castle = CEnvir.CastleInfoList.Binding[castleIndex];
+
+                if (GameScene.Game.CastleFlagAppearances.TryGetValue(Castle, out var appearance))
+                {
+                    BodyShape = appearance.Flag;
+                    CastleFlagColour = appearance.Colour;
+                }
+            }
+            else
+            {
+                BodyShape = NPCInfo.Image;
+            }
 
             CurrentLocation = info.CurrentLocation;
 
@@ -58,23 +75,31 @@ namespace Client.Models
 
             NPCs[NPCInfo] = this;
 
-            CEnvir.LibraryList.TryGetValue(LibraryFile.NPC, out BodyLibrary);
-            Frames = NPCInfo.Image switch
+            if (Castle != null)
             {
-                64 or 65 or 91 or 92 or 93 or 157 or 158 or 160 or 165 or 166 or 168 or 208 or 209 or 210 or 211 or 212 or 213 or 214 or 231 or 234 => new Dictionary<MirAnimation, Frame>
+                CEnvir.LibraryList.TryGetValue(LibraryFile.CastleFlag, out BodyLibrary);
+                Frames = FrameSet.CastleFlag;
+            }
+            else
+            {
+                CEnvir.LibraryList.TryGetValue(LibraryFile.NPC, out BodyLibrary);
+                Frames = NPCInfo.Image switch
                 {
-                    [MirAnimation.Standing] = new Frame(0, 1, 0, TimeSpan.FromHours(1))
-                },
-                56 or 57 => new Dictionary<MirAnimation, Frame>
-                {
-                    [MirAnimation.Standing] = new Frame(0, 12, 0, TimeSpan.FromMilliseconds(200))
-                },
-                156 => new Dictionary<MirAnimation, Frame>
-                {
-                    [MirAnimation.Standing] = new Frame(0, 16, 0, TimeSpan.FromMilliseconds(200))
-                },
-                _ => FrameSet.DefaultNPC,
-            };
+                    64 or 65 or 91 or 92 or 93 or 157 or 158 or 160 or 165 or 166 or 168 or 208 or 209 or 210 or 211 or 212 or 213 or 214 or 231 or 234 => new Dictionary<MirAnimation, Frame>
+                    {
+                        [MirAnimation.Standing] = new Frame(0, 1, 0, TimeSpan.FromHours(1))
+                    },
+                    56 or 57 => new Dictionary<MirAnimation, Frame>
+                    {
+                        [MirAnimation.Standing] = new Frame(0, 12, 0, TimeSpan.FromMilliseconds(200))
+                    },
+                    156 => new Dictionary<MirAnimation, Frame>
+                    {
+                        [MirAnimation.Standing] = new Frame(0, 16, 0, TimeSpan.FromMilliseconds(200))
+                    },
+                    _ => FrameSet.DefaultNPC,
+                };
+            }
             SetFrame(new ObjectAction(MirAction.Standing, MirDirection.Up, CurrentLocation));
 
             GameScene.Game.MapControl.AddObject(this);
@@ -184,6 +209,9 @@ namespace Client.Models
 
             BodyLibrary.Draw(BodyFrame, DrawX, DrawY, DrawColour, true, 1F, ImageType.Image);
 
+            if (Castle != null)
+                BodyLibrary.Draw(BodyFrame, DrawX, DrawY, CastleFlagColour, true, 1F, ImageType.Overlay);
+
             if (outlineEnabled)
             {
                 RenderingPipelineManager.DisableOutlineEffect();
@@ -204,6 +232,13 @@ namespace Client.Models
             return BodyLibrary != null && BodyLibrary.VisiblePixel(BodyFrame, new Point(p.X - DrawX, p.Y - DrawY), false, true);
         }
 
+        public void UpdateCastleFlag(CastleInfo castle, int flag, Color colour)
+        {
+            if (Castle != castle) return;
+
+            BodyShape = flag;
+            CastleFlagColour = colour;
+        }
 
         public override void UpdateQuests()
         {

@@ -253,6 +253,7 @@ namespace Client.Scenes
         public Dictionary<ItemInfo, ClientFortuneInfo> FortuneDictionary = new Dictionary<ItemInfo, ClientFortuneInfo>();
 
         public Dictionary<CastleInfo, string> CastleOwners = new Dictionary<CastleInfo, string>();
+        public Dictionary<CastleInfo, (int Flag, Color Colour)> CastleFlagAppearances = new Dictionary<CastleInfo, (int Flag, Color Colour)>();
 
         public bool MoveFrame { get; set; }
         public DateTime MoveTime, OutputTime, ItemRefreshTime;

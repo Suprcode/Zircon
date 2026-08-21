@@ -200,7 +200,13 @@ namespace Server.Models.Monsters
             foreach (SConnection con in SEnvir.Connections)
                 con.ReceiveChat(string.Format(con.Language.ConquestCapture, Contester.GuildName, War.Castle.Name), MessageType.System);
 
-            SEnvir.Broadcast(new S.GuildCastleInfo { Index = War.Castle.Index, Owner = Contester.GuildName });
+            SEnvir.Broadcast(new S.GuildCastleInfo
+            {
+                Index = War.Castle.Index,
+                Owner = Contester.GuildName,
+                Flag = Contester.Flag,
+                Colour = Contester.Colour
+            });
 
             Contester = null;
         }

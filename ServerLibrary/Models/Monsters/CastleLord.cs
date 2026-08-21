@@ -283,7 +283,13 @@ namespace Server.Models.Monsters
                 foreach (SConnection con in SEnvir.Connections)
                     con.ReceiveChat(string.Format(con.Language.ConquestCapture, EXPOwner.Character.Account.GuildMember.Guild.GuildName, War.Castle.Name), MessageType.System);
 
-                SEnvir.Broadcast(new S.GuildCastleInfo { Index = War.Castle.Index, Owner = EXPOwner.Character.Account.GuildMember.Guild.GuildName });
+                SEnvir.Broadcast(new S.GuildCastleInfo
+                {
+                    Index = War.Castle.Index,
+                    Owner = EXPOwner.Character.Account.GuildMember.Guild.GuildName,
+                    Flag = EXPOwner.Character.Account.GuildMember.Guild.Flag,
+                    Colour = EXPOwner.Character.Account.GuildMember.Guild.Colour
+                });
 
                 War.CastleTarget = null;
 

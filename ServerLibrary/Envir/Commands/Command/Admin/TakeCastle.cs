@@ -43,7 +43,13 @@ namespace Server.Envir.Commands.Command.Admin
                     }
                 }
 
-                SEnvir.Broadcast(new S.GuildCastleInfo { Index = castle.Index, Owner = string.Empty });
+                SEnvir.Broadcast(new S.GuildCastleInfo
+                {
+                    Index = castle.Index,
+                    Owner = string.Empty,
+                    Flag = 0,
+                    Colour = System.Drawing.Color.White
+                });
 
                 foreach (PlayerObject user in SEnvir.Players)
                     user.ApplyCastleBuff();
@@ -66,7 +72,13 @@ namespace Server.Envir.Commands.Command.Admin
                     }
                 }
 
-                SEnvir.Broadcast(new S.GuildCastleInfo { Index = castle.Index, Owner = player.Character.Account.GuildMember.Guild.GuildName });
+                SEnvir.Broadcast(new S.GuildCastleInfo
+                {
+                    Index = castle.Index,
+                    Owner = player.Character.Account.GuildMember.Guild.GuildName,
+                    Flag = player.Character.Account.GuildMember.Guild.Flag,
+                    Colour = player.Character.Account.GuildMember.Guild.Colour
+                });
                 foreach (PlayerObject user in SEnvir.Players)
                     user.ApplyCastleBuff();
             }

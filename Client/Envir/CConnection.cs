@@ -4176,9 +4176,15 @@ namespace Client.Envir
         {
             CastleInfo castle = CEnvir.CastleInfoList.Binding.First(x => x.Index == p.Index);
             GameScene.Game.CastleOwners[castle] = p.Owner;
+            GameScene.Game.CastleFlagAppearances[castle] = (p.Flag, p.Colour);
 
             foreach (MapObject ob in GameScene.Game.MapControl.Objects)
+            {
                 ob.NameChanged();
+
+                if (ob is NPCObject npc)
+                    npc.UpdateCastleFlag(castle, p.Flag, p.Colour);
+            }
 
             GameScene.Game.GuildBox.CastlePanels[castle].Update();
 

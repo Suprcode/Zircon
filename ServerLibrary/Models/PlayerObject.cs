@@ -1140,7 +1140,14 @@ namespace Server.Models
             {
                 GuildInfo ownerGuild = SEnvir.GuildInfoList.Binding.FirstOrDefault(x => x.Castle == castle);
 
-                Enqueue(new S.GuildCastleInfo { Index = castle.Index, Owner = ownerGuild?.GuildName ?? String.Empty, ObserverPacket = false });
+                Enqueue(new S.GuildCastleInfo
+                {
+                    Index = castle.Index,
+                    Owner = ownerGuild?.GuildName ?? String.Empty,
+                    Flag = ownerGuild?.Flag ?? 0,
+                    Colour = ownerGuild?.Colour ?? Color.White,
+                    ObserverPacket = false
+                });
             }
 
             foreach (ConquestWar conquest in SEnvir.ConquestWars)
@@ -1256,7 +1263,13 @@ namespace Server.Models
             {
                 GuildInfo ownerGuild = SEnvir.GuildInfoList.Binding.FirstOrDefault(x => x.Castle == castle);
 
-                con.Enqueue(new S.GuildCastleInfo { Index = castle.Index, Owner = ownerGuild?.GuildName ?? String.Empty });
+                con.Enqueue(new S.GuildCastleInfo
+                {
+                    Index = castle.Index,
+                    Owner = ownerGuild?.GuildName ?? String.Empty,
+                    Flag = ownerGuild?.Flag ?? 0,
+                    Colour = ownerGuild?.Colour ?? Color.White
+                });
             }
 
             foreach (ConquestWar conquest in SEnvir.ConquestWars)
@@ -5080,8 +5093,17 @@ namespace Server.Models
 
             if (Character.Account.GuildMember.Guild.Castle != null)
             {
-                var map = SEnvir.GetMap(Character.Account.GuildMember.Guild.Castle.Map);
+                var castle = Character.Account.GuildMember.Guild.Castle;
+                var map = SEnvir.GetMap(castle.Map);
                 map.RefreshFlags();
+
+                SEnvir.Broadcast(new S.GuildCastleInfo
+                {
+                    Index = castle.Index,
+                    Owner = Character.Account.GuildMember.Guild.GuildName,
+                    Flag = Character.Account.GuildMember.Guild.Flag,
+                    Colour = Character.Account.GuildMember.Guild.Colour
+                });
             }
 
             S.GuildUpdate update = Character.Account.GuildMember.Guild.GetUpdatePacket();
@@ -5106,8 +5128,17 @@ namespace Server.Models
 
             if (Character.Account.GuildMember.Guild.Castle != null)
             {
-                var map = SEnvir.GetMap(Character.Account.GuildMember.Guild.Castle.Map);
+                var castle = Character.Account.GuildMember.Guild.Castle;
+                var map = SEnvir.GetMap(castle.Map);
                 map.RefreshFlags();
+
+                SEnvir.Broadcast(new S.GuildCastleInfo
+                {
+                    Index = castle.Index,
+                    Owner = Character.Account.GuildMember.Guild.GuildName,
+                    Flag = Character.Account.GuildMember.Guild.Flag,
+                    Colour = Character.Account.GuildMember.Guild.Colour
+                });
             }
 
             S.GuildUpdate update = Character.Account.GuildMember.Guild.GetUpdatePacket();
