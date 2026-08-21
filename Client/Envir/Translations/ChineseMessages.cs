@@ -175,7 +175,6 @@ namespace Client.Envir.Translations
         public override string CommonControlConfigWindowGraphicsTabVSyncLabel { get; set; } = "V-Sync";
         public override string CommonControlConfigWindowGraphicsTabLimitFPSLabel { get; set; } = "FPS限制";
         public override string CommonControlConfigWindowGraphicsTabSmoothMoveLabel { get; set; } = "平滑移动";
-        public override string CommonControlConfigWindowGraphicsTabDynamicShadowsLabel { get; set; } = "动态阴影透明度";
         public override string CommonControlConfigWindowGraphicsTabClipMouseLabel { get; set; } = "Clip Mouse";
         public override string CommonControlConfigWindowGraphicsTabDebugLabelLabel { get; set; } = "调试标签";
         public override string CommonControlConfigWindowGraphicsTabLanguageLabel { get; set; } = "语言";

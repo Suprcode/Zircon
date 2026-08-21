@@ -373,39 +373,7 @@ namespace Client.Scenes
         }
         private bool _HermitEnabled;
 
-        public const float NightShadowOpacity = 0.2F;
-        public const float DayShadowOpacity = 0.5F;
-
-        public static float ShadowOpacity = DayShadowOpacity;
-
-        public static float CalculateShadowOpacity(float dayTime, LightSetting lightSetting)
-        {
-            if (!Config.DynamicShadows)
-                return DayShadowOpacity;
-
-            float daylight = lightSetting switch
-            {
-                LightSetting.Light => 1F,
-                LightSetting.Night => 0F,
-                LightSetting.Twilight => 100F / 255F,
-                _ => Math.Clamp(dayTime, 0F, 1F),
-            };
-
-            return NightShadowOpacity + (DayShadowOpacity - NightShadowOpacity) * daylight;
-        }
-
-        public void UpdateShadowOpacity()
-        {
-            LightSetting lightSetting = MapControl?.MapInfo?.Light ?? LightSetting.Default;
-            float newOpacity = CalculateShadowOpacity(DayTime, lightSetting);
-            int oldOpacityLevel = (int)Math.Round(ShadowOpacity * 255F);
-            int newOpacityLevel = (int)Math.Round(newOpacity * 255F);
-
-            ShadowOpacity = newOpacity;
-
-            if (oldOpacityLevel != newOpacityLevel && MapControl != null)
-                MapControl.TextureValid = false;
-        }
+        public static float ShadowOpacity => Math.Clamp(Config.ShadowOpacity, 0.2F, 0.8F);
 
         public float DayTime
         {
@@ -415,7 +383,6 @@ namespace Client.Scenes
                 if (_DayTime == value) return;
 
                 _DayTime = value;
-                UpdateShadowOpacity();
                 MapControl.LLayer.UpdateLights();
             }
         }
@@ -490,7 +457,6 @@ namespace Client.Scenes
                 Parent = this,
                 Size = Size,
             };
-            UpdateShadowOpacity();
             MapControl.MouseWheel += (o, e) =>
             {
                 foreach (ChatTab tab in ChatTab.Tabs)

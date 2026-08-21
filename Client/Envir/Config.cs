@@ -43,7 +43,7 @@ namespace Client.Envir
         public static string Language { get; set; } = "English";
         public static bool Borderless { get; set; } = false;
         public static bool SmoothMove { get; set; } = false;
-        public static bool DynamicShadows { get; set; } = true;
+        public static float ShadowOpacity { get; set; } = 0.5F;
 
 
         [ConfigSection("Sound")]

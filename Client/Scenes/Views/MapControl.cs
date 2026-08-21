@@ -73,7 +73,6 @@ namespace Client.Scenes.Views
 
             UpdateWeather();
             LLayer.UpdateLights();
-            GameScene.Game?.UpdateShadowOpacity();
             MapInfoChanged?.Invoke(this, EventArgs.Empty);
         }
 
