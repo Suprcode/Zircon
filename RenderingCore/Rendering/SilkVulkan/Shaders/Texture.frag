@@ -104,12 +104,25 @@ vec4 FillShadowHatch(vec2 uv)
         bool shadowDown = IsSimilarShadow(down, reference);
         int support = (shadowLeft ? 1 : 0) + (shadowRight ? 1 : 0) +
                       (shadowUp ? 1 : 0) + (shadowDown ? 1 : 0);
+        bool touchesArtwork =
+            (!IsTransparent(left) && !shadowLeft) ||
+            (!IsTransparent(right) && !shadowRight) ||
+            (!IsTransparent(up) && !shadowUp) ||
+            (!IsTransparent(down) && !shadowDown);
 
         if (support < 2)
+        {
+            if (support == 1 && touchesArtwork)
+                return MakeShadowPixel(reference, 1.0, shadowOpacity);
+
             return center;
+        }
 
         vec4 shadow = ((shadowLeft ? left : vec4(0.0)) + (shadowRight ? right : vec4(0.0)) +
                        (shadowUp ? up : vec4(0.0)) + (shadowDown ? down : vec4(0.0))) / float(support);
+
+        if (touchesArtwork)
+            return MakeShadowPixel(shadow, 1.0, shadowOpacity);
 
         int shapeSupport = support;
         shapeSupport += pixel.x == sourceMin.x ? 1 : 0;
@@ -120,13 +133,24 @@ vec4 FillShadowHatch(vec2 uv)
     }
 
     vec4 left = LoadSourcePixel(pixel + ivec2(-1, 0), sourceMin, sourceMax);
-    if (!IsTransparent(left)) return center;
     vec4 right = LoadSourcePixel(pixel + ivec2(1, 0), sourceMin, sourceMax);
-    if (!IsTransparent(right)) return center;
     vec4 up = LoadSourcePixel(pixel + ivec2(0, -1), sourceMin, sourceMax);
-    if (!IsTransparent(up)) return center;
     vec4 down = LoadSourcePixel(pixel + ivec2(0, 1), sourceMin, sourceMax);
-    if (!IsTransparent(down)) return center;
+
+    bool leftTransparent = IsTransparent(left);
+    bool rightTransparent = IsTransparent(right);
+    bool upTransparent = IsTransparent(up);
+    bool downTransparent = IsTransparent(down);
+    bool allTransparent = leftTransparent && rightTransparent && upTransparent && downTransparent;
+
+    bool touchesArtwork =
+        (!leftTransparent && !IsSimilarShadow(left, center)) ||
+        (!rightTransparent && !IsSimilarShadow(right, center)) ||
+        (!upTransparent && !IsSimilarShadow(up, center)) ||
+        (!downTransparent && !IsSimilarShadow(down, center));
+
+    if (!allTransparent && !touchesArtwork)
+        return center;
 
     vec4 topLeft = LoadSourcePixel(pixel + ivec2(-1, -1), sourceMin, sourceMax);
     vec4 topRight = LoadSourcePixel(pixel + ivec2(1, -1), sourceMin, sourceMax);
@@ -138,6 +162,17 @@ vec4 FillShadowHatch(vec2 uv)
     diagonalSupport += ShadowSupport(topRight, center);
     diagonalSupport += ShadowSupport(bottomLeft, center);
     diagonalSupport += ShadowSupport(bottomRight, center);
+
+    if (!allTransparent)
+    {
+        int transparentSupport = (leftTransparent ? 1 : 0) + (rightTransparent ? 1 : 0) +
+                                 (upTransparent ? 1 : 0) + (downTransparent ? 1 : 0);
+
+        if (touchesArtwork && transparentSupport >= 2 && diagonalSupport > 0)
+            return MakeShadowPixel(center, 1.0, shadowOpacity);
+
+        return center;
+    }
 
     if (diagonalSupport > 0)
     {

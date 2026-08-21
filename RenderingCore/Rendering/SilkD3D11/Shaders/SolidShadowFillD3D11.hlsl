@@ -170,15 +170,30 @@ float4 FillShadowHatch(uint textureIndex, float2 uv, float4 spriteSource, float2
         bool shadowDown = IsSimilarShadow(down, reference);
         int support = (shadowLeft ? 1 : 0) + (shadowRight ? 1 : 0) +
                       (shadowUp ? 1 : 0) + (shadowDown ? 1 : 0);
+        bool touchesArtwork =
+            (!IsTransparent(left) && !shadowLeft) ||
+            (!IsTransparent(right) && !shadowRight) ||
+            (!IsTransparent(up) && !shadowUp) ||
+            (!IsTransparent(down) && !shadowDown);
 
         // A transparent checker sample has four possible shadow samples on the
         // opposite parity. Two are enough to establish a real hatch edge; the
         // fraction that remain is the reconstructed silhouette coverage.
         if (support < 2)
+        {
+            if (support == 1 && touchesArtwork)
+                return MakeShadowPixel(reference, 1.0, shadowOpacity);
+
             return center;
+        }
 
         float4 shadow = ((shadowLeft ? left : 0) + (shadowRight ? right : 0) +
                          (shadowUp ? up : 0) + (shadowDown ? down : 0)) / support;
+
+        // The shadow/art join is not an outer silhouette. Keep it at the same
+        // opacity as the resolved shadow so it cannot form a lighter seam.
+        if (touchesArtwork)
+            return MakeShadowPixel(shadow, 1.0, shadowOpacity);
 
         // A source-rectangle boundary is a batching/atlas boundary, not a
         // shadow silhouette. Once the local checker pattern is established,
@@ -193,13 +208,24 @@ float4 FillShadowHatch(uint textureIndex, float2 uv, float4 spriteSource, float2
     }
 
     float4 left = LoadSourcePixel(textureIndex, pixel + int2(-1, 0), sourceMin, sourceMax);
-    if (!IsTransparent(left)) return center;
     float4 right = LoadSourcePixel(textureIndex, pixel + int2(1, 0), sourceMin, sourceMax);
-    if (!IsTransparent(right)) return center;
     float4 up = LoadSourcePixel(textureIndex, pixel + int2(0, -1), sourceMin, sourceMax);
-    if (!IsTransparent(up)) return center;
     float4 down = LoadSourcePixel(textureIndex, pixel + int2(0, 1), sourceMin, sourceMax);
-    if (!IsTransparent(down)) return center;
+
+    bool leftTransparent = IsTransparent(left);
+    bool rightTransparent = IsTransparent(right);
+    bool upTransparent = IsTransparent(up);
+    bool downTransparent = IsTransparent(down);
+    bool allTransparent = leftTransparent && rightTransparent && upTransparent && downTransparent;
+
+    bool touchesArtwork =
+        (!leftTransparent && !IsSimilarShadow(left, center)) ||
+        (!rightTransparent && !IsSimilarShadow(right, center)) ||
+        (!upTransparent && !IsSimilarShadow(up, center)) ||
+        (!downTransparent && !IsSimilarShadow(down, center));
+
+    if (!allTransparent && !touchesArtwork)
+        return center;
 
     float4 topLeft = LoadSourcePixel(textureIndex, pixel + int2(-1, -1), sourceMin, sourceMax);
     float4 topRight = LoadSourcePixel(textureIndex, pixel + int2(1, -1), sourceMin, sourceMax);
@@ -211,6 +237,21 @@ float4 FillShadowHatch(uint textureIndex, float2 uv, float4 spriteSource, float2
     diagonalSupport += ShadowSupport(topRight, center);
     diagonalSupport += ShadowSupport(bottomLeft, center);
     diagonalSupport += ShadowSupport(bottomRight, center);
+
+    if (!allTransparent)
+    {
+        int transparentSupport = (leftTransparent ? 1 : 0) + (rightTransparent ? 1 : 0) +
+                                 (upTransparent ? 1 : 0) + (downTransparent ? 1 : 0);
+
+        // A shadow-coloured hatch pixel beside opaque artwork used to return
+        // unchanged above, bypassing ShadowOpacity and producing a dark line.
+        // Apply the normal resolved-shadow opacity once the diagonal hatch
+        // confirms that this is shadow rather than artwork.
+        if (touchesArtwork && transparentSupport >= 2 && diagonalSupport > 0)
+            return MakeShadowPixel(center, 1.0, shadowOpacity);
+
+        return center;
+    }
 
     if (diagonalSupport > 0)
     {
