@@ -1,7 +1,6 @@
 using Client.Controls;
 using Client.Envir;
 using Library;
-using Library.SystemModels;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -14,6 +13,7 @@ namespace Client.Scenes.Views
     public sealed class NPCSocketDialog : DXImageControl
     {
         private const int SocketCount = 3;
+        private const int GemLoopFrameCount = 10;
 
         public DXLabel TitleLabel;
 
@@ -136,9 +136,9 @@ namespace Client.Scenes.Views
                 IsControl = false,
                 LibraryFile = LibraryFile.GameInter,
                 BaseIndex = 5800,
-                FrameCount = 50,
+                FrameCount = GemLoopFrameCount,
                 Blend = true,
-                AnimationDelay = TimeSpan.FromSeconds(5),
+                AnimationDelay = TimeSpan.FromSeconds(1),
                 Opacity = 0.1F,
                 UseOffSet = true,
                 Loop = true,
@@ -153,9 +153,9 @@ namespace Client.Scenes.Views
                 IsControl = false,
                 LibraryFile = LibraryFile.GameInter,
                 BaseIndex = 5800,
-                FrameCount = 50,
+                FrameCount = GemLoopFrameCount,
                 Blend = true,
-                AnimationDelay = TimeSpan.FromSeconds(5),
+                AnimationDelay = TimeSpan.FromSeconds(1),
                 Opacity = 0.1F,
                 UseOffSet = true,
                 Loop = true,
@@ -170,9 +170,9 @@ namespace Client.Scenes.Views
                 IsControl = false,
                 LibraryFile = LibraryFile.GameInter,
                 BaseIndex = 5800,
-                FrameCount = 50,
+                FrameCount = GemLoopFrameCount,
                 Blend = true,
-                AnimationDelay = TimeSpan.FromSeconds(5),
+                AnimationDelay = TimeSpan.FromSeconds(1),
                 Opacity = 0.1F,
                 UseOffSet = true,
                 Loop = true,
@@ -188,9 +188,9 @@ namespace Client.Scenes.Views
                 IsControl = false,
                 LibraryFile = LibraryFile.GameInter,
                 BaseIndex = 5800,
-                FrameCount = 50,
+                FrameCount = GemLoopFrameCount,
                 Blend = true,
-                AnimationDelay = TimeSpan.FromSeconds(5),
+                AnimationDelay = TimeSpan.FromSeconds(1),
                 Opacity = 0.1F,
                 UseOffSet = true,
                 Loop = true,
@@ -331,7 +331,7 @@ namespace Client.Scenes.Views
 
         private void GemLink_ItemChanged(object sender, EventArgs e)
         {
-            SetLoopAnimation(GemLoopAnimation, GemCell.Item?.Info);
+            SetLoopAnimation(GemLoopAnimation, GemCell.Item);
         }
 
         public bool CanUseGem(ClientUserItem gem)
@@ -533,7 +533,7 @@ namespace Client.Scenes.Views
             RefreshSocketCell(SocketCell2, SocketLoopAnimation2, sockets, 1);
             RefreshSocketCell(SocketCell3, SocketLoopAnimation3, sockets, 2);
 
-            SetLoopAnimation(GemLoopAnimation, GemCell?.Item?.Info);
+            SetLoopAnimation(GemLoopAnimation, GemCell?.Item);
         }
 
         private static void RefreshSocketCell(DXItemCell cell, DXAnimatedControl animation, IReadOnlyList<ClientUserItemSocket> sockets, int slot)
@@ -543,12 +543,12 @@ namespace Client.Scenes.Views
 
             cell.Item = gem;
             cell.Enabled = socket != null;
-            SetLoopAnimation(animation, gem?.Info);
+            SetLoopAnimation(animation, gem);
         }
 
-        private static void SetLoopAnimation(DXAnimatedControl animation, ItemInfo info)
+        private static void SetLoopAnimation(DXAnimatedControl animation, ClientUserItem item)
         {
-            int index = info?.Shape switch
+            int index = item?.Info.Shape switch
             {
                 1 => 5900,
                 2 => 6000,
@@ -563,8 +563,19 @@ namespace Client.Scenes.Views
                 return;
             }
 
+            decimal purity = item.CurrentDurability / 1000M;
+            decimal maximumPurity = Math.Max(0, Globals.MaxGemPurity);
+
+            int purityLevel = purity <= maximumPurity * 0.2M ? 0 :
+                              purity <= maximumPurity * 0.4M ? 1 :
+                              purity <= maximumPurity * 0.6M ? 2 :
+                              purity <= maximumPurity * 0.8M ? 3 : 4;
+
+            index += purityLevel * GemLoopFrameCount;
+
             bool restart = animation.BaseIndex != index || !animation.Visible;
             animation.BaseIndex = index;
+            animation.FrameCount = GemLoopFrameCount;
             animation.Visible = true;
             animation.Animated = true;
 
