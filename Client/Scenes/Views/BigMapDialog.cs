@@ -476,7 +476,8 @@ namespace Client.Scenes.Views
                     .Where(x => x.Monster != null)
                     .Select(x => x.Monster)
                     .Distinct()
-                    .OrderBy(x => x.MonsterName, StringComparer.CurrentCultureIgnoreCase)
+                    .OrderBy(x => x.Level)
+                    .ThenBy(x => x.MonsterName, StringComparer.CurrentCultureIgnoreCase)
                     .ThenBy(x => x.Index));
             }
 
@@ -542,8 +543,11 @@ namespace Client.Scenes.Views
                 int index = MonsterScrollBar.Value + i;
                 bool hasEntry = index < _MonsterEntries.Count;
 
-                MonsterRows[i].Entry = hasEntry ? _MonsterEntries[index] : null;
-                MonsterRows[i].DisplayText = hasEntry ? _MonsterEntries[index].MonsterName : string.Empty;
+                MonsterInfo monster = hasEntry ? _MonsterEntries[index] : null;
+
+                MonsterRows[i].Entry = monster;
+                MonsterRows[i].DisplayText = monster?.MonsterName ?? string.Empty;
+                MonsterRows[i].IsBoss = monster?.IsBoss == true;
                 MonsterRows[i].Selected = false;
                 MonsterRows[i].Visible = i < visibleRows;
             }
@@ -1241,6 +1245,19 @@ namespace Client.Scenes.Views
         }
         private bool _Heading;
 
+        public bool IsBoss
+        {
+            get => _IsBoss;
+            set
+            {
+                if (_IsBoss == value) return;
+
+                _IsBoss = value;
+                UpdateColours();
+            }
+        }
+        private bool _IsBoss;
+
         public string DisplayText
         {
             get => NameLabel?.Text ?? string.Empty;
@@ -1289,7 +1306,11 @@ namespace Client.Scenes.Views
 
             if (NameLabel == null) return;
 
-            NameLabel.ForeColour = Heading ? Color.White : Constants.PrimaryColour;
+            NameLabel.ForeColour = Heading
+                ? Color.White
+                : IsBoss
+                    ? Color.OrangeRed
+                    : Constants.PrimaryColour;
             NameLabel.Location = new Point(Heading ? 5 : 10, 3);
         }
 
@@ -1301,6 +1322,7 @@ namespace Client.Scenes.Views
 
             Entry = null;
             _Heading = false;
+            _IsBoss = false;
             _Selected = false;
 
             if (NameLabel != null)
