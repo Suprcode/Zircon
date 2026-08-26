@@ -7,7 +7,7 @@ using System.Drawing;
 using System.Linq;
 using S = Library.Network.ServerPackets;
 
-namespace Server.Models.Players
+namespace Server.Models.AutoPath
 {
     public sealed class AutoPathService
     {
@@ -125,6 +125,11 @@ namespace Server.Models.Players
             return TryBuildRoute(actor, destination, out route);
         }
 
+        public bool TryBuildCurrentPath(MapObject actor, Point destination, bool avoidLiveObjects, out List<Point> path)
+        {
+            return AutoPathRoutePlanner.TryBuildCurrentPath(actor, destination, avoidLiveObjects, out path);
+        }
+
         private static bool TryBuildRoute(MapObject actor, AutoPathDestination destination, out AutoPathRoute route)
         {
             route = null;
@@ -139,6 +144,7 @@ namespace Server.Models.Players
         {
             if (player == null) return;
 
+            EndAutoPathLog(player, player.AutoPath);
             player.AutoPath = null;
 
             if (notifyClient)
@@ -338,6 +344,7 @@ namespace Server.Models.Players
                 player.AutoPath = state;
             }
 
+            EndAutoPathLog(player, state);
             state.Destinations.Clear();
             state.Routes.Clear();
             state.NextWaypointNumber = 1;
@@ -352,7 +359,10 @@ namespace Server.Models.Players
             state.FullStrideAvailable = false;
 
             if (Rebuild(player, state))
+            {
+                StartAutoPathLog(player, state);
                 return true;
+            }
 
             Fail(player);
             return false;
@@ -426,6 +436,7 @@ namespace Server.Models.Players
         {
             if (state.Destinations.Count == 0) return false;
 
+            EndAutoPathLog(player, state);
             state.Destinations.RemoveAt(0);
             if (state.Routes.Count > 0)
                 state.Routes.RemoveAt(0);
@@ -442,7 +453,31 @@ namespace Server.Models.Players
             state.PathEndsAtMapTransition = false;
             state.WaitingForMovementStart = false;
 
-            return Rebuild(player, state);
+            if (!Rebuild(player, state)) return false;
+
+            StartAutoPathLog(player, state);
+            return true;
+        }
+
+        private static void StartAutoPathLog(PlayerObject player, AutoPathState state)
+        {
+            if (player?.CurrentMap == null || state?.Route == null) return;
+
+            state.AutoPathSourceMap = player.CurrentMap.Info;
+            state.AutoPathSource = player.CurrentLocation;
+            state.AutoPathDestinationMap = state.Destination?.Map;
+            state.AutoPathDestination = state.Route.Destination;
+            state.AutoPathLogged = true;
+
+            AutoPathLogger.Started(player, state.AutoPathSourceMap, state.AutoPathSource, state.AutoPathDestinationMap, state.AutoPathDestination);
+        }
+
+        private static void EndAutoPathLog(PlayerObject player, AutoPathState state)
+        {
+            if (player == null || state?.AutoPathLogged != true) return;
+
+            AutoPathLogger.Ended(player, state.AutoPathSourceMap, state.AutoPathSource, state.AutoPathDestinationMap, state.AutoPathDestination);
+            state.AutoPathLogged = false;
         }
 
         private static void SendRoutes(PlayerObject player, AutoPathState state)

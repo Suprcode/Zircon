@@ -93,11 +93,11 @@ namespace Library
                 [MirAnimation.FishingCast] = new Frame(2000, 8, 10, TimeSpan.FromMilliseconds(100)),
                 [MirAnimation.FishingWait] = new Frame(2080, 6, 10, TimeSpan.FromMilliseconds(120)),
                 [MirAnimation.FishingReel] = new Frame(2160, 8, 10, TimeSpan.FromMilliseconds(100)),
-                [MirAnimation.HorseStanding] = new Frame(2240, 4, 10, TimeSpan.FromMilliseconds(500)), //Horse Standing
+                [MirAnimation.HorseStanding] = new Frame(2240, 4, 10, TimeSpan.FromMilliseconds(500)),
                 [MirAnimation.HorseWalking] = new Frame(2320, 6, 10, TimeSpan.FromMilliseconds(100)),
                 [MirAnimation.HorseRunning] = new Frame(2400, 6, 10, TimeSpan.FromMilliseconds(100)),
                 [MirAnimation.HorseStruck] = new Frame(2480, 3, 10, TimeSpan.FromMilliseconds(100)),
-                [MirAnimation.HorseLeaping] = new Frame(2240, 4, 10, TimeSpan.FromMilliseconds(125)), //Uses Horse Standing until dedicated frames exist
+                [MirAnimation.HorseLeaping] = new Frame(2240, 4, 10, TimeSpan.FromMilliseconds(125)), //Uses Horse Standing as dedicated leaping only exists for white/black horses and no armours
                 [MirAnimation.ChannellingStart] = new Frame(560, 4, 10, TimeSpan.FromMilliseconds(100)), //Proj Spell (channelled)
                 [MirAnimation.ChannellingMiddle] = new Frame(563, 1, 10, TimeSpan.FromMilliseconds(1000)), //Proj Spell (channelled)
                 [MirAnimation.ChannellingEnd] = new Frame(0, 1, 10, TimeSpan.FromMilliseconds(60)), //Proj Spell (channelled)

@@ -695,7 +695,8 @@ namespace Library
         GoldRate,
 
         [StatDescription(Title = "OldDuration", Mode = StatType.Time)]
-        OldDuration,//UNUSED
+        UNUSED1,//UNUSED
+
         [StatDescription(Title = "Available Hunt Gold", Format = "{0:+#0;-#0;#0}", Mode = StatType.Default)]
         AvailableHuntGold,
         [StatDescription(Title = "Maximum Available Hunt Gold", Format = "{0:#0}", Mode = StatType.Default)]
@@ -833,7 +834,7 @@ namespace Library
         [StatDescription(Title = "Poison Resistance", Format = "{0:+#0%;-#0%;#0%}", Mode = StatType.Percent)]
         PoisonResistance,
 
-        [StatDescription(Title = "Rebirth ", Format = "{0}", Mode = StatType.Default)]
+        [StatDescription(Title = "Rebirth", Format = "{0}", Mode = StatType.Default)]
         Rebirth,
 
         [StatDescription(Title = "Focus", Format = "{0:+#0;-#0;#0}", Mode = StatType.Default)]
@@ -865,6 +866,13 @@ namespace Library
 
         [StatDescription(Mode = StatType.None, ServerOnly = true)]
         RoamDistance,
+
+        [StatDescription(Mode = StatType.None, ServerOnly = true, UsageHint = "Monsters with this stat provoke vengeance in eligible living monsters in the same dungeon when they die.")]
+        VengeanceSource,
+        [StatDescription(Mode = StatType.None, ServerOnly = true, UsageHint = "Percentage added to this monster's combat stats for each Vengeance Source that dies while this monster is alive in the same dungeon.")]
+        VengeancePercent,
+        [StatDescription(Title = "Vengeance Response Chance", Format = "{0}%", Mode = StatType.Default, ServerOnly = true, UsageHint = "Percentage chance that this monster moves toward a nearby Vengeance Source when it dies and grants a stack.")]
+        VengeanceResponseChance,
 
         [StatDescription(Title = "Throw Distance", Format = "{0}", Mode = StatType.Default, UsageHint = "1 to 4")]
         ThrowDistance = 200,

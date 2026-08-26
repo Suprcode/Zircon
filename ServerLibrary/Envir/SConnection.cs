@@ -4,7 +4,7 @@ using Library.SystemModels;
 using Server.DBModels;
 using Server.Envir.Translations;
 using Server.Models;
-using Server.Models.Players;
+using Server.Models.AutoPath;
 using System;
 using System.Collections.Generic;
 using System.IO;
