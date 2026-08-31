@@ -5,9 +5,9 @@ using Library.SystemModels;
 using Server.DBModels;
 using Server.Envir;
 using Server.Envir.Events.Triggers;
+using Server.Models.AutoPath;
 using Server.Models.Magics;
 using Server.Models.Monsters;
-using Server.Models.Players;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -3469,22 +3469,18 @@ namespace Server.Models
                         break;
                     case QuestRequirementType.NotAccepted:
                         if (Quests.Any(x => x.QuestInfo == requirement.QuestParameter)) return false;
-
                         break;
                     case QuestRequirementType.HaveCompleted:
                         if (Quests.Any(x => x.QuestInfo == requirement.QuestParameter && x.Completed)) break;
-
                         return false;
                     case QuestRequirementType.HaveNotCompleted:
                         if (Quests.Any(x => x.QuestInfo == requirement.QuestParameter && x.Completed)) return false;
-
                         break;
                     case QuestRequirementType.Class:
                         switch (Class)
                         {
                             case MirClass.Warrior:
                                 if ((requirement.Class & RequiredClass.Warrior) != RequiredClass.Warrior) return false;
-
                                 break;
                             case MirClass.Wizard:
                                 if ((requirement.Class & RequiredClass.Wizard) != RequiredClass.Wizard) return false;

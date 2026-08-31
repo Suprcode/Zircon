@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
-namespace Server.Models.Players
+namespace Server.Models.AutoPath
 {
     internal sealed class AutoPathPlan
     {

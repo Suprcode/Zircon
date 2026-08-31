@@ -99,6 +99,8 @@ namespace Library
             LookingForGroupMinutes = 60,
 
             MaxGrowthLevel = 3,
+            VengeanceDecaySeconds = 300,
+            VengeanceResponseSearchRadius = 50,
 
             MaxMailStorage = 50,
 

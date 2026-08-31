@@ -818,6 +818,22 @@ namespace Client.Models
                     StruckSound = SoundIndex.NumaEliteStruck;
                     DieSound = SoundIndex.NumaEliteDie;
                     break;
+
+                case MonsterImage.NumaElder:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_18, out BodyLibrary);
+                    BodyShape = 4;
+                    AttackSound = SoundIndex.None;
+                    StruckSound = SoundIndex.NumaElderStruck;
+                    DieSound = SoundIndex.NumaElderDie;
+                    break;
+                case MonsterImage.NumaCripple:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_18, out BodyLibrary);
+                    BodyShape = 7;
+                    AttackSound = SoundIndex.None;
+                    StruckSound = SoundIndex.NumaCrippleStruck;
+                    DieSound = SoundIndex.NumaCrippleDie;
+                    break;
+
                 case MonsterImage.Phantom:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_2, out BodyLibrary);
                     BodyShape = 8;

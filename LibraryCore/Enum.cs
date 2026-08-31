@@ -1069,10 +1069,10 @@ namespace Library
         WildBoar = 181,
         //NF_AngelGuardian = 182,
         //NF_Blank183 = 183,
-        //NF_NumaElder = 184,
+        NumaElder = 184,
         //NF_Blank185 = 185,
         //NF_Blank186 = 186,
-        //NF_NumaPriest = 187,
+        NumaCripple = 187,
         //NF_Blank188 = 188,
         //NF_BonePile189 = 189,
 
@@ -1935,7 +1935,7 @@ namespace Library
         NotAccepted = 2,
         HaveCompleted = 3,
         HaveNotCompleted = 4,
-        Class = 5,
+        Class = 5
     }
 
     public enum QuestTaskType
@@ -3019,6 +3019,12 @@ namespace Library
         NumaEliteAttack,
         NumaEliteStruck,
         NumaEliteDie,
+
+        NumaElderStruck,
+        NumaElderDie,
+
+        NumaCrippleStruck,
+        NumaCrippleDie,
 
         SandSharkAttack,
         SandSharkStruck,

@@ -663,6 +663,12 @@ namespace Client.Envir
             [SoundIndex.NumaEliteStruck] = new DXSound(SoundPath + @"217-4.wav", SoundType.Monster),
             [SoundIndex.NumaEliteDie] = new DXSound(SoundPath + @"217-5.wav", SoundType.Monster),
 
+            [SoundIndex.NumaElderStruck] = new DXSound(SoundPath + @"350-4.wav", SoundType.Monster),
+            [SoundIndex.NumaElderDie] = new DXSound(SoundPath + @"350-5.wav", SoundType.Monster),
+
+            [SoundIndex.NumaCrippleStruck] = new DXSound(SoundPath + @"350-4.wav", SoundType.Monster),
+            [SoundIndex.NumaCrippleDie] = new DXSound(SoundPath + @"350-5.wav", SoundType.Monster),
+
             [SoundIndex.SandSharkAttack] = new DXSound(SoundPath + @"342-2.wav", SoundType.Monster),
             [SoundIndex.SandSharkStruck] = new DXSound(SoundPath + @"342-4.wav", SoundType.Monster),
             [SoundIndex.SandSharkDie] = new DXSound(SoundPath + @"342-5.wav", SoundType.Monster),

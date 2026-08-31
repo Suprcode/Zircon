@@ -1,6 +1,6 @@
 using Library;
 using Library.SystemModels;
-using Server.Models.Players;
+using Server.Models.AutoPath;
 using System.Collections.Generic;
 using System.Drawing;
 
@@ -32,6 +32,12 @@ namespace Server.Models
         public Map RouteMap;
         public List<Point> Path;
 
+        public bool AutoPathLogged;
+        public MapInfo AutoPathSourceMap;
+        public Point AutoPathSource;
+        public MapInfo AutoPathDestinationMap;
+        public Point AutoPathDestination;
+
         public bool FullStrideAvailable;
         public bool LiveObjectRepathRequired;
         public bool PathAvoidsLiveObjects;
@@ -40,11 +46,4 @@ namespace Server.Models
         public bool WaitingForMovementStart;
     }
 
-    internal sealed class AutoPathDestination
-    {
-        public MapInfo Map;
-        public Point Point;
-        public MapRegion Region;
-        public NPCInfo NPC;
-    }
 }
