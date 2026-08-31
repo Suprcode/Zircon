@@ -472,7 +472,7 @@ namespace Client.Envir.Translations
         public override string CommunicationDialogReadTabReplyLabel { get; set; } = "回复邮箱:";
         public override string CommunicationDialogReadTabDeleteButtonLabel { get; set; } = "删除邮件";
 
-        public override string CompanionDialogTitle { get; set; } = "伙伴";
+        public override string CompanionDialogTitle { get; set; } = "宠物";
         public override string CompanionDialogCompanionTabLabel { get; set; } = "宠物";
         public override string CompanionDialogCompanionTabBonusButtonLabel { get; set; } = "加成";
         public override string CompanionDialogCompanionTabFilterButtonLabel { get; set; } = "过滤";
