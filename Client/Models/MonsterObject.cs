@@ -476,14 +476,19 @@ namespace Client.Models
                     AttackSound = SoundIndex.MutantFleaAttack;
                     StruckSound = SoundIndex.MutantFleaStruck;
                     DieSound = SoundIndex.MutantFleaDie;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.MutantFlea)
+                        Frames[frame.Key] = frame.Value;
                     break;
                 case MonsterImage.PurpleFlea:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_15, out BodyLibrary);
                     BodyShape = 6;
-                    //TODO - Need correct sounds for this monster
-                    AttackSound = SoundIndex.MutantFleaAttack;
+                    AttackSound = SoundIndex.PurpleFleaAttack;
                     StruckSound = SoundIndex.MutantFleaStruck;
-                    DieSound = SoundIndex.MutantFleaDie;
+                    DieSound = SoundIndex.PurpleFleaDie;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.PurpleFlea)
+                        Frames[frame.Key] = frame.Value;
                     break;
                 case MonsterImage.BlasterMutantFlea:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_15, out BodyLibrary);
@@ -491,14 +496,20 @@ namespace Client.Models
                     AttackSound = SoundIndex.BlasterMutantFleaAttack;
                     StruckSound = SoundIndex.BlasterMutantFleaStruck;
                     DieSound = SoundIndex.BlasterMutantFleaDie;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.BlasterMutantFlea)
+                        Frames[frame.Key] = frame.Value;
                     break;
                 case MonsterImage.BlueBlasterMutantFlea:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_15, out BodyLibrary);
                     BodyShape = 8;
-                    //TODO - Need correct sounds for this monster
+                    
                     AttackSound = SoundIndex.BlasterMutantFleaAttack;
                     StruckSound = SoundIndex.BlasterMutantFleaStruck;
                     DieSound = SoundIndex.BlasterMutantFleaDie;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.BlasterMutantFlea)
+                        Frames[frame.Key] = frame.Value;
                     break;
                 case MonsterImage.PoisonousMutantFlea:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_15, out BodyLibrary);
@@ -1308,6 +1319,16 @@ namespace Client.Models
                     foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.EmperorSaWoo)
                         Frames[frame.Key] = frame.Value;
                     break;
+                case MonsterImage.NumaWarlord:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_19, out BodyLibrary);
+                    BodyShape = 6;
+                    AttackSound = SoundIndex.NumaWarlordAttack;
+                    StruckSound = SoundIndex.NumaWarlordStruck;
+                    DieSound = SoundIndex.NumaWarlordDie;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.NumaWarlord)
+                        Frames[frame.Key] = frame.Value;
+                    break;
                 case MonsterImage.NumaArmoredSoldier:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_19, out BodyLibrary);
                     BodyShape = 1;
@@ -1390,13 +1411,13 @@ namespace Client.Models
                     foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.BanyaGuard)
                         Frames[frame.Key] = frame.Value;
                     break;
-                case MonsterImage.IcySpiritSolider:
+                case MonsterImage.IcySpiritSoldier:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_21, out BodyLibrary);
                     BodyShape = 9;
-                    AttackSound = SoundIndex.IcySpiritSoliderAttack;
-                    StruckSound = SoundIndex.IcySpiritSoliderStruck;
-                    DieSound = SoundIndex.IcySpiritSoliderDie;
-                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.BanyaGuard)
+                    AttackSound = SoundIndex.IcySpiritSoldierAttack;
+                    StruckSound = SoundIndex.IcySpiritSoldierStruck;
+                    DieSound = SoundIndex.IcySpiritSoldierDie;
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.IcySpiritSoldier)
                         Frames[frame.Key] = frame.Value;
                     break;
                 case MonsterImage.WildBoar:
@@ -2814,6 +2835,44 @@ namespace Client.Models
                     }
                     break;
 
+                case MonsterImage.MutantFlea:
+                    foreach (MapObject attackTarget in AttackTargets)
+                    {
+                        Effects.Add(new MirProjectile(2160, 1, TimeSpan.FromMilliseconds(100), LibraryFile.MonMagicEx, 0, 0, Globals.NoneColour, CurrentLocation)
+                        {
+                            Target = attackTarget,
+                            Skip = 10,
+                            Has16Directions = true,
+                        });
+                    }
+                    break;
+
+                case MonsterImage.BlasterMutantFlea:
+                case MonsterImage.BlueBlasterMutantFlea:
+                    foreach (MapObject attackTarget in AttackTargets)
+                    {
+                        MirEffect effect;
+                        Effects.Add(effect = new MirProjectile(2160, 1, TimeSpan.FromMilliseconds(100), LibraryFile.MonMagicEx, 0, 0, Globals.NoneColour, CurrentLocation)
+                        {
+                            Target = attackTarget,
+                            Skip = 10,
+                            Has16Directions = true,
+                        });
+
+                        effect.CompleteAction = () =>
+                        {
+                            attackTarget.Effects.Add(effect = new MirEffect(2330, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MonMagicEx, 0, 0, Globals.NoneColour)
+                            {
+                                Target = attackTarget,
+                                Skip = 0,
+                                Blend = true,
+                            });
+                            effect.Process();
+                        };
+                        effect.Process();
+                    }
+                    break;
+
                 case MonsterImage.AntHealer:
                     foreach (MapObject attackTarget in AttackTargets)
                     {
@@ -3197,6 +3256,7 @@ namespace Client.Models
                     }
                     break;
                 case MonsterImage.InfernalSoldier:
+                case MonsterImage.NumaWarlord:
                     switch (CurrentAction) // Old Action
                     {
                         case MirAction.Dead:
@@ -3463,6 +3523,79 @@ namespace Client.Models
                                 Target = this,
                                 Direction = action.Direction,
                                 Blend = true,
+                            });
+                            break;
+                    }
+                    break;
+                case MonsterImage.NumaWarlord:
+                    switch (action.Action)
+                    {
+                        case MirAction.Attack:
+                            Effects.Add(new MirEffect(1550, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MonMagicEx4, 0, 0, Globals.NoneColour)
+                            {
+                                Target = this,
+                                Blend = true,
+                                Skip = 0,
+                            });
+                            break;
+                        case MirAction.RangeAttack:
+                            Effects.Add(new MirEffect(1600, 8, TimeSpan.FromMilliseconds(100), LibraryFile.MonMagicEx4, 0, 0, Globals.NoneColour)
+                            {
+                                Target = this,
+                                Direction = action.Direction,
+                                Blend = true,
+                                Skip = 10,
+                            });
+                            break;
+                        case MirAction.Spell:
+                            if ((MagicType)action.Extra[0] != MagicType.None) break;
+
+                            DXSoundManager.Play(SoundIndex.NumaWarlordAttack3);
+
+                            Effects.Add(new MirEffect(1700, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MonMagicEx4, 0, 0, Globals.NoneColour)
+                            {
+                                Target = this,
+                                Blend = true,
+                                Skip = 0,
+                            });
+                            break;
+                        case MirAction.Die:
+                            Effects.Add(new MirEffect(1750, 10, TimeSpan.FromMilliseconds(120), LibraryFile.MonMagicEx4, 0, 0, Globals.NoneColour)
+                            {
+                                Target = this,
+                                Direction = action.Direction,
+                                Blend = true,
+                                Skip = 10,
+                            });
+                            break;
+                    }
+                    break;
+                case MonsterImage.Werewolf:
+                    switch (action.Action)
+                    {
+                        case MirAction.Spell:
+                            if ((MagicType)action.Extra[0] != MagicType.GreaterFrozenEarth) break;
+
+                            Effects.Add(new MirEffect(6260, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MonMagicEx3, 0, 0, Globals.NoneColour)
+                            {
+                                Target = this,
+                                Direction = action.Direction,
+                                Blend = true,
+                                Skip = 10,
+                            });
+                            break;
+                    }
+                    break;
+                case MonsterImage.IcySpiritSoldier:
+                    switch (action.Action)
+                    {
+                        case MirAction.RangeAttack:
+                            Effects.Add(new MirEffect(600, 7, TimeSpan.FromMilliseconds(100), LibraryFile.MonMagicEx3, 0, 0, Globals.NoneColour)
+                            {
+                                Target = this,
+                                Direction = action.Direction,
+                                Blend = true,
+                                Skip = 10,
                             });
                             break;
                     }
@@ -3864,6 +3997,12 @@ namespace Client.Models
 
         public override void PlayAttackSound()
         {
+            if (Image == MonsterImage.NumaWarlord && CurrentAction == MirAction.RangeAttack)
+            {
+                DXSoundManager.Play(SoundIndex.NumaWarlordAttack2);
+                return;
+            }
+
             DXSoundManager.Play(AttackSound);
         }
         public override void PlayStruckSound()

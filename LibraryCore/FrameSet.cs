@@ -19,15 +19,16 @@ namespace Library
             DevouringGhost,
             Larva,
             ZumaGuardian, ZumaKing,
-            Monkey,
+            Monkey, MutantFlea, PurpleFlea, BlasterMutantFlea,
             NumaMage, CursedCactus, NetherWorldGate,
             WestDesertLizard,
+            NumaWarlord,
             BanyaGuard, EmperorSaWoo,
             JinchonDevil,
             ArchLichTaeda,
             ShinsuBig,
             PachonTheChaosBringer,
-            IcySpiritGeneral,
+            IcySpiritGeneral, IcySpiritSoldier,
             FieryDancer, EmeraldDancer, QueenOfDawn,
             JinamStoneGate, OYoungBeast, YumgonWitch, JinhwanSpirit, ChiwooGeneral, DragonQueen, DragonLord,
             FerociousIceTiger,
@@ -338,6 +339,22 @@ namespace Library
                 [MirAnimation.Combat2] = new Frame(400, 6, 10, TimeSpan.FromMilliseconds(100)),
             };
 
+            MutantFlea = new Dictionary<MirAnimation, Frame>
+            {
+                [MirAnimation.Combat2] = new Frame(400, 6, 10, TimeSpan.FromMilliseconds(100)),
+            };
+
+            PurpleFlea = new Dictionary<MirAnimation, Frame>
+            {
+                //TODO - Purple Flea has no AI action using these secondary combat frames yet.
+                [MirAnimation.Combat2] = new Frame(400, 6, 10, TimeSpan.FromMilliseconds(100)),
+            };
+
+            BlasterMutantFlea = new Dictionary<MirAnimation, Frame>
+            {
+                [MirAnimation.Combat2] = new Frame(160, 6, 10, TimeSpan.FromMilliseconds(100)),
+            };
+
             NetherWorldGate = new Dictionary<MirAnimation, Frame>
             {
                 [MirAnimation.Standing] = new Frame(0, 10, 0, TimeSpan.FromMilliseconds(200)),
@@ -372,6 +389,18 @@ namespace Library
                 [MirAnimation.Combat3] = new Frame(480, 8, 10, TimeSpan.FromMilliseconds(70)),
             };
 
+            NumaWarlord = new Dictionary<MirAnimation, Frame>
+            {
+                [MirAnimation.Standing] = new Frame(0, 4, 10, TimeSpan.FromMilliseconds(500)),
+                [MirAnimation.Walking] = new Frame(80, 6, 10, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Pushed] = new Frame(80, 6, 10, TimeSpan.FromMilliseconds(50)) { Reversed = true, StaticSpeed = true },
+                [MirAnimation.Struck] = new Frame(240, 2, 10, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Combat2] = new Frame(400, 8, 10, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Combat3] = new Frame(480, 6, 10, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Combat1] = new Frame(160, 6, 10, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Die] = new Frame(320, 10, 10, TimeSpan.FromMilliseconds(120)),
+                [MirAnimation.Dead] = new Frame(329, 1, 10, TimeSpan.FromMilliseconds(1000))
+            };
 
             EmperorSaWoo = new Dictionary<MirAnimation, Frame>
             {
@@ -399,6 +428,12 @@ namespace Library
             IcySpiritGeneral = new Dictionary<MirAnimation, Frame>
             {
                 [MirAnimation.Combat3] = new Frame(400, 6, 10, TimeSpan.FromMilliseconds(100)),
+            };
+
+            IcySpiritSoldier = new Dictionary<MirAnimation, Frame>
+            {
+                [MirAnimation.Combat2] = new Frame(400, 10, 10, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Combat3] = new Frame(400, 10, 10, TimeSpan.FromMilliseconds(100)),
             };
 
             FieryDancer = new Dictionary<MirAnimation, Frame>

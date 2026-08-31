@@ -48,6 +48,9 @@ namespace Client.Scenes.Views
         public DXButton OptionsButton;
         public DXButton ChatModeButton;
         private readonly List<int> LinkedItemIndexes = new List<int>();
+        private readonly List<string> AutoCompleteSuggestions = new List<string>();
+        private string SuggestedCompletion;
+        private int AutoCompleteSuggestionIndex = -1;
 
         public override void OnParentChanged(DXControl oValue, DXControl nValue)
         {
@@ -118,8 +121,9 @@ namespace Client.Scenes.Views
                 Opacity = 0.35f,
             };
             TextBox.TextBox.KeyPress += TextBox_KeyPress;
-            //TextBox.TextBox.KeyDown += TextBox_KeyDown;
-            //TextBox.TextBox.KeyUp += TextBox_KeyUp;
+            TextBox.TextBox.KeyDown += TextBox_KeyDown;
+            TextBox.TextBox.PreviewKeyDown += TextBox_PreviewKeyDown;
+            TextBox.TextBox.TextChanged += TextBox_TextChanged;
 
             SetDefaultSize();
 
@@ -139,6 +143,134 @@ namespace Client.Scenes.Views
         }
 
         #region Methods
+        private void TextBox_TextChanged(object sender, EventArgs e)
+        {
+            UpdateAutoCompleteSuggestion();
+        }
+
+        private void TextBox_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            if (e.KeyCode == Keys.Tab && !string.IsNullOrEmpty(SuggestedCompletion))
+                e.IsInputKey = true;
+        }
+
+        private void TextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (string.IsNullOrEmpty(SuggestedCompletion) || AutoCompleteSuggestions.Count == 0 ||
+                TextBox.TextBox.SelectionLength != 0 || TextBox.TextBox.SelectionStart != TextBox.TextBox.TextLength) return;
+
+            switch (e.KeyCode)
+            {
+                case Keys.Up:
+                    AutoCompleteSuggestionIndex--;
+                    if (AutoCompleteSuggestionIndex < 0)
+                        AutoCompleteSuggestionIndex = AutoCompleteSuggestions.Count - 1;
+                    ShowCurrentAutoCompleteSuggestion();
+                    break;
+                case Keys.Down:
+                    AutoCompleteSuggestionIndex++;
+                    if (AutoCompleteSuggestionIndex >= AutoCompleteSuggestions.Count)
+                        AutoCompleteSuggestionIndex = 0;
+                    ShowCurrentAutoCompleteSuggestion();
+                    break;
+                case Keys.Tab:
+                    TextBox.TextBox.Text = SuggestedCompletion;
+                    TextBox.TextBox.SelectionStart = TextBox.TextBox.TextLength;
+                    TextBox.TextBox.SelectionLength = 0;
+                    break;
+                default:
+                    return;
+            }
+
+            e.Handled = true;
+            e.SuppressKeyPress = true;
+        }
+
+        private void UpdateAutoCompleteSuggestion()
+        {
+            SuggestedCompletion = null;
+            AutoCompleteSuggestions.Clear();
+            AutoCompleteSuggestionIndex = -1;
+            TextBox.TextBox.SetSuggestion(string.Empty);
+
+            string text = TextBox.TextBox.Text;
+            if (string.IsNullOrEmpty(text) || TextBox.TextBox.SelectionLength != 0 ||
+                TextBox.TextBox.SelectionStart != TextBox.TextBox.TextLength) return;
+
+            GetCommandSuggestions(text, AutoCompleteSuggestions);
+            AutoCompleteSuggestions.RemoveAll(suggestion => suggestion.Length <= text.Length || suggestion.Length > TextBox.MaxLength);
+            if (AutoCompleteSuggestions.Count == 0) return;
+
+            AutoCompleteSuggestionIndex = 0;
+            ShowCurrentAutoCompleteSuggestion();
+        }
+
+        private void ShowCurrentAutoCompleteSuggestion()
+        {
+            SuggestedCompletion = AutoCompleteSuggestions[AutoCompleteSuggestionIndex];
+            TextBox.TextBox.SetSuggestion(SuggestedCompletion.Substring(TextBox.TextBox.TextLength));
+        }
+
+        private static void GetCommandSuggestions(string text, List<string> suggestions)
+        {
+            const string makePrefix = "@MAKE ";
+            if (text.StartsWith(makePrefix, StringComparison.OrdinalIgnoreCase))
+            {
+                FindDatabaseMatches(text, makePrefix.Length, true, suggestions);
+                return;
+            }
+
+            const string monsterPrefix = "@MONSTER ";
+            if (text.StartsWith(monsterPrefix, StringComparison.OrdinalIgnoreCase))
+                FindDatabaseMatches(text, monsterPrefix.Length, false, suggestions);
+        }
+
+        private static void FindDatabaseMatches(string text, int valueStart, bool itemSearch, List<string> suggestions)
+        {
+            string search = text.Substring(valueStart);
+            if (string.IsNullOrWhiteSpace(search) || search.IndexOf(' ') >= 0) return;
+
+            List<string> matches = new List<string>();
+
+            if (itemSearch)
+            {
+                if (Globals.ItemInfoList == null) return;
+
+                foreach (var info in Globals.ItemInfoList.Binding)
+                    AddDatabaseMatch(info.ItemName, search, matches);
+            }
+            else
+            {
+                if (Globals.MonsterInfoList == null) return;
+
+                foreach (var info in Globals.MonsterInfoList.Binding)
+                    AddDatabaseMatch(info.MonsterName, search, matches);
+            }
+
+            matches.Sort((x, y) =>
+            {
+                int result = x.Length.CompareTo(y.Length);
+                return result != 0 ? result : string.Compare(x, y, StringComparison.OrdinalIgnoreCase);
+            });
+
+            foreach (string match in matches)
+                suggestions.Add(text + match.Substring(search.Length));
+        }
+
+        private static void AddDatabaseMatch(string databaseName, string search, List<string> matches)
+        {
+            if (string.IsNullOrWhiteSpace(databaseName)) return;
+
+            string commandName = databaseName.Replace(" ", string.Empty);
+            if (!commandName.StartsWith(search, StringComparison.OrdinalIgnoreCase) ||
+                commandName.Length == search.Length) return;
+
+            foreach (string match in matches)
+                if (string.Equals(match, commandName, StringComparison.OrdinalIgnoreCase)) return;
+
+            matches.Add(commandName);
+        }
+
         private void TextBox_KeyPress(object sender, KeyPressEventArgs e)
         {
             switch (e.KeyChar)
@@ -309,10 +441,18 @@ namespace Client.Scenes.Views
                 ModeChanged = null;
 
                 LastPM = null;
+                SuggestedCompletion = null;
+                AutoCompleteSuggestions.Clear();
+                AutoCompleteSuggestionIndex = -1;
                 LinkedItemIndexes.Clear();
 
                 if (TextBox != null)
                 {
+                    TextBox.TextBox.KeyPress -= TextBox_KeyPress;
+                    TextBox.TextBox.KeyDown -= TextBox_KeyDown;
+                    TextBox.TextBox.PreviewKeyDown -= TextBox_PreviewKeyDown;
+                    TextBox.TextBox.TextChanged -= TextBox_TextChanged;
+
                     if (!TextBox.IsDisposed)
                         TextBox.Dispose();
 

@@ -204,6 +204,8 @@ namespace Server.Models
                     return new NetherworldGate { MonsterInfo = monsterInfo };
                 case 31:
                     return new SonicLizard { MonsterInfo = monsterInfo };
+                case 32: //Unused AI
+                    return new MonsterObject { MonsterInfo = monsterInfo };
                 case 33:
                     return new GiantLizard { MonsterInfo = monsterInfo, AttackRange = 9, IgnoreShield = true };
                 case 34:
@@ -255,12 +257,16 @@ namespace Server.Models
                     return new GiantLizard { MonsterInfo = monsterInfo, AttackRange = 8, PoisonType = PoisonType.Paralysis, PoisonTicks = 1, PoisonFrequency = 5 };
                 case 50:
                     return new GiantLizard { MonsterInfo = monsterInfo, AttackRange = 8 };
+                case 51:
+                    return new MutantFlea { MonsterInfo = monsterInfo };
                 case 52:
                     return new WhiteBone() { MonsterInfo = monsterInfo };
                 case 53:
                     return new Shinsu { MonsterInfo = monsterInfo };
                 case 54:
                     return new GiantLizard { MonsterInfo = monsterInfo, RangeCooldown = TimeSpan.FromSeconds(5) };
+                case 55:
+                    return new BlasterMutantFlea { MonsterInfo = monsterInfo };
                 case 56:
                     return new CorrosivePoisonSpitter { MonsterInfo = monsterInfo, PoisonType = PoisonType.Green, PoisonTicks = 7, PoisonRate = 15, IgnoreShield = true };
                 case 57:
@@ -303,6 +309,8 @@ namespace Server.Models
                     return new BanyoWarrior { MonsterInfo = monsterInfo };
                 case 72:
                     return new BanyoCaptain { MonsterInfo = monsterInfo };
+                case 73: //Unused AI
+                    return new MonsterObject { MonsterInfo = monsterInfo };
                 case 74:
                     return new BanyoLordGuzak
                     {
@@ -639,6 +647,8 @@ namespace Server.Models
                     return new MonsterObject { MonsterInfo = monsterInfo, Passive = true };
                 case 136: //Passive, does not retaliate
                     return new MonsterObject { MonsterInfo = monsterInfo, Passive = true, CanRetaliate = false };
+                case 137: //Numa Warlord
+                    return new NumaWarlord { MonsterInfo = monsterInfo };
 
                 case 1001:
                     return new CastleFlag { MonsterInfo = monsterInfo };
@@ -2872,7 +2882,8 @@ namespace Server.Models
                 }
                 else
                 {
-                    chance = (long)(int.MaxValue / (drop.Chance * players) * rate);
+                    decimal boostedChance = int.MaxValue / ((decimal)drop.Chance * players) * rate;
+                    chance = (long)Math.Min(int.MaxValue, boostedChance);
                 }
 
                 UserDrop userDrop = owner.Character.Account.UserDrops.FirstOrDefault(x => x.Item == drop.Item);
@@ -2958,12 +2969,6 @@ namespace Server.Models
                     }
 
                     continue;
-                }
-
-                if (Config.EnableFortune)
-                {
-                    if (!SEnvir.IsCurrencyItem(drop.Item) && (Math.Floor(userDrop.Progress) > userDrop.DropCount + amount))
-                        amount = (long)(userDrop.Progress - userDrop.DropCount);
                 }
 
                 userDrop.DropCount += amount;

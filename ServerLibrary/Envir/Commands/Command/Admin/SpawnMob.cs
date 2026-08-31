@@ -1,6 +1,7 @@
 ﻿using Library;
 using Server.Envir.Commands.Exceptions;
 using Server.Models;
+using System.Linq;
 
 namespace Server.Envir.Commands.Command.Admin
 {
@@ -15,6 +16,7 @@ namespace Server.Envir.Commands.Command.Admin
                 ThrowNewInvalidParametersException();
 
             var monsterInfo = SEnvir.GetMonsterInfo(vals[1]);
+
             if (monsterInfo == null)
                 throw new UserCommandException(string.Format("Could not find monster: {0}", vals[1]));
 

@@ -1078,11 +1078,11 @@ namespace Library
 
         NumaCavalry = 190,
         NumaArmoredSoldier = 191,
-        //NF_NumaAxeSoldier = 192,
+        //NF_NumaRoyalGuard = 192, //Duplicate 195
         NumaStoneThrower = 193,
         NumaHighMage = 194,
         NumaRoyalGuard = 195,
-        //NF_NumaWarlord = 196,
+        NumaWarlord = 196,
         BloodStone = 197,
         //NF_Chest = 198,
         //NF_BonePile199 = 199,
@@ -1107,7 +1107,7 @@ namespace Library
         IcySpiritSpearman = 216,
         Werewolf = 217,
         Whitefang = 218,
-        IcySpiritSolider = 219,
+        IcySpiritSoldier = 219,
 
         EscortCommander = 220,
         QueenOfDawn = 221,
@@ -2859,6 +2859,9 @@ namespace Library
         MutantFleaStruck,
         MutantFleaDie,
 
+        PurpleFleaAttack,
+        PurpleFleaDie,
+
         PoisonousMutantFleaAttack,
         PoisonousMutantFleaStruck,
         PoisonousMutantFleaDie,
@@ -3228,6 +3231,12 @@ namespace Library
         NumaRoyalGuardStruck,
         NumaRoyalGuardDie,
 
+        NumaWarlordAttack,
+        NumaWarlordAttack2,
+        NumaWarlordAttack3,
+        NumaWarlordStruck,
+        NumaWarlordDie,
+
         NumaArmoredSoldierAttack,
         NumaArmoredSoldierStruck,
         NumaArmoredSoldierDie,
@@ -3264,9 +3273,9 @@ namespace Library
         WhitefangStruck,
         WhitefangDie,
 
-        IcySpiritSoliderAttack,
-        IcySpiritSoliderStruck,
-        IcySpiritSoliderDie,
+        IcySpiritSoldierAttack,
+        IcySpiritSoldierStruck,
+        IcySpiritSoldierDie,
 
         WildBoarAttack,
         WildBoarStruck,
