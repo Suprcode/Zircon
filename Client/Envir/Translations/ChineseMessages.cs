@@ -79,7 +79,7 @@ namespace Client.Envir.Translations
         public override string GameSceneCastNoEnoughMana { get; set; } = "无法施放 {0}，魔法值不足。";
         public override string GameSceneCastTooFar { get; set; } = "无法施放 {0}，目标距离太远。";
 
-        public override string GameSceneThrowTooFar { get; set; } = "Unable to throw {0}, Your target is too far.";
+        public override string GameSceneThrowTooFar { get; set; } = "目标距离太远，无法使用{0}";
         public override string GameSceneHoldTooHeavy { get; set; } = "无法手持 {0}，该物品过重。";
         public override string GameSceneNeedFishingRod { get; set; } = "无法手持 {0}，必须先手持钓竿。";
         public override string GameSceneWearTooHeavy { get; set; } = "无法穿戴 {0}，该物品过重。";
@@ -472,7 +472,7 @@ namespace Client.Envir.Translations
         public override string CommunicationDialogReadTabReplyLabel { get; set; } = "回复邮箱:";
         public override string CommunicationDialogReadTabDeleteButtonLabel { get; set; } = "删除邮件";
 
-        public override string CompanionDialogTitle { get; set; } = "伙伴";
+        public override string CompanionDialogTitle { get; set; } = "宠物";
         public override string CompanionDialogCompanionTabLabel { get; set; } = "宠物";
         public override string CompanionDialogCompanionTabBonusButtonLabel { get; set; } = "加成";
         public override string CompanionDialogCompanionTabFilterButtonLabel { get; set; } = "过滤";
