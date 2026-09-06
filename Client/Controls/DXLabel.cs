@@ -6,7 +6,6 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Font = System.Drawing.Font;
 
-//Cleaned
 namespace Client.Controls
 {
     public class DXLabel : DXControl
@@ -21,6 +20,17 @@ namespace Client.Controls
 
             Size tempSize = RenderingPipelineManager.MeasureText(text, font);
 
+            // Measure the same pixel font used by the scaled label texture so
+            // fractional-DPI hinting cannot clip an automatically sized label.
+            float scale = CEnvir.Target?.TextRasterScale ?? 1F;
+            if (scale > 1F)
+            {
+                using Font rasterFont = RenderingPipelineManager.CreatePixelFont(font, scale);
+                Size rasterSize = RenderingPipelineManager.MeasureText(text, rasterFont);
+                tempSize.Width = Math.Max(tempSize.Width, (int)Math.Ceiling(rasterSize.Width / scale));
+                tempSize.Height = Math.Max(tempSize.Height, (int)Math.Ceiling(rasterSize.Height / scale));
+            }
+
             if (outline && tempSize.Width > 0 && tempSize.Height > 0)
             {
                 tempSize.Width += 2;
@@ -34,6 +44,15 @@ namespace Client.Controls
         public static Size GetHeight(DXLabel label, int width)
         {
             Size tempSize = RenderingPipelineManager.MeasureText(label.Text, label.Font, new Size(width, 2000), label.DrawFormat);
+            float scale = CEnvir.Target?.TextRasterScale ?? 1F;
+            if (scale > 1F)
+            {
+                using Font rasterFont = RenderingPipelineManager.CreatePixelFont(label.Font, scale);
+                Size rasterSize = RenderingPipelineManager.MeasureText(label.Text, rasterFont,
+                    new Size(Math.Max(1, (int)Math.Ceiling(width * scale)),
+                        Math.Max(1, (int)Math.Ceiling(2000 * scale))), label.DrawFormat);
+                tempSize.Height = Math.Max(tempSize.Height, (int)Math.Ceiling(rasterSize.Height / scale));
+            }
 
             if (label.Outline && tempSize.Width > 0 && tempSize.Height > 0)
             {
@@ -251,6 +270,23 @@ namespace Client.Controls
 
         #endregion
 
+        #region AlignRight
+
+        public bool AlignRight
+        {
+            get => _AlignRight;
+            set
+            {
+                if (_AlignRight == value) return;
+
+                _AlignRight = value;
+                TextureValid = false;
+            }
+        }
+        private bool _AlignRight;
+
+        #endregion
+
         #region LabelStyle
 
         public DXLabelStyle LabelStyle
@@ -367,7 +403,10 @@ namespace Client.Controls
         {
             if (!AutoSize) return;
 
-            Size = GetSize(Text, Font, Outline, PaddingBottom);
+            float scale = CEnvir.Target?.TextRasterScale ?? 1F;
+            Size = this == HintLabel && scale > 1F
+                ? DirectWriteHintRenderer.Measure(Text, Font, scale, PaddingBottom)
+                : GetSize(Text, Font, Outline, PaddingBottom);
         }
 
         private void UpdateLabelStyle()
@@ -397,16 +436,22 @@ namespace Client.Controls
         }
 
         private RenderTexture _labelTextureHandle;
+        private float _rasterScale;
+        private float RasterScale => CEnvir.Target?.TextRasterScale ?? 1F;
 
         protected override void CreateTexture()
         {
-            int width = DisplayArea.Width;
-            int height = DisplayArea.Height;
+            float textureScale = RasterScale;
+            _rasterScale = textureScale;
+            using Font rasterFont = RenderingPipelineManager.CreatePixelFont(Font, textureScale);
+            int width = Math.Max(1, (int)Math.Ceiling(DisplayArea.Width * textureScale));
+            int height = Math.Max(1, (int)Math.Ceiling(DisplayArea.Height * textureScale));
+            Size requiredTextureSize = new Size(width, height);
 
-            if (!ControlTexture.IsValid || DisplayArea.Size != TextureSize)
+            if (!ControlTexture.IsValid || requiredTextureSize != TextureSize)
             {
                 DisposeTexture();
-                TextureSize = DisplayArea.Size;
+                TextureSize = requiredTextureSize;
                 _labelTextureHandle = RenderingPipelineManager.CreateTexture(TextureSize, RenderTextureFormat.A8R8G8B8, RenderTextureUsage.None, RenderTexturePool.Managed);
 
                 ControlTexture = _labelTextureHandle;
@@ -420,28 +465,56 @@ namespace Client.Controls
                 RenderingPipelineManager.ConfigureGraphics(graphics);
                 graphics.Clear(BackColour);
 
-                if (Gradient)
+                int outlineOffset = Math.Max(1, (int)Math.Floor(textureScale));
+                int outlineFarOffset = outlineOffset * 2;
+
+                if (this == HintLabel && textureScale > 1F && BackColour.A == 255)
                 {
-                    DrawGradientText(graphics, width, height);
+                    using Bitmap hint = DirectWriteHintRenderer.Render(Text, Font, textureScale, TextureSize, ForeColour, BackColour);
+                    graphics.DrawImageUnscaled(hint, 0, 0);
+                }
+                else if (Gradient)
+                {
+                    DrawGradientText(graphics, width, height, outlineOffset, outlineFarOffset, rasterFont);
                 }
                 else if (Outline)
                 {
-                    TextRenderer.DrawText(graphics, Text, Font, new Rectangle(1, 0, width, height), OutlineColour, DrawFormat);
-                    TextRenderer.DrawText(graphics, Text, Font, new Rectangle(0, 1, width, height), OutlineColour, DrawFormat);
-                    TextRenderer.DrawText(graphics, Text, Font, new Rectangle(2, 1, width, height), OutlineColour, DrawFormat);
-                    TextRenderer.DrawText(graphics, Text, Font, new Rectangle(1, 2, width, height), OutlineColour, DrawFormat);
-                    TextRenderer.DrawText(graphics, Text, Font, new Rectangle(1, 1, width, height), ForeColour, DrawFormat);
+                    if (AlignRight)
+                    {
+                        TextFormatFlags format = (DrawFormat & ~(TextFormatFlags.WordBreak | TextFormatFlags.WordEllipsis | TextFormatFlags.HorizontalCenter)) |
+                                                 TextFormatFlags.Right | TextFormatFlags.SingleLine | TextFormatFlags.NoPadding;
+                        TextRenderer.DrawText(graphics, Text, rasterFont, new Rectangle(0, 0, width - outlineOffset, height), OutlineColour, format);
+                        TextRenderer.DrawText(graphics, Text, rasterFont, new Rectangle(0, outlineOffset, width - outlineFarOffset, height), OutlineColour, format);
+                        TextRenderer.DrawText(graphics, Text, rasterFont, new Rectangle(0, outlineOffset, width, height), OutlineColour, format);
+                        TextRenderer.DrawText(graphics, Text, rasterFont, new Rectangle(0, outlineFarOffset, width - outlineOffset, height), OutlineColour, format);
+                        TextRenderer.DrawText(graphics, Text, rasterFont, new Rectangle(0, outlineOffset, width - outlineOffset, height), ForeColour, format);
+                    }
+                    else
+                    {
+                        TextRenderer.DrawText(graphics, Text, rasterFont, new Rectangle(outlineOffset, 0, width, height), OutlineColour, DrawFormat);
+                        TextRenderer.DrawText(graphics, Text, rasterFont, new Rectangle(0, outlineOffset, width, height), OutlineColour, DrawFormat);
+                        TextRenderer.DrawText(graphics, Text, rasterFont, new Rectangle(outlineFarOffset, outlineOffset, width, height), OutlineColour, DrawFormat);
+                        TextRenderer.DrawText(graphics, Text, rasterFont, new Rectangle(outlineOffset, outlineFarOffset, width, height), OutlineColour, DrawFormat);
+                        TextRenderer.DrawText(graphics, Text, rasterFont, new Rectangle(outlineOffset, outlineOffset, width, height), ForeColour, DrawFormat);
+                    }
                 }
                 else
                 {
-                    TextRenderer.DrawText(graphics, Text, Font, new Rectangle(1, 0, width, height), ForeColour, DrawFormat);
+                    TextFormatFlags format = AlignRight
+                        ? (DrawFormat & ~(TextFormatFlags.WordBreak | TextFormatFlags.WordEllipsis | TextFormatFlags.HorizontalCenter)) |
+                          TextFormatFlags.Right | TextFormatFlags.SingleLine | TextFormatFlags.NoPadding
+                        : DrawFormat;
+                    Rectangle bounds = AlignRight
+                        ? new Rectangle(0, 0, width, height)
+                        : new Rectangle(outlineOffset, 0, width, height);
+                    TextRenderer.DrawText(graphics, Text, rasterFont, bounds, ForeColour, format);
                 }
             }
             TextureValid = true;
             ExpireTime = CEnvir.Now + Config.CacheDuration;
         }
 
-        private void DrawGradientText(Graphics graphics, int width, int height)
+        private void DrawGradientText(Graphics graphics, int width, int height, int outlineOffset, int outlineFarOffset, Font rasterFont)
         {
             if (string.IsNullOrEmpty(Text) || width <= 0 || height <= 0) return;
 
@@ -450,10 +523,10 @@ namespace Client.Controls
 
             if (Outline)
             {
-                TextRenderer.DrawText(graphics, Text, Font, new Rectangle(1, 0, width, height), OutlineColour, DrawFormat);
-                TextRenderer.DrawText(graphics, Text, Font, new Rectangle(0, 1, width, height), OutlineColour, DrawFormat);
-                TextRenderer.DrawText(graphics, Text, Font, new Rectangle(2, 1, width, height), OutlineColour, DrawFormat);
-                TextRenderer.DrawText(graphics, Text, Font, new Rectangle(1, 2, width, height), OutlineColour, DrawFormat);
+                TextRenderer.DrawText(graphics, Text, rasterFont, new Rectangle(outlineOffset, 0, width, height), OutlineColour, DrawFormat);
+                TextRenderer.DrawText(graphics, Text, rasterFont, new Rectangle(0, outlineOffset, width, height), OutlineColour, DrawFormat);
+                TextRenderer.DrawText(graphics, Text, rasterFont, new Rectangle(outlineFarOffset, outlineOffset, width, height), OutlineColour, DrawFormat);
+                TextRenderer.DrawText(graphics, Text, rasterFont, new Rectangle(outlineOffset, outlineFarOffset, width, height), OutlineColour, DrawFormat);
             }
 
             using (Bitmap textMask = new Bitmap(width, height, PixelFormat.Format32bppArgb))
@@ -463,10 +536,10 @@ namespace Client.Controls
                 maskGraphics.Clear(Color.Transparent);
 
                 Rectangle textBounds = Outline
-                    ? new Rectangle(1, 1, width, height)
-                    : new Rectangle(1, 0, width, height);
+                    ? new Rectangle(outlineOffset, outlineOffset, width, height)
+                    : new Rectangle(outlineOffset, 0, width, height);
 
-                TextRenderer.DrawText(maskGraphics, Text, Font, textBounds, Color.White, DrawFormat);
+                TextRenderer.DrawText(maskGraphics, Text, rasterFont, textBounds, Color.White, DrawFormat);
                 ApplyGradientToMask(textMask, topColour, bottomColour);
 
                 graphics.DrawImageUnscaled(textMask, 0, 0);
@@ -533,7 +606,7 @@ namespace Client.Controls
                 return;
             }
 
-            if (!TextureValid)
+            if (!TextureValid || _rasterScale != RasterScale)
             {
                 CreateTexture();
             }
@@ -542,7 +615,22 @@ namespace Client.Controls
 
             RenderingPipelineManager.SetOpacity(Opacity);
 
-            PresentTexture(ControlTexture, Parent, DisplayArea, IsEnabled ? Color.White : Color.FromArgb(75, 75, 75), this);
+            Rectangle clippedArea = Rectangle.Intersect(ClipArea, DisplayArea);
+            if (clippedArea.Width > 0 && clippedArea.Height > 0)
+            {
+                // Use the same nearest physical-pixel boundary as the destination alignment.
+                // Mixing floor/ceiling here with a rounded destination shifts the first
+                // partially clipped line by one source pixel at fractional DPI scales.
+                int sourceLeft = (int)Math.Round((clippedArea.Left - DisplayArea.Left) * _rasterScale);
+                int sourceTop = (int)Math.Round((clippedArea.Top - DisplayArea.Top) * _rasterScale);
+                int sourceRight = (int)Math.Round((clippedArea.Right - DisplayArea.Left) * _rasterScale);
+                int sourceBottom = (int)Math.Round((clippedArea.Bottom - DisplayArea.Top) * _rasterScale);
+                Rectangle source = Rectangle.FromLTRB(sourceLeft, sourceTop, Math.Min(TextureSize.Width, sourceRight), Math.Min(TextureSize.Height, sourceBottom));
+
+                Point alignmentOrigin = Parent is DXLabel ? Parent.DisplayArea.Location : DisplayArea.Location;
+                RenderingPipelineManager.DrawDpiText(ControlTexture, source, clippedArea, alignmentOrigin, AlignRight,
+                    IsEnabled ? Color.White : Color.FromArgb(75, 75, 75));
+            }
 
             RenderingPipelineManager.SetOpacity(oldOpacity);
 
@@ -577,6 +665,7 @@ namespace Client.Controls
                 _Font?.Dispose();
                 _Font = null;
                 _Outline = false;
+                _AlignRight = false;
                 _Gradient = false;
                 _LabelStyle = DXLabelStyle.None;
                 _GradientTopColour = Color.Empty;

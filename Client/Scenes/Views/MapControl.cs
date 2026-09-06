@@ -260,45 +260,64 @@ namespace Client.Scenes.Views
             }
 
             RenderingPipelineManager.SetBlend(previousBlendEnabled, previousBlendRate, previousBlendMode);
+        }
 
-            foreach (MapObject ob in Objects)
+        private void DrawWorldOverlays()
+        {
+            RenderingPipelineManager.PushUIScale(GameScene.Game.UIScale);
+            try
             {
-                if (ob.Dead) continue;
-
-                switch (ob.Race)
+                foreach (MapObject ob in Objects)
                 {
-                    case ObjectType.Player:
-                        if (!Config.ShowPlayerNames) continue;
-                        break;
-                    case ObjectType.Item:
-                        if (!Config.ShowItemNames || ob.CurrentLocation == MapLocation) continue;
-                        break;
-                    case ObjectType.NPC:
-                        if (!Config.ShowNPCNames) continue;
-                        break;
-                    case ObjectType.Spell:
-                        break;
-                    case ObjectType.Monster:
-                        if (!Config.ShowMonsterNames) continue;
-                        break;
+                    if (ob.Dead) continue;
+
+                    switch (ob.Race)
+                    {
+                        case ObjectType.Player:
+                            if (!Config.ShowPlayerNames) continue;
+                            break;
+                        case ObjectType.Item:
+                            if (!Config.ShowItemNames || ob.CurrentLocation == MapLocation) continue;
+                            break;
+                        case ObjectType.NPC:
+                            if (!Config.ShowNPCNames) continue;
+                            break;
+                        case ObjectType.Spell:
+                            break;
+                        case ObjectType.Monster:
+                            if (!Config.ShowMonsterNames) continue;
+                            break;
+                    }
+
+                    SetWorldOverlayScaleOrigin(ob);
+                    ob.DrawName();
                 }
 
-                ob.DrawName();
-            }
+                if (MapObject.MouseObject != null && MapObject.MouseObject.Race != ObjectType.Item)
+                {
+                    SetWorldOverlayScaleOrigin(MapObject.MouseObject);
+                    MapObject.MouseObject.DrawName();
+                }
 
-            if (MapObject.MouseObject != null && MapObject.MouseObject.Race != ObjectType.Item)
-                MapObject.MouseObject.DrawName();
-
-            foreach (MapObject ob in Objects)
-            {
-                ob.DrawChat();
-                ob.DrawPoison();
-                ob.DrawHealth();
-            }
-
-            if (Config.ShowDamageNumbers)
                 foreach (MapObject ob in Objects)
-                    ob.DrawDamage();
+                {
+                    SetWorldOverlayScaleOrigin(ob);
+                    ob.DrawChat();
+                    ob.DrawPoison();
+                    ob.DrawHealth();
+                }
+
+                if (Config.ShowDamageNumbers)
+                    foreach (MapObject ob in Objects)
+                    {
+                        SetWorldOverlayScaleOrigin(ob);
+                        ob.DrawDamage();
+                    }
+            }
+            finally
+            {
+                RenderingPipelineManager.PopUIScale();
+            }
 
             if (MapLocation.X >= 0 && MapLocation.X < Width && MapLocation.Y >= 0 && MapLocation.Y < Height)
             {
@@ -314,6 +333,90 @@ namespace Client.Scenes.Views
             }
         }
 
+        private static void SetWorldOverlayScaleOrigin(MapObject ob)
+        {
+            RenderingPipelineManager.SetUIScaleOrigin(new PointF(ob.DrawX + CellWidth / 2F, ob.DrawY + CellHeight / 2F));
+        }
+
+        protected override void DrawControl()
+        {
+            if (!TextureValid)
+                CreateTexture();
+
+            if (!TextureValid || !Config.ColourGrading || MapInfo == null)
+            {
+                DrawMapTexture();
+                return;
+            }
+
+            ColourGradePreset grade = GetColourGradePreset();
+            RenderingPipelineManager.EnableColourGradeEffect(grade.Exposure, grade.Contrast, grade.Saturation, grade.Tint, grade.TintStrength);
+
+            try
+            {
+                DrawMapTexture();
+            }
+            finally
+            {
+                RenderingPipelineManager.DisableSpriteShaderEffect();
+            }
+        }
+
+        private void DrawMapTexture()
+        {
+            if (!ControlTexture.IsValid || TextureSize.Width <= 0 || TextureSize.Height <= 0)
+                return;
+
+            RenderingPipelineManager.DrawTexture(
+                ControlTexture,
+                new Rectangle(Point.Empty, TextureSize),
+                new RectangleF(DisplayArea.X, DisplayArea.Y, DisplayArea.Width, DisplayArea.Height),
+                IsEnabled ? Color.White : Color.FromArgb(75, 75, 75));
+        }
+
+        private ColourGradePreset GetColourGradePreset()
+        {
+            switch (MapInfo.Light)
+            {
+                case LightSetting.Night:
+                    return new ColourGradePreset(0.04F, 1.025F, 0.94F, Color.FromArgb(226, 238, 255), 0.11F);
+                case LightSetting.Twilight:
+                    return new ColourGradePreset(0.02F, 1.035F, 0.98F, Color.FromArgb(255, 242, 228), 0.06F);
+                case LightSetting.Light:
+                    return new ColourGradePreset(0.015F, 1.035F, 1.02F, Color.White, 0F);
+            }
+
+            switch (GameScene.Game.TimeOfDay)
+            {
+                case TimeOfDay.Dawn:
+                    return new ColourGradePreset(0.025F, 1.03F, 1F, Color.FromArgb(255, 241, 224), 0.07F);
+                case TimeOfDay.Dusk:
+                    return new ColourGradePreset(0.015F, 1.04F, 0.98F, Color.FromArgb(255, 235, 218), 0.08F);
+                case TimeOfDay.Night:
+                    return new ColourGradePreset(0.04F, 1.025F, 0.94F, Color.FromArgb(226, 238, 255), 0.11F);
+                default:
+                    return new ColourGradePreset(0.015F, 1.035F, 1.02F, Color.White, 0F);
+            }
+        }
+
+        private readonly struct ColourGradePreset
+        {
+            public float Exposure { get; }
+            public float Contrast { get; }
+            public float Saturation { get; }
+            public Color Tint { get; }
+            public float TintStrength { get; }
+
+            public ColourGradePreset(float exposure, float contrast, float saturation, Color tint, float tintStrength)
+            {
+                Exposure = exposure;
+                Contrast = contrast;
+                Saturation = saturation;
+                Tint = tint;
+                TintStrength = tintStrength;
+            }
+        }
+
         public override void Draw()
         {
             if (!IsVisible || Size.Width == 0 || Size.Height == 0) return;
@@ -321,13 +424,13 @@ namespace Client.Scenes.Views
             FLayer.CheckTexture();
             LLayer.CheckTexture();
 
-            //CreateTexture();
             OnBeforeDraw();
 
             DrawControl();
 
-            DrawBorder();
+            DrawWorldOverlays();
 
+            DrawBorder();
             OnAfterDraw();
         }
 
@@ -397,24 +500,29 @@ namespace Client.Scenes.Views
                         int index = cell.MiddleImage - 1;
 
                         bool blend = false;
-                        if (cell.MiddleAnimationFrame > 1 && cell.MiddleAnimationFrame < 255)
+                        bool animated = cell.MiddleAnimationFrame > 1 && cell.MiddleAnimationFrame < 255;
+                        if (animated)
                         {
                             blend = cell.MiddleAnimationBlend;
                             index += Animation % cell.MiddleAnimationCount;
                         }
 
                         Size s = cell.MiddleLibrary.GetSize(index);
+                        bool cellSized = IsCellSized(s);
 
-                        if ((s.Width != CellWidth || s.Height != CellHeight) && (s.Width != CellWidth * 2 || s.Height != CellHeight * 2))
+                        if (!cellSized)
                         {
                             if (!blend)
                                 DrawMapImage(cell.MiddleLibrary, index, drawX, drawY - s.Height);
                             else
                                 DrawMapImageBlend(cell.MiddleLibrary, index, drawX, drawY - s.Height, 0.5F);
                         }
-                        else
+                        else if (animated)
                         {
-                            DrawMapImage(cell.MiddleLibrary, index, drawX, drawY - s.Height);
+                            if (!blend)
+                                DrawMapImage(cell.MiddleLibrary, index, drawX, drawY - CellHeight);
+                            else
+                                DrawMapImageBlend(cell.MiddleLibrary, index, drawX, drawY - CellHeight, 0.5F);
                         }
                     }
 
@@ -423,7 +531,8 @@ namespace Client.Scenes.Views
                         int index = cell.FrontImage - 1;
 
                         bool blend = false;
-                        if (cell.FrontAnimationFrame > 1 && cell.FrontAnimationFrame < 255)
+                        bool animated = cell.FrontAnimationFrame > 1 && cell.FrontAnimationFrame < 255;
+                        if (animated)
                         {
                             blend = cell.FrontAnimationBlend;
                             int frameCount = cell.FrontAnimationCount;
@@ -434,9 +543,7 @@ namespace Client.Scenes.Views
                         }
 
                         Size s = cell.FrontLibrary.GetSize(index);
-
-                        bool cellSized = (s.Width == CellWidth && s.Height == CellHeight) ||
-                                         (s.Width == CellWidth * 2 && s.Height == CellHeight * 2);
+                        bool cellSized = IsCellSized(s);
 
                         if (!cellSized)
                         {
@@ -445,7 +552,7 @@ namespace Client.Scenes.Views
                             else
                                 DrawMapImageBlend(cell.FrontLibrary, index, drawX, drawY - s.Height, 0.5F);
                         }
-                        else
+                        else if (animated)
                         {
                             if (!blend)
                                 DrawMapImage(cell.FrontLibrary, index, drawX, drawY - CellHeight);
@@ -508,6 +615,12 @@ namespace Client.Scenes.Views
                     ob.Draw();
                 }
             }
+        }
+
+        private static bool IsCellSized(Size size)
+        {
+            return (size.Width == CellWidth && size.Height == CellHeight) ||
+                   (size.Width == CellWidth * 2 && size.Height == CellHeight * 2);
         }
 
         private void LoadMap()
@@ -611,12 +724,13 @@ namespace Client.Scenes.Views
 
         public override void OnMouseMove(MouseEventArgs e)
         {
+            e = GameScene.Game.ToWorldMouseEventArgs(e);
             base.OnMouseMove(e);
-
             MouseLocation = e.Location;
         }
         public override void OnMouseDown(MouseEventArgs e)
         {
+            e = GameScene.Game.ToWorldMouseEventArgs(e);
             base.OnMouseDown(e);
 
             if (GameScene.Game.Observer) return;
@@ -778,6 +892,7 @@ namespace Client.Scenes.Views
         }
         public override void OnMouseClick(MouseEventArgs e)
         {
+            e = GameScene.Game.ToWorldMouseEventArgs(e);
             base.OnMouseClick(e);
             switch (e.Button)
             {
@@ -1534,9 +1649,40 @@ namespace Client.Scenes.Views
                     }
                 }
 
-                // Middle and front images, including cell-sized images, are already
-                // rendered in DrawObjects. Drawing them here as well would duplicate
-                // semi-transparent shader output and make resolved shadows too dark.
+                for (int y = minY; y <= maxY; y++)
+                {
+                    int drawY = (y - User.CurrentLocation.Y + OffSetY + 1) * CellHeight + PixelOffsetY - User.MovingOffSet.Y - User.ShakeScreenOffset.Y;
+
+                    for (int x = minX; x <= maxX; x++)
+                    {
+                        int drawX = (x - User.CurrentLocation.X + OffSetX) * CellWidth + PixelOffsetX - User.MovingOffSet.X - User.ShakeScreenOffset.X;
+                        Cell cell = GameScene.Game.MapControl.Cells[x, y];
+
+                        if (!(cell.MiddleAnimationFrame > 1 && cell.MiddleAnimationFrame < 255) &&
+                            Libraries.KROrder.TryGetValue(cell.MiddleFile, out LibraryFile file) &&
+                            file != LibraryFile.Tilesc &&
+                            CEnvir.LibraryList.TryGetValue(file, out MirLibrary library))
+                        {
+                            int index = cell.MiddleImage - 1;
+                            Size size = library.GetSize(index);
+
+                            if (IsCellSized(size))
+                                library.Draw(index, drawX, drawY - CellHeight, Color.White, false, 1F, ImageType.Image);
+                        }
+
+                        if (!(cell.FrontAnimationFrame > 1 && cell.FrontAnimationFrame < 255) &&
+                            Libraries.KROrder.TryGetValue(cell.FrontFile, out file) &&
+                            file != LibraryFile.Tilesc &&
+                            CEnvir.LibraryList.TryGetValue(file, out library))
+                        {
+                            int index = cell.FrontImage - 1;
+                            Size size = library.GetSize(index);
+
+                            if (IsCellSized(size))
+                                library.Draw(index, drawX, drawY - CellHeight, Color.White, false, 1F, ImageType.Image);
+                        }
+                    }
+                }
             }
 
             public override void Draw()

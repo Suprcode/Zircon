@@ -11,3 +11,5 @@ licenses.licx
 /.codex/skills/*
 /milestones
 /tmp
+/Exports/*
+/artifacts

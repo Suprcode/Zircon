@@ -166,11 +166,14 @@ namespace Client.Envir.Translations
         public override string CommonControlConfigWindowGameSectionSettingsLabel { get; set; } = "设置";
         public override string CommonControlConfigWindowNetworkSectionSettingsLabel { get; set; } = "设置";
         public override string CommonControlConfigWindowUISectionSettingsLabel { get; set; } = "设置";
+        public override string CommonControlConfigWindowUISectionScalingLabel { get; set; } = "缩放";
         public override string CommonControlConfigWindowUISectionColoursLabel { get; set; } = "颜色";
         public override string CommonControlConfigWindowUISectionTargetColoursLabel { get; set; } = "目标颜色";
         public override string CommonControlConfigWindowGraphicsTabFullScreenLabel { get; set; } = "全屏";
         public override string CommonControlConfigWindowGraphicsTabBorderlessLabel { get; set; } = "无边框";
         public override string CommonControlConfigWindowGraphicsTabGameSizeLabel { get; set; } = "分辨率";
+        public override string CommonControlConfigWindowScaleLabel { get; set; } = "窗口缩放";
+        public override string CommonControlConfigWindowScaleAutomatic { get; set; } = "跟随系统";
         public override string CommonControlConfigWindowGraphicsTabDefaultMonitorLabel { get; set; } = "显示器";
         public override string CommonControlConfigWindowGraphicsTabVSyncLabel { get; set; } = "垂直同步";
         public override string CommonControlConfigWindowGraphicsTabLimitFPSLabel { get; set; } = "帧率限制";
@@ -194,6 +197,7 @@ namespace Client.Envir.Translations
         public override string CommonControlConfigWindowGameTabDamageNumbersLabel { get; set; } = "伤害数字";
         public override string CommonControlConfigWindowGraphicsTabDrawParticlesLabel { get; set; } = "粒子绘制";
         public override string CommonControlConfigWindowGraphicsTabDisplayHelmetLabel { get; set; } = "显示头盔";
+        public override string CommonControlConfigWindowUITabUIScaleLabel { get; set; } = "界面缩放";
         public override string CommonControlConfigWindowUITabHideChatBarLabel { get; set; } = "隐藏聊天框";
         public override string CommonControlConfigWindowUITabEscapeCloseAllLabel { get; set; } = "按 Esc 关闭所有窗口";
         public override string CommonControlConfigWindowUITabShiftOpenChatLabel { get; set; } = "Shift+1 打开聊天";
@@ -204,9 +208,12 @@ namespace Client.Envir.Translations
         public override string CommonControlConfigWindowUITabLogChatLabel { get; set; } = "聊天日志";
         public override string CommonControlConfigWindowGraphicsTabDrawEffectsLabel { get; set; } = "特效绘制";
         public override string CommonControlConfigWindowGraphicsTabDrawWeatherLabel { get; set; } = "天气绘制";
+        public override string CommonControlConfigWindowGraphicsTabColourGradingLabel { get; set; } = "色彩分级";
         public override string CommonControlConfigWindowGameTabShowTargetOutlineLabel { get; set; } = "目标轮廓";
         public override string CommonControlConfigWindowGameTabObservableLabel { get; set; } = "允许观察";
         public override string CommonControlConfigWindowUITabKeyBindButtonLabel { get; set; } = "按键绑定";
+        public override string CommonControlConfigWindowUITabFontSizeModifierLabel { get; set; } = "字体调整（重启）";
+        public override string CommonControlConfigWindowUITabFontSizeModifierHint { get; set; } = "重启客户端后调整所有游戏内字体大小。";
         public override string CommonControlConfigWindowNetworkTabUseNetworkConfigLabel { get; set; } = "开启网络配置";
         public override string CommonControlConfigWindowNetworkTabUseIPAddressLabel { get; set; } = "IP地址";
         public override string CommonControlConfigWindowNetworkTabUsePortLabel { get; set; } = "端口";

@@ -34,6 +34,147 @@ namespace Shared.Rendering
         private static readonly Dictionary<PipelineSession, RenderTexture> SolidFillTextures = new();
         private static readonly object GraphicsLock = new();
         private static string _pendingPipelineId;
+        internal static bool DrawingDpiText { get; private set; }
+        private static PointF DpiTextOrigin { get; set; }
+        private static bool DpiTextRightAligned { get; set; }
+        private static int _uiScaleDepth;
+        private static float _uiScale = 1F;
+        private static object _uiScaleSurface;
+        private static PointF _uiScaleOrigin;
+
+        public static float CurrentUIScale => IsUIScaleActive ? _uiScale : 1F;
+        public static bool UsesFractionalUIScale => IsUIScaleActive && Math.Abs(_uiScale - MathF.Round(_uiScale)) > 0.001F;
+        public static bool IsUIScaleActive => _uiScaleDepth > 0 && _uiScale > 1F &&
+                                              ReferenceEquals(_activePipeline?.GetCurrentSurface().NativeHandle, _uiScaleSurface);
+
+        public static void PushUIScale(float scale, PointF origin = default)
+        {
+            if (_uiScaleDepth++ == 0)
+            {
+                _uiScale = float.IsFinite(scale) ? Math.Max(1F, scale) : 1F;
+                _uiScaleSurface = _activePipeline?.GetCurrentSurface().NativeHandle;
+                _uiScaleOrigin = origin;
+            }
+        }
+
+        public static void SetUIScaleOrigin(PointF origin)
+        {
+            if (_uiScaleDepth <= 0)
+                throw new InvalidOperationException("No UI scale scope is active.");
+
+            _uiScaleOrigin = origin;
+        }
+
+        public static void PopUIScale()
+        {
+            if (_uiScaleDepth <= 0)
+                throw new InvalidOperationException("No UI scale scope is active.");
+
+            if (--_uiScaleDepth == 0)
+            {
+                _uiScale = 1F;
+                _uiScaleSurface = null;
+                _uiScaleOrigin = PointF.Empty;
+            }
+        }
+
+        private static PointF ScaleUIPoint(PointF point)
+        {
+            float scale = CurrentUIScale;
+            return scale == 1F
+                ? point
+                : new PointF(
+                    _uiScaleOrigin.X + (point.X - _uiScaleOrigin.X) * scale,
+                    _uiScaleOrigin.Y + (point.Y - _uiScaleOrigin.Y) * scale);
+        }
+
+        private static RectangleF ScaleUIRectangle(RectangleF rectangle)
+        {
+            float scale = CurrentUIScale;
+            return scale == 1F
+                ? rectangle
+                : new RectangleF(
+                    _uiScaleOrigin.X + (rectangle.X - _uiScaleOrigin.X) * scale,
+                    _uiScaleOrigin.Y + (rectangle.Y - _uiScaleOrigin.Y) * scale,
+                    rectangle.Width * scale, rectangle.Height * scale);
+        }
+
+        private static Matrix3x2 ScaleUITransform(Matrix3x2 transform, Vector3 center, Vector3 translation)
+        {
+            if (center != Vector3.Zero)
+                transform = Matrix3x2.CreateTranslation(-center.X, -center.Y) * transform;
+
+            transform.M31 += translation.X;
+            transform.M32 += translation.Y;
+
+            float scale = CurrentUIScale;
+            if (scale == 1F)
+                return transform;
+
+            Matrix3x2 uiTransform =
+                Matrix3x2.CreateTranslation(-_uiScaleOrigin.X, -_uiScaleOrigin.Y) *
+                Matrix3x2.CreateScale(scale) *
+                Matrix3x2.CreateTranslation(_uiScaleOrigin.X, _uiScaleOrigin.Y);
+
+            return transform * uiTransform;
+        }
+
+        public static void DrawDpiText(RenderTexture texture, Rectangle source, RectangleF destination, PointF origin,
+            bool rightAligned, Color colour)
+        {
+            bool previous = DrawingDpiText;
+            PointF previousOrigin = DpiTextOrigin;
+            bool previousRightAligned = DpiTextRightAligned;
+            DrawingDpiText = true;
+            DpiTextOrigin = ScaleUIPoint(origin);
+            DpiTextRightAligned = rightAligned;
+            try
+            {
+                DrawTexture(texture, source, destination, colour);
+            }
+            finally
+            {
+                DrawingDpiText = previous;
+                DpiTextOrigin = previousOrigin;
+                DpiTextRightAligned = previousRightAligned;
+            }
+        }
+
+        internal static RectangleF AlignTextDestination(RectangleF destination, Size physicalSize, Size sourceSize)
+        {
+            if (!DrawingDpiText) return destination;
+            Size logical = Settings.ActiveSceneSize;
+            if (logical.Width <= 0 || logical.Height <= 0) return destination;
+            float coordinateScale = CurrentUIScale;
+            float sx = physicalSize.Width / (float)logical.Width;
+            float sy = physicalSize.Height / (float)logical.Height;
+            float originX = MathF.Round(DpiTextOrigin.X * sx) / sx;
+            float originY = MathF.Round(DpiTextOrigin.Y * sy) / sy;
+            float alignedY = originY + MathF.Round((destination.Top - DpiTextOrigin.Y) * sy) / sy;
+
+            if (DpiTextRightAligned)
+            {
+                float alignedRight = MathF.Round(destination.Right * sx) / sx;
+                return new RectangleF(alignedRight - sourceSize.Width / sx, alignedY,
+                    sourceSize.Width / sx, sourceSize.Height / sy);
+            }
+
+            // Snap text runs relative to a shared parent origin. This keeps the raster
+            // spacing between separately coloured lines stable while their parent scrolls.
+            RectangleF aligned = new RectangleF(
+                originX + MathF.Round((destination.Left - DpiTextOrigin.X) * sx) / sx,
+                alignedY,
+                sourceSize.Width / sx,
+                sourceSize.Height / sy);
+
+            if (coordinateScale == 1F && (aligned.Width > destination.Width || aligned.Height > destination.Height))
+            {
+                aligned.X -= (aligned.Width - destination.Width) / 2F;
+                aligned.Y -= (aligned.Height - destination.Height) / 2F;
+            }
+
+            return aligned;
+        }
         internal static RenderingHostSettings HostSettings => Settings;
         internal static Control RenderTarget => _context?.RenderTarget;
         private static RenderingHostSettings Settings => _context?.Settings ?? DefaultSettings;
@@ -111,7 +252,6 @@ namespace Shared.Rendering
         public static IReadOnlyCollection<string> AvailablePipelineIds => PipelineFactories.Keys;
         public static bool SupportsMultiplePipelines => PipelineFactories.Count > 1;
         public static bool IsDefaultPipelineOnly => PipelineFactories.Count == 1 && PipelineFactories.ContainsKey(DefaultPipelineId);
-
         public static IReadOnlyList<DisplayMonitorInfo> GetDisplayMonitors()
         {
             Screen[] screens = Screen.AllScreens;
@@ -487,25 +627,33 @@ namespace Shared.Rendering
 
         public static Size MeasureText(string text, Font font)
         {
+            using Font pixelFont = CreatePixelFont(font);
             if (_activePipeline != null)
-                return _activePipeline.MeasureText(text, font);
+                return _activePipeline.MeasureText(text, pixelFont);
 
             lock (GraphicsLock)
             {
-                return TextRenderer.MeasureText(FallbackGraphics, text, font);
+                return TextRenderer.MeasureText(FallbackGraphics, text, pixelFont);
             }
         }
 
         public static Size MeasureText(string text, Font font, Size proposedSize, TextFormatFlags format)
         {
+            using Font pixelFont = CreatePixelFont(font);
             if (_activePipeline != null)
-                return _activePipeline.MeasureText(text, font, proposedSize, format);
+                return _activePipeline.MeasureText(text, pixelFont, proposedSize, format);
 
             lock (GraphicsLock)
             {
-                return TextRenderer.MeasureText(FallbackGraphics, text, font, proposedSize, format);
+                return TextRenderer.MeasureText(FallbackGraphics, text, pixelFont, proposedSize, format);
             }
         }
+
+        // GDI TextRenderer uses the screen DC's DPI for point fonts, not Bitmap.SetResolution.
+        // Keep layout at 96 DPI and scale the raster font explicitly for the destination texture.
+        public static Font CreatePixelFont(Font font, float scale = 1F) =>
+            new Font(font.FontFamily, (font.Unit == GraphicsUnit.Pixel ? font.Size : font.SizeInPoints * 96F / 72F) * scale,
+                font.Style, GraphicsUnit.Pixel, font.GdiCharSet, font.GdiVerticalFont);
 
         public static float GetHorizontalDpi()
         {
@@ -632,7 +780,18 @@ namespace Shared.Rendering
 
         public static void EnableDropShadowEffect(Color colour, float width, float startOpacity, RectangleF? visibleBounds = null)
         {
+            if (IsUIScaleActive)
+            {
+                width *= CurrentUIScale;
+                if (visibleBounds.HasValue)
+                    visibleBounds = ScaleUIRectangle(visibleBounds.Value);
+            }
             _spriteShaderEffect = new SpriteShaderEffectRequest(new DropShadowEffectSettings(colour, width, startOpacity, visibleBounds));
+        }
+
+        public static void EnableColourGradeEffect(float exposure, float contrast, float saturation, Color tint, float tintStrength)
+        {
+            _spriteShaderEffect = new SpriteShaderEffectRequest(new ColourGradeEffectSettings(exposure, contrast, saturation, tint, tintStrength));
         }
 
         public static void DisableSpriteShaderEffect()
@@ -654,6 +813,16 @@ namespace Shared.Rendering
 
             if (_activePipeline != null)
             {
+                if (IsUIScaleActive)
+                {
+                    LinePoint[] scaledPoints = new LinePoint[points.Count];
+                    for (int i = 0; i < points.Count; i++)
+                    {
+                        PointF point = ScaleUIPoint(new PointF(points[i].X, points[i].Y));
+                        scaledPoints[i] = new LinePoint(point.X, point.Y);
+                    }
+                    points = scaledPoints;
+                }
                 _activePipeline.DrawLine(points, colour);
             }
         }
@@ -670,6 +839,13 @@ namespace Shared.Rendering
 
             if (_activePipeline == null)
                 throw new InvalidOperationException("No rendering pipeline has been initialized.");
+
+            if (IsUIScaleActive)
+            {
+                transform = ScaleUITransform(transform, center, translation);
+                center = Vector3.Zero;
+                translation = Vector3.Zero;
+            }
 
             if (_activePipeline is SilkVulkan.SilkVulkanRenderingPipeline vulkanPipeline)
             {
@@ -706,7 +882,7 @@ namespace Shared.Rendering
             if (_activePipeline == null)
                 throw new InvalidOperationException("No rendering pipeline has been initialized.");
 
-            _activePipeline.DrawTexture(texture, sourceRectangle, destinationRectangle, colour);
+            _activePipeline.DrawTexture(texture, sourceRectangle, ScaleUIRectangle(destinationRectangle), colour);
         }
 
         public static void DrawTexture(RenderTexture texture, Rectangle? sourceRectangle, Matrix3x2 transform, Vector3 center, Vector3 translation, Color colour)
@@ -716,6 +892,13 @@ namespace Shared.Rendering
 
             if (_activePipeline == null)
                 throw new InvalidOperationException("No rendering pipeline has been initialized.");
+
+            if (IsUIScaleActive)
+            {
+                transform = ScaleUITransform(transform, center, translation);
+                center = Vector3.Zero;
+                translation = Vector3.Zero;
+            }
 
             _activePipeline.DrawTexture(texture, sourceRectangle, transform, center, translation, colour);
         }
@@ -733,7 +916,7 @@ namespace Shared.Rendering
             if (_activePipeline == null)
                 throw new InvalidOperationException("No rendering pipeline has been initialized.");
 
-            _activePipeline.QueueSprite(texture, sourceRectangle, destinationRectangle, colour);
+            _activePipeline.QueueSprite(texture, sourceRectangle, ScaleUIRectangle(destinationRectangle), colour);
         }
 
         public static void EndSpriteBatch()
@@ -1173,12 +1356,31 @@ namespace Shared.Rendering
             }
         }
 
+        internal readonly struct ColourGradeEffectSettings
+        {
+            public float Exposure { get; }
+            public float Contrast { get; }
+            public float Saturation { get; }
+            public Color Tint { get; }
+            public float TintStrength { get; }
+
+            public ColourGradeEffectSettings(float exposure, float contrast, float saturation, Color tint, float tintStrength)
+            {
+                Exposure = Math.Clamp(exposure, -2F, 2F);
+                Contrast = Math.Clamp(contrast, 0F, 2F);
+                Saturation = Math.Clamp(saturation, 0F, 2F);
+                Tint = tint;
+                TintStrength = Math.Clamp(tintStrength, 0F, 1F);
+            }
+        }
+
         internal readonly struct SpriteShaderEffectRequest
         {
             public SpriteShaderEffectKind Kind { get; }
             public float Amount { get; }
             public OutlineEffectSettings Outline { get; }
             public DropShadowEffectSettings DropShadow { get; }
+            public ColourGradeEffectSettings ColourGrade { get; }
 
             public SpriteShaderEffectRequest(OutlineEffectSettings outline)
             {
@@ -1186,6 +1388,7 @@ namespace Shared.Rendering
                 Amount = 0F;
                 Outline = outline;
                 DropShadow = default;
+                ColourGrade = default;
             }
 
             public SpriteShaderEffectRequest(SpriteShaderEffectKind kind, float amount = 0F)
@@ -1194,6 +1397,7 @@ namespace Shared.Rendering
                 Amount = amount;
                 Outline = default;
                 DropShadow = default;
+                ColourGrade = default;
             }
 
             public SpriteShaderEffectRequest(DropShadowEffectSettings dropShadow)
@@ -1202,6 +1406,16 @@ namespace Shared.Rendering
                 Amount = 0F;
                 Outline = default;
                 DropShadow = dropShadow;
+                ColourGrade = default;
+            }
+
+            public SpriteShaderEffectRequest(ColourGradeEffectSettings colourGrade)
+            {
+                Kind = SpriteShaderEffectKind.ColourGrade;
+                Amount = 0F;
+                Outline = default;
+                DropShadow = default;
+                ColourGrade = colourGrade;
             }
         }
 
@@ -1210,7 +1424,8 @@ namespace Shared.Rendering
             Outline,
             Grayscale,
             DropShadow,
-            SolidShadowFill
+            SolidShadowFill,
+            ColourGrade
         }
     }
 }

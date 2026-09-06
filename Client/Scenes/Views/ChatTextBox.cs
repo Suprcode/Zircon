@@ -448,11 +448,6 @@ namespace Client.Scenes.Views
 
                 if (TextBox != null)
                 {
-                    TextBox.TextBox.KeyPress -= TextBox_KeyPress;
-                    TextBox.TextBox.KeyDown -= TextBox_KeyDown;
-                    TextBox.TextBox.PreviewKeyDown -= TextBox_PreviewKeyDown;
-                    TextBox.TextBox.TextChanged -= TextBox_TextChanged;
-
                     if (!TextBox.IsDisposed)
                         TextBox.Dispose();
 

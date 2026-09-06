@@ -1,5 +1,5 @@
 ﻿using Client.Envir;
-using Shared.Rendering;
+using Client.Scenes;
 using Library;
 using System;
 using System.Collections.Generic;
@@ -130,6 +130,24 @@ namespace Client.Controls
         #endregion
 
         #region Properties
+
+        public bool UsesUIScale
+        {
+            get
+            {
+                if (ActiveScene is not GameScene game || this == game || this == game.MapControl)
+                    return false;
+
+                DXControl root = this;
+                while (root.Parent != null && root.Parent != game)
+                    root = root.Parent;
+
+                return root.Parent == game && root != game.MapControl;
+            }
+        }
+
+        private Size ActiveLayoutSize => UsesUIScale && ActiveScene is GameScene game ? game.UISize : ActiveScene.Size;
+        public static Size SceneLayoutSize => ActiveScene is GameScene game ? game.UISize : ActiveScene?.Size ?? Size.Empty;
 
         protected internal List<DXControl> Controls { get; private set; } = new List<DXControl>();
 
@@ -1259,8 +1277,10 @@ BorderInformation = new[]
         private void UpdateClipArea()
         {
             Rectangle sceneArea = ActiveScene?.DisplayArea ?? DisplayArea;
+            if (UsesUIScale && ActiveScene is GameScene game)
+                sceneArea = new Rectangle(ActiveScene.Location, game.UISize);
 
-            if (Parent == null || Parent.IsMoving && Parent.AllowDragOut)
+            if (Parent == null || Parent == ActiveScene || Parent.IsMoving && Parent.AllowDragOut)
             {
                 ClipArea = Rectangle.Intersect(sceneArea, DisplayArea);
                 return;
@@ -1396,8 +1416,8 @@ BorderInformation = new[]
                 {
                     nSize = new Size(nSize.Width, nSize.Height + tempPoint.Y);
 
-                    if (nSize.Height + nLocation.Y >= ActiveScene.Size.Height)
-                        nSize.Height = ActiveScene.Size.Height - nLocation.Y;
+                    if (nSize.Height + nLocation.Y >= ActiveLayoutSize.Height)
+                        nSize.Height = ActiveLayoutSize.Height - nLocation.Y;
 
                     if (nSize.Height < ResizeBuffer * 2)
                         nSize.Height = ResizeBuffer * 2;
@@ -1426,8 +1446,8 @@ BorderInformation = new[]
                 {
                     nSize = new Size(nSize.Width + tempPoint.X, nSize.Height);
 
-                    if (nSize.Width + nLocation.X >= ActiveScene.Size.Width)
-                        nSize.Width = ActiveScene.Size.Width - nLocation.X;
+                    if (nSize.Width + nLocation.X >= ActiveLayoutSize.Width)
+                        nSize.Width = ActiveLayoutSize.Width - nLocation.X;
 
                     if (nSize.Width < ResizeBuffer * 2)
                         nSize.Width = ResizeBuffer * 2;
@@ -1510,8 +1530,9 @@ BorderInformation = new[]
                 {
                     if (Parent == null) return;
 
-                    if (tempPoint.X + DisplayArea.Width > Parent.DisplayArea.Width) tempPoint.X = Parent.DisplayArea.Width - DisplayArea.Width;
-                    if (tempPoint.Y + DisplayArea.Height > Parent.DisplayArea.Height) tempPoint.Y = Parent.DisplayArea.Height - DisplayArea.Height;
+                    Size parentBounds = Parent == ActiveScene ? ActiveLayoutSize : Parent.DisplayArea.Size;
+                    if (tempPoint.X + DisplayArea.Width > parentBounds.Width) tempPoint.X = parentBounds.Width - DisplayArea.Width;
+                    if (tempPoint.Y + DisplayArea.Height > parentBounds.Height) tempPoint.Y = parentBounds.Height - DisplayArea.Height;
 
                     if (tempPoint.X < 0) tempPoint.X = 0;
                     if (tempPoint.Y < 0) tempPoint.Y = 0;
@@ -1548,8 +1569,8 @@ BorderInformation = new[]
                     if (DisplayArea.X + change.X < ActiveScene.Location.X) tempPoint.X -= DisplayArea.X + change.X - ActiveScene.Location.X;
                     if (DisplayArea.Y + change.Y < ActiveScene.Location.Y) tempPoint.Y -= DisplayArea.Y + change.Y - ActiveScene.Location.Y;
 
-                    if (DisplayArea.X + clipSize.Width + change.X - ActiveScene.Location.X >= ActiveScene.DisplayArea.Width) tempPoint.X -= DisplayArea.X + clipSize.Width + change.X - ActiveScene.Location.X - ActiveScene.DisplayArea.Width;
-                    if (DisplayArea.Y + clipSize.Height + change.Y - ActiveScene.Location.Y >= ActiveScene.DisplayArea.Height) tempPoint.Y -= DisplayArea.Y + clipSize.Height + change.Y - ActiveScene.Location.Y - ActiveScene.DisplayArea.Height;
+                    if (DisplayArea.X + clipSize.Width + change.X - ActiveScene.Location.X >= ActiveLayoutSize.Width) tempPoint.X -= DisplayArea.X + clipSize.Width + change.X - ActiveScene.Location.X - ActiveLayoutSize.Width;
+                    if (DisplayArea.Y + clipSize.Height + change.Y - ActiveScene.Location.Y >= ActiveLayoutSize.Height) tempPoint.Y -= DisplayArea.Y + clipSize.Height + change.Y - ActiveScene.Location.Y - ActiveLayoutSize.Height;
                 }
 
                 Location = tempPoint;
@@ -1807,8 +1828,10 @@ BorderInformation = new[]
         private Rectangle GetBorderClipArea()
         {
             Rectangle sceneArea = ActiveScene?.DisplayArea ?? DisplayArea;
+            if (UsesUIScale && ActiveScene is GameScene game)
+                sceneArea = new Rectangle(ActiveScene.Location, game.UISize);
 
-            if (Parent == null || Parent.IsMoving && Parent.AllowDragOut)
+            if (Parent == null || Parent == ActiveScene || Parent.IsMoving && Parent.AllowDragOut)
                 return sceneArea;
 
             return Parent.ClipArea;
@@ -1848,7 +1871,8 @@ BorderInformation = new[]
 
         protected virtual void DrawChildControls()
         {
-            if (CacheChildControls && Controls.Count > 0 && RenderingPipelineManager.SupportsCachedRenderTargets)
+            bool dpiScaled = CEnvir.Target != null && Math.Abs(CEnvir.Target.TextRasterScale - 1F) > 0.001F;
+            if (!dpiScaled && CacheChildControls && Controls.Count > 0 && RenderingPipelineManager.SupportsCachedRenderTargets)
             {
                 DrawCachedChildControls();
                 return;
@@ -2158,16 +2182,12 @@ BorderInformation = new[]
                 return;
             }
 
-            float uiScale = 1f;// control.UiScale;
-            float finalScale = scale * uiScale;
+            float finalScale = scale;
+            Rectangle scaledArea = displayArea;
 
-            Rectangle scaledArea = new Rectangle(
-                (int)(displayArea.X * uiScale),
-                (int)(displayArea.Y * uiScale),
-                (int)(displayArea.Width * uiScale),
-                (int)(displayArea.Height * uiScale));
-
-            Rectangle bounds = ActiveScene.DisplayArea;
+            Rectangle bounds = control?.UsesUIScale == true && ActiveScene is GameScene game
+                ? new Rectangle(ActiveScene.Location, game.UISize)
+                : ActiveScene.DisplayArea;
             Rectangle scaledTextureArea = Rectangle.Intersect(bounds, scaledArea);
 
             if (!control.IsMoving || !control.AllowDragOut)
@@ -2176,19 +2196,15 @@ BorderInformation = new[]
                 {
                     if (parent.IsMoving && parent.AllowDragOut)
                     {
-                        bounds = ActiveScene.DisplayArea;
+                        bounds = control?.UsesUIScale == true && ActiveScene is GameScene dragGame
+                            ? new Rectangle(ActiveScene.Location, dragGame.UISize)
+                            : ActiveScene.DisplayArea;
                         if (intersectParent)
                             scaledTextureArea = Rectangle.Intersect(bounds, scaledArea);
                         break;
                     }
 
-                    var parentUiScale = 1f; //parent.UiScale;
-
-                    Rectangle scaledParent = new Rectangle(
-                        (int)(parent.DisplayArea.X * parentUiScale),
-                        (int)(parent.DisplayArea.Y * parentUiScale),
-                        (int)(parent.DisplayArea.Width * parentUiScale),
-                        (int)(parent.DisplayArea.Height * parentUiScale));
+                    Rectangle scaledParent = parent.DisplayArea;
 
                     bounds = scaledParent;
                     if (intersectParent)
@@ -2210,10 +2226,10 @@ BorderInformation = new[]
             }
 
             Rectangle textureArea = new Rectangle(
-                (int)((scaledTextureArea.X - scaledArea.X) / uiScale),
-                (int)((scaledTextureArea.Y - scaledArea.Y) / uiScale),
-                (int)(scaledTextureArea.Width / uiScale),
-                (int)(scaledTextureArea.Height / uiScale));
+                scaledTextureArea.X - scaledArea.X,
+                scaledTextureArea.Y - scaledArea.Y,
+                scaledTextureArea.Width,
+                scaledTextureArea.Height);
 
             if (textureArea.Width <= 0 || textureArea.Height <= 0)
                 return;
@@ -2234,8 +2250,8 @@ BorderInformation = new[]
                     return;
             }
 
-            float destinationX = scaledTextureArea.X + offX * uiScale;
-            float destinationY = scaledTextureArea.Y + offY * uiScale;
+            float destinationX = scaledTextureArea.X + offX;
+            float destinationY = scaledTextureArea.Y + offY;
             float destinationWidth = textureArea.Width * finalScale;
             float destinationHeight = textureArea.Height * finalScale;
 

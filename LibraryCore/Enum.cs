@@ -652,7 +652,7 @@ namespace Library
         AugmentDestructiveSurge = 119,
         AugmentDefiance = 120,
         AugmentReflectDamage = 121,
-        AdvancedPotionMastery = 122,
+        AugmentPotionMastery = 122,
         MassBeckon = 123,
         SeismicSlam = 124,
         Invincibility = 125,

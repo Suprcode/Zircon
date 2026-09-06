@@ -23,7 +23,7 @@ namespace Client.Controls
 
         //Graphics
         public DXCheckBox FullScreenCheckBox, BorderlessCheckbox, VSyncCheckBox, LimitFPSCheckBox, ClipMouseCheckBox, DebugLabelCheckBox, SmoothMoveCheckBox;
-        private DXComboBox GameSizeComboBox, DefaultMonitorComboBox, LanguageComboBox, RenderingPipelineComboBox;
+        private DXComboBox GameSizeComboBox, DefaultMonitorComboBox, LanguageComboBox, RenderingPipelineComboBox, WindowScaleComboBox;
 
         //Sound
         public DXCheckBox BackgroundSoundBox;
@@ -32,9 +32,13 @@ namespace Client.Controls
         //Game
         private DXCheckBox ItemNameCheckBox, MonsterNameCheckBox, PlayerNameCheckBox, NPCNameCheckBox, UserHealthCheckBox, MonsterHealthCheckBox, DamageNumbersCheckBox,
             EscapeCloseAllCheckBox, ShiftOpenChatCheckBox, RightClickDeTargetCheckBox, MonsterBoxVisibleCheckBox, LogChatCheckBox, DrawEffectsCheckBox,
-            DrawParticlesCheckBox, DrawWeatherCheckBox, ShowTargetOutlineCheckBox, ObservableCheckBox;
+            DrawParticlesCheckBox, DrawWeatherCheckBox, ColourGradingCheckBox, ShowTargetOutlineCheckBox, ObservableCheckBox;
         public DXCheckBox DisplayHelmetCheckBox, HideChatBarCheckBox;
         public DXButton KeyBindButton;
+
+        //UI
+        private DXComboBox UIScaleComboBox;
+        public DXValueBar FontSizeBar;
 
         //Network
         private DXCheckBox UseNetworkConfigCheckBox;
@@ -93,6 +97,7 @@ namespace Client.Controls
             GameSizeComboBox.Enabled = ActiveScene is GameScene;
             DefaultMonitorComboBox.Enabled = ActiveScene is GameScene;
             RenderingPipelineComboBox.Enabled = ActiveScene is GameScene;
+            UpdateScaleControlState();
 
             FullScreenCheckBox.Checked = Config.FullScreen;
             BorderlessCheckbox.Checked = Config.Borderless;
@@ -105,6 +110,9 @@ namespace Client.Controls
             DebugLabelCheckBox.Checked = Config.DebugLabel;
             LanguageComboBox.ListBox.SelectItem(Config.Language);
             RenderingPipelineComboBox.ListBox.SelectItem(Config.RenderingPipeline);
+            WindowScaleComboBox.ListBox.SelectItem(Config.WindowScalePercent);
+            UIScaleComboBox.ListBox.SelectItem(Config.UIScalePercent);
+            FontSizeBar.Value = Config.FontSizeMod;
 
             BackgroundSoundBox.Checked = Config.SoundInBackground;
             SoundSystemBar.Value = Config.SystemVolume;
@@ -139,6 +147,7 @@ namespace Client.Controls
             LogChatCheckBox.Checked = Config.LogChat;
             DrawEffectsCheckBox.Checked = Config.DrawEffects;
             DrawWeatherCheckBox.Checked = Config.DrawWeather;
+            ColourGradingCheckBox.Checked = Config.ColourGrading;
             ShowTargetOutlineCheckBox.Checked = Config.ShowTargetOutline;
 
             LocalColourBox.ForeColourControl.BackColour = Config.LocalTextForeColour;
@@ -185,6 +194,15 @@ namespace Client.Controls
             base.OnParentChanged(oValue, nValue);
 
             KeyBindWindow.Parent = nValue;
+        }
+
+        public void UpdateScaleControlState()
+        {
+            if (WindowScaleComboBox != null)
+                WindowScaleComboBox.Enabled = ActiveScene is GameScene && !Config.FullScreen && !Config.Borderless;
+
+            if (UIScaleComboBox != null)
+                UIScaleComboBox.Enabled = ActiveScene is GameScene;
         }
 
         public override void OnLocationChanged(Point oValue, Point nValue)
@@ -352,9 +370,11 @@ namespace Client.Controls
 
                     if (!Config.FullScreen)
                     {
-                        CEnvir.Target.ClientSize = Config.GameSize;
+                        CEnvir.Target.SetLogicalClientSize(Config.GameSize);
                         RenderingPipelineManager.CenterOnSelectedMonitor();
                     }
+
+                    UpdateScaleControlState();
                 }
             };
 
@@ -372,6 +392,7 @@ namespace Client.Controls
 
                 Config.Borderless = BorderlessCheckbox.Checked;
                 RenderingPipelineManager.ResetDevice();
+                UpdateScaleControlState();
             };
 
             displayGraphicsSection.AddControl("", BorderlessCheckbox);
@@ -437,6 +458,32 @@ namespace Client.Controls
                 };
 
             displayGraphicsSection.AddControl(CEnvir.Language.CommonControlConfigWindowGraphicsTabGameSizeLabel, GameSizeComboBox);
+
+            WindowScaleComboBox = new DXComboBox
+            {
+                Size = new Size(122, DXComboBox.DefaultNormalHeight),
+                Border = false,
+                Background = { Visible = true }
+            };
+            foreach (int percent in new[] { 0, 100, 125, 150, 175, 200, 250, 300 })
+                new DXListBoxItem
+                {
+                    Parent = WindowScaleComboBox.ListBox,
+                    Label = { Text = percent == 0 ? CEnvir.Language.CommonControlConfigWindowScaleAutomatic : $"{percent}%" },
+                    Item = percent
+                };
+            WindowScaleComboBox.ListBox.SelectItem(Config.WindowScalePercent);
+            WindowScaleComboBox.SelectedItemChanged += (o, e) =>
+            {
+                if (WindowScaleComboBox.SelectedItem is not int percent || Config.WindowScalePercent == percent)
+                    return;
+
+                Config.WindowScalePercent = percent;
+                CEnvir.Target.ApplyWindowScale();
+            };
+            displayGraphicsSection.AddControl(CEnvir.Language.CommonControlConfigWindowScaleLabel, WindowScaleComboBox);
+
+            UpdateScaleControlState();
 
             DefaultMonitorComboBox = new DXComboBox
             {
@@ -584,6 +631,13 @@ namespace Client.Controls
             };
             DrawWeatherCheckBox.CheckedChanged += (o, e) => Config.DrawWeather = DrawWeatherCheckBox.Checked;
             displayEffectsSection.AddControl("", DrawWeatherCheckBox);
+
+            ColourGradingCheckBox = new DXCheckBox
+            {
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabColourGradingLabel },
+            };
+            ColourGradingCheckBox.CheckedChanged += (o, e) => Config.ColourGrading = ColourGradingCheckBox.Checked;
+            displayEffectsSection.AddControl("", ColourGradingCheckBox);
 
             DisplayHelmetCheckBox = new DXCheckBox
             {
@@ -970,6 +1024,51 @@ namespace Client.Controls
             KeyBindButton.MouseClick += (o, e) => KeyBindWindow.Visible = !KeyBindWindow.Visible;
             uiSettingsSection.AddControl("", KeyBindButton);
 
+            DXConfigSection uiScalingSection = new(CEnvir.Language.CommonControlConfigWindowUISectionScalingLabel)
+            {
+                Columns = 1,
+                Parent = UITab,
+            };
+            UITab.AddSection(uiScalingSection);
+
+            UIScaleComboBox = new DXComboBox
+            {
+                Size = new Size(122, DXComboBox.DefaultNormalHeight),
+                Border = false,
+                Background = { Visible = true }
+            };
+            foreach (int percent in new[] { 100, 125, 150, 175, 200, 250, 300 })
+                new DXListBoxItem
+                {
+                    Parent = UIScaleComboBox.ListBox,
+                    Label = { Text = $"{percent}%" },
+                    Item = percent
+                };
+            UIScaleComboBox.ListBox.SelectItem(Config.UIScalePercent);
+            UIScaleComboBox.SelectedItemChanged += (o, e) =>
+            {
+                if (UIScaleComboBox.SelectedItem is not int percent || Config.UIScalePercent == percent)
+                    return;
+
+                float previousScale = Math.Clamp(Config.UIScalePercent / 100F, 1F, 3F);
+                Config.UIScalePercent = percent;
+                CEnvir.Target.ApplyUIScale(previousScale);
+            };
+            uiScalingSection.AddControl(CEnvir.Language.CommonControlConfigWindowUITabUIScaleLabel, UIScaleComboBox);
+            UpdateScaleControlState();
+
+            FontSizeBar = new DXValueBar(
+                Config.MinimumFontSizeModifier,
+                Config.MaximumFontSizeModifier,
+                0.25F,
+                value => value.ToString("+0.##;-0.##;0"))
+            {
+                Parent = uiScalingSection,
+                Hint = CEnvir.Language.CommonControlConfigWindowUITabFontSizeModifierHint,
+            };
+            FontSizeBar.ValueChanged += (o, e) => Config.FontSizeMod = FontSizeBar.Value;
+            uiScalingSection.AddControl(CEnvir.Language.CommonControlConfigWindowUITabFontSizeModifierLabel, FontSizeBar);
+
             #endregion
 
             #region Colours
@@ -1191,6 +1290,14 @@ namespace Client.Controls
                         GameSizeComboBox.Dispose();
 
                     GameSizeComboBox = null;
+                }
+
+                if (WindowScaleComboBox != null)
+                {
+                    if (!WindowScaleComboBox.IsDisposed)
+                        WindowScaleComboBox.Dispose();
+
+                    WindowScaleComboBox = null;
                 }
 
                 if (DefaultMonitorComboBox != null)
@@ -1438,6 +1545,14 @@ namespace Client.Controls
                     DrawWeatherCheckBox = null;
                 }
 
+                if (ColourGradingCheckBox != null)
+                {
+                    if (!ColourGradingCheckBox.IsDisposed)
+                        ColourGradingCheckBox.Dispose();
+
+                    ColourGradingCheckBox = null;
+                }
+
                 if (ShowTargetOutlineCheckBox != null)
                 {
                     if (!ShowTargetOutlineCheckBox.IsDisposed)
@@ -1458,6 +1573,26 @@ namespace Client.Controls
                         KeyBindButton.Dispose();
 
                     KeyBindButton = null;
+                }
+
+                #endregion
+
+                #region UI
+
+                if (UIScaleComboBox != null)
+                {
+                    if (!UIScaleComboBox.IsDisposed)
+                        UIScaleComboBox.Dispose();
+
+                    UIScaleComboBox = null;
+                }
+
+                if (FontSizeBar != null)
+                {
+                    if (!FontSizeBar.IsDisposed)
+                        FontSizeBar.Dispose();
+
+                    FontSizeBar = null;
                 }
 
                 #endregion
@@ -1861,6 +1996,8 @@ namespace Client.Controls
             {
                 cb.Label.ForeColour = Color.FromArgb(169, 124, 67);
                 cb.Label.Outline = true;
+                cb.Label.AlignRight = true;
+                cb.LabelBoxPadding = 2;
             }
 
             ConfigControls.Add(new ConfigControl
@@ -1870,6 +2007,7 @@ namespace Client.Controls
                     Text = label,
                     ForeColour = Color.FromArgb(169, 124, 67),
                     Outline = true,
+                    AlignRight = true,
                     Parent = this,
                 },
                 Control = control
@@ -1949,7 +2087,7 @@ namespace Client.Controls
 
         private void ApplyRenderingMode()
         {
-            bool useCachedTexture = RenderingPipelineManager.SupportsCachedRenderTargets;
+            bool useCachedTexture = RenderingPipelineManager.SupportsCachedRenderTargets && (CEnvir.Target?.TextRasterScale ?? 1F) == 1F;
 
             DrawTexture = useCachedTexture;
 
@@ -2010,9 +2148,9 @@ namespace Client.Controls
             {
                 GetSingleColumnAlignment(control.Control, out int labelAlignX, out int controlAlignX);
 
-                control.Label.Location = new Point(DisplayArea.Right - labelAlignX - control.Label.Size.Width, y);
+                control.Label.Location = new Point(Size.Width - labelAlignX - control.Label.Size.Width, y);
 
-                control.Control.Location = new Point(DisplayArea.Right - controlAlignX - control.Control.Size.Width, y);
+                control.Control.Location = new Point(Size.Width - controlAlignX - control.Control.Size.Width, y);
 
                 y += controlHeight;
             }
@@ -2036,9 +2174,9 @@ namespace Client.Controls
                 bool isLeftColumn = rowItems == 0;
                 int columnOffset = isLeftColumn ? colOffset : 0;
 
-                control.Label.Location = new Point(DisplayArea.Right - labelAlignX - columnOffset - control.Label.Size.Width, y);
+                control.Label.Location = new Point(Size.Width - labelAlignX - columnOffset - control.Label.Size.Width, y);
 
-                control.Control.Location = new Point(DisplayArea.Right - controlAlignX - columnOffset - control.Control.Size.Width, y);
+                control.Control.Location = new Point(Size.Width - controlAlignX - columnOffset - control.Control.Size.Width, y);
 
                 rowItems++;
 
@@ -2066,6 +2204,10 @@ namespace Client.Controls
             {
                 labelAlignX = 250;
                 controlAlignX = 70;
+            }
+            else if (control is DXValueBar)
+            {
+                controlAlignX = 10;
             }
             else if (control is DXCheckBox)
             {

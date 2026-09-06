@@ -318,11 +318,11 @@ namespace Client.Envir
 
                 Point location = new(x, y);
 
-                if (location.X + DXControl.HintLabel.Size.Width > DXControl.ActiveScene.Size.Width)
-                    location.X = DXControl.ActiveScene.Size.Width - DXControl.HintLabel.Size.Width - 1;
+                if (location.X + DXControl.HintLabel.Size.Width > DXControl.SceneLayoutSize.Width)
+                    location.X = DXControl.SceneLayoutSize.Width - DXControl.HintLabel.Size.Width - 1;
 
-                if (location.Y + DXControl.HintLabel.Size.Height > DXControl.ActiveScene.Size.Height)
-                    location.Y = DXControl.ActiveScene.Size.Height - DXControl.HintLabel.Size.Height - 1;
+                if (location.Y + DXControl.HintLabel.Size.Height > DXControl.SceneLayoutSize.Height)
+                    location.Y = DXControl.SceneLayoutSize.Height - DXControl.HintLabel.Size.Height - 1;
 
                 if (location.X < 0) location.X = 0;
                 if (location.Y < 0) location.Y = 0;
@@ -431,7 +431,13 @@ namespace Client.Envir
                     if (supportedResolutions.Count > 0)
                     {
                         if (!supportedResolutions.Contains(Config.GameSize))
-                            Config.GameSize = supportedResolutions[0];
+                        {
+                            long configuredArea = (long)Config.GameSize.Width * Config.GameSize.Height;
+                            Config.GameSize = supportedResolutions
+                                .OrderBy(x => Math.Abs((long)x.Width * x.Height - configuredArea))
+                                .ThenBy(x => Math.Abs(x.Width - Config.GameSize.Width) + Math.Abs(x.Height - Config.GameSize.Height))
+                                .First();
+                        }
                     }
                     else
                     {
@@ -959,7 +965,7 @@ namespace Client.Envir
 
         public static float FontSize(float size)
         {
-            return (size - Config.FontSizeMod) * (96F / RenderingPipelineManager.GetHorizontalDpi());
+            return size - Config.FontSizeMod;
         }
 
         public static int ErrorCount;

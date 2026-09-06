@@ -65,7 +65,7 @@ namespace Client.Scenes.Views
             var minWidth = 320;
             var minHeight = 240;
 
-            var maxWidth = Math.Min(MaximumMapWidth, Math.Max(minWidth, GameScene.Game.Size.Width - SidePanelWidth - SidePanelGap - 60));
+            var maxWidth = Math.Min(MaximumMapWidth, Math.Max(minWidth, GameScene.Game.UISize.Width - SidePanelWidth - SidePanelGap - 60));
             var maxHeight = MaximumMapHeight;
 
             _MapClientSize = new Size(Math.Min(Math.Max(Image.Size.Width, minWidth), maxWidth), Math.Min(Math.Max(Image.Size.Height, minHeight), maxHeight));
@@ -85,7 +85,7 @@ namespace Client.Scenes.Views
 
             RecenterButton.Enabled = SelectedInfo != GameScene.Game.MapControl.MapInfo;
 
-            Location = new Point((GameScene.Game.Size.Width - Size.Width) / 2, (GameScene.Game.Size.Height - Size.Height) / 2);
+            Location = new Point((GameScene.Game.UISize.Width - Size.Width) / 2, (GameScene.Game.UISize.Height - Size.Height) / 2);
 
             Size size = GetMapSize(SelectedInfo.FileName);
             ScaleX = Image.Size.Width / (float)size.Width;

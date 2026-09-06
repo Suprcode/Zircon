@@ -860,7 +860,7 @@ namespace Client.Scenes.Views
             Parent = GameScene.Game;
             TitleLabel.Text = CEnvir.Language.ConsignmentDialogSalesTitle;
             SetClientSize(new Size(270, 110));
-            Location = new Point((GameScene.Game.Size.Width - Size.Width) / 2, (GameScene.Game.Size.Height - Size.Height) / 2);
+            Location = new Point((GameScene.Game.UISize.Width - Size.Width) / 2, (GameScene.Game.UISize.Height - Size.Height) / 2);
 
             ItemLabel = CreateLabel(0);
             SaleCountLabel = CreateLabel(28);
@@ -1056,7 +1056,7 @@ namespace Client.Scenes.Views
             _Owner = owner;
             Parent = GameScene.Game;
             Size = new Size(296, 228);
-            Location = new Point((GameScene.Game.Size.Width - Size.Width) / 2, (GameScene.Game.Size.Height - Size.Height) / 2);
+            Location = new Point((GameScene.Game.UISize.Width - Size.Width) / 2, (GameScene.Game.UISize.Height - Size.Height) / 2);
             Movable = true;
             Sort = true;
 

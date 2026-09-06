@@ -17,7 +17,7 @@ struct PS_INPUT
 
 float4 PS_SHADOW(PS_INPUT input) : SV_Target
 {
-    float2 position = input.Pos.xy;
+    float2 position = input.ScreenPos;
 
     float2 imgMin = SourceUV.xy;
     float2 imgMax = SourceUV.zw;

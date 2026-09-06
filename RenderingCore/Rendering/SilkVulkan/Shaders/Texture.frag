@@ -272,6 +272,24 @@ void main()
     vec4 texel = effectMode == 4 ? FillShadowHatch(vTexCoord) : texture(uTexture, vTexCoord);
     float sourceAlpha = pushConstants.uTint.x > 0.5 ? texel.a : 1.0;
 
+    if (effectMode == 5)
+    {
+        float alpha = texel.a * vColour.a;
+        vec3 colour = texel.a > 0.0001 ? texel.rgb / texel.a : vec3(0.0);
+
+        colour *= exp2(pushConstants.uSource.x);
+        colour = (colour - 0.5) * pushConstants.uSource.y + 0.5;
+
+        float luminance = dot(colour, vec3(0.2126, 0.7152, 0.0722));
+        colour = mix(vec3(luminance), colour, pushConstants.uSource.z);
+
+        vec3 tint = mix(vec3(1.0), pushConstants.uOutlineColour.rgb, pushConstants.uSource.w);
+        colour = clamp(colour * tint, 0.0, 1.0);
+
+        outColour = vec4(colour * vColour.rgb * alpha, alpha);
+        return;
+    }
+
     if (effectMode == 1)
     {
         float gray = dot(texel.rgb, vec3(0.299, 0.587, 0.114));

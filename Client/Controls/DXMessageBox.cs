@@ -86,7 +86,7 @@ namespace Client.Controls
             SetClientSize(Label.Size);
             Label.Location = ClientArea.Location;
 
-            Location = new Point((ActiveScene.DisplayArea.Width - DisplayArea.Width) / 2, (ActiveScene.DisplayArea.Height - DisplayArea.Height) / 2);
+            Location = new Point((SceneLayoutSize.Width - Size.Width) / 2, (SceneLayoutSize.Height - Size.Height) / 2);
 
 
             switch (Buttons)

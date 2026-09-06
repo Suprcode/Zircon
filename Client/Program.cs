@@ -1,6 +1,7 @@
 ﻿using Client.Controls;
 using Client.Envir;
 using Client.Scenes;
+using Client.Scenes.Views;
 using Library;
 using Sentry;
 using System;
@@ -20,6 +21,7 @@ namespace Client
         [STAThread]
         static void Main(string[] args)
         {
+            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
             ConfigReader.Load(Assembly.GetAssembly(typeof(Config)));
 
             if (Config.SentryEnabled && !string.IsNullOrEmpty(Config.SentryDSN))
@@ -38,7 +40,6 @@ namespace Client
         static void Init(string[] args)
         {
             Application.EnableVisualStyles();
-            Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.SetCompatibleTextRenderingDefault(false);
 
             MirLibrary.GetNow = () => CEnvir.Now;
@@ -86,8 +87,11 @@ namespace Client
                 {
                     if (DXConfigWindow.ActiveConfig?.FullScreenCheckBox != null)
                         DXConfigWindow.ActiveConfig.FullScreenCheckBox.Checked = fullScreen;
+
+                    DXConfigWindow.ActiveConfig?.UpdateScaleControlState();
                 },
                 GetActiveSceneSize = () => DXControl.ActiveScene?.Size ?? Config.GameSize,
+                GetMonitorScale = TargetForm.GetMonitorScale,
                 GetDefaultMonitor = () => Config.DefaultMonitor,
                 SetDefaultMonitor = value => Config.DefaultMonitor = value,
                 GetRenderingPipeline = () => Config.RenderingPipeline,
@@ -105,30 +109,46 @@ namespace Client
             };
         }
 
-        private static void InvalidateRenderCaches()
+        internal static void InvalidateRenderCaches()
         {
-            HashSet<DXControl> visited = new();
-            InvalidateControlTree(DXControl.ActiveScene, visited);
-
-            foreach (DXControl messageBox in DXControl.MessageBoxList.ToArray())
-                InvalidateControlTree(messageBox, visited);
-
-            InvalidateControlTree(DXControl.MouseControl, visited);
-            InvalidateControlTree(DXControl.FocusControl, visited);
+            InvalidateControlCaches(false);
 
             foreach (MirLibrary library in CEnvir.LibraryList.Values)
                 library?.DisposeTextures();
         }
 
-        private static void InvalidateControlTree(DXControl control, HashSet<DXControl> visited)
+        internal static void InvalidateUiRenderCaches()
+        {
+            InvalidateControlCaches(true);
+        }
+
+        private static void InvalidateControlCaches(bool skipWorld)
+        {
+            HashSet<DXControl> visited = new();
+            InvalidateControlTree(DXControl.ActiveScene, visited, skipWorld);
+
+            foreach (DXControl messageBox in DXControl.MessageBoxList.ToArray())
+                InvalidateControlTree(messageBox, visited, skipWorld);
+
+            InvalidateControlTree(DXControl.MouseControl, visited, skipWorld);
+            InvalidateControlTree(DXControl.FocusControl, visited, skipWorld);
+            InvalidateControlTree(DXControl.DebugLabel, visited, skipWorld);
+            InvalidateControlTree(DXControl.HintLabel, visited, skipWorld);
+            InvalidateControlTree(DXControl.PingLabel, visited, skipWorld);
+        }
+
+        private static void InvalidateControlTree(DXControl control, HashSet<DXControl> visited, bool skipWorld)
         {
             if (control == null || !visited.Add(control))
+                return;
+
+            if (skipWorld && control is MapControl)
                 return;
 
             control.DisposeTexture();
 
             foreach (DXControl child in control.Controls.ToArray())
-                InvalidateControlTree(child, visited);
+                InvalidateControlTree(child, visited, skipWorld);
         }
     }
 }

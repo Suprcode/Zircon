@@ -21,6 +21,69 @@ namespace Client.Scenes
 {
     public sealed partial class GameScene : DXScene
     {
+        public float UIScale => Math.Clamp(Config.UIScalePercent / 100F, 1F, 3F);
+        public Size UISize => new Size(
+            Math.Max(1, (int)Math.Floor(Size.Width / UIScale)),
+            Math.Max(1, (int)Math.Floor(Size.Height / UIScale)));
+
+        public MouseEventArgs ToUIMouseEventArgs(MouseEventArgs e)
+        {
+            float scale = UIScale;
+            return scale == 1F
+                ? e
+                : new MouseEventArgs(e.Button, e.Clicks,
+                    (int)Math.Floor(e.X / scale), (int)Math.Floor(e.Y / scale), e.Delta);
+        }
+
+        public MouseEventArgs ToWorldMouseEventArgs(MouseEventArgs e)
+        {
+            float scale = UIScale;
+            return scale == 1F
+                ? e
+                : new MouseEventArgs(e.Button, e.Clicks,
+                    (int)Math.Floor(e.X * scale), (int)Math.Floor(e.Y * scale), e.Delta);
+        }
+
+        public void UIScaleChanged(float previousScale)
+        {
+            Size oldSize = new Size(
+                Math.Max(1, (int)Math.Floor(Size.Width / Math.Max(1F, previousScale))),
+                Math.Max(1, (int)Math.Floor(Size.Height / Math.Max(1F, previousScale))));
+            Size newSize = UISize;
+
+            NPCBox?.RefreshTextLayoutForScale();
+
+            foreach (DXControl control in Controls)
+            {
+                if (control == MapControl) continue;
+
+                Point location = control.Location;
+                location.X = ReanchorAxis(location.X, control.Size.Width, oldSize.Width, newSize.Width);
+                location.Y = ReanchorAxis(location.Y, control.Size.Height, oldSize.Height, newSize.Height);
+
+                control.Location = location;
+            }
+
+            ClampUIControls();
+            UpdateClipAreaTree();
+        }
+
+        private static int ReanchorAxis(int location, int controlLength, int oldViewportLength, int newViewportLength)
+        {
+            const int tolerance = 5;
+
+            int oldCentre = (oldViewportLength - controlLength) / 2;
+            int oldEnd = oldViewportLength - controlLength;
+            int centreDistance = Math.Abs(location - oldCentre);
+            int endDistance = Math.Abs(location - oldEnd);
+
+            if (Math.Min(centreDistance, endDistance) > tolerance)
+                return location;
+
+            return centreDistance <= endDistance
+                ? (newViewportLength - controlLength) / 2
+                : newViewportLength - controlLength;
+        }
         #region Properties
         public static GameScene Game;
 
@@ -441,6 +504,7 @@ namespace Client.Scenes
             ConsignmentBox?.LoadSettings();
 
             LoadChatTabs();
+            ClampUIControls();
         }
 
         #endregion
@@ -839,38 +903,75 @@ namespace Client.Scenes
             HelpBox.LoadSettings();
             GameStoreBox.LoadSettings();
             ConsignmentBox.LoadSettings();
+            ClampUIControls();
         }
 
         #region Methods
+        public override void Draw()
+        {
+            if (!IsVisible || DisplayArea.Width <= 0 || DisplayArea.Height <= 0) return;
+
+            OnBeforeDraw();
+            DrawControl();
+            OnBeforeChildrenDraw();
+
+            foreach (DXControl control in Controls)
+            {
+                if (control == MapControl)
+                    control.Draw();
+            }
+
+            RenderingPipelineManager.PushUIScale(UIScale);
+            try
+            {
+                foreach (DXControl control in Controls)
+                {
+                    if (control == MapControl || !control.IsVisible || control.DisplayArea.Width <= 0 || control.DisplayArea.Height <= 0)
+                        continue;
+
+                    control.Draw();
+                }
+
+                DrawBorder();
+                OnAfterDraw();
+            }
+            finally
+            {
+                RenderingPipelineManager.PopUIScale();
+            }
+        }
+
         private void SetDefaultLocations()
         {
             if (ConfigBox == null) return;
 
-            MenuBox.Location = new Point(Size.Width - MenuBox.Size.Width, Size.Height - MenuBox.Size.Height - MainPanel.Size.Height);
+            Size uiSize = UISize;
 
-            ConfigBox.Location = new Point((Size.Width - ConfigBox.Size.Width) / 2, (Size.Height - ConfigBox.Size.Height) / 2);
+            MenuBox.Location = new Point(uiSize.Width - MenuBox.Size.Width, uiSize.Height - MenuBox.Size.Height - MainPanel.Size.Height);
+
+            ConfigBox.Location = new Point((uiSize.Width - ConfigBox.Size.Width) / 2, (uiSize.Height - ConfigBox.Size.Height) / 2);
 
             CaptionBox.Location = Point.Empty;
 
-            ChatOptionsBox.Location = new Point((Size.Width - ChatOptionsBox.Size.Width) / 2, (Size.Height - ChatOptionsBox.Size.Height) / 2);
+            ChatOptionsBox.Location = new Point((uiSize.Width - ChatOptionsBox.Size.Width) / 2, (uiSize.Height - ChatOptionsBox.Size.Height) / 2);
 
-            ExitBox.Location = new Point((Size.Width - ExitBox.Size.Width) / 2, (Size.Height - ExitBox.Size.Height) / 2);
+            ExitBox.Location = new Point((uiSize.Width - ExitBox.Size.Width) / 2, (uiSize.Height - ExitBox.Size.Height) / 2);
 
-            TradeBox.Location = new Point((Size.Width - TradeBox.Size.Width) / 2, (Size.Height - TradeBox.Size.Height) / 2);
+            TradeBox.Location = new Point((uiSize.Width - TradeBox.Size.Width) / 2, (uiSize.Height - TradeBox.Size.Height) / 2);
 
-            GuildBox.Location = new Point((Size.Width - GuildBox.Size.Width) / 2, (Size.Height - GuildBox.Size.Height) / 2);
+            GuildBox.Location = new Point((uiSize.Width - GuildBox.Size.Width) / 2, (uiSize.Height - GuildBox.Size.Height) / 2);
 
-            GuildMemberBox.Location = new Point((Size.Width - GuildMemberBox.Size.Width) / 2, (Size.Height - GuildMemberBox.Size.Height) / 2);
+            GuildMemberBox.Location = new Point((uiSize.Width - GuildMemberBox.Size.Width) / 2, (uiSize.Height - GuildMemberBox.Size.Height) / 2);
 
-            InventoryBox.Location = new Point(Size.Width - InventoryBox.Size.Width, MiniMapBox.Size.Height);
+            InventoryBox.Location = new Point(uiSize.Width - InventoryBox.Size.Width, MiniMapBox.Size.Height);
 
             CharacterBox.Location = Point.Empty;
 
             MapControl.Size = Size;
 
-            MainPanel.Location = new Point((Size.Width - MainPanel.Size.Width) / 2, Size.Height - MainPanel.Size.Height);
+            MainPanel.Location = new Point((uiSize.Width - MainPanel.Size.Width) / 2, uiSize.Height - MainPanel.Size.Height);
 
-            ChatTextBox.Location = new Point((Size.Width - ChatTextBox.Size.Width) / 2, (Size.Height - ChatTextBox.Size.Height) / 2);
+            ChatTextBox.Location = new Point((uiSize.Width - ChatTextBox.Size.Width) / 2, (uiSize.Height - ChatTextBox.Size.Height) / 2);
 
             BeltBox.Location = new Point(MainPanel.Location.X + MainPanel.Size.Width - BeltBox.Size.Width, MainPanel.Location.Y - BeltBox.Size.Height);
 
@@ -878,60 +979,73 @@ namespace Client.Scenes
 
             NPCGoodsBox.Location = new Point(0, NPCBox.Size.Height);
 
-            NPCRollBox.Location = new Point((Size.Width - NPCRollBox.Size.Width) / 2, (Size.Height - NPCRollBox.Size.Height) / 2);
+            NPCRollBox.Location = new Point((uiSize.Width - NPCRollBox.Size.Width) / 2, (uiSize.Height - NPCRollBox.Size.Height) / 2);
 
             NPCRepairBox.Location = new Point(0, NPCBox.Size.Height);
 
-            MiniMapBox.Location = new Point(Size.Width - MiniMapBox.Size.Width, 0);
+            MiniMapBox.Location = new Point(uiSize.Width - MiniMapBox.Size.Width, 0);
 
-            QuestTrackerBox.Location = new Point(Size.Width - QuestTrackerBox.Size.Width, MiniMapBox.Size.Height + 5);
+            QuestTrackerBox.Location = new Point(uiSize.Width - QuestTrackerBox.Size.Width, MiniMapBox.Size.Height + 5);
 
-            MilestoneAchievedBox.Location = new Point((Size.Width - MilestoneAchievedBox.Size.Width) / 2, ((Size.Height - MilestoneAchievedBox.Size.Height) / 2) + 100);
+            MilestoneAchievedBox.Location = new Point((uiSize.Width - MilestoneAchievedBox.Size.Width) / 2, ((uiSize.Height - MilestoneAchievedBox.Size.Height) / 2) + 100);
 
-            BuffBox.Location = new Point(Size.Width - MiniMapBox.Size.Width - BuffBox.Size.Width - 5, 0);
+            BuffBox.Location = new Point(uiSize.Width - MiniMapBox.Size.Width - BuffBox.Size.Width - 5, 0);
 
-            MagicBox.Location = new Point(Size.Width - MagicBox.Size.Width, 0);
+            MagicBox.Location = new Point(uiSize.Width - MagicBox.Size.Width, 0);
 
-            GroupBox.Location = new Point((Size.Width - GroupBox.Size.Width) / 2, (Size.Height - GroupBox.Size.Height) / 2);
+            GroupBox.Location = new Point((uiSize.Width - GroupBox.Size.Width) / 2, (uiSize.Height - GroupBox.Size.Height) / 2);
 
-            StorageBox.Location = new Point(Size.Width - StorageBox.Size.Width - InventoryBox.Size.Width, 0);
+            StorageBox.Location = new Point(uiSize.Width - StorageBox.Size.Width - InventoryBox.Size.Width, 0);
 
-            AutoPotionBox.Location = new Point((Size.Width - AutoPotionBox.Size.Width) / 2, (Size.Height - AutoPotionBox.Size.Height) / 2);
+            AutoPotionBox.Location = new Point((uiSize.Width - AutoPotionBox.Size.Width) / 2, (uiSize.Height - AutoPotionBox.Size.Height) / 2);
 
             InspectBox.Location = new Point(CharacterBox.Size.Width, 0);
 
-            RankingBox.Location = new Point((Size.Width - RankingBox.Size.Width) / 2, (Size.Height - RankingBox.Size.Height) / 2);
+            RankingBox.Location = new Point((uiSize.Width - RankingBox.Size.Width) / 2, (uiSize.Height - RankingBox.Size.Height) / 2);
 
-            GameStoreBox.Location = new Point((Size.Width - GameStoreBox.Size.Width) / 2, (Size.Height - GameStoreBox.Size.Height) / 2);
+            GameStoreBox.Location = new Point((uiSize.Width - GameStoreBox.Size.Width) / 2, (uiSize.Height - GameStoreBox.Size.Height) / 2);
 
-            ConsignmentBox.Location = new Point((Size.Width - ConsignmentBox.Size.Width) / 2, (Size.Height - ConsignmentBox.Size.Height) / 2);
+            ConsignmentBox.Location = new Point((uiSize.Width - ConsignmentBox.Size.Width) / 2, (uiSize.Height - ConsignmentBox.Size.Height) / 2);
 
-            CommunicationBox.Location = new Point((Size.Width - CommunicationBox.Size.Width) / 2, (Size.Height - CommunicationBox.Size.Height) / 2);
+            CommunicationBox.Location = new Point((uiSize.Width - CommunicationBox.Size.Width) / 2, (uiSize.Height - CommunicationBox.Size.Height) / 2);
 
-            CompanionBox.Location = new Point((Size.Width - CompanionBox.Size.Width) / 2, (Size.Height - CompanionBox.Size.Height) / 2);
+            CompanionBox.Location = new Point((uiSize.Width - CompanionBox.Size.Width) / 2, (uiSize.Height - CompanionBox.Size.Height) / 2);
 
-            MonsterBox.Location = new Point((Size.Width - MonsterBox.Size.Width) / 2, 50);
+            MonsterBox.Location = new Point((uiSize.Width - MonsterBox.Size.Width) / 2, 50);
 
-            EditCharacterBox.Location = new Point((Size.Width - EditCharacterBox.Size.Width) / 2, (Size.Height - EditCharacterBox.Size.Height) / 2);
+            EditCharacterBox.Location = new Point((uiSize.Width - EditCharacterBox.Size.Width) / 2, (uiSize.Height - EditCharacterBox.Size.Height) / 2);
 
-            FortuneCheckerBox.Location = new Point((Size.Width - FortuneCheckerBox.Size.Width) / 2, (Size.Height - FortuneCheckerBox.Size.Height) / 2);
+            FortuneCheckerBox.Location = new Point((uiSize.Width - FortuneCheckerBox.Size.Width) / 2, (uiSize.Height - FortuneCheckerBox.Size.Height) / 2);
 
-            NPCWeaponCraftBox.Location = new Point((Size.Width - NPCWeaponCraftBox.Size.Width) / 2, (Size.Height - NPCWeaponCraftBox.Size.Height) / 2);
+            NPCWeaponCraftBox.Location = new Point((uiSize.Width - NPCWeaponCraftBox.Size.Width) / 2, (uiSize.Height - NPCWeaponCraftBox.Size.Height) / 2);
 
-            NPCSocketBox.Location = new Point((Size.Width - NPCSocketBox.Size.Width) / 2, (Size.Height - NPCSocketBox.Size.Height) / 2);
-            NPCSocketCombineBox.Location = new Point((Size.Width - NPCSocketCombineBox.Size.Width) / 2, (Size.Height - NPCSocketCombineBox.Size.Height) / 2);
+            NPCSocketBox.Location = new Point((uiSize.Width - NPCSocketBox.Size.Width) / 2, (uiSize.Height - NPCSocketBox.Size.Height) / 2);
+            NPCSocketCombineBox.Location = new Point((uiSize.Width - NPCSocketCombineBox.Size.Width) / 2, (uiSize.Height - NPCSocketCombineBox.Size.Height) / 2);
 
-            CurrencyBox.Location = new Point((Size.Width - CurrencyBox.Size.Width) / 2, (Size.Height - CurrencyBox.Size.Height) / 2);
+            CurrencyBox.Location = new Point((uiSize.Width - CurrencyBox.Size.Width) / 2, (uiSize.Height - CurrencyBox.Size.Height) / 2);
 
             FishingBox.Location = new Point(CharacterBox.Location.X + CharacterBox.Size.Width, CharacterBox.Location.Y);
 
-            FishingCatchBox.Location = new Point(((Size.Width - FishingCatchBox.Size.Width) / 2), ((Size.Height - FishingCatchBox.Size.Height) / 2) + 200);
+            FishingCatchBox.Location = new Point(((uiSize.Width - FishingCatchBox.Size.Width) / 2), ((uiSize.Height - FishingCatchBox.Size.Height) / 2) + 200);
 
-            TimerBox.Location = new Point(MainPanel.DisplayArea.Right - 115, Size.Height - 170);
+            TimerBox.Location = new Point(MainPanel.DisplayArea.Right - 115, uiSize.Height - 170);
 
-            BundleBox.Location = new Point((Size.Width - BundleBox.Size.Width) / 2, (Size.Height - BundleBox.Size.Height) / 2);
+            BundleBox.Location = new Point((uiSize.Width - BundleBox.Size.Width) / 2, (uiSize.Height - BundleBox.Size.Height) / 2);
 
-            LootBoxBox.Location = new Point((Size.Width - LootBoxBox.Size.Width) / 2, (Size.Height - LootBoxBox.Size.Height) / 2);
+            LootBoxBox.Location = new Point((uiSize.Width - LootBoxBox.Size.Width) / 2, (uiSize.Height - LootBoxBox.Size.Height) / 2);
+        }
+
+        private void ClampUIControls()
+        {
+            Size bounds = UISize;
+            foreach (DXControl control in Controls)
+            {
+                if (control == MapControl || control.AllowDragOut) continue;
+
+                control.Location = new Point(
+                    Math.Clamp(control.Location.X, Math.Min(0, bounds.Width - control.Size.Width), Math.Max(0, bounds.Width - control.Size.Width)),
+                    Math.Clamp(control.Location.Y, Math.Min(0, bounds.Height - control.Size.Height), Math.Max(0, bounds.Height - control.Size.Height)));
+            }
         }
 
         public void SaveChatTabs()
@@ -1143,11 +1257,11 @@ namespace Client.Scenes
             {
                 int x = CEnvir.MouseLocation.X + 15, y = CEnvir.MouseLocation.Y;
 
-                if (x + FameLabel.Size.Width > Size.Width + Location.X)
-                    x = Size.Width - FameLabel.Size.Width + Location.X;
+                if (x + FameLabel.Size.Width > UISize.Width + Location.X)
+                    x = UISize.Width - FameLabel.Size.Width + Location.X;
 
-                if (y + FameLabel.Size.Height > Size.Height + Location.Y)
-                    y = Size.Height - FameLabel.Size.Height + Location.Y;
+                if (y + FameLabel.Size.Height > UISize.Height + Location.Y)
+                    y = UISize.Height - FameLabel.Size.Height + Location.Y;
 
                 if (x < Location.X)
                     x = Location.X;
@@ -1800,11 +1914,11 @@ namespace Client.Scenes
 
             int x = CEnvir.MouseLocation.X + 15, y = CEnvir.MouseLocation.Y;
 
-            if (x + ItemLabel.Size.Width > Size.Width + Location.X)
-                x = Size.Width - ItemLabel.Size.Width + Location.X;
+            if (x + ItemLabel.Size.Width > UISize.Width + Location.X)
+                x = UISize.Width - ItemLabel.Size.Width + Location.X;
 
-            if (y + ItemLabel.Size.Height > Size.Height + Location.Y)
-                y = Size.Height - ItemLabel.Size.Height + Location.Y;
+            if (y + ItemLabel.Size.Height > UISize.Height + Location.Y)
+                y = UISize.Height - ItemLabel.Size.Height + Location.Y;
 
             if (x < Location.X)
                 x = Location.X;
@@ -1925,11 +2039,11 @@ namespace Client.Scenes
 
             int x = CEnvir.MouseLocation.X + 15, y = CEnvir.MouseLocation.Y;
 
-            if (x + MagicLabel.Size.Width > Size.Width + Location.X)
-                x = Size.Width - MagicLabel.Size.Width + Location.X;
+            if (x + MagicLabel.Size.Width > UISize.Width + Location.X)
+                x = UISize.Width - MagicLabel.Size.Width + Location.X;
 
-            if (y + MagicLabel.Size.Height > Size.Height + Location.Y)
-                y = Size.Height - MagicLabel.Size.Height + Location.Y;
+            if (y + MagicLabel.Size.Height > UISize.Height + Location.Y)
+                y = UISize.Height - MagicLabel.Size.Height + Location.Y;
 
             if (x < Location.X)
                 x = Location.X;
@@ -3556,11 +3670,11 @@ namespace Client.Scenes
                 Size imageSize = library.GetSize(image);
                 Point p = new Point(CEnvir.MouseLocation.X - imageSize.Width / 2, CEnvir.MouseLocation.Y - imageSize.Height / 2);
 
-                if (p.X + imageSize.Width >= Size.Width + Location.X)
-                    p.X = Size.Width - imageSize.Width + Location.X;
+                if (p.X + imageSize.Width >= UISize.Width + Location.X)
+                    p.X = UISize.Width - imageSize.Width + Location.X;
 
-                if (p.Y + imageSize.Height >= Size.Height + Location.Y)
-                    p.Y = Size.Height - imageSize.Height + Location.Y;
+                if (p.Y + imageSize.Height >= UISize.Height + Location.Y)
+                    p.Y = UISize.Height - imageSize.Height + Location.Y;
 
                 if (p.X < Location.X)
                     p.X = Location.X;

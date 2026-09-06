@@ -39,6 +39,17 @@ namespace Client.Controls
 
         #region Properties
 
+        public override Size Size
+        {
+            get => base.Size;
+            set
+            {
+                if (TextBox != null && !TextBox.Multiline)
+                    value.Height = Math.Max(1, (int)Math.Ceiling(TextBox.PreferredHeight / (CEnvir.Target?.TextRasterScale ?? 1F)));
+                base.Size = value;
+            }
+        }
+
         #region Editable
 
         public bool Editable
@@ -86,7 +97,8 @@ namespace Client.Controls
         {
             FontChanged?.Invoke(this, EventArgs.Empty);
 
-            TextBox.Font = Font;
+            UpdateNativeFont();
+            Size = Size;
         }
 
         #endregion
@@ -236,7 +248,7 @@ namespace Client.Controls
 
             if (TextBox == null || !TextBox.Visible) return;
 
-            TextBox.Location = DisplayArea.Location;
+            SynchronizeNativeBounds();
         }
         public override void OnSizeChanged(Size oValue, Size nValue)
         {
@@ -244,7 +256,7 @@ namespace Client.Controls
 
             if (TextBox == null) return;
 
-            TextBox.Size = Size;
+            SynchronizeNativeBounds();
         }
         public override void OnIsVisibleChanged(bool oValue, bool nValue)
         {
@@ -273,6 +285,7 @@ namespace Client.Controls
             {
                 Visible = false,
                 BorderStyle = BorderStyle.None,
+                AutoSize = false,
                 Parent = CEnvir.Target,
                 BackColor = Color.Black,
                 ForeColor = Color.White,
@@ -290,13 +303,52 @@ namespace Client.Controls
         #region Methods
 
         private RenderTexture _textBoxTextureHandle;
+        private Font _nativeFont;
+        private Font _nativeSourceFont;
+        private float _nativeFontScale;
+
+        private void UpdateNativeFont()
+        {
+            if (TextBox == null || Font == null) return;
+            float scale = CEnvir.Target?.TextRasterScale ?? 1F;
+            if (_nativeSourceFont == Font && _nativeFontScale == scale) return;
+            Font previous = _nativeFont;
+            _nativeFont = RenderingPipelineManager.CreatePixelFont(Font, scale);
+            _nativeSourceFont = Font;
+            _nativeFontScale = scale;
+            TextBox.Font = _nativeFont;
+            previous?.Dispose();
+        }
+
+        private void SynchronizeNativeBounds()
+        {
+            if (TextBox == null || CEnvir.Target == null) return;
+            UpdateNativeFont();
+            float scale = CEnvir.Target.TextRasterScale;
+            Rectangle bounds = Rectangle.FromLTRB(
+                (int)Math.Round(DisplayArea.Left * scale),
+                (int)Math.Round(DisplayArea.Top * scale),
+                (int)Math.Round(DisplayArea.Right * scale),
+                (int)Math.Round(DisplayArea.Bottom * scale));
+            if (TextBox.Bounds != bounds)
+                TextBox.Bounds = bounds;
+        }
+
+        private int NativeMouseLocation(MouseEventArgs e)
+        {
+            float scale = CEnvir.Target?.TextRasterScale ?? 1F;
+            int x = (int)Math.Round((e.X - DisplayArea.X) * scale);
+            int y = (int)Math.Round((e.Y - DisplayArea.Y) * scale);
+            return (x & 0xffff) | (y & 0xffff) << 16;
+        }
 
         protected override void CreateTexture()
         {
-            if (!ControlTexture.IsValid || DisplayArea.Size != TextureSize)
+            SynchronizeNativeBounds();
+            if (!ControlTexture.IsValid || TextBox.Size != TextureSize)
             {
                 DisposeTexture();
-                TextureSize = DisplayArea.Size;
+                TextureSize = TextBox.Size;
                 _textBoxTextureHandle = RenderingPipelineManager.CreateTexture(TextureSize, RenderTextureFormat.A8R8G8B8, RenderTextureUsage.None, RenderTexturePool.Managed);
 
                 ControlTexture = _textBoxTextureHandle;
@@ -304,9 +356,9 @@ namespace Client.Controls
             }
 
             using (TextureLock textureLock = RenderingPipelineManager.LockTexture(_textBoxTextureHandle, TextureLockMode.Discard))
-            using (Bitmap image = new Bitmap(DisplayArea.Width, DisplayArea.Height, textureLock.Pitch, PixelFormat.Format32bppArgb, textureLock.DataPointer))
+            using (Bitmap image = new Bitmap(TextureSize.Width, TextureSize.Height, textureLock.Pitch, PixelFormat.Format32bppArgb, textureLock.DataPointer))
             {
-                TextBox.DrawToBitmap(image, new Rectangle(Point.Empty, Size.Round(DisplayArea.Size)));
+                TextBox.DrawToBitmap(image, new Rectangle(Point.Empty, TextureSize));
             }
 
             TextureValid = true;
@@ -324,11 +376,9 @@ namespace Client.Controls
         }
         public virtual void OnActivated()
         {
+            SynchronizeNativeBounds();
             if (TextBox.Visible != Editable)
                 TextBox.Visible = Editable;
-
-            if (TextBox.Location != DisplayArea.Location)
-                TextBox.Location = DisplayArea.Location;
 
             if (TextBox.Visible && CEnvir.Target.ActiveControl != TextBox)
                 CEnvir.Target.ActiveControl = TextBox;
@@ -361,7 +411,7 @@ namespace Client.Controls
 
         protected internal override void UpdateDisplayArea()
         {
-            Rectangle area = new Rectangle(Location, TextBox.Size);
+            Rectangle area = new Rectangle(Location, Size);
 
             if (Parent != null)
                 area.Offset(Parent.DisplayArea.Location);
@@ -379,7 +429,7 @@ namespace Client.Controls
 
             if (!TextBox.Visible) return;
 
-            int location = (e.X - DisplayArea.X) | (e.Y - DisplayArea.Y) << 16;
+            int location = NativeMouseLocation(e);
 
             switch (e.Button)
             {
@@ -397,7 +447,7 @@ namespace Client.Controls
 
             if (CEnvir.Target.ActiveControl == TextBox) return;
 
-            int location = (e.X - DisplayArea.X) | (e.Y - DisplayArea.Y) << 16;
+            int location = NativeMouseLocation(e);
 
 
             SendMessage(TextBox.Handle, 0x200, e.Clicks, location);
@@ -409,7 +459,7 @@ namespace Client.Controls
             if (!TextBox.Visible) return;
 
 
-            int location = (e.X - DisplayArea.X) | (e.Y - DisplayArea.Y) << 16;
+            int location = NativeMouseLocation(e);
 
             switch (e.Button)
             {
@@ -454,6 +504,8 @@ namespace Client.Controls
 
         protected override void DrawControl()
         {
+            SynchronizeNativeBounds();
+            if (TextBox.Visible) return;
             if (!DrawTexture)
             {
                 return;
@@ -468,7 +520,19 @@ namespace Client.Controls
 
             RenderingPipelineManager.SetOpacity(Opacity);
 
-            PresentTexture(ControlTexture, Parent, DisplayArea, IsEnabled ? Color.White : Color.FromArgb(75, 75, 75), this);
+            Rectangle clipped = Rectangle.Intersect(DisplayArea, ClipArea);
+            if (clipped.Width > 0 && clipped.Height > 0)
+            {
+                float sx = TextureSize.Width / (float)DisplayArea.Width;
+                float sy = TextureSize.Height / (float)DisplayArea.Height;
+                Rectangle source = Rectangle.FromLTRB(
+                    (int)Math.Round((clipped.Left - DisplayArea.Left) * sx),
+                    (int)Math.Round((clipped.Top - DisplayArea.Top) * sy),
+                    (int)Math.Round((clipped.Right - DisplayArea.Left) * sx),
+                    (int)Math.Round((clipped.Bottom - DisplayArea.Top) * sy));
+                RenderingPipelineManager.DrawDpiText(ControlTexture, source, clipped, DisplayArea.Location, false,
+                    IsEnabled ? Color.White : Color.FromArgb(75, 75, 75));
+            }
 
             RenderingPipelineManager.SetOpacity(oldOpacity);
 
@@ -497,6 +561,9 @@ namespace Client.Controls
                         _TextBox.Dispose();
                     _TextBox = null;
                 }
+                _nativeFont?.Dispose();
+                _nativeFont = null;
+                _nativeSourceFont = null;
 
                 Button = MouseButtons.None;
                 ClickTime = DateTime.MinValue;
@@ -761,8 +828,6 @@ namespace Client.Controls
                 base.OnSizeChanged(e);
 
                 if (Owner == null) return;
-                Owner.Size = Size;
-
                 Owner.TextureValid = false;
             }
 

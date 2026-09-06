@@ -1,4 +1,7 @@
 ﻿using System.Collections.Generic;
+using Client.Envir;
+using Shared.Rendering;
+using System;
 using System.Drawing;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
@@ -39,12 +42,23 @@ namespace Client.Extensions
         {
             List<ButtonInfo> regions = new List<ButtonInfo>();
 
-            Size tSize = RenderingPipelineManager.MeasureText("A", font, new Size(width, 2000), flags);
-            int h = tSize.Height;
-            int leading = tSize.Width - (RenderingPipelineManager.MeasureText("AA", font, new Size(width, 2000), flags).Width - tSize.Width);
+            float rasterScale = Math.Max(1F, CEnvir.Target?.TextRasterScale ?? 1F);
+            using Font rasterFont = RenderingPipelineManager.CreatePixelFont(font, rasterScale);
+            Size measureBounds = new Size(
+                Math.Max(1, (int)Math.Ceiling(width * rasterScale)),
+                Math.Max(1, (int)Math.Ceiling(9999 * rasterScale)));
+
+            Size Measure(string value) => RenderingPipelineManager.MeasureText(value, rasterFont, measureBounds, flags);
+            int ToLogicalPosition(int value) => (int)Math.Round(value / rasterScale, MidpointRounding.AwayFromZero);
+            int ToLogicalLength(int value) => (int)Math.Ceiling(value / rasterScale);
+
+            Size tSize = Measure("A");
+            int physicalLineHeight = tSize.Height;
+            int h = ToLogicalLength(physicalLineHeight);
+            int leading = tSize.Width - (Measure("AA").Width - tSize.Width);
 
             int lineStart = 0;
-            int lastHeight = h;
+            int lastHeight = physicalLineHeight;
 
             Regex regex = new Regex(@"(?<Words>\S+)", RegexOptions.Compiled);
 
@@ -60,7 +74,7 @@ namespace Client.Extensions
             //If Word Wrap enabled.
             foreach (CharacterRange range in ranges)
             {
-                int height = RenderingPipelineManager.MeasureText(text.Substring(0, range.First + range.Length), font, new Size(width, 9999), flags).Height;
+                int height = Measure(text.Substring(0, range.First + range.Length)).Height;
 
                 if (range.First >= index + length) break;
 
@@ -79,8 +93,8 @@ namespace Client.Extensions
                         Rectangle region = new Rectangle
                         {
                             X = 0,
-                            Y = height - h,
-                            Width = RenderingPipelineManager.MeasureText(text.Substring(range.First, range.Length), font, new Size(width, 9999), flags).Width,
+                            Y = ToLogicalPosition(height - physicalLineHeight),
+                            Width = ToLogicalLength(Measure(text.Substring(range.First, range.Length)).Width),
                             Height = h,
                         };
                         currentInfo = new ButtonInfo { Region = region, Index = range.First, Length = range.Length };
@@ -96,16 +110,18 @@ namespace Client.Extensions
                     {
                         if (currentInfo == null)
                         {
+                            int physicalX = Measure(text.Substring(lineStart, range.First - lineStart)).Width;
+                            if (physicalX > 0)
+                                physicalX -= leading;
+
                             Rectangle region = new Rectangle
                             {
-                                X = RenderingPipelineManager.MeasureText(text.Substring(lineStart, range.First - lineStart), font, new Size(width, 9999), flags).Width,
-                                Y = height - h,
-                                Width = RenderingPipelineManager.MeasureText(text.Substring(range.First, range.Length), font, new Size(width, 9999), flags).Width,
+                                X = ToLogicalPosition(physicalX),
+                                Y = ToLogicalPosition(height - physicalLineHeight),
+                                Width = ToLogicalLength(Measure(text.Substring(range.First, range.Length)).Width),
                                 Height = h,
                             };
 
-                            if (region.X > 0)
-                                region.X -= leading;
                             currentInfo = new ButtonInfo { Region = region, Index = range.First, Length = range.Length };
                             regions.Add(currentInfo);
                         }
@@ -113,7 +129,7 @@ namespace Client.Extensions
                         {
                             //Measure Current.Index to range.First + Length
                             currentInfo.Length = range.First + range.Length - currentInfo.Index;
-                            currentInfo.Region.Width = RenderingPipelineManager.MeasureText(text.Substring(currentInfo.Index, currentInfo.Length), font, new Size(width, 9999), flags).Width;
+                            currentInfo.Region.Width = ToLogicalLength(Measure(text.Substring(currentInfo.Index, currentInfo.Length)).Width);
                         }
                         //We need to capture this word.
                         //ADD to any previous rects otherwise create new ?

@@ -165,11 +165,14 @@ namespace Client.Envir.Translations
         public abstract string CommonControlConfigWindowGameSectionSettingsLabel { get; set; }
         public abstract string CommonControlConfigWindowNetworkSectionSettingsLabel { get; set; }
         public abstract string CommonControlConfigWindowUISectionSettingsLabel { get; set; }
+        public abstract string CommonControlConfigWindowUISectionScalingLabel { get; set; }
         public abstract string CommonControlConfigWindowUISectionColoursLabel { get; set; }
         public abstract string CommonControlConfigWindowUISectionTargetColoursLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabFullScreenLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabBorderlessLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabGameSizeLabel { get; set; }
+        public abstract string CommonControlConfigWindowScaleLabel { get; set; }
+        public abstract string CommonControlConfigWindowScaleAutomatic { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabDefaultMonitorLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabVSyncLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabLimitFPSLabel { get; set; }
@@ -193,6 +196,7 @@ namespace Client.Envir.Translations
         public abstract string CommonControlConfigWindowGameTabDamageNumbersLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabDrawParticlesLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabDisplayHelmetLabel { get; set; }
+        public abstract string CommonControlConfigWindowUITabUIScaleLabel { get; set; }
         public abstract string CommonControlConfigWindowUITabHideChatBarLabel { get; set; }
         public abstract string CommonControlConfigWindowUITabEscapeCloseAllLabel { get; set; }
         public abstract string CommonControlConfigWindowUITabShiftOpenChatLabel { get; set; }
@@ -203,9 +207,12 @@ namespace Client.Envir.Translations
         public abstract string CommonControlConfigWindowUITabLogChatLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabDrawEffectsLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabDrawWeatherLabel { get; set; }
+        public abstract string CommonControlConfigWindowGraphicsTabColourGradingLabel { get; set; }
         public abstract string CommonControlConfigWindowGameTabShowTargetOutlineLabel { get; set; }
         public abstract string CommonControlConfigWindowGameTabObservableLabel { get; set; }
         public abstract string CommonControlConfigWindowUITabKeyBindButtonLabel { get; set; }
+        public abstract string CommonControlConfigWindowUITabFontSizeModifierLabel { get; set; }
+        public abstract string CommonControlConfigWindowUITabFontSizeModifierHint { get; set; }
         public abstract string CommonControlConfigWindowNetworkTabUseNetworkConfigLabel { get; set; }
         public abstract string CommonControlConfigWindowNetworkTabUseIPAddressLabel { get; set; }
         public abstract string CommonControlConfigWindowNetworkTabUsePortLabel { get; set; }

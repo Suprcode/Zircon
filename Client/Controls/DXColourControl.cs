@@ -137,7 +137,7 @@ namespace Client.Controls
                 SelectedColour = BackColour,
                 AllowNoColour = AllowNoColour,
             };
-            Window.Location = new Point((ActiveScene.Size.Width - Window.Size.Width) / 2, (ActiveScene.Size.Height - Window.Size.Height) / 2);
+            Window.Location = new Point((SceneLayoutSize.Width - Window.Size.Width) / 2, (SceneLayoutSize.Height - Window.Size.Height) / 2);
         }
         #endregion
 

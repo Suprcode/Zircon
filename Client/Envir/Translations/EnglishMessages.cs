@@ -166,12 +166,15 @@ namespace Client.Envir.Translations
         public override string CommonControlConfigWindowGameSectionSettingsLabel { get; set; } = "Settings";
         public override string CommonControlConfigWindowNetworkSectionSettingsLabel { get; set; } = "Settings";
         public override string CommonControlConfigWindowUISectionSettingsLabel { get; set; } = "Settings";
+        public override string CommonControlConfigWindowUISectionScalingLabel { get; set; } = "Scaling";
         public override string CommonControlConfigWindowUISectionColoursLabel { get; set; } = "Chat Colours";
         public override string CommonControlConfigWindowUISectionTargetColoursLabel { get; set; } = "Outline Colours";
 
         public override string CommonControlConfigWindowGraphicsTabFullScreenLabel { get; set; } = "Full Screen";
         public override string CommonControlConfigWindowGraphicsTabBorderlessLabel { get; set; } = "Borderless";
         public override string CommonControlConfigWindowGraphicsTabGameSizeLabel { get; set; } = "Game Size";
+        public override string CommonControlConfigWindowScaleLabel { get; set; } = "Window Scale";
+        public override string CommonControlConfigWindowScaleAutomatic { get; set; } = "Follow Windows";
         public override string CommonControlConfigWindowGraphicsTabDefaultMonitorLabel { get; set; } = "Monitor";
         public override string CommonControlConfigWindowGraphicsTabVSyncLabel { get; set; } = "V-Sync";
         public override string CommonControlConfigWindowGraphicsTabLimitFPSLabel { get; set; } = "Limit FPS";
@@ -195,6 +198,7 @@ namespace Client.Envir.Translations
         public override string CommonControlConfigWindowGameTabDamageNumbersLabel { get; set; } = "Dmg Numbers";
         public override string CommonControlConfigWindowGraphicsTabDrawParticlesLabel { get; set; } = "Draw Particles";
         public override string CommonControlConfigWindowGraphicsTabDisplayHelmetLabel { get; set; } = "Display Helmet";
+        public override string CommonControlConfigWindowUITabUIScaleLabel { get; set; } = "UI Scale";
         public override string CommonControlConfigWindowUITabHideChatBarLabel { get; set; } = "Hide Chat Bar";
         public override string CommonControlConfigWindowUITabEscapeCloseAllLabel { get; set; } = "Escape Close All";
         public override string CommonControlConfigWindowUITabShiftOpenChatLabel { get; set; } = "Shift+1 Open Chat";
@@ -205,9 +209,12 @@ namespace Client.Envir.Translations
         public override string CommonControlConfigWindowUITabLogChatLabel { get; set; } = "Log Chat";
         public override string CommonControlConfigWindowGraphicsTabDrawEffectsLabel { get; set; } = "Draw Effects";
         public override string CommonControlConfigWindowGraphicsTabDrawWeatherLabel { get; set; } = "Draw Weather";
+        public override string CommonControlConfigWindowGraphicsTabColourGradingLabel { get; set; } = "Colour Grading";
         public override string CommonControlConfigWindowGameTabShowTargetOutlineLabel { get; set; } = "Target Outline";
         public override string CommonControlConfigWindowGameTabObservableLabel { get; set; } = "Observable";
         public override string CommonControlConfigWindowUITabKeyBindButtonLabel { get; set; } = "Key Binds";
+        public override string CommonControlConfigWindowUITabFontSizeModifierLabel { get; set; } = "Font Modifier";
+        public override string CommonControlConfigWindowUITabFontSizeModifierHint { get; set; } = "Adjusts all in-game font sizes after restarting the client.";
         public override string CommonControlConfigWindowNetworkTabUseNetworkConfigLabel { get; set; } = "Use Config";
         public override string CommonControlConfigWindowNetworkTabUseIPAddressLabel { get; set; } = "IP Address";
         public override string CommonControlConfigWindowNetworkTabUsePortLabel { get; set; } = "Port";

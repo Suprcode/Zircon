@@ -23,6 +23,7 @@ namespace Shared.Rendering
         public Action InvalidateRenderCaches { get; set; }
         public Action<bool> FullScreenChanged { get; set; }
         public Func<Size> GetActiveSceneSize { get; set; }
+        public Func<Screen, float> GetMonitorScale { get; set; }
         public Func<string> GetDefaultMonitor { get; set; }
         public Action<string> SetDefaultMonitor { get; set; }
         public Func<string> GetRenderingPipeline { get; set; }
@@ -132,6 +133,20 @@ namespace Shared.Rendering
 
         public DateTime CurrentTime => Now?.Invoke() ?? DateTime.Now;
         public Size ActiveSceneSize => GetActiveSceneSize?.Invoke() ?? GameSize;
+
+        public float GetScale(Screen screen)
+        {
+            float scale = GetMonitorScale?.Invoke(screen) ?? 1F;
+            return float.IsFinite(scale) && scale > 0F ? scale : 1F;
+        }
+
+        public Size ScaleToPhysical(Size logicalSize, Screen screen)
+        {
+            float scale = GetScale(screen);
+            return new Size(
+                Math.Max(1, (int)Math.Round(logicalSize.Width * scale)),
+                Math.Max(1, (int)Math.Round(logicalSize.Height * scale)));
+        }
 
         public void NotifyFullScreenChanged()
         {

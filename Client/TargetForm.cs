@@ -17,6 +17,25 @@ namespace Client
     {
         public bool Resizing { get; private set; }
 
+        public float WindowScale
+        {
+            get
+            {
+                if (Config.FullScreen || Config.Borderless)
+                    return 1F;
+
+                return Config.WindowScalePercent is >= 100 and <= 300
+                    ? Config.WindowScalePercent / 100F
+                    : Math.Max(1F, DeviceDpi / 96F);
+            }
+        }
+
+        public float UIScale => DXControl.ActiveScene is GameScene
+            ? Math.Clamp(Config.UIScalePercent / 100F, 1F, 3F)
+            : 1F;
+
+        public float TextRasterScale => WindowScale * UIScale;
+
         public TargetForm()
         {
             Text = Globals.ClientName;
@@ -32,6 +51,97 @@ namespace Client
             FormBorderStyle = (Config.FullScreen || Config.Borderless) ? FormBorderStyle.None : FormBorderStyle.FixedSingle;
 
             MaximizeBox = false;
+        }
+
+        public void SetLogicalClientSize(Size size)
+        {
+            ClientSize = new Size(
+                Math.Max(1, (int)Math.Round(size.Width * WindowScale)),
+                Math.Max(1, (int)Math.Round(size.Height * WindowScale)));
+        }
+
+        public void ApplyWindowScale()
+        {
+            Size logicalSize = DXControl.ActiveScene?.Size ?? Config.GameSize;
+            RenderingPipelineManager.SetResolution(logicalSize);
+            Program.InvalidateUiRenderCaches();
+            Invalidate();
+        }
+
+        public void ApplyUIScale(float previousScale)
+        {
+            if (DXControl.ActiveScene is GameScene game)
+                game.UIScaleChanged(previousScale);
+
+            Program.InvalidateUiRenderCaches();
+            Invalidate();
+        }
+
+        protected override void OnDpiChanged(DpiChangedEventArgs e)
+        {
+            base.OnDpiChanged(e);
+
+            if (!Config.FullScreen && !Config.Borderless)
+                SetLogicalClientSize(DXControl.ActiveScene?.Size ?? Config.GameSize);
+
+            Program.InvalidateUiRenderCaches();
+        }
+
+        public static float GetMonitorScale(Screen screen)
+        {
+            if (Config.FullScreen || Config.Borderless)
+                return 1F;
+
+            if (Config.WindowScalePercent is >= 100 and <= 300)
+                return Config.WindowScalePercent / 100F;
+            if (screen == null)
+                return 1F;
+
+            TargetForm target = CEnvir.Target;
+            if (target?.IsHandleCreated == true &&
+                string.Equals(Screen.FromControl(target).DeviceName, screen.DeviceName, StringComparison.OrdinalIgnoreCase))
+            {
+                try
+                {
+                    uint windowDpi = GetDpiForWindow(target.Handle);
+                    if (windowDpi > 0)
+                        return windowDpi / 96F;
+                }
+                catch (EntryPointNotFoundException)
+                {
+                }
+            }
+
+            try
+            {
+                Point centre = new Point(screen.Bounds.Left + screen.Bounds.Width / 2, screen.Bounds.Top + screen.Bounds.Height / 2);
+                IntPtr monitor = MonitorFromPoint(centre, 2);
+
+                if (monitor != IntPtr.Zero && GetDpiForMonitor(monitor, 0, out uint dpiX, out _) == 0 && dpiX > 0)
+                    return dpiX / 96F;
+            }
+            catch (EntryPointNotFoundException)
+            {
+            }
+            catch (DllNotFoundException)
+            {
+            }
+
+            return 1F;
+        }
+
+        private MouseEventArgs ToLogicalMouseEventArgs(MouseEventArgs e)
+        {
+            Size logicalSize = DXControl.ActiveScene?.Size ?? Config.GameSize;
+            float scaleX = ClientSize.Width > 0 ? logicalSize.Width / (float)ClientSize.Width : 1F / WindowScale;
+            float scaleY = ClientSize.Height > 0 ? logicalSize.Height / (float)ClientSize.Height : 1F / WindowScale;
+
+            return new MouseEventArgs(
+                e.Button,
+                e.Clicks,
+                (int)Math.Floor(e.X * scaleX),
+                (int)Math.Floor(e.Y * scaleY),
+                e.Delta);
         }
 
         protected override bool IsInputKey(Keys keyData)
@@ -66,6 +176,9 @@ namespace Client
             else
                 Cursor.Clip = Rectangle.Empty;
 
+            e = ToLogicalMouseEventArgs(e);
+            if (DXControl.ActiveScene is GameScene game)
+                e = game.ToUIMouseEventArgs(e);
             CEnvir.MouseLocation = e.Location;
 
             try
@@ -89,6 +202,9 @@ namespace Client
 
             try
             {
+                e = ToLogicalMouseEventArgs(e);
+                if (DXControl.ActiveScene is GameScene game)
+                    e = game.ToUIMouseEventArgs(e);
                 DXControl.ActiveScene?.OnMouseDown(e);
             }
             catch (Exception ex)
@@ -105,6 +221,9 @@ namespace Client
 
             try
             {
+                e = ToLogicalMouseEventArgs(e);
+                if (DXControl.ActiveScene is GameScene game)
+                    e = game.ToUIMouseEventArgs(e);
                 DXControl.ActiveScene?.OnMouseUp(e);
             }
             catch (Exception ex)
@@ -117,6 +236,9 @@ namespace Client
         {
             try
             {
+                e = ToLogicalMouseEventArgs(e);
+                if (DXControl.ActiveScene is GameScene game)
+                    e = game.ToUIMouseEventArgs(e);
                 DXControl.ActiveScene?.OnMouseClick(e);
             }
             catch (Exception ex)
@@ -129,6 +251,9 @@ namespace Client
         {
             try
             {
+                e = ToLogicalMouseEventArgs(e);
+                if (DXControl.ActiveScene is GameScene game)
+                    e = game.ToUIMouseEventArgs(e);
                 DXControl.ActiveScene?.OnMouseClick(e);
             }
             catch (Exception ex)
@@ -141,6 +266,9 @@ namespace Client
         {
             try
             {
+                e = ToLogicalMouseEventArgs(e);
+                if (DXControl.ActiveScene is GameScene game)
+                    e = game.ToUIMouseEventArgs(e);
                 DXControl.ActiveScene?.OnMouseWheel(e);
             }
             catch (Exception ex)
@@ -236,7 +364,7 @@ namespace Client
                 if (GameScene.Game != null)
                     text += $"Player: {MapObject.User.Name}{Environment.NewLine}";
 
-                using (Font font = new Font(Config.FontName, CEnvir.FontSize(8F)))
+                using (Font font = new Font(Config.FontName, CEnvir.FontSize(8F) * CEnvir.Target.TextRasterScale))
                 {
                     graphics.DrawString(text, font, Brushes.Black, 3, 33);
                     graphics.DrawString(text, font, Brushes.Black, 4, 32);
@@ -264,6 +392,12 @@ namespace Client
 
         [DllImport("user32.dll")]
         static extern IntPtr GetWindowDC(IntPtr handle);
+        [DllImport("user32.dll")]
+        static extern IntPtr MonitorFromPoint(Point point, uint flags);
+        [DllImport("shcore.dll")]
+        static extern int GetDpiForMonitor(IntPtr monitor, int dpiType, out uint dpiX, out uint dpiY);
+        [DllImport("user32.dll")]
+        static extern uint GetDpiForWindow(IntPtr window);
         [DllImport("gdi32.dll")]
         public static extern IntPtr CreateCompatibleDC(IntPtr handle);
         [DllImport("gdi32.dll")]

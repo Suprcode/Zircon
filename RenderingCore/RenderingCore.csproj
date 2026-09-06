@@ -20,6 +20,7 @@
   <ItemGroup>
     <None Update="Rendering\SilkD3D11\Shaders\DropShadowD3D11.hlsl" CopyToOutputDirectory="PreserveNewest" />
     <None Update="Rendering\SilkD3D11\Shaders\GrayscaleD3D11.hlsl" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Rendering\SilkD3D11\Shaders\ColourGradeD3D11.hlsl" CopyToOutputDirectory="PreserveNewest" />
     <None Update="Rendering\SilkD3D11\Shaders\OutlineD3D11.hlsl" CopyToOutputDirectory="PreserveNewest" />
     <None Update="Rendering\SilkD3D11\Shaders\SolidShadowFillD3D11.hlsl" CopyToOutputDirectory="PreserveNewest" />
     <None Update="Rendering\SilkD3D11\Shaders\SpriteD3D11.hlsl" CopyToOutputDirectory="PreserveNewest" />

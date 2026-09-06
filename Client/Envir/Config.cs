@@ -31,19 +31,31 @@ namespace Client.Envir
         public static bool ExtendedLogin { get; set; }
         public static Size GameSize { get; set; } = IntroSceneSize;
         public static string DefaultMonitor { get; set; } = string.Empty;
+        // Zero follows the current monitor DPI.
+        public static int WindowScalePercent { get; set; } = 0;
+        public static int UIScalePercent { get; set; } = 100;
         public static string RenderingPipeline { get; set; } = RenderingPipelineIds.SilkDXD3D11;
         public static bool UseZlAtlasPages { get; set; } = true;
         public static bool UseD3D11SpriteBatch { get; set; } = false;
         public static TimeSpan CacheDuration { get; set; } = TimeSpan.FromMinutes(30);
-        public static string FontName { get; set; } = "MS Sans Serif";
+        public static string FontName { get; set; } = "Microsoft Sans Serif";
         public static string MapPath { get; set; } = @".\Map\";
         public static bool ClipMouse { get; set; } = false;
         public static bool DebugLabel { get; set; } = false;
-        public static float FontSizeMod { get; set; } = 0.0F;
+        public const float MinimumFontSizeModifier = -2F;
+        public const float MaximumFontSizeModifier = 2F;
+
+        public static float FontSizeMod
+        {
+            get => _FontSizeMod;
+            set => _FontSizeMod = Math.Max(MinimumFontSizeModifier, Math.Min(MaximumFontSizeModifier, value));
+        }
+        private static float _FontSizeMod;
         public static string Language { get; set; } = "English";
         public static bool Borderless { get; set; } = false;
         public static bool SmoothMove { get; set; } = false;
         public static float ShadowOpacity { get; set; } = 0.5F;
+        public static bool ColourGrading { get; set; } = true;
 
 
         [ConfigSection("Sound")]

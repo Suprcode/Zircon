@@ -171,6 +171,9 @@ namespace Client.Scenes.Views
                 Size = new Size(350, 10),
                 ForeColour = Color.White
             };
+            // Render measured logical lines below, so DPI font rounding cannot change wrapping
+            // or move the page text away from its separately positioned interactive links.
+            PageText.DrawTexture = false;
 
             ScrollBar = new DXVScrollBar
             {
@@ -343,13 +346,7 @@ namespace Client.Scenes.Views
             text = C.Replace(text, @"${Text}");
             PageText.Text = text;
 
-            int height = DXLabel.GetHeight(PageText, PageText.Size.Width).Height;
-            SetSize(height);
-            ProcessText(CurrentPageSay);
-            ScrollBar.Value = 0;
-            ScrollBar_ValueChanged(ScrollBar, EventArgs.Empty);
-            PageText.UpdateDisplayArea();
-            PageText.UpdateClipAreaTree();
+            RefreshTextLayout(true);
 
             Opened = true;
 
@@ -438,7 +435,7 @@ namespace Client.Scenes.Views
                     break;
                 case NPCDialogType.CompanionManage:
                     GameScene.Game.NPCCompanionStorageBox.Visible = GameScene.Game.NPCCompanionStorageBox.Companions.Count > 0;
-                    GameScene.Game.NPCCompanionStorageBox.Location = new Point((GameScene.Game.Size.Width - GameScene.Game.NPCCompanionStorageBox.Size.Width) / 2, (GameScene.Game.Size.Height - GameScene.Game.NPCCompanionStorageBox.Size.Height) / 2);
+                    GameScene.Game.NPCCompanionStorageBox.Location = new Point((GameScene.Game.UISize.Width - GameScene.Game.NPCCompanionStorageBox.Size.Width) / 2, (GameScene.Game.UISize.Height - GameScene.Game.NPCCompanionStorageBox.Size.Height) / 2);
                     GameScene.Game.NPCCompanionStorageBox.SelectedIndex = 0;
                     GameScene.Game.NPCAdoptCompanionBox.Visible = true;
                     GameScene.Game.NPCAdoptCompanionBox.Location = new Point(0, Size.Height);
@@ -476,11 +473,11 @@ namespace Client.Scenes.Views
                     break;
                 case NPCDialogType.Socketing:
                     GameScene.Game.NPCSocketBox.Visible = true;
-                    GameScene.Game.NPCSocketBox.Location = new Point((GameScene.Game.Size.Width - GameScene.Game.NPCSocketBox.Size.Width) / 2, (GameScene.Game.Size.Height - GameScene.Game.NPCSocketBox.Size.Height) / 2);
+                    GameScene.Game.NPCSocketBox.Location = new Point((GameScene.Game.UISize.Width - GameScene.Game.NPCSocketBox.Size.Width) / 2, (GameScene.Game.UISize.Height - GameScene.Game.NPCSocketBox.Size.Height) / 2);
                     break;
                 case NPCDialogType.SocketCombine:
                     GameScene.Game.NPCSocketCombineBox.Visible = true;
-                    GameScene.Game.NPCSocketCombineBox.Location = new Point((GameScene.Game.Size.Width - GameScene.Game.NPCSocketCombineBox.Size.Width) / 2, (GameScene.Game.Size.Height - GameScene.Game.NPCSocketCombineBox.Size.Height) / 2);
+                    GameScene.Game.NPCSocketCombineBox.Location = new Point((GameScene.Game.UISize.Width - GameScene.Game.NPCSocketCombineBox.Size.Width) / 2, (GameScene.Game.UISize.Height - GameScene.Game.NPCSocketCombineBox.Size.Height) / 2);
                     break;
                 case NPCDialogType.RollDie:
                     Rolling = true;
@@ -545,6 +542,23 @@ namespace Client.Scenes.Views
                 }
             }
 
+            // Do not draw white copies underneath coloured/link runs: their independently
+            // rounded glyph advances can otherwise leave a white fringe at fractional DPI.
+            int plainStart = 0;
+            foreach (CharacterRange range in buttonRanges.Select(x => x.Range)
+                .Append(new CharacterRange(PageText.Text.Length, 0)))
+            {
+                if (range.First > plainStart)
+                {
+                    foreach (ButtonInfo info in DrawTextExtensions.GetWordRegionsNew(PageText.Text, PageText.Font,
+                        PageText.DrawFormat, PageText.Size.Width, plainStart, range.First - plainStart))
+                    {
+                        Buttons.Add(CreateTextRun(info, Color.White, false));
+                    }
+                }
+                plainStart = range.First + range.Length;
+            }
+
             for (int i = 0; i < buttonRanges.Count; i++)
             {
                 var buttonIndex = buttonRanges[i];
@@ -554,19 +568,7 @@ namespace Client.Scenes.Views
                 List<DXLabel> labels = new();
 
                 foreach (ButtonInfo info in buttons)
-                {
-                    labels.Add(new DXLabel
-                    {
-                        AutoSize = false,
-                        Parent = PageText,
-                        Location = info.Region.Location,
-                        DrawFormat = PageText.DrawFormat,
-                        Text = PageText.Text.Substring(info.Index, info.Length),
-                        Font = PageText.Font,
-                        Size = info.Region.Size,
-                        Outline = false
-                    });
-                }
+                    labels.Add(CreateTextRun(info, Color.White, true));
 
                 int index = i;
                 DateTime NextButtonTime = DateTime.MinValue;
@@ -614,6 +616,7 @@ namespace Client.Scenes.Views
                         case DXButtonType.Label:
                             {
                                 label.ForeColour = Color.FromName(matchList[index].Groups["Colour"].Value);
+                                label.IsControl = false;
                             }
                             break;
                     }
@@ -621,6 +624,47 @@ namespace Client.Scenes.Views
                     Buttons.Add(label);
                 }
             }
+        }
+
+        public void RefreshTextLayoutForScale()
+        {
+            if (string.IsNullOrEmpty(CurrentPageSay) || string.IsNullOrEmpty(PageText.Text))
+                return;
+
+            RefreshTextLayout(false);
+        }
+
+        private void RefreshTextLayout(bool resetScroll)
+        {
+            int scrollValue = resetScroll ? 0 : ScrollBar.Value;
+            int height = DXLabel.GetHeight(PageText, PageText.Size.Width).Height;
+
+            SetSize(height);
+            ProcessText(CurrentPageSay);
+
+            ScrollBar.Value = resetScroll
+                ? 0
+                : Math.Clamp(scrollValue, ScrollBar.MinValue, Math.Max(ScrollBar.MinValue, ScrollBar.MaxValue));
+            ScrollBar_ValueChanged(ScrollBar, EventArgs.Empty);
+            PageText.UpdateDisplayArea();
+            PageText.UpdateClipAreaTree();
+        }
+
+        private DXLabel CreateTextRun(ButtonInfo info, Color colour, bool isControl)
+        {
+            return new DXLabel
+            {
+                AutoSize = false,
+                Parent = PageText,
+                Location = info.Region.Location,
+                DrawFormat = TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix,
+                Text = PageText.Text.Substring(info.Index, info.Length),
+                Font = new Font(PageText.Font, PageText.Font.Style),
+                Size = info.Region.Size,
+                ForeColour = colour,
+                Outline = false,
+                IsControl = isControl
+            };
         }
 
         public override void OnKeyDown(KeyEventArgs e)
@@ -8376,7 +8420,7 @@ namespace Client.Scenes.Views
                 case 0: //Die
                     {
                         Size = new Size(65, 65);
-                        Location = new Point((GameScene.ActiveScene.Size.Width / 2) - 38, (GameScene.ActiveScene.Size.Height / 2) - 40);
+                        Location = new Point((DXControl.SceneLayoutSize.Width / 2) - 38, (DXControl.SceneLayoutSize.Height / 2) - 40);
 
                         _image.Index = 12;
                         _image.LibraryFile = LibraryFile.MiniGames;
@@ -8390,7 +8434,7 @@ namespace Client.Scenes.Views
                 case 1: //Yut
                     {
                         Size = new Size(180, 210);
-                        Location = new Point((GameScene.ActiveScene.Size.Width / 2) - 90, (GameScene.ActiveScene.Size.Height / 2) - 65);
+                        Location = new Point((DXControl.SceneLayoutSize.Width / 2) - 90, (DXControl.SceneLayoutSize.Height / 2) - 65);
 
                         _image.Index = 100;
                         _image.LibraryFile = LibraryFile.MiniGames;
