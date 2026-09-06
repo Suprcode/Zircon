@@ -1825,7 +1825,7 @@ BorderInformation = new[]
             DrawClippedVerticalLine(area.Left - 1, area.Top - 1, area.Bottom, clipArea);
         }
 
-        private Rectangle GetBorderClipArea()
+        protected Rectangle GetBorderClipArea()
         {
             Rectangle sceneArea = ActiveScene?.DisplayArea ?? DisplayArea;
             if (UsesUIScale && ActiveScene is GameScene game)
@@ -1837,12 +1837,12 @@ BorderInformation = new[]
             return Parent.ClipArea;
         }
 
-        private void DrawClippedHorizontalLine(int left, int right, int y, Rectangle clipArea)
+        protected void DrawClippedHorizontalLine(float left, float right, float y, Rectangle clipArea)
         {
             if (y < clipArea.Top || y >= clipArea.Bottom) return;
 
-            int clippedLeft = Math.Max(left, clipArea.Left);
-            int clippedRight = Math.Min(right, clipArea.Right - 1);
+            float clippedLeft = Math.Max(left, clipArea.Left);
+            float clippedRight = Math.Min(right, clipArea.Right - 1);
 
             if (clippedLeft > clippedRight) return;
 
@@ -1853,12 +1853,12 @@ BorderInformation = new[]
             }, BorderColour);
         }
 
-        private void DrawClippedVerticalLine(int x, int top, int bottom, Rectangle clipArea)
+        protected void DrawClippedVerticalLine(float x, float top, float bottom, Rectangle clipArea)
         {
             if (x < clipArea.Left || x >= clipArea.Right) return;
 
-            int clippedTop = Math.Max(top, clipArea.Top);
-            int clippedBottom = Math.Min(bottom, clipArea.Bottom - 1);
+            float clippedTop = Math.Max(top, clipArea.Top);
+            float clippedBottom = Math.Min(bottom, clipArea.Bottom - 1);
 
             if (clippedTop > clippedBottom) return;
 

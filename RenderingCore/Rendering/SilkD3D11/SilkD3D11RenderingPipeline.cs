@@ -381,22 +381,34 @@ namespace Shared.Rendering.SilkD3D11
         {
             width = Math.Max(1F, width);
             float half = width * 0.5F;
-            float x1 = Snap(a.X);
-            float y1 = Snap(a.Y);
-            float x2 = Snap(b.X);
-            float y2 = Snap(b.Y);
+            Size drawingSize = GetDrawingSize(_currentTarget);
+            float scaleX = _currentTarget.Size.Width / (float)drawingSize.Width;
+            float scaleY = _currentTarget.Size.Height / (float)drawingSize.Height;
 
-            RectangleF rect;
+            // Line widths are framebuffer pixels, so align and size the stroke there before
+            // converting its rectangle back into the target's logical coordinate space.
+            float x1 = Snap(a.X * scaleX);
+            float y1 = Snap(a.Y * scaleY);
+            float x2 = Snap(b.X * scaleX);
+            float y2 = Snap(b.Y * scaleY);
+
+            RectangleF physicalRectangle;
             if (Math.Abs(x2 - x1) >= Math.Abs(y2 - y1))
             {
-                rect = new RectangleF(Math.Min(x1, x2), y1 - half, Math.Max(width, Math.Abs(x2 - x1)), width);
+                physicalRectangle = new RectangleF(Math.Min(x1, x2), y1 - half, Math.Max(width, Math.Abs(x2 - x1)), width);
             }
             else
             {
-                rect = new RectangleF(x1 - half, Math.Min(y1, y2), width, Math.Max(width, Math.Abs(y2 - y1)));
+                physicalRectangle = new RectangleF(x1 - half, Math.Min(y1, y2), width, Math.Max(width, Math.Abs(y2 - y1)));
             }
 
-            DrawSolidRectangle(rect, colour, opacity);
+            RectangleF logicalRectangle = new(
+                physicalRectangle.X / scaleX,
+                physicalRectangle.Y / scaleY,
+                physicalRectangle.Width / scaleX,
+                physicalRectangle.Height / scaleY);
+
+            DrawSolidRectangle(logicalRectangle, colour, opacity);
         }
 
         public void DrawTexture(RenderTexture texture, Rectangle sourceRectangle, RectangleF destinationRectangle, GdiColor colour)

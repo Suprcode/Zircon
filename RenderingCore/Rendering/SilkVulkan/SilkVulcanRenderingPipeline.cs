@@ -550,20 +550,24 @@ namespace Shared.Rendering.SilkVulkan
             FlushSpriteBatch();
             BeginRenderPass(_currentTarget);
 
+            Size drawingSize = GetDrawingSize(_currentTarget);
+            float scaleX = _currentTarget.Size.Width / (float)drawingSize.Width;
+            float scaleY = _currentTarget.Size.Height / (float)drawingSize.Height;
+
+            // Vulkan line widths are framebuffer pixels; snap their centres in that same space.
             TextureVertex* vertices = AllocateVertices(points.Count, out ulong offset);
             for (int i = 0; i < points.Count; i++)
             {
                 vertices[i] = new TextureVertex
                 {
-                    X = SnapLineCoordinate(points[i].X),
-                    Y = SnapLineCoordinate(points[i].Y)
+                    X = SnapLineCoordinate(points[i].X, scaleX),
+                    Y = SnapLineCoordinate(points[i].Y, scaleY)
                 };
             }
 
             BindPipeline(_linePipeline);
             _vk.CmdSetLineWidth(_activeCommandBuffer, _supportsWideLines ? _lineWidth : 1F);
 
-            Size drawingSize = GetDrawingSize(_currentTarget);
             PushConstants push = new PushConstants
             {
                 Viewport = new Vector2(drawingSize.Width, drawingSize.Height),
@@ -3042,9 +3046,9 @@ namespace Shared.Rendering.SilkVulkan
             return (value + alignment - 1) & ~(alignment - 1);
         }
 
-        private static float SnapLineCoordinate(float value)
+        private static float SnapLineCoordinate(float value, float scale)
         {
-            return (float)Math.Floor(value) + 0.5F;
+            return ((float)Math.Floor(value * scale) + 0.5F) / scale;
         }
 
         private static float HueToRgb(float p, float q, float t)

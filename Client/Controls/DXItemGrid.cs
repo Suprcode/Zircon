@@ -330,51 +330,31 @@ namespace Client.Controls
                 }
         }
 
-        protected override void OnClearTexture()
+        protected override void OnBeforeChildrenDraw()
         {
-            base.OnClearTexture();
+            base.OnBeforeChildrenDraw();
 
             if (!Border || BorderInformation == null)
-            {
                 return;
-            }
 
-            RenderingPipelineManager.DrawLine(BorderInformation, BorderColour);
+            if (RenderingPipelineManager.GetLineWidth() != BorderSize)
+                RenderingPipelineManager.SetLineWidth(BorderSize);
+
+            Rectangle clipArea = GetBorderClipArea();
+            float columnWidth = DXItemCell.CellWidth - 1 + GridPadding * 2;
+            float rowHeight = DXItemCell.CellHeight - 1 + GridPadding * 2;
 
             for (int i = 0; i <= GridSize.Width; i++)
             {
-                RenderingPipelineManager.DrawLine(new[] {
-                    new LinePoint(((DXItemCell.CellWidth - 1 + (GridPadding * 2)) * i), 0),
-                    new LinePoint(((DXItemCell.CellWidth - 1 + (GridPadding * 2)) * i), Size.Height)
-                }, BorderColour);
+                float x = DisplayArea.Left + columnWidth * i;
+                DrawClippedVerticalLine(x, DisplayArea.Top, DisplayArea.Bottom - 1, clipArea);
             }
 
             for (int i = 0; i <= Math.Min(GridSize.Height, VisibleHeight); i++)
             {
-                RenderingPipelineManager.DrawLine(new[] {
-                    new LinePoint(0, ((DXItemCell.CellHeight - 1 + (GridPadding * 2)) * i)),
-                    new LinePoint(Size.Width, ((DXItemCell.CellHeight - 1 + (GridPadding * 2)) * i))
-                }, BorderColour);
+                float y = DisplayArea.Top + rowHeight * i;
+                DrawClippedHorizontalLine(DisplayArea.Left, DisplayArea.Right - 1, y, clipArea);
             }
-        }
-
-        protected internal override void UpdateBorderInformation()
-        {
-            BorderInformation = null;
-            if (!Border || Size.Width == 0 || Size.Height == 0)
-            {
-                return;
-            }
-
-            BorderInformation = new[]
-            {
-                new LinePoint(0, 0),
-                new LinePoint(Size.Width - 1, 0),
-                new LinePoint(Size.Width - 1, Size.Height - 1),
-                new LinePoint(0, Size.Height - 1),
-                new LinePoint(0, 0)
-            };
-            TextureValid = false;
         }
 
         protected override void DrawBorder()

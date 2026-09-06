@@ -369,6 +369,7 @@ namespace Client.Scenes.Views
                 AutoSize = false,
                 Text = message,
                 Outline = false,
+                SeparateBackground = true,
                 DrawFormat = TextFormatFlags.WordBreak | TextFormatFlags.WordEllipsis,
                 Parent = TextPanel,
             };
@@ -432,6 +433,7 @@ namespace Client.Scenes.Views
                         AutoSize = false,
                         Text = "You have died, Click here to revive in town.",
                         Outline = false,
+                        SeparateBackground = true,
                         DrawFormat = TextFormatFlags.WordBreak | TextFormatFlags.WordEllipsis,
                         Parent = TextPanel,
                     };

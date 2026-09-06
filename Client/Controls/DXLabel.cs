@@ -287,6 +287,32 @@ namespace Client.Controls
 
         #endregion
 
+        #region SeparateBackground
+
+        public bool SeparateBackground
+        {
+            get => _SeparateBackground;
+            set
+            {
+                if (_SeparateBackground == value) return;
+
+                bool oldValue = _SeparateBackground;
+                _SeparateBackground = value;
+
+                OnSeparateBackgroundChanged(oldValue, value);
+            }
+        }
+        private bool _SeparateBackground;
+        public event EventHandler<EventArgs> SeparateBackgroundChanged;
+        public virtual void OnSeparateBackgroundChanged(bool oValue, bool nValue)
+        {
+            TextureValid = false;
+
+            SeparateBackgroundChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
         #region LabelStyle
 
         public DXLabelStyle LabelStyle
@@ -403,10 +429,7 @@ namespace Client.Controls
         {
             if (!AutoSize) return;
 
-            float scale = CEnvir.Target?.TextRasterScale ?? 1F;
-            Size = this == HintLabel && scale > 1F
-                ? DirectWriteHintRenderer.Measure(Text, Font, scale, PaddingBottom)
-                : GetSize(Text, Font, Outline, PaddingBottom);
+            Size = GetSize(Text, Font, Outline, PaddingBottom);
         }
 
         private void UpdateLabelStyle()
@@ -442,6 +465,12 @@ namespace Client.Controls
         protected override void CreateTexture()
         {
             float textureScale = RasterScale;
+
+            // Auto-sized bounds must be measured for the same raster scale as the texture.
+            // Reusing bounds measured at another fractional scale can clip hinted glyphs.
+            if (_rasterScale != textureScale && AutoSize)
+                CreateSize();
+
             _rasterScale = textureScale;
             using Font rasterFont = RenderingPipelineManager.CreatePixelFont(Font, textureScale);
             int width = Math.Max(1, (int)Math.Ceiling(DisplayArea.Width * textureScale));
@@ -463,17 +492,12 @@ namespace Client.Controls
             using (Graphics graphics = Graphics.FromImage(image))
             {
                 RenderingPipelineManager.ConfigureGraphics(graphics);
-                graphics.Clear(BackColour);
+                graphics.Clear(SeparateBackground ? Color.Transparent : BackColour);
 
                 int outlineOffset = Math.Max(1, (int)Math.Floor(textureScale));
                 int outlineFarOffset = outlineOffset * 2;
 
-                if (this == HintLabel && textureScale > 1F && BackColour.A == 255)
-                {
-                    using Bitmap hint = DirectWriteHintRenderer.Render(Text, Font, textureScale, TextureSize, ForeColour, BackColour);
-                    graphics.DrawImageUnscaled(hint, 0, 0);
-                }
-                else if (Gradient)
+                if (Gradient)
                 {
                     DrawGradientText(graphics, width, height, outlineOffset, outlineFarOffset, rasterFont);
                 }
@@ -618,6 +642,19 @@ namespace Client.Controls
             Rectangle clippedArea = Rectangle.Intersect(ClipArea, DisplayArea);
             if (clippedArea.Width > 0 && clippedArea.Height > 0)
             {
+                Color colour = IsEnabled ? Color.White : Color.FromArgb(75, 75, 75);
+
+                if (SeparateBackground && BackColour.A > 0)
+                {
+                    Color background = Color.FromArgb(
+                        BackColour.A,
+                        BackColour.R * colour.R / 255,
+                        BackColour.G * colour.G / 255,
+                        BackColour.B * colour.B / 255);
+
+                    RenderingPipelineManager.FillRectangle(clippedArea, background);
+                }
+
                 // Use the same nearest physical-pixel boundary as the destination alignment.
                 // Mixing floor/ceiling here with a rounded destination shifts the first
                 // partially clipped line by one source pixel at fractional DPI scales.
@@ -629,7 +666,7 @@ namespace Client.Controls
 
                 Point alignmentOrigin = Parent is DXLabel ? Parent.DisplayArea.Location : DisplayArea.Location;
                 RenderingPipelineManager.DrawDpiText(ControlTexture, source, clippedArea, alignmentOrigin, AlignRight,
-                    IsEnabled ? Color.White : Color.FromArgb(75, 75, 75));
+                    colour);
             }
 
             RenderingPipelineManager.SetOpacity(oldOpacity);
@@ -666,6 +703,7 @@ namespace Client.Controls
                 _Font = null;
                 _Outline = false;
                 _AlignRight = false;
+                _SeparateBackground = false;
                 _Gradient = false;
                 _LabelStyle = DXLabelStyle.None;
                 _GradientTopColour = Color.Empty;
@@ -676,6 +714,7 @@ namespace Client.Controls
                 DrawFormatChanged = null;
                 FontChanged = null;
                 OutlineChanged = null;
+                SeparateBackgroundChanged = null;
                 GradientChanged = null;
                 LabelStyleChanged = null;
                 GradientTopColourChanged = null;

@@ -325,11 +325,22 @@ namespace Client.Controls
             if (TextBox == null || CEnvir.Target == null) return;
             UpdateNativeFont();
             float scale = CEnvir.Target.TextRasterScale;
+            int left = (int)Math.Round(DisplayArea.Left * scale);
+            int top = (int)Math.Round(DisplayArea.Top * scale);
+            int right = Border
+                ? (int)Math.Floor(DisplayArea.Right * scale)
+                : (int)Math.Round(DisplayArea.Right * scale);
+            int bottom = Border
+                ? (int)Math.Floor(DisplayArea.Bottom * scale)
+                : (int)Math.Round(DisplayArea.Bottom * scale);
+
+            // A live WinForms text box is composited above the rendered UI. Keep its trailing
+            // edges inside a bordered DXTextBox so it cannot cover the border at fractional DPI.
             Rectangle bounds = Rectangle.FromLTRB(
-                (int)Math.Round(DisplayArea.Left * scale),
-                (int)Math.Round(DisplayArea.Top * scale),
-                (int)Math.Round(DisplayArea.Right * scale),
-                (int)Math.Round(DisplayArea.Bottom * scale));
+                left,
+                top,
+                Math.Max(left + 1, right),
+                Math.Max(top + 1, bottom));
             if (TextBox.Bounds != bounds)
                 TextBox.Bounds = bounds;
         }
