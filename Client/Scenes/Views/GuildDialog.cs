@@ -353,17 +353,11 @@ namespace Client.Scenes.Views
             CloseButton.Location = new Point(DisplayArea.Width - CloseButton.Size.Width - 3, 3);
             CloseButton.MouseClick += (o, e) => Visible = false;
 
-            TitleLabel = new DXLabel
+            TitleLabel = new DXWindowTitleLabel
             {
                 Text = CEnvir.Language.GuildDialogTitle,
                 Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Constants.PrimaryColour,
-                Outline = true,
-                OutlineColour = Color.Black,
-                IsControl = false,
             };
-            TitleLabel.Location = new Point((DisplayArea.Width - TitleLabel.Size.Width) / 2, 8);
 
             GuildTabs = new DXTabControl
             {
@@ -462,7 +456,6 @@ namespace Client.Scenes.Views
         public void RefreshGuildDisplay()
         {
             TitleLabel.Text = GuildInfo.GuildName;
-            TitleLabel.Location = new Point((DisplayArea.Width - TitleLabel.Size.Width) / 2, 8);
 
             if (!NoticeTextBox.Editable)
                 NoticeTextBox.TextBox.Text = GuildInfo.Notice;

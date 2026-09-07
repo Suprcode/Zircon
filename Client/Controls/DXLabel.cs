@@ -51,6 +51,7 @@ namespace Client.Controls
                 Size rasterSize = RenderingPipelineManager.MeasureText(label.Text, rasterFont,
                     new Size(Math.Max(1, (int)Math.Ceiling(width * scale)),
                         Math.Max(1, (int)Math.Ceiling(2000 * scale))), label.DrawFormat);
+                tempSize.Width = Math.Max(tempSize.Width, (int)Math.Ceiling(rasterSize.Width / scale));
                 tempSize.Height = Math.Max(tempSize.Height, (int)Math.Ceiling(rasterSize.Height / scale));
             }
 

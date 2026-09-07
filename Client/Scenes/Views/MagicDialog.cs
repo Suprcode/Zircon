@@ -99,28 +99,7 @@ namespace Client.Scenes.Views
                 IsControl = false
             };
 
-            CloseButton = new DXButton
-            {
-                Parent = this,
-                Index = 15,
-                LibraryFile = LibraryFile.Interface,
-                Hint = CEnvir.Language.CommonControlClose,
-                HintPosition = HintPosition.TopLeft
-            };
-            CloseButton.Location = new Point(DisplayArea.Width - CloseButton.Size.Width - 3, 3);
-            CloseButton.MouseClick += (o, e) => Visible = false;
-
-            TitleLabel = new DXLabel
-            {
-                Text = CEnvir.Language.MagicDialogTitle,
-                Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Constants.PrimaryColour,
-                Outline = true,
-                OutlineColour = Color.Black,
-                IsControl = false,
-            };
-            TitleLabel.Location = new Point((DisplayArea.Width - TitleLabel.Size.Width) / 2, 8);
+            TitleLabel.Text = CEnvir.Language.MagicDialogTitle;
 
             TabControl = new DXTabControl
             {
@@ -245,22 +224,6 @@ namespace Client.Scenes.Views
                         BackgroundImage.Dispose();
 
                     BackgroundImage = null;
-                }
-
-                if (TitleLabel != null)
-                {
-                    if (!TitleLabel.IsDisposed)
-                        TitleLabel.Dispose();
-
-                    TitleLabel = null;
-                }
-
-                if (CloseButton != null)
-                {
-                    if (!CloseButton.IsDisposed)
-                        CloseButton.Dispose();
-
-                    CloseButton = null;
                 }
 
                 if (SchoolTabs != null)

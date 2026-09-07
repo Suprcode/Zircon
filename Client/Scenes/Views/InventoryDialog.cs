@@ -189,17 +189,11 @@ namespace Client.Scenes.Views
             CloseButton.Location = new Point(DisplayArea.Width - CloseButton.Size.Width - 3, 3);
             CloseButton.MouseClick += (o, e) => Visible = false;
 
-            TitleLabel = new DXLabel
+            TitleLabel = new DXWindowTitleLabel
             {
                 Text = CEnvir.Language.InventoryDialogTitle,
                 Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Constants.PrimaryColour,
-                Outline = true,
-                OutlineColour = Color.Black,
-                IsControl = false,
             };
-            TitleLabel.Location = new Point((DisplayArea.Width - TitleLabel.Size.Width) / 2, 8);
 
             Grid = new DXItemGrid
             {
@@ -337,6 +331,7 @@ namespace Client.Scenes.Views
             WalletLabel = new DXLabel
             {
                 Parent = this,
+                AutoSize = false,
                 Location = new Point(8, 380),
                 Hint = string.Format(CEnvir.Language.InventoryDialogWalletLabelHint, CEnvir.GetKeyBindLabel(KeyBindAction.CurrencyWindow)),
                 Size = new Size(45, 40),
@@ -585,7 +580,6 @@ namespace Client.Scenes.Views
                         TrashButton.Visible = true;
 
                         TitleLabel.Text = CEnvir.Language.InventoryDialogTitle;
-                        TitleLabel.Location = new Point((DisplayArea.Width - TitleLabel.Size.Width) / 2, 8);
                     }
                     break;
                 case InventoryMode.Sell:
@@ -597,7 +591,6 @@ namespace Client.Scenes.Views
                         SellButton.Visible = true;
 
                         TitleLabel.Text = CEnvir.Language.InventoryDialogTitle + " [Sell]";
-                        TitleLabel.Location = new Point((DisplayArea.Width - TitleLabel.Size.Width) / 2, 8);
                     }
                     break;
             }
@@ -675,6 +668,8 @@ namespace Client.Scenes.Views
 
                 if (WalletLabel != null)
                 {
+                    WalletLabel.MouseClick -= WalletLabel_MouseClick;
+
                     if (!WalletLabel.IsDisposed)
                         WalletLabel.Dispose();
 

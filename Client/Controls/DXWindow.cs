@@ -276,18 +276,12 @@ namespace Client.Controls
             };
             CloseButton.MouseClick += (o, e) => Visible = false;
 
-            TitleLabel = new DXLabel
+            TitleLabel = new DXWindowTitleLabel
             {
                 Text = "Window",
                 Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Constants.PrimaryColour,
-                Outline = true,
-                OutlineColour = Color.Black,
                 Visible = HasTitle,
-                IsControl = false,
             };
-            TitleLabel.SizeChanged += (o, e) => TitleLabel.Location = new Point((Size.Width - TitleLabel.Size.Width) / 2, 8);
         }
 
         #region Methods
@@ -341,8 +335,39 @@ namespace Client.Controls
             if (CloseButton != null)
                 CloseButton.Location = new Point(DisplayArea.Width - CloseButton.Size.Width - 3, 3);
 
-            if (TitleLabel != null)
-                TitleLabel.Location = new Point((DisplayArea.Width - TitleLabel.Size.Width) / 2, 8);
+        }
+
+        protected override void OnBeforeChildrenDraw()
+        {
+            base.OnBeforeChildrenDraw();
+
+            EnsureChromeOrder();
+        }
+
+        private void EnsureChromeOrder()
+        {
+            if (Controls == null || Controls.Count == 0) return;
+
+            bool hasTitle = TitleLabel != null && Controls.Contains(TitleLabel);
+            bool hasCloseButton = CloseButton != null && Controls.Contains(CloseButton);
+            int expectedTitleIndex = Controls.Count - (hasCloseButton ? 2 : 1);
+
+            if ((!hasTitle || Controls.IndexOf(TitleLabel) == expectedTitleIndex) &&
+                (!hasCloseButton || Controls[Controls.Count - 1] == CloseButton)) return;
+
+            if (hasTitle)
+                Controls.Remove(TitleLabel);
+
+            if (hasCloseButton)
+                Controls.Remove(CloseButton);
+
+            if (hasTitle)
+                Controls.Add(TitleLabel);
+
+            if (hasCloseButton)
+                Controls.Add(CloseButton);
+
+            InvalidateChildCache();
         }
 
         protected internal override void UpdateDisplayArea()
