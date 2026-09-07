@@ -476,7 +476,8 @@ namespace Client.Scenes.Views
                     .Where(x => x.Monster != null)
                     .Select(x => x.Monster)
                     .Distinct()
-                    .OrderBy(x => x.Level)
+                    .OrderBy(x => x.IsBoss)
+                    .ThenBy(x => x.Level)
                     .ThenBy(x => x.MonsterName, StringComparer.CurrentCultureIgnoreCase)
                     .ThenBy(x => x.Index));
             }

@@ -665,7 +665,12 @@ namespace Client.Controls
                 int sourceBottom = (int)Math.Round((clippedArea.Bottom - DisplayArea.Top) * _rasterScale);
                 Rectangle source = Rectangle.FromLTRB(sourceLeft, sourceTop, Math.Min(TextureSize.Width, sourceRight), Math.Min(TextureSize.Height, sourceBottom));
 
-                Point alignmentOrigin = Parent is DXLabel ? Parent.DisplayArea.Location : DisplayArea.Location;
+                // Keep every label in a movable UI subtree on the same physical-pixel grid.
+                DXControl alignmentRoot = this;
+                while (alignmentRoot.Parent != null && alignmentRoot.Parent != ActiveScene)
+                    alignmentRoot = alignmentRoot.Parent;
+
+                Point alignmentOrigin = alignmentRoot.DisplayArea.Location;
                 RenderingPipelineManager.DrawDpiText(ControlTexture, source, clippedArea, alignmentOrigin, AlignRight,
                     colour);
             }

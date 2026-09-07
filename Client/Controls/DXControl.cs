@@ -1818,11 +1818,14 @@ BorderInformation = new[]
 
             Rectangle area = DisplayArea;
             Rectangle clipArea = GetBorderClipArea();
+            SizeF pixelSize = RenderingPipelineManager.GetBackBufferPixelSize();
+            float right = area.Right - pixelSize.Width;
+            float bottom = area.Bottom - pixelSize.Height;
 
-            DrawClippedHorizontalLine(area.Left - 1, area.Right, area.Top - 1, clipArea);
-            DrawClippedVerticalLine(area.Right, area.Top - 1, area.Bottom, clipArea);
-            DrawClippedHorizontalLine(area.Left - 1, area.Right, area.Bottom, clipArea);
-            DrawClippedVerticalLine(area.Left - 1, area.Top - 1, area.Bottom, clipArea);
+            DrawClippedHorizontalLine(area.Left, right, area.Top, clipArea, pixelSize.Width);
+            DrawClippedVerticalLine(right, area.Top, bottom, clipArea, pixelSize.Height);
+            DrawClippedHorizontalLine(area.Left, right, bottom, clipArea, pixelSize.Width);
+            DrawClippedVerticalLine(area.Left, area.Top, bottom, clipArea, pixelSize.Height);
         }
 
         protected Rectangle GetBorderClipArea()
@@ -1839,10 +1842,15 @@ BorderInformation = new[]
 
         protected void DrawClippedHorizontalLine(float left, float right, float y, Rectangle clipArea)
         {
+            DrawClippedHorizontalLine(left, right, y, clipArea, RenderingPipelineManager.GetBackBufferPixelSize().Width);
+        }
+
+        protected void DrawClippedHorizontalLine(float left, float right, float y, Rectangle clipArea, float pixelWidth)
+        {
             if (y < clipArea.Top || y >= clipArea.Bottom) return;
 
             float clippedLeft = Math.Max(left, clipArea.Left);
-            float clippedRight = Math.Min(right, clipArea.Right - 1);
+            float clippedRight = Math.Min(right, clipArea.Right - pixelWidth);
 
             if (clippedLeft > clippedRight) return;
 
@@ -1855,10 +1863,15 @@ BorderInformation = new[]
 
         protected void DrawClippedVerticalLine(float x, float top, float bottom, Rectangle clipArea)
         {
+            DrawClippedVerticalLine(x, top, bottom, clipArea, RenderingPipelineManager.GetBackBufferPixelSize().Height);
+        }
+
+        protected void DrawClippedVerticalLine(float x, float top, float bottom, Rectangle clipArea, float pixelHeight)
+        {
             if (x < clipArea.Left || x >= clipArea.Right) return;
 
             float clippedTop = Math.Max(top, clipArea.Top);
-            float clippedBottom = Math.Min(bottom, clipArea.Bottom - 1);
+            float clippedBottom = Math.Min(bottom, clipArea.Bottom - pixelHeight);
 
             if (clippedTop > clippedBottom) return;
 

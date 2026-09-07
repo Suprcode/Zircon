@@ -1034,6 +1034,17 @@ namespace Shared.Rendering
             return _activePipeline.GetBackBufferSize();
         }
 
+        public static SizeF GetBackBufferPixelSize()
+        {
+            Size logicalSize = Settings.ActiveSceneSize;
+            Size physicalSize = GetBackBufferSize();
+            float uiScale = CurrentUIScale;
+
+            return new SizeF(
+                Math.Max(1, logicalSize.Width) / (float)Math.Max(1, physicalSize.Width) / uiScale,
+                Math.Max(1, logicalSize.Height) / (float)Math.Max(1, physicalSize.Height) / uiScale);
+        }
+
         public static RenderTexture GetColourPaletteTexture()
         {
             if (_activePipeline == null)

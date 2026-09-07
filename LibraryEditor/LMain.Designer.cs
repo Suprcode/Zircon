@@ -253,7 +253,7 @@ namespace LibraryEditor
             // 
             // splitContainer1
             // 
-            splitContainer1.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            splitContainer1.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             splitContainer1.Location = new System.Drawing.Point(0, 67);
             splitContainer1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -268,7 +268,7 @@ namespace LibraryEditor
             // splitContainer1.Panel2
             // 
             splitContainer1.Panel2.Controls.Add(PreviewListView);
-            splitContainer1.Size = new System.Drawing.Size(1256, 967);
+            splitContainer1.Size = new System.Drawing.Size(1256, 848);
             splitContainer1.SplitterDistance = 479;
             splitContainer1.SplitterWidth = 5;
             splitContainer1.TabIndex = 1;
@@ -719,7 +719,7 @@ namespace LibraryEditor
             // PreviewListView
             // 
             PreviewListView.Activation = System.Windows.Forms.ItemActivation.OneClick;
-            PreviewListView.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            PreviewListView.Dock = System.Windows.Forms.DockStyle.Fill;
             PreviewListView.BackColor = System.Drawing.Color.GhostWhite;
             PreviewListView.ForeColor = System.Drawing.Color.FromArgb(142, 152, 156);
             PreviewListView.LargeImageList = ImageList;
@@ -844,8 +844,8 @@ namespace LibraryEditor
             // 
             // LMain
             // 
-            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             ClientSize = new System.Drawing.Size(1256, 939);
             Controls.Add(panel1);
             Controls.Add(splitContainer1);
