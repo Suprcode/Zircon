@@ -99,6 +99,7 @@ namespace Client.Controls
             };
             HintLabel = new DXLabel
             {
+                SeparateBackground = true,
                 BackColour = Color.FromArgb(255, 255, 255, 150),//Color.FromArgb(120, 0, 0, 0)
                 Border = true,
                 BorderColour = Color.Black,//Color.Yellow,
@@ -1816,11 +1817,11 @@ BorderInformation = new[]
                 RenderingPipelineManager.SetLineWidth(BorderSize);
             }
 
-            Rectangle area = DisplayArea;
+            RectangleF area = RenderingPipelineManager.GetPixelAlignedBorderBounds(DisplayArea);
             Rectangle clipArea = GetBorderClipArea();
             SizeF pixelSize = RenderingPipelineManager.GetBackBufferPixelSize();
-            float right = area.Right - pixelSize.Width;
-            float bottom = area.Bottom - pixelSize.Height;
+            float right = area.Right;
+            float bottom = area.Bottom;
 
             DrawClippedHorizontalLine(area.Left, right, area.Top, clipArea, pixelSize.Width);
             DrawClippedVerticalLine(right, area.Top, bottom, clipArea, pixelSize.Height);

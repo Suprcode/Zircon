@@ -667,7 +667,7 @@ namespace Client.Controls
                         BackColour.G * colour.G / 255,
                         BackColour.B * colour.B / 255);
 
-                    RenderingPipelineManager.FillRectangle(clippedArea, background);
+                    RenderingPipelineManager.FillRectangle(clippedArea, background, alignToBorder: Border);
                 }
 
                 // Use the same nearest physical-pixel boundary as the destination alignment.

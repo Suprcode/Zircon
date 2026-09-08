@@ -583,7 +583,10 @@ namespace Shared.Rendering.SilkVulkan
         public void DrawTexture(RenderTexture texture, Rectangle sourceRectangle, RectangleF destinationRectangle, Color colour)
         {
             if (_currentTarget?.IsBackBuffer == true)
+            {
                 destinationRectangle = RenderingPipelineManager.AlignTextDestination(destinationRectangle, _currentTarget.Size, sourceRectangle.Size);
+                destinationRectangle = RenderingPipelineManager.AlignBorderBackground(destinationRectangle, _currentTarget.Size);
+            }
             DrawTextureCore(texture, sourceRectangle, destinationRectangle, Matrix3x2.Identity, colour);
         }
 

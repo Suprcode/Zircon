@@ -35,6 +35,7 @@ namespace Shared.Rendering
         private static readonly object GraphicsLock = new();
         private static string _pendingPipelineId;
         internal static bool DrawingDpiText { get; private set; }
+        private static bool DrawingBorderBackground { get; set; }
         private static PointF DpiTextOrigin { get; set; }
         private static bool DpiTextRightAligned { get; set; }
         private static int _uiScaleDepth;
@@ -970,13 +971,40 @@ namespace Shared.Rendering
             _activePipeline.ColorFill(surface, rectangle, colorFill);
         }
 
-        public static void FillRectangle(Rectangle rectangle, Color colour)
+        public static void FillRectangle(Rectangle rectangle, Color colour, bool alignToBorder = false)
         {
             if (rectangle.Width <= 0 || rectangle.Height <= 0 || colour.A == 0)
                 return;
 
             RenderTexture texture = GetSolidFillTexture();
-            DrawTexture(texture, new Rectangle(0, 0, 1, 1), new RectangleF(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height), colour);
+            bool previous = DrawingBorderBackground;
+            DrawingBorderBackground = alignToBorder;
+            try
+            {
+                DrawTexture(texture, new Rectangle(0, 0, 1, 1), new RectangleF(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height), colour);
+            }
+            finally
+            {
+                DrawingBorderBackground = previous;
+            }
+        }
+
+        internal static RectangleF AlignBorderBackground(RectangleF destination, Size physicalSize)
+        {
+            if (!DrawingBorderBackground) return destination;
+            Size logical = Settings.ActiveSceneSize;
+            if (logical.Width <= 0 || logical.Height <= 0) return destination;
+            float sx = physicalSize.Width / (float)logical.Width;
+            float sy = physicalSize.Height / (float)logical.Height;
+
+            // Borders snap their centres to floor(edge) + 0.5 framebuffer pixels.
+            // The bottom/right strokes are one pixel inside the exclusive bounds,
+            // so flooring all four fill edges covers exactly the bordered rectangle.
+            return RectangleF.FromLTRB(
+                MathF.Floor(destination.Left * sx) / sx,
+                MathF.Floor(destination.Top * sy) / sy,
+                MathF.Floor(destination.Right * sx) / sx,
+                MathF.Floor(destination.Bottom * sy) / sy);
         }
 
         private static RenderTexture GetSolidFillTexture()
@@ -1043,6 +1071,23 @@ namespace Shared.Rendering
             return new SizeF(
                 Math.Max(1, logicalSize.Width) / (float)Math.Max(1, physicalSize.Width) / uiScale,
                 Math.Max(1, logicalSize.Height) / (float)Math.Max(1, physicalSize.Height) / uiScale);
+        }
+
+        public static RectangleF GetPixelAlignedBorderBounds(Rectangle rectangle)
+        {
+            SizeF pixel = GetBackBufferPixelSize();
+            RectangleF scaled = ScaleUIRectangle(rectangle);
+            Size physical = GetBackBufferSize();
+            Size logical = Settings.ActiveSceneSize;
+            float sx = physical.Width / (float)Math.Max(1, logical.Width);
+            float sy = physical.Height / (float)Math.Max(1, logical.Height);
+            // Return stroke centres, not pixel edges. Re-projecting a centre cannot
+            // round down into the preceding pixel when the renderer snaps the line.
+            return RectangleF.FromLTRB(
+                rectangle.Left + (MathF.Floor(scaled.Left * sx) + 0.5F - scaled.Left * sx) * pixel.Width,
+                rectangle.Top + (MathF.Floor(scaled.Top * sy) + 0.5F - scaled.Top * sy) * pixel.Height,
+                rectangle.Right + (MathF.Floor(scaled.Right * sx) - 0.5F - scaled.Right * sx) * pixel.Width,
+                rectangle.Bottom + (MathF.Floor(scaled.Bottom * sy) - 0.5F - scaled.Bottom * sy) * pixel.Height);
         }
 
         public static RenderTexture GetColourPaletteTexture()
