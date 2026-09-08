@@ -258,12 +258,17 @@ void main()
         float distBottom = vScreenPos.y - boundsMax.y;
         float shadowDistance = max(max(distLeft, distTop), max(distRight, distBottom));
 
-        if (shadowDistance <= 0.0)
+        // Keep the boundary covered: at fractional scales it can lie on a pixel
+        // centre excluded by the image's bottom/right rasterization edges. Allow
+        // a tiny overlap (in screen pixels) for interpolation roundoff as well.
+        vec2 pixelSize = fwidth(vScreenPos);
+        float edgeTolerance = 0.001 * max(pixelSize.x, pixelSize.y);
+        if (shadowDistance < -edgeTolerance)
             discard;
 
         float shadowSize = max(pushConstants.uEffect.y, 0.0001);
         float maxAlpha = pushConstants.uEffect.z;
-        float alpha = clamp(1.0 - shadowDistance / shadowSize, 0.0, 1.0) * maxAlpha * pushConstants.uOutlineColour.a * vColour.a;
+        float alpha = clamp(1.0 - max(shadowDistance, 0.0) / shadowSize, 0.0, 1.0) * maxAlpha * pushConstants.uOutlineColour.a * vColour.a;
 
         outColour = vec4(pushConstants.uOutlineColour.rgb * alpha, alpha);
         return;

@@ -29,12 +29,17 @@ float4 PS_SHADOW(PS_INPUT input) : SV_Target
 
     float shadowDistance = max(max(distLeft, distTop), max(distRight, distBottom));
 
-    if (shadowDistance <= 0.0)
+    // Keep the boundary covered: at fractional scales it can lie on a pixel
+    // centre excluded by the image's bottom/right rasterization edges. Allow
+    // a tiny overlap (in screen pixels) for interpolation roundoff as well.
+    float2 pixelSize = fwidth(position);
+    float edgeTolerance = 0.001 * max(pixelSize.x, pixelSize.y);
+    if (shadowDistance < -edgeTolerance)
         return float4(0, 0, 0, 0);
 
     float shadowSize = max(Effect.y, 0.0001);
     float maxAlpha = Effect.z;
-    float alpha = saturate(1.0 - shadowDistance / shadowSize) * maxAlpha;
+    float alpha = saturate(1.0 - max(shadowDistance, 0.0) / shadowSize) * maxAlpha;
 
     return float4(0, 0, 0, alpha);
 }

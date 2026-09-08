@@ -67,6 +67,20 @@ namespace Client.Controls
 
         #region Properties
 
+        // Text runs in a scrolling block must snap relative to that block, so
+        // rounding the scroll offset cannot change the spacing between runs.
+        public DXControl TextAlignmentRoot
+        {
+            get => _TextAlignmentRoot;
+            set
+            {
+                if (_TextAlignmentRoot == value) return;
+                _TextAlignmentRoot = value;
+                InvalidateParentChildCache();
+            }
+        }
+        private DXControl _TextAlignmentRoot;
+
         #region AutoSize
 
         public bool AutoSize
@@ -666,9 +680,13 @@ namespace Client.Controls
                 Rectangle source = Rectangle.FromLTRB(sourceLeft, sourceTop, Math.Min(TextureSize.Width, sourceRight), Math.Min(TextureSize.Height, sourceBottom));
 
                 // Keep every label in a movable UI subtree on the same physical-pixel grid.
-                DXControl alignmentRoot = this;
-                while (alignmentRoot.Parent != null && alignmentRoot.Parent != ActiveScene)
-                    alignmentRoot = alignmentRoot.Parent;
+                DXControl alignmentRoot = TextAlignmentRoot;
+                if (alignmentRoot == null)
+                {
+                    alignmentRoot = this;
+                    while (alignmentRoot.Parent != null && alignmentRoot.Parent != ActiveScene)
+                        alignmentRoot = alignmentRoot.Parent;
+                }
 
                 Point alignmentOrigin = alignmentRoot.DisplayArea.Location;
                 RenderingPipelineManager.DrawDpiText(ControlTexture, source, clippedArea, alignmentOrigin, AlignRight,
@@ -709,6 +727,7 @@ namespace Client.Controls
                 _Font = null;
                 _Outline = false;
                 _AlignRight = false;
+                _TextAlignmentRoot = null;
                 _SeparateBackground = false;
                 _Gradient = false;
                 _LabelStyle = DXLabelStyle.None;

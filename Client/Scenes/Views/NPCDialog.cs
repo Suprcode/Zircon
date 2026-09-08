@@ -656,6 +656,7 @@ namespace Client.Scenes.Views
             {
                 AutoSize = false,
                 Parent = PageText,
+                TextAlignmentRoot = PageText,
                 Location = info.Region.Location,
                 DrawFormat = TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix,
                 Text = PageText.Text.Substring(info.Index, info.Length),

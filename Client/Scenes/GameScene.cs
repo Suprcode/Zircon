@@ -2133,6 +2133,27 @@ namespace Client.Scenes
             }
         }
 
+        private sealed class ItemLabelDivider : DXControl
+        {
+            public ItemLabelDivider()
+            {
+                // Draw directly on the screen pixel grid, even if the tooltip is cached.
+                CacheInParent = false;
+            }
+
+            protected override void DrawControl()
+            {
+                float oldWidth = RenderingPipelineManager.GetLineWidth();
+                float oldOpacity = RenderingPipelineManager.GetOpacity();
+                // Line widths are physical pixels; each renderer handles pixel-centre snapping.
+                RenderingPipelineManager.SetLineWidth(1F);
+                RenderingPipelineManager.SetOpacity(Opacity);
+                DrawClippedHorizontalLine(DisplayArea.Left, DisplayArea.Right, DisplayArea.Top, GetBorderClipArea());
+                RenderingPipelineManager.SetOpacity(oldOpacity);
+                RenderingPipelineManager.SetLineWidth(oldWidth);
+            }
+        }
+
         private sealed class ItemLabelBuilder
         {
             private const int Padding = 6;
@@ -2292,10 +2313,9 @@ namespace Client.Scenes
                     {
                         y += DividerGap;
 
-                        new DXControl
+                        new ItemLabelDivider
                         {
-                            BackColour = DividerColour,
-                            DrawTexture = true,
+                            BorderColour = DividerColour,
                             IsControl = false,
                             Location = new Point(textX + 3, y),
                             Parent = Label,
