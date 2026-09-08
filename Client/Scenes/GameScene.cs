@@ -1252,25 +1252,7 @@ namespace Client.Scenes
 
             UpdateItemLabelLocation();
             UpdateMagicLabelLocation();
-
-            if (FameLabel != null && !FameLabel.IsDisposed)
-            {
-                int x = CEnvir.MouseLocation.X + 15, y = CEnvir.MouseLocation.Y;
-
-                if (x + FameLabel.Size.Width > UISize.Width + Location.X)
-                    x = UISize.Width - FameLabel.Size.Width + Location.X;
-
-                if (y + FameLabel.Size.Height > UISize.Height + Location.Y)
-                    y = UISize.Height - FameLabel.Size.Height + Location.Y;
-
-                if (x < Location.X)
-                    x = Location.X;
-
-                if (y <= Location.Y)
-                    y = Location.Y;
-
-                FameLabel.Location = new Point(x, y);
-            }
+            UpdateFameLabelLocation();
 
             MonsterObject mob = MouseObject as MonsterObject;
 
@@ -1968,6 +1950,28 @@ namespace Client.Scenes
 
             builder.Complete();
             FameLabel = builder.Label;
+            UpdateFameLabelLocation();
+        }
+
+        private void UpdateFameLabelLocation()
+        {
+            if (FameLabel == null || FameLabel.IsDisposed) return;
+
+            int x = CEnvir.MouseLocation.X + 15, y = CEnvir.MouseLocation.Y;
+
+            if (x + FameLabel.Size.Width > UISize.Width + Location.X)
+                x = UISize.Width - FameLabel.Size.Width + Location.X;
+
+            if (y + FameLabel.Size.Height > UISize.Height + Location.Y)
+                y = UISize.Height - FameLabel.Size.Height + Location.Y;
+
+            if (x < Location.X)
+                x = Location.X;
+
+            if (y <= Location.Y)
+                y = Location.Y;
+
+            FameLabel.Location = new Point(x, y);
         }
 
         private void CreateMagicLabel()
