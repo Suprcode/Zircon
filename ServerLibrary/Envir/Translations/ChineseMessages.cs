@@ -350,5 +350,7 @@ namespace Server.Envir.Translations
         public override string DisciplineRequiredGold { get; set; } = "Required gold for next discipline is {0:#,##0}.";
         public override string DisciplineRequiredExp { get; set; } = "Required experience for next discipline is {0}.";
         public override string FameNeedSpace { get; set; } = "Unable to promote fame, Not enough space in your inventory.";
+        public override string CraftingCannotStart { get; set; } = "无法制作该配方。请检查制作等级、金币、材料和背包空间。";
+        public override string CraftingInterrupted { get; set; } = "制造被中断。";
     }
 }

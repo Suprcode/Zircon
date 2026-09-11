@@ -338,5 +338,7 @@ namespace Server.Envir.Translations
         public override string DisciplineRequiredExp { get; set; } = "Required experience for next discipline is {0}.";
 
         public override string FameNeedSpace { get; set; } = "Unable to promote fame, Not enough space in your inventory.";
+        public override string CraftingCannotStart { get; set; } = "Unable to craft this recipe. Check its level, gold, ingredients, and inventory space.";
+        public override string CraftingInterrupted { get; set; } = "Crafting interrupted.";
     }
 }

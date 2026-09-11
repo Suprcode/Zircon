@@ -360,5 +360,7 @@ namespace Server.Envir
 
         [ConfigSection("Fame")]
         public abstract string FameNeedSpace { get; set; }
+        public abstract string CraftingCannotStart { get; set; }
+        public abstract string CraftingInterrupted { get; set; }
     }
 }

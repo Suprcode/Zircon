@@ -1489,5 +1489,27 @@ namespace Library.Network.ServerPackets
     {
         public int Index { get; set; }
     }
+
+    public sealed class CraftingState : Packet
+    {
+        public int Level { get; set; }
+        public long Experience { get; set; }
+        public int FavouriteRecipeIndex { get; set; }
+    }
+
+    public sealed class CraftingStarted : Packet
+    {
+        public int RecipeIndex { get; set; }
+        public int Design { get; set; }
+        public TimeSpan Duration { get; set; }
+    }
+
+    public sealed class CraftingEnded : Packet
+    {
+        public CraftingResult Result { get; set; }
+        public bool Interrupted { get; set; }
+        public int Level { get; set; }
+        public long Experience { get; set; }
+    }
 }
 

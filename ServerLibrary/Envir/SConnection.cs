@@ -1648,6 +1648,24 @@ namespace Server.Envir
             if (Stage != GameStage.Game) return;
             Player.MilestoneClaim(p);
         }
+
+        public void Process(C.CraftingSetFavourite p)
+        {
+            if (Stage != GameStage.Game) return;
+            Player.SetCraftingFavourite(p);
+        }
+
+        public void Process(C.CraftingStart p)
+        {
+            if (Stage != GameStage.Game) return;
+            Player.StartCrafting(p);
+        }
+
+        public void Process(C.CraftingCancel p)
+        {
+            if (Stage != GameStage.Game) return;
+            Player.CancelCrafting();
+        }
     }
 
     public enum GameStage

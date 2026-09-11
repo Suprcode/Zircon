@@ -831,5 +831,41 @@ namespace Client.Envir.Translations
         public abstract string SocketDialogStartButtonLabel { get; set; }
         public abstract string SocketCombineDialogTitle { get; set; }
         public abstract string SocketCombineDialogStartButtonLabel { get; set; }
+
+        public abstract string CharacterCraftingTabLabel { get; set; }
+        public abstract string CharacterCraftingMaterialsLabel { get; set; }
+        public abstract string CraftingLevelLabel { get; set; }
+        public abstract string CraftingMaxLevelLabel { get; set; }
+        public abstract string CraftingExperienceLabel { get; set; }
+        public abstract string CraftingFavouriteLabel { get; set; }
+        public abstract string CraftingCraftButtonLabel { get; set; }
+        public abstract string CraftingOpenRecipesButtonLabel { get; set; }
+        public abstract string CraftingRecipesTitle { get; set; }
+        public abstract string CraftingRecipeListLabel { get; set; }
+        public abstract string CraftingProgressTitle { get; set; }
+        public abstract string CraftingResultLabel { get; set; }
+        public abstract string CraftingRequiredMaterialsLabel { get; set; }
+        public abstract string CraftingRequiredLevelTitleLabel { get; set; }
+        public abstract string CraftingRequiredGoldTitleLabel { get; set; }
+        public abstract string CraftingExperienceRewardTitleLabel { get; set; }
+        public abstract string CraftingOnlyCraftableLabel { get; set; }
+        public abstract string CraftingFavouriteButtonLabel { get; set; }
+        public abstract string CraftingWeaponCategory { get; set; }
+        public abstract string CraftingArmourCategory { get; set; }
+        public abstract string CraftingAccessoriesCategory { get; set; }
+        public abstract string CraftingConsumableCategory { get; set; }
+        public abstract string CraftingIngredientsCategory { get; set; }
+        public abstract string CraftingRequiredLevelLabel { get; set; }
+        public abstract string CraftingRequiredGoldLabel { get; set; }
+        public abstract string CraftingExperienceRewardLabel { get; set; }
+        public abstract string CraftingSuccessRateLabel { get; set; }
+        public abstract string CraftingSuccessRateBonusLabel { get; set; }
+        public abstract string CraftingDurationLabel { get; set; }
+        public abstract string CraftingDesignLabel { get; set; }
+        public abstract string CraftingInProgressLabel { get; set; }
+        public abstract string CraftingSuccessLabel { get; set; }
+        public abstract string CraftingFailedLabel { get; set; }
+        public abstract string CraftingCancelledLabel { get; set; }
+        public abstract string CraftingRetryButtonLabel { get; set; }
     }
 }

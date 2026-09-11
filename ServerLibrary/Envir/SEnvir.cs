@@ -301,6 +301,8 @@ namespace Server.Envir
         public static DBCollection<BundleInfo> BundleInfoList;
         public static DBCollection<LootBoxInfo> LootBoxInfoList;
         public static DBCollection<MilestoneInfo> MilestoneInfoList;
+        public static DBCollection<CraftingLevelInfo> CraftingLevelInfoList;
+        public static DBCollection<CraftingRecipeInfo> CraftingRecipeInfoList;
         public static DBCollection<UserMilestoneLog> UserMilestoneLogList;
         public static DBCollection<UserMilestone> UserMilestoneList;
 
@@ -510,6 +512,10 @@ namespace Server.Envir
             BundleInfoList = Session.GetCollection<BundleInfo>();
             LootBoxInfoList = Session.GetCollection<LootBoxInfo>();
             MilestoneInfoList = Session.GetCollection<MilestoneInfo>();
+            CraftingLevelInfoList = Session.GetCollection<CraftingLevelInfo>();
+            CraftingRecipeInfoList = Session.GetCollection<CraftingRecipeInfo>();
+            Globals.CraftingLevelInfoList = CraftingLevelInfoList;
+            Globals.CraftingRecipeInfoList = CraftingRecipeInfoList;
             UserMilestoneLogList = Session.GetCollection<UserMilestoneLog>();
             UserMilestoneList = Session.GetCollection<UserMilestone>();
 

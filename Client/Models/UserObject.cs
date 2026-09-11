@@ -215,6 +215,10 @@ namespace Client.Models
 
         public ClientUserDiscipline Discipline;
 
+        public int CraftingLevel = 1;
+        public long CraftingExperience;
+        public int FavouriteCraftingRecipeIndex;
+
         public bool CanThrusting
         {
             get { return _canThrusting; }
@@ -358,6 +362,10 @@ namespace Client.Models
             FiltersClass = info.FiltersClass;
             FiltersRarity = info.FiltersRarity;
             FiltersItemType = info.FiltersItemType;
+
+            CraftingLevel = Math.Max(1, info.CraftingLevel);
+            CraftingExperience = info.CraftingExperience;
+            FavouriteCraftingRecipeIndex = info.FavouriteCraftingRecipeIndex;
 
             UpdateLibraries();
 

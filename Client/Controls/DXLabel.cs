@@ -451,14 +451,14 @@ namespace Client.Controls
         {
             switch (LabelStyle)
             {
-                case DXLabelStyle.Title:
+                case DXLabelStyle.GoldTitle:
                     Outline = true;
                     OutlineColour = Color.Black;
                     Gradient = true;
                     GradientTopColour = Color.FromArgb(255, 226, 113);
                     GradientBottomColour = Color.FromArgb(226, 171, 55);
                     break;
-                case DXLabelStyle.GameStoreTopRank:
+                case DXLabelStyle.BlueTitle:
                     Outline = true;
                     OutlineColour = Color.Black;
                     Gradient = true;
@@ -753,7 +753,7 @@ namespace Client.Controls
     public enum DXLabelStyle
     {
         None,
-        Title,
-        GameStoreTopRank
+        GoldTitle,
+        BlueTitle
     }
 }

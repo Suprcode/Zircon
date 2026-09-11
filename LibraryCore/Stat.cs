@@ -874,6 +874,9 @@ namespace Library
         [StatDescription(Title = "Vengeance Response Chance", Format = "{0}%", Mode = StatType.Default, ServerOnly = true, UsageHint = "Percentage chance that this monster moves toward a nearby Vengeance Source when it dies and grants a stack.")]
         VengeanceResponseChance,
 
+        [StatDescription(Title = "Crafting Success", Format = "{0:+#0%;-#0%;#0%}", Mode = StatType.Percent)]
+        CraftingSuccess,
+
         [StatDescription(Title = "Throw Distance", Format = "{0}", Mode = StatType.Default, UsageHint = "1 to 4")]
         ThrowDistance = 200,
         [StatDescription(Title = "Auto Cast", Mode = StatType.Text)]

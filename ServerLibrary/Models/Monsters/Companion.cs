@@ -776,6 +776,7 @@ namespace Server.Models.Monsters
                 {
                     var currency = CompanionOwner.GetCurrency(item.Info);
                     currency.Amount += item.Count;
+                    CompanionOwner.CurrencyChanged(currency);
                     item.SetTemporary(true);
                     item.Delete();
                     CompanionOwner.LogMilestone(MilestoneType.CurrencyGain, item.Count, currency: currency.Info);

@@ -831,5 +831,41 @@ namespace Client.Envir.Translations
 
         public override string SocketCombineDialogTitle { get; set; } = "宝石合成";
         public override string SocketCombineDialogStartButtonLabel { get; set; } = "开始";
+
+        public override string CharacterCraftingTabLabel { get; set; } = "制造";
+        public override string CharacterCraftingMaterialsLabel { get; set; } = "材料";
+        public override string CraftingLevelLabel { get; set; } = "制造等级";
+        public override string CraftingMaxLevelLabel { get; set; } = "最高";
+        public override string CraftingExperienceLabel { get; set; } = "制造经验";
+        public override string CraftingFavouriteLabel { get; set; } = "收藏配方";
+        public override string CraftingCraftButtonLabel { get; set; } = "制造";
+        public override string CraftingOpenRecipesButtonLabel { get; set; } = "打开配方";
+        public override string CraftingRecipesTitle { get; set; } = "制造配方";
+        public override string CraftingProgressTitle { get; set; } = "制造进度";
+        public override string CraftingRecipeListLabel { get; set; } = "配方列表";
+        public override string CraftingResultLabel { get; set; } = "结果";
+        public override string CraftingRequiredMaterialsLabel { get; set; } = "所需";
+        public override string CraftingRequiredLevelTitleLabel { get; set; } = "所需制造等级";
+        public override string CraftingRequiredGoldTitleLabel { get; set; } = "所需金币";
+        public override string CraftingExperienceRewardTitleLabel { get; set; } = "获得制造经验";
+        public override string CraftingOnlyCraftableLabel { get; set; } = "只显示可制造";
+        public override string CraftingFavouriteButtonLabel { get; set; } = "设为收藏";
+        public override string CraftingWeaponCategory { get; set; } = "武器";
+        public override string CraftingArmourCategory { get; set; } = "衣服";
+        public override string CraftingAccessoriesCategory { get; set; } = "饰品";
+        public override string CraftingConsumableCategory { get; set; } = "消耗品";
+        public override string CraftingIngredientsCategory { get; set; } = "材料";
+        public override string CraftingRequiredLevelLabel { get; set; } = "需要制造等级：{0}";
+        public override string CraftingRequiredGoldLabel { get; set; } = "需要金币：{0:#,##0}";
+        public override string CraftingExperienceRewardLabel { get; set; } = "获得经验：{0:#,##0}";
+        public override string CraftingSuccessRateLabel { get; set; } = "成功率：{0}%";
+        public override string CraftingSuccessRateBonusLabel { get; set; } = "成功率：{0}% (+{1}%)";
+        public override string CraftingDurationLabel { get; set; } = "制造时间：{0}";
+        public override string CraftingDesignLabel { get; set; } = "设计 {0}";
+        public override string CraftingInProgressLabel { get; set; } = "制造中...";
+        public override string CraftingSuccessLabel { get; set; } = "制造成功";
+        public override string CraftingFailedLabel { get; set; } = "制造失败";
+        public override string CraftingCancelledLabel { get; set; } = "制造取消";
+        public override string CraftingRetryButtonLabel { get; set; } = "重试";
     }
 }

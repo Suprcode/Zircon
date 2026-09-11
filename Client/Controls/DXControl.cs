@@ -13,6 +13,7 @@ namespace Client.Controls
     {
         public static readonly Color ActiveTabColour = Color.White;
         public static readonly Color InactiveTabColour = Color.FromArgb(123, 105, 66);
+        public static readonly Color TextColour = Color.White;
         public static readonly Color PrimaryColour = Color.FromArgb(198, 166, 99);
         public static readonly Color RowBackColour = Color.FromArgb(25, 20, 0);
         public static readonly Color SelectedRowBackColour = Color.FromArgb(80, 80, 125);

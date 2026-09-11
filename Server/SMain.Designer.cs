@@ -76,6 +76,7 @@
             WeaponCraftInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             BundleInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             LootBoxInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            CraftingInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             navBarGroup6 = new DevExpress.XtraNavBar.NavBarGroup();
             MonsterInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             MonsterInfoStatButton = new DevExpress.XtraNavBar.NavBarItem();
@@ -125,19 +126,22 @@
             // 
             // ribbonControl1
             // 
+            ribbonControl1.EmptyAreaImageOptions.ImagePadding = new System.Windows.Forms.Padding(45, 44, 45, 44);
             ribbonControl1.ExpandCollapseItem.Id = 0;
             ribbonControl1.Items.AddRange(new DevExpress.XtraBars.BarItem[] { ribbonControl1.ExpandCollapseItem, skinRibbonGalleryBarItem1, StartServerButton, StopServerButton });
             ribbonControl1.Location = new System.Drawing.Point(0, 0);
+            ribbonControl1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             ribbonControl1.MaxItemId = 9;
             ribbonControl1.MdiMergeStyle = DevExpress.XtraBars.Ribbon.RibbonMdiMergeStyle.Always;
             ribbonControl1.Name = "ribbonControl1";
+            ribbonControl1.OptionsMenuMinWidth = 495;
             ribbonControl1.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] { ribbonPage1, ribbonPage2, ribbonPage3 });
             ribbonControl1.ShowApplicationButton = DevExpress.Utils.DefaultBoolean.False;
             ribbonControl1.ShowExpandCollapseButton = DevExpress.Utils.DefaultBoolean.True;
             ribbonControl1.ShowItemCaptionsInCaptionBar = true;
             ribbonControl1.ShowQatLocationSelector = false;
             ribbonControl1.ShowToolbarCustomizeItem = false;
-            ribbonControl1.Size = new System.Drawing.Size(1294, 144);
+            ribbonControl1.Size = new System.Drawing.Size(1941, 209);
             ribbonControl1.Toolbar.ShowCustomizeItem = false;
             // 
             // skinRibbonGalleryBarItem1
@@ -202,11 +206,12 @@
             navBarControl1.ActiveGroup = navBarGroup1;
             navBarControl1.Dock = System.Windows.Forms.DockStyle.Left;
             navBarControl1.Groups.AddRange(new DevExpress.XtraNavBar.NavBarGroup[] { navBarGroup1, navBarGroup4, navBarGroup5, navBarGroup8, navBarGroup7, navBarGroup6, navBarGroup3 });
-            navBarControl1.Items.AddRange(new DevExpress.XtraNavBar.NavBarItem[] { LogNavButton, ChatLogButton, ConfigButton, MapInfoButton, MonsterInfoButton, ItemInfoButton, InstanceInfoButton, DungeonInfoButton, NPCInfoButton, NPCPageButton, MagicInfoButton, AccountInfoButton, CharacterInfoButton, MovementInfoButton, ItemInfoStatButton, MonsterInfoStatButton, SetInfoButton, StoreInfoButton, BaseStatButton, SafeZoneInfoButton, RespawnInfoButton, MapRegionButton, DropInfoButton, UserDropButton, QuestInfoButton, MilestoneInfoButton, CompanionInfoButton, EventInfoButton, CastleInfoButton, PaymentButton, StoreSalesButton, DiagnosticButton, OrphanDiagnosticsButton, ConquestStatsButton, UserMailButton, WeaponCraftInfoButton, CurrencyInfoButton, FishingInfoButton, FameInfoButton, DisciplineInfoButton, NPCDataButton, BundleInfoButton, LootBoxInfoButton, HelpInfoButton });
-            navBarControl1.Location = new System.Drawing.Point(0, 144);
+            navBarControl1.Items.AddRange(new DevExpress.XtraNavBar.NavBarItem[] { LogNavButton, ChatLogButton, ConfigButton, MapInfoButton, MonsterInfoButton, ItemInfoButton, InstanceInfoButton, DungeonInfoButton, NPCInfoButton, NPCPageButton, MagicInfoButton, AccountInfoButton, CharacterInfoButton, MovementInfoButton, ItemInfoStatButton, MonsterInfoStatButton, SetInfoButton, StoreInfoButton, BaseStatButton, SafeZoneInfoButton, RespawnInfoButton, MapRegionButton, DropInfoButton, UserDropButton, QuestInfoButton, MilestoneInfoButton, CompanionInfoButton, EventInfoButton, CastleInfoButton, PaymentButton, StoreSalesButton, DiagnosticButton, OrphanDiagnosticsButton, ConquestStatsButton, UserMailButton, WeaponCraftInfoButton, CurrencyInfoButton, FishingInfoButton, FameInfoButton, DisciplineInfoButton, NPCDataButton, BundleInfoButton, LootBoxInfoButton, CraftingInfoButton, HelpInfoButton });
+            navBarControl1.Location = new System.Drawing.Point(0, 209);
+            navBarControl1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             navBarControl1.Name = "navBarControl1";
-            navBarControl1.OptionsNavPane.ExpandedWidth = 144;
-            navBarControl1.Size = new System.Drawing.Size(144, 688);
+            navBarControl1.OptionsNavPane.ExpandedWidth = 216;
+            navBarControl1.Size = new System.Drawing.Size(216, 1006);
             navBarControl1.TabIndex = 1;
             navBarControl1.Text = "navBarControl1";
             // 
@@ -421,7 +426,7 @@
             navBarGroup7.Caption = "Item";
             navBarGroup7.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("navBarGroup7.ImageOptions.LargeImage");
             navBarGroup7.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("navBarGroup7.ImageOptions.SmallImage");
-            navBarGroup7.ItemLinks.AddRange(new DevExpress.XtraNavBar.NavBarItemLink[] { new DevExpress.XtraNavBar.NavBarItemLink(ItemInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(ItemInfoStatButton), new DevExpress.XtraNavBar.NavBarItemLink(SetInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(WeaponCraftInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(BundleInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(LootBoxInfoButton) });
+            navBarGroup7.ItemLinks.AddRange(new DevExpress.XtraNavBar.NavBarItemLink[] { new DevExpress.XtraNavBar.NavBarItemLink(ItemInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(ItemInfoStatButton), new DevExpress.XtraNavBar.NavBarItemLink(SetInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(WeaponCraftInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(BundleInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(LootBoxInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(CraftingInfoButton) });
             navBarGroup7.Name = "navBarGroup7";
             // 
             // ItemInfoButton
@@ -467,6 +472,14 @@
             LootBoxInfoButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("LootBoxInfoButton.ImageOptions.SmallImage");
             LootBoxInfoButton.Name = "LootBoxInfoButton";
             LootBoxInfoButton.LinkClicked += LootBoxInfoButton_LinkClicked;
+            // 
+            // CraftingInfoButton
+            // 
+            CraftingInfoButton.Caption = "Crafting Info";
+            CraftingInfoButton.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("CraftingInfoButton.ImageOptions.LargeImage");
+            CraftingInfoButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("CraftingInfoButton.ImageOptions.SmallImage");
+            CraftingInfoButton.Name = "CraftingInfoButton";
+            CraftingInfoButton.LinkClicked += CraftingInfoButton_LinkClicked;
             // 
             // navBarGroup6
             // 
@@ -690,15 +703,17 @@
             barDockControlTop.Dock = System.Windows.Forms.DockStyle.Top;
             barDockControlTop.Location = new System.Drawing.Point(0, 0);
             barDockControlTop.Manager = BManager;
-            barDockControlTop.Size = new System.Drawing.Size(1294, 0);
+            barDockControlTop.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            barDockControlTop.Size = new System.Drawing.Size(1941, 0);
             // 
             // barDockControlBottom
             // 
             barDockControlBottom.CausesValidation = false;
             barDockControlBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
-            barDockControlBottom.Location = new System.Drawing.Point(0, 832);
+            barDockControlBottom.Location = new System.Drawing.Point(0, 1215);
             barDockControlBottom.Manager = BManager;
-            barDockControlBottom.Size = new System.Drawing.Size(1294, 27);
+            barDockControlBottom.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            barDockControlBottom.Size = new System.Drawing.Size(1941, 40);
             // 
             // barDockControlLeft
             // 
@@ -706,15 +721,17 @@
             barDockControlLeft.Dock = System.Windows.Forms.DockStyle.Left;
             barDockControlLeft.Location = new System.Drawing.Point(0, 0);
             barDockControlLeft.Manager = BManager;
-            barDockControlLeft.Size = new System.Drawing.Size(0, 832);
+            barDockControlLeft.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            barDockControlLeft.Size = new System.Drawing.Size(0, 1215);
             // 
             // barDockControlRight
             // 
             barDockControlRight.CausesValidation = false;
             barDockControlRight.Dock = System.Windows.Forms.DockStyle.Right;
-            barDockControlRight.Location = new System.Drawing.Point(1294, 0);
+            barDockControlRight.Location = new System.Drawing.Point(1941, 0);
             barDockControlRight.Manager = BManager;
-            barDockControlRight.Size = new System.Drawing.Size(0, 832);
+            barDockControlRight.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            barDockControlRight.Size = new System.Drawing.Size(0, 1215);
             // 
             // InterfaceTimer
             // 
@@ -723,9 +740,9 @@
             // 
             // SMain
             // 
-            AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            AutoScaleDimensions = new System.Drawing.SizeF(9F, 19F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(1294, 859);
+            ClientSize = new System.Drawing.Size(1941, 1255);
             Controls.Add(navBarControl1);
             Controls.Add(ribbonControl1);
             Controls.Add(barDockControlLeft);
@@ -733,6 +750,7 @@
             Controls.Add(barDockControlBottom);
             Controls.Add(barDockControlTop);
             IsMdiContainer = true;
+            Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             Name = "SMain";
             Ribbon = ribbonControl1;
             StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -831,6 +849,7 @@
         private DevExpress.XtraNavBar.NavBarGroup navBarGroup6;
         private DevExpress.XtraNavBar.NavBarItem BundleInfoButton;
         private DevExpress.XtraNavBar.NavBarItem LootBoxInfoButton;
+        private DevExpress.XtraNavBar.NavBarItem CraftingInfoButton;
     }
 }
 

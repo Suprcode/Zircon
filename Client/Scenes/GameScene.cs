@@ -298,6 +298,8 @@ namespace Client.Scenes
         public TimerDialog TimerBox;
         public BundleDialog BundleBox;
         public LootBoxDialog LootBoxBox;
+        public CraftingRecipeDialog CraftingRecipeBox;
+        public CraftingProgressDialog CraftingProgressBox;
 
         public FishingDialog FishingBox;
         public FishingCatchDialog FishingCatchBox;
@@ -880,6 +882,18 @@ namespace Client.Scenes
                 Visible = false
             };
 
+            CraftingRecipeBox = new CraftingRecipeDialog
+            {
+                Parent = this,
+                Visible = false,
+            };
+
+            CraftingProgressBox = new CraftingProgressDialog
+            {
+                Parent = this,
+                Visible = false,
+            };
+
             SetDefaultLocations();
 
             LoadChatTabs();
@@ -903,6 +917,7 @@ namespace Client.Scenes
             HelpBox.LoadSettings();
             GameStoreBox.LoadSettings();
             ConsignmentBox.LoadSettings();
+            CraftingRecipeBox.LoadSettings();
             ClampUIControls();
         }
 
@@ -1033,6 +1048,9 @@ namespace Client.Scenes
             BundleBox.Location = new Point((uiSize.Width - BundleBox.Size.Width) / 2, (uiSize.Height - BundleBox.Size.Height) / 2);
 
             LootBoxBox.Location = new Point((uiSize.Width - LootBoxBox.Size.Width) / 2, (uiSize.Height - LootBoxBox.Size.Height) / 2);
+
+            CraftingRecipeBox.Location = new Point((uiSize.Width - CraftingRecipeBox.Size.Width) / 2, (uiSize.Height - CraftingRecipeBox.Size.Height) / 2);
+            CraftingProgressBox.Location = new Point((uiSize.Width - CraftingProgressBox.Size.Width) / 2, (uiSize.Height - CraftingProgressBox.Size.Height) / 2);
         }
 
         private void ClampUIControls()
@@ -4124,6 +4142,8 @@ namespace Client.Scenes
                 cell.UpdateColours();
 
             CharacterBox.UpdateStats();
+            CharacterBox.RefreshCrafting();
+            CraftingRecipeBox.RefreshAll();
 
             FilterDropBox.UpdateDropFilters();
         }
@@ -4779,6 +4799,22 @@ namespace Client.Scenes
                         CharacterBox.Dispose();
 
                     CharacterBox = null;
+                }
+
+                if (CraftingRecipeBox != null)
+                {
+                    if (!CraftingRecipeBox.IsDisposed)
+                        CraftingRecipeBox.Dispose();
+
+                    CraftingRecipeBox = null;
+                }
+
+                if (CraftingProgressBox != null)
+                {
+                    if (!CraftingProgressBox.IsDisposed)
+                        CraftingProgressBox.Dispose();
+
+                    CraftingProgressBox = null;
                 }
 
                 if (ExitBox != null)

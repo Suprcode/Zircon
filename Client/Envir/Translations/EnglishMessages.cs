@@ -832,5 +832,41 @@ namespace Client.Envir.Translations
 
         public override string SocketCombineDialogTitle { get; set; } = "Combine Gems";
         public override string SocketCombineDialogStartButtonLabel { get; set; } = "Start";
+
+        public override string CharacterCraftingTabLabel { get; set; } = "Crafting";
+        public override string CharacterCraftingMaterialsLabel { get; set; } = "Materials";
+        public override string CraftingLevelLabel { get; set; } = "Crafting Level";
+        public override string CraftingMaxLevelLabel { get; set; } = "Max";
+        public override string CraftingExperienceLabel { get; set; } = "Crafting Experience";
+        public override string CraftingFavouriteLabel { get; set; } = "Favourite";
+        public override string CraftingCraftButtonLabel { get; set; } = "Craft";
+        public override string CraftingOpenRecipesButtonLabel { get; set; } = "Open Recipes";
+        public override string CraftingRecipesTitle { get; set; } = "Crafting Recipes";
+        public override string CraftingRecipeListLabel { get; set; } = "Recipe List";
+        public override string CraftingProgressTitle { get; set; } = "Crafting Progress";
+        public override string CraftingResultLabel { get; set; } = "Result";
+        public override string CraftingRequiredMaterialsLabel { get; set; } = "Required";
+        public override string CraftingRequiredLevelTitleLabel { get; set; } = "Required Level";
+        public override string CraftingRequiredGoldTitleLabel { get; set; } = "Required Gold";
+        public override string CraftingExperienceRewardTitleLabel { get; set; } = "Experience Gained";
+        public override string CraftingOnlyCraftableLabel { get; set; } = "Only craftable";
+        public override string CraftingFavouriteButtonLabel { get; set; } = "Set Favourite";
+        public override string CraftingWeaponCategory { get; set; } = "Weapon";
+        public override string CraftingArmourCategory { get; set; } = "Armour";
+        public override string CraftingAccessoriesCategory { get; set; } = "Accessories";
+        public override string CraftingConsumableCategory { get; set; } = "Consumable";
+        public override string CraftingIngredientsCategory { get; set; } = "Ingredients";
+        public override string CraftingRequiredLevelLabel { get; set; } = "Required level: {0}";
+        public override string CraftingRequiredGoldLabel { get; set; } = "Required gold: {0:#,##0}";
+        public override string CraftingExperienceRewardLabel { get; set; } = "Experience gained: {0:#,##0}";
+        public override string CraftingSuccessRateLabel { get; set; } = "Success rate: {0}%";
+        public override string CraftingSuccessRateBonusLabel { get; set; } = "Success rate: {0}% (+{1}%)";
+        public override string CraftingDurationLabel { get; set; } = "Crafting time: {0}";
+        public override string CraftingDesignLabel { get; set; } = "Design {0}";
+        public override string CraftingInProgressLabel { get; set; } = "Crafting...";
+        public override string CraftingSuccessLabel { get; set; } = "Crafting successful";
+        public override string CraftingFailedLabel { get; set; } = "Crafting failed";
+        public override string CraftingCancelledLabel { get; set; } = "Crafting cancelled";
+        public override string CraftingRetryButtonLabel { get; set; } = "Retry";
     }
 }

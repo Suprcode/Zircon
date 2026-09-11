@@ -417,6 +417,8 @@ namespace Client.Envir
                     Globals.HelpInfoList = Session.GetCollection<HelpInfo>();
                     Globals.MilestoneInfoList = Session.GetCollection<MilestoneInfo>();
                     Globals.MilestoneTaskInfoList = Session.GetCollection<MilestoneInfoTask>();
+                    Globals.CraftingLevelInfoList = Session.GetCollection<CraftingLevelInfo>();
+                    Globals.CraftingRecipeInfoList = Session.GetCollection<CraftingRecipeInfo>();
 
                     KeyBinds = Session.GetCollection<KeyBindInfo>();
                     WindowSettings = Session.GetCollection<WindowSetting>();

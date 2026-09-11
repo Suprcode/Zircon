@@ -858,4 +858,19 @@ namespace Library.Network.ClientPackets
     {
         public int Index { get; set; }
     }
+
+    public sealed class CraftingSetFavourite : Packet
+    {
+        public int RecipeIndex { get; set; }
+    }
+
+    public sealed class CraftingStart : Packet
+    {
+        public int RecipeIndex { get; set; }
+        public int Design { get; set; }
+    }
+
+    public sealed class CraftingCancel : Packet
+    {
+    }
 }

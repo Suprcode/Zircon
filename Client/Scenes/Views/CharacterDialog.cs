@@ -23,7 +23,9 @@ namespace Client.Scenes.Views
         #region Properties
 
         private DXTabControl TabControl;
-        private DXTab CharacterTab, HermitTab, DisciplineTab;
+        private DXTab CharacterTab, HermitTab, DisciplineTab, CraftingTab;
+        private CharacterCraftingControl CraftingControl;
+        public bool CraftingVisible => !Inspect && Visible && TabControl?.SelectedTab == CraftingTab;
         public DXLabel CharacterNameLabel, GuildNameLabel, GuildRankLabel;
 
         private DXTabControl StatsTabControl;
@@ -351,6 +353,26 @@ namespace Client.Scenes.Views
             HermitTab.TabButton.MouseClick += (o, e) =>
             {
                 Index = 111;
+            };
+
+            CraftingTab = new DXTab
+            {
+                Parent = TabControl,
+                TabButton = { Label = { Text = CEnvir.Language.CharacterCraftingTabLabel } },
+                BackColour = Color.Empty,
+                Location = new Point(0, 26),
+            };
+            CraftingTab.TabButton.Visible = !Inspect;
+            CraftingTab.TabButton.MouseClick += (o, e) =>
+            {
+                Index = 113;
+                GameScene.Game.CraftingRecipeBox?.RefreshAll();
+            };
+
+            CraftingControl = new CharacterCraftingControl
+            {
+                Parent = CraftingTab,
+                Location = Point.Empty,
             };
 
             DXControl namePanel = new DXControl
@@ -2992,6 +3014,12 @@ namespace Client.Scenes.Views
             }
         }
 
+        public void RefreshCrafting()
+        {
+            if (!Inspect)
+                CraftingControl?.Refresh();
+        }
+
         public void RefreshDisciplineMagic(MagicInfo info)
         {
             if (DisciplineMagics.ContainsKey(info))
@@ -3058,6 +3086,22 @@ namespace Client.Scenes.Views
                         DisciplineTab.Dispose();
 
                     DisciplineTab = null;
+                }
+
+                if (CraftingTab != null)
+                {
+                    if (!CraftingTab.IsDisposed)
+                        CraftingTab.Dispose();
+
+                    CraftingTab = null;
+                }
+
+                if (CraftingControl != null)
+                {
+                    if (!CraftingControl.IsDisposed)
+                        CraftingControl.Dispose();
+
+                    CraftingControl = null;
                 }
 
                 if (CharacterNameLabel != null)

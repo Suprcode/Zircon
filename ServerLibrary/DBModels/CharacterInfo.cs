@@ -598,6 +598,27 @@ namespace Server.DBModels
         }
         private int _Fame;
 
+        public int CraftingLevel
+        {
+            get => _CraftingLevel;
+            set { if (_CraftingLevel == value) return; int oldValue = _CraftingLevel; _CraftingLevel = value; OnChanged(oldValue, value, "CraftingLevel"); }
+        }
+        private int _CraftingLevel = 1;
+
+        public long CraftingExperience
+        {
+            get => _CraftingExperience;
+            set { if (_CraftingExperience == value) return; long oldValue = _CraftingExperience; _CraftingExperience = value; OnChanged(oldValue, value, "CraftingExperience"); }
+        }
+        private long _CraftingExperience;
+
+        public CraftingRecipeInfo FavouriteCraftingRecipe
+        {
+            get => _FavouriteCraftingRecipe;
+            set { if (_FavouriteCraftingRecipe == value) return; CraftingRecipeInfo oldValue = _FavouriteCraftingRecipe; _FavouriteCraftingRecipe = value; OnChanged(oldValue, value, "FavouriteCraftingRecipe"); }
+        }
+        private CraftingRecipeInfo _FavouriteCraftingRecipe;
+
         public DateTime NextDeathDropChange
         {
             get { return _NextDeathDropChange; }

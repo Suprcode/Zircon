@@ -334,10 +334,8 @@ namespace Client.Scenes.Views
             {
                 Parent = CompanionTab,
                 Outline = true,
-                Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
+                LabelStyle = DXLabelStyle.BlueTitle,
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.Left,
-                ForeColour = Constants.PrimaryColour,
-                OutlineColour = Color.Black,
                 IsControl = false,
                 Text = CEnvir.Language.CompanionDialogCompanionTabNameLabel,
                 AutoSize = false,
@@ -361,11 +359,8 @@ namespace Client.Scenes.Views
             LevelLabelTitle = new DXLabel
             {
                 Parent = CompanionTab,
-                Outline = true,
-                Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
+                LabelStyle = DXLabelStyle.BlueTitle,
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.Left,
-                ForeColour = Constants.PrimaryColour,
-                OutlineColour = Color.Black,
                 IsControl = false,
                 Text = CEnvir.Language.CompanionDialogCompanionTabLevelLabel,
                 AutoSize = false,
@@ -410,11 +405,8 @@ namespace Client.Scenes.Views
             ExperienceLabelTitle = new DXLabel
             {
                 Parent = CompanionTab,
-                Outline = true,
-                Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
+                LabelStyle = DXLabelStyle.BlueTitle,
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.Left,
-                ForeColour = Constants.PrimaryColour,
-                OutlineColour = Color.Black,
                 IsControl = false,
                 Text = CEnvir.Language.CompanionDialogCompanionTabExpLabel,
                 AutoSize = false,
@@ -460,10 +452,8 @@ namespace Client.Scenes.Views
             {
                 Parent = CompanionTab,
                 Outline = true,
-                Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
+                LabelStyle = DXLabelStyle.BlueTitle,
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.Left,
-                ForeColour = Constants.PrimaryColour,
-                OutlineColour = Color.Black,
                 IsControl = false,
                 Text = CEnvir.Language.CompanionDialogCompanionTabHungerLabel,
                 AutoSize = false,

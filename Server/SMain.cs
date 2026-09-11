@@ -698,6 +698,11 @@ namespace Server
             ShowView(typeof(WeaponCraftStatInfoView));
         }
 
+        private void CraftingInfoButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
+        {
+            ShowView(typeof(CraftingInfoView));
+        }
+
         private void FishingInfoButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
         {
             ShowView(typeof(FishingInfoView));

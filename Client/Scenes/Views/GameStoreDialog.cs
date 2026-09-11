@@ -190,7 +190,7 @@ namespace Client.Scenes.Views
                 Font = new Font(Config.FontName, CEnvir.FontSize(8F), FontStyle.Bold),
                 DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
                 Text = CEnvir.Language.GameStoreDialogCurrencyLabel,
-                LabelStyle = DXLabelStyle.Title,
+                LabelStyle = DXLabelStyle.GoldTitle,
                 IsControl = false,
             };
 
@@ -237,7 +237,7 @@ namespace Client.Scenes.Views
                 Font = new Font(Config.FontName, CEnvir.FontSize(8F), FontStyle.Bold),
                 DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
                 Text = CEnvir.Language.GameStoreDialogTopFiveLabel,
-                LabelStyle = DXLabelStyle.Title,
+                LabelStyle = DXLabelStyle.GoldTitle,
                 IsControl = false,
             };
             TopItems.ItemSelected += info =>
@@ -1151,7 +1151,7 @@ namespace Client.Scenes.Views
                 Size = new Size(174, 20),
                 AutoSize = false,
                 DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
-                LabelStyle = DXLabelStyle.GameStoreTopRank,
+                LabelStyle = DXLabelStyle.BlueTitle,
                 IsControl = false,
             };
 

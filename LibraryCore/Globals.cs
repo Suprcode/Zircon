@@ -35,6 +35,8 @@ namespace Library
         public static DBCollection<HelpInfo> HelpInfoList;
         public static DBCollection<MilestoneInfo> MilestoneInfoList;
         public static DBCollection<MilestoneInfoTask> MilestoneTaskInfoList;
+        public static DBCollection<CraftingLevelInfo> CraftingLevelInfoList;
+        public static DBCollection<CraftingRecipeInfo> CraftingRecipeInfoList;
 
         public static Random Random = new Random();
 
@@ -436,6 +438,10 @@ namespace Library
         public string FiltersClass { get; set; }
         public string FiltersRarity { get; set; }
         public string FiltersItemType { get; set; }
+
+        public int CraftingLevel { get; set; }
+        public long CraftingExperience { get; set; }
+        public int FavouriteCraftingRecipeIndex { get; set; }
 
         //Server settings
         public bool StruckEnabled { get; set; }

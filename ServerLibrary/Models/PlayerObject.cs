@@ -128,9 +128,9 @@ namespace Server.Models
         public bool CompanionLevelLock3, CompanionLevelLock5, CompanionLevelLock7, CompanionLevelLock10, CompanionLevelLock11, CompanionLevelLock13, CompanionLevelLock15;
         public bool ExtractorLock;
 
-        public override bool CanMove => base.CanMove && !Fishing;
-        public override bool CanAttack => base.CanAttack && Horse == HorseType.None;
-        public override bool CanCast => base.CanCast && !Fishing;
+        public override bool CanMove => base.CanMove && !Fishing && !Crafting;
+        public override bool CanAttack => base.CanAttack && Horse == HorseType.None && !Crafting;
+        public override bool CanCast => base.CanCast && !Fishing && !Crafting;
 
         private bool HideHead
         {
@@ -192,6 +192,9 @@ namespace Server.Models
             DisplayHP = CurrentHP;
 
             Character.LastStats = Stats = new Stats();
+
+            if (Character.CraftingLevel < 1)
+                Character.CraftingLevel = 1;
 
             foreach (UserItem item in Character.Account.Items)
             {
@@ -315,6 +318,8 @@ namespace Server.Models
             {
                 ResetFishing();
             }
+
+            ProcessCrafting();
 
             ProcessRegen();
 
@@ -889,6 +894,10 @@ namespace Server.Models
                 FiltersRarity = Character.FiltersRarity,
                 FiltersItemType = Character.FiltersItemType,
 
+                CraftingLevel = Math.Max(1, Character.CraftingLevel),
+                CraftingExperience = Character.CraftingExperience,
+                FavouriteCraftingRecipeIndex = Character.FavouriteCraftingRecipe?.Index ?? 0,
+
                 StruckEnabled = Config.EnableStruck,
                 HermitEnabled = Config.EnableHermit,
 
@@ -950,6 +959,7 @@ namespace Server.Models
 
         public void StopGame()
         {
+            CancelCrafting(false);
             Character.LastLogin = SEnvir.Now;
 
             if (Character.Account.GuildMember != null)
@@ -2791,6 +2801,7 @@ namespace Server.Models
 
         public override bool Teleport(Map map, Point location, bool leaveEffect = true, bool enterEffect = true)
         {
+            CancelCrafting();
             bool res = base.Teleport(map, location, leaveEffect, enterEffect);
 
             if (Fishing) return false;
@@ -6209,6 +6220,7 @@ namespace Server.Models
                 if (currency != null)
                 {
                     currency.Amount += item.Count;
+                    CurrencyChanged(currency);
                     item.SetTemporary(true);
                     item.Delete();
 
@@ -15664,6 +15676,8 @@ namespace Server.Models
                     LevelMagic(physicalImmunity.Magic);
                 }
             }
+
+            CancelCrafting(interrupted: true);
 
             CombatTime = SEnvir.Now;
 
