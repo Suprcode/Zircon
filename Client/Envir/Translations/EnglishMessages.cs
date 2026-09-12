@@ -190,6 +190,10 @@ namespace Client.Envir.Translations
         public override string CommonControlConfigWindowSoundTabMonsterVolumeLabel { get; set; } = "Monster Volume";
         public override string CommonControlConfigWindowSoundTabMagicVolumeLabel { get; set; } = "Magic Volume";
         public override string CommonControlConfigWindowGameTabItemNameLabel { get; set; } = "Item Names";
+        public override string GroundLootDenseLabel { get; set; } = "Compact Loot Piles";
+        public override string GroundLootDenseHint { get; set; } = "Show one item and rarity glow per tile. Hover and scroll to view every item in a pile.";
+        public override string GroundLootCount { get; set; } = "{0} drops";
+        public override string GroundLootPage { get; set; } = "{0}-{1} / {2} (scroll)";
         public override string CommonControlConfigWindowGameTabMonsterNameLabel { get; set; } = "Monster Names";
         public override string CommonControlConfigWindowGameTabPlayerNameLabel { get; set; } = "Player Names";
         public override string CommonControlConfigWindowGameTabNPCNameLabel { get; set; } = "NPC Names";

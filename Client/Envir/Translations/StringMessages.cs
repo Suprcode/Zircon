@@ -188,6 +188,10 @@ namespace Client.Envir.Translations
         public abstract string CommonControlConfigWindowSoundTabMonsterVolumeLabel { get; set; }
         public abstract string CommonControlConfigWindowSoundTabMagicVolumeLabel { get; set; }
         public abstract string CommonControlConfigWindowGameTabItemNameLabel { get; set; }
+        public abstract string GroundLootDenseLabel { get; set; }
+        public abstract string GroundLootDenseHint { get; set; }
+        public abstract string GroundLootCount { get; set; }
+        public abstract string GroundLootPage { get; set; }
         public abstract string CommonControlConfigWindowGameTabMonsterNameLabel { get; set; }
         public abstract string CommonControlConfigWindowGameTabPlayerNameLabel { get; set; }
         public abstract string CommonControlConfigWindowGameTabNPCNameLabel { get; set; }

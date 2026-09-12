@@ -526,12 +526,17 @@ namespace Client.Scenes
             };
             MapControl.MouseWheel += (o, e) =>
             {
+                bool chatScrolled = false;
                 foreach (ChatTab tab in ChatTab.Tabs)
                 {
                     if (!tab.DisplayArea.Contains(e.Location) || !tab.Visible) continue;
 
                     tab.ScrollBar.DoMouseWheel(tab.ScrollBar, e);
+                    chatScrolled = true;
                 }
+
+                if (!chatScrolled)
+                    MapControl.ScrollLoot(e.Delta);
             };
 
             MainPanel = new MainPanel { Parent = this };
@@ -1261,6 +1266,7 @@ namespace Client.Scenes
 
             foreach (MapObject ob in MapControl.Objects)
                 ob.Process();
+            if (MapControl.HasGroundItems) MapControl.PrepareLoot();
 
             for (int i = MapControl.Effects.Count - 1; i >= 0; i--)
                 MapControl.Effects[i].Process();

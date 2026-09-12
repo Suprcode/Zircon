@@ -83,6 +83,7 @@ namespace Client.Envir
         public static bool DrawWeather { get; set; } = true;
         public static bool ShowTargetOutline { get; set; } = true;
         public static bool ShowItemNames { get; set; } = true;
+        public static bool DenseLoot { get; set; } = false;
         public static bool ShowMonsterNames { get; set; } = true;
         public static bool ShowPlayerNames { get; set; } = true;
         public static bool ShowNPCNames { get; set; } = true;

@@ -189,6 +189,10 @@ namespace Client.Envir.Translations
         public override string CommonControlConfigWindowSoundTabMonsterVolumeLabel { get; set; } = "怪物音量";
         public override string CommonControlConfigWindowSoundTabMagicVolumeLabel { get; set; } = "魔法音量";
         public override string CommonControlConfigWindowGameTabItemNameLabel { get; set; } = "物品显名";
+        public override string GroundLootDenseLabel { get; set; } = "精简地面物品";
+        public override string GroundLootDenseHint { get; set; } = "每格只显示一个物品及品质光效。悬停并滚动鼠标滚轮可查看全部物品。";
+        public override string GroundLootCount { get; set; } = "{0}件掉落";
+        public override string GroundLootPage { get; set; } = "{0}-{1} / {2}（滚轮翻页）";
         public override string CommonControlConfigWindowGameTabMonsterNameLabel { get; set; } = "怪物显名";
         public override string CommonControlConfigWindowGameTabPlayerNameLabel { get; set; } = "人物显名";
         public override string CommonControlConfigWindowGameTabNPCNameLabel { get; set; } = "NPC 显名";

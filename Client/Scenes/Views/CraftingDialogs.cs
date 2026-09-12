@@ -558,7 +558,7 @@ namespace Client.Scenes.Views
                 Text = CEnvir.Language.CraftingRecipesTitle,
             };
 
-            RecipeListTitleLabel = CreateSectionTitleLabel(CEnvir.Language.CraftingRecipeListLabel, new Point(14, 67), new Size(194, 18));
+            RecipeListTitleLabel = CreateSectionTitleLabel(CEnvir.Language.CraftingRecipeListLabel, new Point(14, 66), new Size(194, 18));
             ResultTitleLabel = CreateSectionTitleLabel(CEnvir.Language.CraftingResultLabel, new Point(232, 67), new Size(120, 17));
 
             CategoryTabControl = new DXTabControl

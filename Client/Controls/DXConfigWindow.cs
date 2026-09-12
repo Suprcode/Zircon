@@ -30,7 +30,7 @@ namespace Client.Controls
         public DXSoundBar SoundMusicBar, SoundSystemBar, SoundPlayerBar, SoundMonsterBar, SoundMagicBar;
 
         //Game
-        private DXCheckBox ItemNameCheckBox, MonsterNameCheckBox, PlayerNameCheckBox, NPCNameCheckBox, UserHealthCheckBox, MonsterHealthCheckBox, DamageNumbersCheckBox,
+        private DXCheckBox DenseLootCheckBox, ItemNameCheckBox, MonsterNameCheckBox, PlayerNameCheckBox, NPCNameCheckBox, UserHealthCheckBox, MonsterHealthCheckBox, DamageNumbersCheckBox,
             EscapeCloseAllCheckBox, ShiftOpenChatCheckBox, RightClickDeTargetCheckBox, MonsterBoxVisibleCheckBox, LogChatCheckBox, DrawEffectsCheckBox,
             DrawParticlesCheckBox, DrawWeatherCheckBox, ColourGradingCheckBox, ShowTargetOutlineCheckBox, ObservableCheckBox;
         public DXCheckBox DisplayHelmetCheckBox, HideChatBarCheckBox;
@@ -131,6 +131,7 @@ namespace Client.Controls
             PortBox.ValueTextBox.TextBox.Text = Config.Port.ToString();
 
             ItemNameCheckBox.Checked = Config.ShowItemNames;
+            DenseLootCheckBox.Checked = Config.DenseLoot;
             MonsterNameCheckBox.Checked = Config.ShowMonsterNames;
             PlayerNameCheckBox.Checked = Config.ShowPlayerNames;
             NPCNameCheckBox.Checked = Config.ShowNPCNames;
@@ -778,6 +779,14 @@ namespace Client.Controls
             ItemNameCheckBox.CheckedChanged += (o, e) => Config.ShowItemNames = ItemNameCheckBox.Checked;
             gameSettingsSection.AddControl("", ItemNameCheckBox);
 
+            DenseLootCheckBox = new DXCheckBox
+            {
+                Label = { Text = CEnvir.Language.GroundLootDenseLabel },
+                Hint = CEnvir.Language.GroundLootDenseHint,
+            };
+            DenseLootCheckBox.CheckedChanged += (o, e) => Config.DenseLoot = DenseLootCheckBox.Checked;
+            gameSettingsSection.AddControl("", DenseLootCheckBox);
+
             MonsterNameCheckBox = new DXCheckBox
             {
                 Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabMonsterNameLabel },
@@ -1398,6 +1407,14 @@ namespace Client.Controls
                         ItemNameCheckBox.Dispose();
 
                     ItemNameCheckBox = null;
+                }
+
+                if (DenseLootCheckBox != null)
+                {
+                    if (!DenseLootCheckBox.IsDisposed)
+                        DenseLootCheckBox.Dispose();
+
+                    DenseLootCheckBox = null;
                 }
 
                 if (MonsterNameCheckBox != null)
