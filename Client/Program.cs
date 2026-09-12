@@ -91,6 +91,9 @@ namespace Client
                     DXConfigWindow.ActiveConfig?.UpdateScaleControlState();
                 },
                 GetActiveSceneSize = () => DXControl.ActiveScene?.Size ?? Config.GameSize,
+                GetWindowScale = () => CEnvir.Target?.WindowScale ?? 1F,
+                GetUIScale = () => CEnvir.Target?.UIScale ?? 1F,
+                GetTextRasterScale = () => CEnvir.Target?.TextRasterScale ?? 1F,
                 GetMonitorScale = TargetForm.GetMonitorScale,
                 GetDefaultMonitor = () => Config.DefaultMonitor,
                 SetDefaultMonitor = value => Config.DefaultMonitor = value,

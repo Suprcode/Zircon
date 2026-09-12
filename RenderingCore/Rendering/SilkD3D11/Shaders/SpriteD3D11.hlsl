@@ -3,6 +3,13 @@ cbuffer MatrixBuffer : register(b0)
     matrix Matrix;
 };
 
+cbuffer EffectBuffer : register(b1)
+{
+    float4 Source;
+    float4 OutlineColour;
+    float4 Effect;
+};
+
 struct VS_INPUT
 {
     float2 Pos : POSITION;
@@ -84,5 +91,8 @@ float4 PS(PS_INPUT input) : SV_Target
     uint textureIndex = (uint)round(input.TexIndex);
     float4 texel = SampleTexture(textureIndex, input.Tex);
     float alpha = texel.a * input.Col.a;
+    // Render-target pixels already contain alpha-weighted colour.
+    if (Effect.x == 6.0)
+        return float4(texel.rgb * input.Col.rgb * input.Col.a, alpha);
     return float4(texel.rgb * input.Col.rgb * alpha, alpha);
 }

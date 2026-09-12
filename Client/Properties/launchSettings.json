@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "Client": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ZIRCON_RENDER_METRICS": "0",
+        "ZIRCON_FORCE_UNCACHED": "0"
+      }
+    }
+  }
+}

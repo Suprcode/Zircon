@@ -851,10 +851,10 @@ namespace Client.Envir.Translations
         public override string CraftingExperienceRewardTitleLabel { get; set; } = "Experience Gained";
         public override string CraftingOnlyCraftableLabel { get; set; } = "Only craftable";
         public override string CraftingFavouriteButtonLabel { get; set; } = "Set Favourite";
-        public override string CraftingWeaponCategory { get; set; } = "Weapon";
+        public override string CraftingWeaponCategory { get; set; } = "Weapons";
         public override string CraftingArmourCategory { get; set; } = "Armour";
         public override string CraftingAccessoriesCategory { get; set; } = "Accessories";
-        public override string CraftingConsumableCategory { get; set; } = "Consumable";
+        public override string CraftingConsumableCategory { get; set; } = "Consumables";
         public override string CraftingIngredientsCategory { get; set; } = "Ingredients";
         public override string CraftingRequiredLevelLabel { get; set; } = "Required level: {0}";
         public override string CraftingRequiredGoldLabel { get; set; } = "Required gold: {0:#,##0}";

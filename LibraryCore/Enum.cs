@@ -2344,10 +2344,10 @@ namespace Library
 
     public enum CraftingCategory : byte
     {
-        Weapon = 0,
+        Weapons = 0,
         Armour = 1,
         Accessories = 2,
-        Consumable = 3,
+        Consumables = 3,
         Ingredients = 4,
     }
 

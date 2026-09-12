@@ -1,4 +1,4 @@
-﻿using Client.Envir;
+using Client.Envir;
 using Client.Scenes;
 using Library;
 using System;
@@ -160,10 +160,13 @@ namespace Client.Controls
             public RenderTargetResource RenderTarget;
             public Size RenderTargetSize;
             public bool TextureValid;
+            public UICacheKey Key;
+            public Rectangle PhysicalBounds;
         }
 
         private readonly List<CachedChildControlSegment> _childRenderSegments = new List<CachedChildControlSegment>();
         private bool _childRenderSegmentsValid;
+        private UICacheKey _childRenderKey;
 
         public bool CacheChildControls
         {
@@ -1046,6 +1049,7 @@ namespace Client.Controls
         {
             if (!IsVisible)
             {
+                ReleaseChildRenderTarget();
                 if (FocusControl == this)
                     FocusControl = null;
 
@@ -1153,13 +1157,13 @@ namespace Client.Controls
                 throw new InvalidOperationException("Control surface is not available.");
 
             RenderSurface previous = RenderingPipelineManager.GetCurrentSurface();
-            RenderingPipelineManager.SetSurface(ControlSurface);
-
-            RenderingPipelineManager.Clear(RenderClearFlags.Target, BackColour, 0, 0);
-
-            OnClearTexture();
-
-            RenderingPipelineManager.SetSurface(previous);
+            try
+            {
+                RenderingPipelineManager.SetSurface(ControlSurface);
+                RenderingPipelineManager.Clear(RenderClearFlags.Target, BackColour, 0, 0);
+                OnClearTexture();
+            }
+            finally { RenderingPipelineManager.SetSurface(previous); }
             TextureValid = true;
 
             ExpireTime = CEnvir.Now + Config.CacheDuration;
@@ -1780,12 +1784,29 @@ BorderInformation = new[]
         }
 
         #region Drawing
-        public event EventHandler<EventArgs> BeforeDraw, AfterDraw, BeforeChildrenDraw;
+        private EventHandler<EventArgs> _beforeDraw, _afterDraw, _beforeChildrenDraw;
+        public event EventHandler<EventArgs> BeforeDraw
+        {
+            add { _beforeDraw += value; Parent?.InvalidateChildCache(); }
+            remove { _beforeDraw -= value; Parent?.InvalidateChildCache(); }
+        }
+        public event EventHandler<EventArgs> AfterDraw
+        {
+            add { _afterDraw += value; Parent?.InvalidateChildCache(); }
+            remove { _afterDraw -= value; Parent?.InvalidateChildCache(); }
+        }
+        public event EventHandler<EventArgs> BeforeChildrenDraw
+        {
+            add { _beforeChildrenDraw += value; Parent?.InvalidateChildCache(); }
+            remove { _beforeChildrenDraw -= value; Parent?.InvalidateChildCache(); }
+        }
         public virtual void Draw()
         {
+            RenderDiagnostics.Count(RenderDiagnostics.Counter.ControlsVisited);
             if (!IsVisible || DisplayArea.Width <= 0 || DisplayArea.Height <= 0) return;
             if (HideWhenClipped && !ClipArea.Contains(DisplayArea)) return;
 
+            RenderDiagnostics.Count(RenderDiagnostics.Counter.ControlsUncached);
             OnBeforeDraw();
             DrawControl();
             OnBeforeChildrenDraw();
@@ -1796,16 +1817,18 @@ BorderInformation = new[]
 
         protected virtual void OnBeforeDraw()
         {
-            BeforeDraw?.Invoke(this, EventArgs.Empty);
+            _beforeDraw?.Invoke(this, EventArgs.Empty);
         }
         protected virtual void OnBeforeChildrenDraw()
         {
-            BeforeChildrenDraw?.Invoke(this, EventArgs.Empty);
+            _beforeChildrenDraw?.Invoke(this, EventArgs.Empty);
         }
         protected virtual void OnAfterDraw()
         {
-            AfterDraw?.Invoke(this, EventArgs.Empty);
+            _afterDraw?.Invoke(this, EventArgs.Empty);
         }
+        protected virtual bool UseSpriteBorders => true;
+
         protected virtual void DrawBorder()
         {
             if (!Border || BorderInformation == null)
@@ -1856,6 +1879,11 @@ BorderInformation = new[]
 
             if (clippedLeft > clippedRight) return;
 
+            if (UseSpriteBorders)
+            {
+                RenderingPipelineManager.DrawBorderStroke(new PointF(clippedLeft, y), new PointF(clippedRight, y), BorderSize, BorderColour);
+                return;
+            }
             RenderingPipelineManager.DrawLine(new[]
             {
                 new LinePoint(clippedLeft, y),
@@ -1877,6 +1905,11 @@ BorderInformation = new[]
 
             if (clippedTop > clippedBottom) return;
 
+            if (UseSpriteBorders)
+            {
+                RenderingPipelineManager.DrawBorderStroke(new PointF(x, clippedTop), new PointF(x, clippedBottom), BorderSize, BorderColour);
+                return;
+            }
             RenderingPipelineManager.DrawLine(new[]
             {
                 new LinePoint(x, clippedTop),
@@ -1886,8 +1919,7 @@ BorderInformation = new[]
 
         protected virtual void DrawChildControls()
         {
-            bool dpiScaled = CEnvir.Target != null && Math.Abs(CEnvir.Target.TextRasterScale - 1F) > 0.001F;
-            if (!dpiScaled && CacheChildControls && Controls.Count > 0 && RenderingPipelineManager.SupportsCachedRenderTargets)
+            if (!RenderDiagnostics.ForceUncached && CacheChildControls && Controls.Count > 0 && RenderingPipelineManager.CanCacheUI)
             {
                 DrawCachedChildControls();
                 return;
@@ -1940,13 +1972,13 @@ BorderInformation = new[]
             if (!control.CacheInParent)
                 return false;
 
-            if (control.BeforeDraw != null || control.BeforeChildrenDraw != null || control.AfterDraw != null)
+            if (control._beforeDraw != null || control._beforeChildrenDraw != null || control._afterDraw != null)
                 return false;
 
             if (control is DXAnimatedControl)
                 return false;
 
-            if (control is DXImageControl imageControl && (imageControl.Blend || imageControl.ImageOpacity < 1F))
+            if (control is DXImageControl imageControl && (imageControl.Blend || imageControl.ImageOpacity < 1F || imageControl.DropShadow || !imageControl.IntersectParent))
                 return false;
 
             return true;
@@ -1954,6 +1986,7 @@ BorderInformation = new[]
 
         public void InvalidateChildCache()
         {
+            RenderDiagnostics.Count(RenderDiagnostics.Counter.CacheInvalidations);
             _childRenderSegmentsValid = false;
 
             foreach (CachedChildControlSegment segment in _childRenderSegments)
@@ -1992,7 +2025,9 @@ BorderInformation = new[]
                 if (segmentIndex < _childRenderSegments.Count && _childRenderSegments[segmentIndex].StartIndex == i)
                 {
                     CachedChildControlSegment segment = _childRenderSegments[segmentIndex++];
-                    PresentTexture(segment.RenderTarget.Texture, DisplayArea, Parent, DisplayArea, Color.White, this);
+                    RenderDiagnostics.Count(RenderDiagnostics.Counter.CachePresented);
+                    RenderingPipelineManager.PresentUICache(segment.RenderTarget.Texture, segment.PhysicalBounds,
+                        RenderingPipelineManager.GetUIPhysicalBounds(Rectangle.Intersect(DisplayArea, ClipArea)));
                     i = segment.EndIndex;
                     continue;
                 }
@@ -2044,17 +2079,22 @@ BorderInformation = new[]
             foreach (CachedChildControlSegment segment in oldSegments)
             {
                 if (segment.RenderTarget.IsValid)
-                    RenderingPipelineManager.ReleaseRenderTarget(segment.RenderTarget);
+                    RenderingPipelineManager.ReturnUICacheTarget(segment.RenderTarget);
             }
 
             _childRenderSegmentsValid = true;
+            _childRenderKey = CurrentCacheKey;
         }
+
+        private UICacheKey CurrentCacheKey => RenderingPipelineManager.GetUICacheKey(CEnvir.Target?.WindowScale ?? 1F, CEnvir.Target?.TextRasterScale ?? 1F);
 
         private bool AllChildRenderSegmentsValid(Size backBufferSize)
         {
+            UICacheKey key = CurrentCacheKey;
+            if (_childRenderKey != key) return false;
             foreach (CachedChildControlSegment segment in _childRenderSegments)
             {
-                if (!segment.RenderTarget.IsValid || segment.RenderTargetSize != backBufferSize)
+                if (!segment.RenderTarget.IsValid || segment.Key != key)
                     return false;
             }
 
@@ -2066,13 +2106,21 @@ BorderInformation = new[]
             if (startIndex == -1 || endIndex < startIndex)
                 return;
 
+            Rectangle logicalBounds = Rectangle.Empty;
+            for (int i = startIndex; i <= endIndex; i++)
+                IncludeCacheBounds(Controls[i], ref logicalBounds);
+            logicalBounds = Rectangle.Intersect(logicalBounds, Rectangle.Intersect(DisplayArea, ClipArea));
+            Rectangle physicalBounds = RenderingPipelineManager.GetUIPhysicalBounds(logicalBounds);
+            if (physicalBounds.Width <= 0 || physicalBounds.Height <= 0) return;
+            Size targetSize = RenderingPipelineManager.GetUICacheTargetSize(physicalBounds.Size);
+            UICacheKey key = CurrentCacheKey;
             CachedChildControlSegment segment = null;
 
             for (int i = 0; i < oldSegments.Count; i++)
             {
                 CachedChildControlSegment oldSegment = oldSegments[i];
 
-                if (oldSegment.RenderTarget.IsValid && oldSegment.RenderTargetSize == backBufferSize)
+                if (oldSegment.RenderTarget.IsValid && oldSegment.RenderTargetSize == targetSize && oldSegment.Key.Session == key.Session && oldSegment.Key.Generation == key.Generation)
                 {
                     segment = oldSegment;
                     oldSegments.RemoveAt(i);
@@ -2084,37 +2132,45 @@ BorderInformation = new[]
             {
                 segment = new CachedChildControlSegment
                 {
-                    RenderTarget = RenderingPipelineManager.CreateRenderTarget(backBufferSize),
-                    RenderTargetSize = backBufferSize,
+                    RenderTarget = RenderingPipelineManager.RentUICacheTarget(targetSize),
+                    RenderTargetSize = targetSize,
                 };
             }
 
+            segment.PhysicalBounds = physicalBounds;
+            segment.Key = CurrentCacheKey;
             segment.StartIndex = startIndex;
             segment.EndIndex = endIndex;
             segment.TextureValid = false;
             _childRenderSegments.Add(segment);
         }
 
+        private static void IncludeCacheBounds(DXControl control, ref Rectangle bounds)
+        {
+            if (!control.IsVisible) return;
+            Rectangle area = control.DisplayArea;
+            // Text alignment and border strokes can extend beyond their nominal edges.
+            SizeF pixel = RenderingPipelineManager.GetBackBufferPixelSize();
+            area.Inflate((int)Math.Ceiling((control.BorderSize + 2) * pixel.Width),
+                (int)Math.Ceiling((control.BorderSize + 2) * pixel.Height));
+            bounds = bounds.IsEmpty ? area : Rectangle.Union(bounds, area);
+            foreach (DXControl child in control.Controls) IncludeCacheBounds(child, ref bounds);
+        }
+
         private void RenderChildControlSegment(CachedChildControlSegment segment)
         {
-            RenderSurface oldSurface = RenderingPipelineManager.GetCurrentSurface();
-            RenderingPipelineManager.SetSurface(segment.RenderTarget.Surface);
-            RenderingPipelineManager.Clear(RenderClearFlags.Target, Color.FromArgb(0), 0, 0);
-
-            for (int i = segment.StartIndex; i <= segment.EndIndex; i++)
+            RenderDiagnostics.Count(RenderDiagnostics.Counter.CacheRebuilt);
+            using (RenderingPipelineManager.PushUICacheTarget(segment.RenderTarget.Surface, segment.PhysicalBounds))
             {
-                DXControl control = Controls[i];
-
-                if (!control.IsVisible || control.DisplayArea.Width <= 0 || control.DisplayArea.Height <= 0)
-                    continue;
-
-                if (!ShouldCacheChildControl(control))
-                    continue;
-
-                control.Draw();
+                RenderingPipelineManager.Clear(RenderClearFlags.Target, Color.FromArgb(0), 0, 0);
+                for (int i = segment.StartIndex; i <= segment.EndIndex; i++)
+                {
+                    DXControl control = Controls[i];
+                    if (!control.IsVisible || control.DisplayArea.Width <= 0 || control.DisplayArea.Height <= 0)
+                        continue;
+                    if (ShouldCacheChildControl(control)) control.Draw();
+                }
             }
-
-            RenderingPipelineManager.SetSurface(oldSurface);
             segment.TextureValid = true;
         }
 
@@ -2123,10 +2179,11 @@ BorderInformation = new[]
             foreach (CachedChildControlSegment segment in _childRenderSegments)
             {
                 if (segment.RenderTarget.IsValid)
-                    RenderingPipelineManager.ReleaseRenderTarget(segment.RenderTarget);
+                    RenderingPipelineManager.ReturnUICacheTarget(segment.RenderTarget);
             }
 
             _childRenderSegments.Clear();
+            RenderDiagnostics.Count(RenderDiagnostics.Counter.CacheInvalidations);
             _childRenderSegmentsValid = false;
         }
 
@@ -2405,9 +2462,9 @@ BorderInformation = new[]
                 KeyUp = null;
                 KeyPress = null;
 
-                BeforeDraw = null;
-                BeforeChildrenDraw = null;
-                AfterDraw = null;
+                _beforeDraw = null;
+                _beforeChildrenDraw = null;
+                _afterDraw = null;
 
                 ProcessAction = null;
             }

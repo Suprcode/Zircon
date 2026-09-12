@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace Shared.Rendering
 {
-    public static class RenderingPipelineManager
+    public static partial class RenderingPipelineManager
     {
         private const string DefaultPipelineId = RenderingPipelineIds.SilkDXD3D11;
         private static readonly Dictionary<string, Func<IRenderingPipeline>> PipelineFactories = new(StringComparer.OrdinalIgnoreCase)
@@ -46,7 +46,7 @@ namespace Shared.Rendering
         public static float CurrentUIScale => IsUIScaleActive ? _uiScale : 1F;
         public static bool UsesFractionalUIScale => IsUIScaleActive && Math.Abs(_uiScale - MathF.Round(_uiScale)) > 0.001F;
         public static bool IsUIScaleActive => _uiScaleDepth > 0 && _uiScale > 1F &&
-                                              ReferenceEquals(_activePipeline?.GetCurrentSurface().NativeHandle, _uiScaleSurface);
+                                              (ReferenceEquals(_activePipeline?.GetCurrentSurface().NativeHandle, _uiScaleSurface) || IsUICacheSurface);
 
         public static void PushUIScale(float scale, PointF origin = default)
         {
@@ -247,6 +247,7 @@ namespace Shared.Rendering
 
         public static string DefaultPipelineIdentifier => DefaultPipelineId;
         public static string ActivePipelineId => _activePipeline?.Id;
+        public static string DiagnosticPresentation => $"pipeline={_activePipeline?.Id} backbuffer={GetBackBufferSize()} scene={Settings.ActiveSceneSize} windowScale={Settings.GetWindowScale?.Invoke()} uiScale={Settings.GetUIScale?.Invoke()} textRasterScale={Settings.GetTextRasterScale?.Invoke()}";
         public static bool SupportsCachedRenderTargets => _activePipeline?.SupportsCachedRenderTargets ?? false;
         public static bool SupportsAtlasTextures => _activePipeline?.SupportsAtlasTextures ?? false;
         public static bool SupportsBc7Textures => _activePipeline?.SupportsBc7Textures ?? false;
@@ -515,6 +516,7 @@ namespace Shared.Rendering
 
         private static void InvalidateAllControlTextures()
         {
+            InvalidateUICacheGeneration();
             _activePipeline?.InvalidateTextureCaches();
             Settings.InvalidateRenderCaches?.Invoke();
         }
@@ -538,6 +540,7 @@ namespace Shared.Rendering
                 SolidFillTextures.Remove(session);
             }
 
+            ReleaseUICacheTargets(session);
             session.Pipeline.Shutdown();
 
             if (ReferenceEquals(_activeSession, session))
@@ -563,7 +566,9 @@ namespace Shared.Rendering
             if (_activePipeline == null)
                 throw new InvalidOperationException("No rendering pipeline has been initialized.");
 
-            return _activePipeline.RenderFrame(drawScene);
+            RenderDiagnostics.BeginFrame();
+            try { return _activePipeline.RenderFrame(drawScene); }
+            finally { RenderDiagnostics.EndFrame(); }
         }
 
         public static void ToggleFullScreen()
@@ -819,7 +824,7 @@ namespace Shared.Rendering
                     LinePoint[] scaledPoints = new LinePoint[points.Count];
                     for (int i = 0; i < points.Count; i++)
                     {
-                        PointF point = ScaleUIPoint(new PointF(points[i].X, points[i].Y));
+                        PointF point = MapUICachePoint(ScaleUIPoint(new PointF(points[i].X, points[i].Y)));
                         scaledPoints[i] = new LinePoint(point.X, point.Y);
                     }
                     points = scaledPoints;

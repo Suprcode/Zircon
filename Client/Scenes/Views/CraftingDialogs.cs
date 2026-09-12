@@ -745,7 +745,7 @@ namespace Client.Scenes.Views
             };
             CraftButton.MouseClick += (o, e) => StartCraft(SelectedRecipe, SelectedDesign);
 
-            Category = CraftingCategory.Weapon;
+            Category = CraftingCategory.Weapons;
             RefreshList();
         }
 
