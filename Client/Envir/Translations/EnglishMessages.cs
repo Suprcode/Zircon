@@ -190,6 +190,10 @@ namespace Client.Envir.Translations
         public override string CommonControlConfigWindowSoundTabMonsterVolumeLabel { get; set; } = "Monster Volume";
         public override string CommonControlConfigWindowSoundTabMagicVolumeLabel { get; set; } = "Magic Volume";
         public override string CommonControlConfigWindowGameTabItemNameLabel { get; set; } = "Item Names";
+        public override string GroundLootDenseLabel { get; set; } = "Compact Loot Piles";
+        public override string GroundLootDenseHint { get; set; } = "Show one item and rarity glow per tile. Hover and scroll to view every item in a pile.";
+        public override string GroundLootCount { get; set; } = "{0} drops";
+        public override string GroundLootPage { get; set; } = "{0}-{1} / {2} (scroll)";
         public override string CommonControlConfigWindowGameTabMonsterNameLabel { get; set; } = "Monster Names";
         public override string CommonControlConfigWindowGameTabPlayerNameLabel { get; set; } = "Player Names";
         public override string CommonControlConfigWindowGameTabNPCNameLabel { get; set; } = "NPC Names";
@@ -851,10 +855,10 @@ namespace Client.Envir.Translations
         public override string CraftingExperienceRewardTitleLabel { get; set; } = "Experience Gained";
         public override string CraftingOnlyCraftableLabel { get; set; } = "Only craftable";
         public override string CraftingFavouriteButtonLabel { get; set; } = "Set Favourite";
-        public override string CraftingWeaponCategory { get; set; } = "Weapon";
+        public override string CraftingWeaponCategory { get; set; } = "Weapons";
         public override string CraftingArmourCategory { get; set; } = "Armour";
         public override string CraftingAccessoriesCategory { get; set; } = "Accessories";
-        public override string CraftingConsumableCategory { get; set; } = "Consumable";
+        public override string CraftingConsumableCategory { get; set; } = "Consumables";
         public override string CraftingIngredientsCategory { get; set; } = "Ingredients";
         public override string CraftingRequiredLevelLabel { get; set; } = "Required level: {0}";
         public override string CraftingRequiredGoldLabel { get; set; } = "Required gold: {0:#,##0}";

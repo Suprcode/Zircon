@@ -23,6 +23,9 @@ namespace Shared.Rendering
         public Action InvalidateRenderCaches { get; set; }
         public Action<bool> FullScreenChanged { get; set; }
         public Func<Size> GetActiveSceneSize { get; set; }
+        public Func<float> GetWindowScale { get; set; }
+        public Func<float> GetUIScale { get; set; }
+        public Func<float> GetTextRasterScale { get; set; }
         public Func<Screen, float> GetMonitorScale { get; set; }
         public Func<string> GetDefaultMonitor { get; set; }
         public Action<string> SetDefaultMonitor { get; set; }

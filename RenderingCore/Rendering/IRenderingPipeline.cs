@@ -17,6 +17,7 @@ namespace Shared.Rendering
         bool RenderFrame(Action drawScene);
 
         bool SupportsCachedRenderTargets => true;
+        bool IsPresentationSurface => false;
         bool SupportsAtlasTextures => false;
         bool SupportsBc7Textures => false;
 

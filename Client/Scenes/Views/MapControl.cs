@@ -1,4 +1,4 @@
-﻿using Client.Controls;
+using Client.Controls;
 using Client.Envir;
 using Client.Models;
 using Client.Models.Particles;
@@ -15,7 +15,7 @@ using C = Library.Network.ClientPackets;
 //Cleaned
 namespace Client.Scenes.Views
 {
-    public sealed class MapControl : DXControl
+    public sealed partial class MapControl : DXControl
     {
         #region Properties
 
@@ -204,6 +204,7 @@ namespace Client.Scenes.Views
 
         protected override void OnClearTexture()
         {
+            worldNamesValid = false;
             base.OnClearTexture();
 
             if (!Visible) return;
@@ -267,31 +268,7 @@ namespace Client.Scenes.Views
             RenderingPipelineManager.PushUIScale(GameScene.Game.UIScale);
             try
             {
-                foreach (MapObject ob in Objects)
-                {
-                    if (ob.Dead) continue;
-
-                    switch (ob.Race)
-                    {
-                        case ObjectType.Player:
-                            if (!Config.ShowPlayerNames) continue;
-                            break;
-                        case ObjectType.Item:
-                            if (!Config.ShowItemNames || ob.CurrentLocation == MapLocation) continue;
-                            break;
-                        case ObjectType.NPC:
-                            if (!Config.ShowNPCNames) continue;
-                            break;
-                        case ObjectType.Spell:
-                            break;
-                        case ObjectType.Monster:
-                            if (!Config.ShowMonsterNames) continue;
-                            break;
-                    }
-
-                    SetWorldOverlayScaleOrigin(ob);
-                    ob.DrawName();
-                }
+                DrawWorldNames();
 
                 if (MapObject.MouseObject != null && MapObject.MouseObject.Race != ObjectType.Item)
                 {
@@ -299,7 +276,7 @@ namespace Client.Scenes.Views
                     MapObject.MouseObject.DrawName();
                 }
 
-                foreach (MapObject ob in Objects)
+                foreach (MapObject ob in HasGroundItems ? statusOverlayObjects : Objects)
                 {
                     SetWorldOverlayScaleOrigin(ob);
                     ob.DrawChat();
@@ -308,7 +285,7 @@ namespace Client.Scenes.Views
                 }
 
                 if (Config.ShowDamageNumbers)
-                    foreach (MapObject ob in Objects)
+                    foreach (MapObject ob in HasGroundItems ? statusOverlayObjects : Objects)
                     {
                         SetWorldOverlayScaleOrigin(ob);
                         ob.DrawDamage();
@@ -319,17 +296,10 @@ namespace Client.Scenes.Views
                 RenderingPipelineManager.PopUIScale();
             }
 
-            if (MapLocation.X >= 0 && MapLocation.X < Width && MapLocation.Y >= 0 && MapLocation.Y < Height)
+            if (HasGroundItems && MapLocation.X >= 0 && MapLocation.X < Width && MapLocation.Y >= 0 && MapLocation.Y < Height)
             {
                 Cell cell = Cells[MapLocation.X, MapLocation.Y];
-                int layer = 0;
-                if (cell.Objects != null)
-                    for (int i = cell.Objects.Count - 1; i >= 0; i--)
-                    {
-                        ItemObject ob = cell.Objects[i] as ItemObject;
-
-                        ob?.DrawFocus(layer++);
-                    }
+                DrawLootFocus(cell);
             }
         }
 
@@ -474,6 +444,29 @@ namespace Client.Scenes.Views
             int minX = Math.Max(0, User.CurrentLocation.X - OffSetX - 4), maxX = Math.Min(Width - 1, User.CurrentLocation.X + OffSetX + 4);
             int minY = Math.Max(0, User.CurrentLocation.Y - OffSetY - 4), maxY = Math.Min(Height - 1, User.CurrentLocation.Y + OffSetY + 25);
 
+            bool useLootRows = HasGroundItems;
+            if (useLootRows)
+            {
+                objectRows.Reset(minY, maxY);
+                effectRows.Reset(minY, maxY);
+                foreach (MapObject ob in Objects)
+                {
+                    if (ob is ItemObject item && !item.IsPileRepresentative) continue;
+                    objectRows.Add(ob.RenderY, ob);
+                }
+                if (Config.DrawEffects)
+                    foreach (MirEffect effect in Effects)
+                    {
+                        if (effect.DrawType != DrawType.Object) continue;
+                        if (effect is LootEffect loot && !loot.Representative) continue;
+                        if (effect.MapTarget.IsEmpty && effect.Target != null)
+                        {
+                            if (effect.Target != User) effectRows.Add(effect.Target.RenderY, effect);
+                        }
+                        else effectRows.Add(effect.MapTarget.Y, effect);
+                    }
+            }
+
             for (int y = minY; y <= maxY; y++)
             {
                 int drawY = (y - User.CurrentLocation.Y + OffSetY + 1) * CellHeight + PixelOffsetY - User.MovingOffSet.Y - User.ShakeScreenOffset.Y;
@@ -564,26 +557,32 @@ namespace Client.Scenes.Views
 
                 RenderingPipelineManager.DisableSpriteShaderEffect();
 
-                foreach (MapObject ob in Objects)
+                if (useLootRows)
                 {
-                    if (ob.RenderY == y)
+                    foreach (MapObject ob in objectRows[y])
                         ob.Draw();
+                    if (Config.DrawEffects)
+                        foreach (MirEffect ob in effectRows[y])
+                            ob.Draw();
                 }
-
-                if (Config.DrawEffects)
+                else
                 {
-                    foreach (MirEffect ob in Effects)
-                    {
-                        if (ob.DrawType != DrawType.Object) continue;
-
-                        if (ob.MapTarget.IsEmpty && ob.Target != null)
+                    // Keep the original small-scene path free of loot preparation.
+                    foreach (MapObject ob in Objects)
+                        if (ob.RenderY == y)
+                            ob.Draw();
+                    if (Config.DrawEffects)
+                        foreach (MirEffect ob in Effects)
                         {
-                            if (ob.Target.RenderY == y && ob.Target != User)
+                            if (ob.DrawType != DrawType.Object) continue;
+                            if (ob.MapTarget.IsEmpty && ob.Target != null)
+                            {
+                                if (ob.Target.RenderY == y && ob.Target != User)
+                                    ob.Draw();
+                            }
+                            else if (ob.MapTarget.Y == y)
                                 ob.Draw();
                         }
-                        else if (ob.MapTarget.Y == y)
-                            ob.Draw();
-                    }
                 }
 
             }
@@ -1435,7 +1434,9 @@ namespace Client.Scenes.Views
 
         public void AddObject(MapObject ob)
         {
+            TextureValid = false;
             Objects.Add(ob);
+            if (ob is ItemObject) groundItemCount++;
 
             if (ob.CurrentLocation.X < Width && ob.CurrentLocation.Y < Height)
                 Cells[ob.CurrentLocation.X, ob.CurrentLocation.Y].AddObject(ob);
@@ -1443,7 +1444,19 @@ namespace Client.Scenes.Views
 
         public void RemoveObject(MapObject ob)
         {
-            Objects.Remove(ob);
+            if (!Objects.Remove(ob)) return;
+
+            TextureValid = false;
+            if (ob is ItemObject item)
+            {
+                groundItemCount--;
+                focusedLoot.Remove(item);
+                if (!HasGroundItems)
+                    ClearLootCaches();
+            }
+
+            nameOverlayObjects.Remove(ob);
+            statusOverlayObjects.Remove(ob);
 
             if (ob.CurrentLocation.X < Width && ob.CurrentLocation.Y < Height)
                 Cells[ob.CurrentLocation.X, ob.CurrentLocation.Y].RemoveObject(ob);
@@ -1526,10 +1539,14 @@ namespace Client.Scenes.Views
 
         protected override void Dispose(bool disposing)
         {
+            ReleaseWorldNames();
             base.Dispose(disposing);
 
             if (disposing)
             {
+                DisposeLoot();
+                foreach (MapObject ob in Objects)
+                    if (ob is ItemObject item) item.ReleaseLabels();
                 _MapInfo = null;
                 MapInfoChanged = null;
 
@@ -1820,6 +1837,7 @@ namespace Client.Scenes.Views
                 foreach (MirEffect ob in map.Effects)
                 {
                     float frameLight = ob.FrameLight;
+                    if (ob is LootEffect && !LootLightVisible(ob, frameLight, lightSize)) continue;
 
                     if (frameLight > 0)
                     {
@@ -1882,6 +1900,16 @@ namespace Client.Scenes.Views
             private static bool ShouldDrawObjectLight(MapObject ob, UserObject user)
             {
                 return ob.Light > 0 && (!ob.Dead || ob == user || ob.Race == ObjectType.Spell);
+            }
+
+            private static bool LootLightVisible(MirEffect effect, float frameLight, Size lightSize)
+            {
+                if (frameLight <= 0) return false;
+                float scale = BaseLightSize + frameLight * 2 * LightScale / EffectLightScaleDivisor;
+                float width = lightSize.Width * scale, height = lightSize.Height * scale;
+                return new RectangleF(effect.DrawX + CellWidth / 2F - width / 2,
+                    effect.DrawY + CellHeight / 2F - height / 2, width, height)
+                    .IntersectsWith(new RectangleF(PointF.Empty, GameScene.Game.MapControl.Size));
             }
 
             public void UpdateLights()
@@ -1978,6 +2006,7 @@ namespace Client.Scenes.Views
                         float frameLight = effect.FrameLight;
                         if (frameLight <= 0)
                             continue;
+                        if (effect is LootEffect && !LootLightVisible(effect, frameLight, RenderingPipelineManager.GetLightTextureSize())) continue;
 
                         hash = hash * 31 + effect.DrawX;
                         hash = hash * 31 + effect.DrawY;
@@ -2037,6 +2066,7 @@ namespace Client.Scenes.Views
         public bool LibrariesLoaded;
 
         public List<MapObject> Objects;
+        public int ObjectVersion { get; private set; }
 
         public bool Blocking()
         {
@@ -2053,6 +2083,7 @@ namespace Client.Scenes.Views
         {
             if (Objects == null)
                 Objects = new List<MapObject>();
+            ObjectVersion++;
 
             if (ob.Race == ObjectType.Spell)
                 Objects.Insert(0, ob);
@@ -2065,6 +2096,7 @@ namespace Client.Scenes.Views
         public void RemoveObject(MapObject ob)
         {
             Objects.Remove(ob);
+            ObjectVersion++;
 
             if (Objects.Count == 0)
                 Objects = null;

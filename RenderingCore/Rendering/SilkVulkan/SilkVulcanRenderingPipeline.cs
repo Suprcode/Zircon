@@ -248,7 +248,9 @@ namespace Shared.Rendering.SilkVulkan
 
                 BeginRenderPass(_currentTarget);
                 Clear(RenderClearFlags.Target, Color.Black, 0, 0);
-                drawScene();
+                RenderDiagnostics.BeginScene();
+                try { drawScene(); }
+                finally { RenderDiagnostics.EndScene(); }
                 EndRenderPass();
 
                 TransitionTarget(_currentBackBufferTarget, VkImageLayout.PresentSrcKhr, AccessFlags.ColorAttachmentWriteBit, 0, PipelineStageFlags.ColorAttachmentOutputBit, PipelineStageFlags.BottomOfPipeBit);
@@ -507,6 +509,7 @@ namespace Shared.Rendering.SilkVulkan
                 return;
 
             _vk.CmdClearAttachments(_activeCommandBuffer, 1, in attachment, 1, in clearRect);
+            RenderDiagnostics.Count(RenderDiagnostics.Counter.TargetClears);
         }
 
         public void SetBlend(bool enabled, float rate, ClientBlendMode mode)
@@ -577,8 +580,12 @@ namespace Shared.Rendering.SilkVulkan
 
             Buffer buffer = _activeFrame.VertexBuffer.Buffer;
             _vk.CmdBindVertexBuffers(_activeCommandBuffer, 0, 1, in buffer, in offset);
+            RenderDiagnostics.Count(RenderDiagnostics.Counter.LineBatches);
+            RenderDiagnostics.Count(RenderDiagnostics.Counter.LineVertices, points.Count);
             _vk.CmdDraw(_activeCommandBuffer, (uint)points.Count, 1, 0, 0);
         }
+
+        public bool IsPresentationSurface => _currentTarget?.IsBackBuffer == true;
 
         public void DrawTexture(RenderTexture texture, Rectangle sourceRectangle, RectangleF destinationRectangle, Color colour)
         {
@@ -587,6 +594,7 @@ namespace Shared.Rendering.SilkVulkan
                 destinationRectangle = RenderingPipelineManager.AlignTextDestination(destinationRectangle, _currentTarget.Size, sourceRectangle.Size);
                 destinationRectangle = RenderingPipelineManager.AlignBorderBackground(destinationRectangle, _currentTarget.Size);
             }
+            destinationRectangle = RenderingPipelineManager.MapUICacheDestination(destinationRectangle, sourceRectangle.Size);
             DrawTextureCore(texture, sourceRectangle, destinationRectangle, Matrix3x2.Identity, colour);
         }
 
@@ -603,6 +611,7 @@ namespace Shared.Rendering.SilkVulkan
 
             finalTransform.M31 += translation.X;
             finalTransform.M32 += translation.Y;
+            finalTransform = RenderingPipelineManager.MapUICacheTransform(finalTransform);
             DrawTextureCore(texture, source, destination, finalTransform, colour);
         }
 
@@ -643,6 +652,7 @@ namespace Shared.Rendering.SilkVulkan
 
             FlushSpriteBatch();
             EndRenderPass();
+            RenderDiagnostics.Count(RenderDiagnostics.Counter.TargetSwitches);
             _currentTarget = target;
         }
 
@@ -687,6 +697,8 @@ namespace Shared.Rendering.SilkVulkan
         {
             if ((flags & RenderClearFlags.Target) == 0 || _currentTarget == null)
                 return;
+
+            RenderDiagnostics.Count(RenderDiagnostics.Counter.TargetClears);
 
             FlushSpriteBatch();
             BeginRenderPass(_currentTarget);
@@ -1072,7 +1084,7 @@ namespace Shared.Rendering.SilkVulkan
             }
 
             ClientBlendMode blendMode = GetAppliedBlendMode();
-            bool forcePointSampling = RenderingPipelineManager.DrawingDpiText;
+            bool forcePointSampling = RenderingPipelineManager.ForcePointSampling;
             float opacity = _opacity * (colour.A / 255F);
             if (_blending && _blendMode != ClientBlendMode.NONE && AppliesBlendRateToVertexColour(_blendMode))
                 opacity *= _blendRate;
@@ -2621,6 +2633,7 @@ namespace Shared.Rendering.SilkVulkan
                 colour,
                 new Vector4(Math.Min(u0, u1), Math.Min(v0, v1), Math.Max(u0, u1), Math.Max(v0, v1)));
 
+            RenderDiagnostics.Count(RenderDiagnostics.Counter.SpritesQueued);
             _spriteBatchInstanceCount++;
         }
 
@@ -2651,6 +2664,8 @@ namespace Shared.Rendering.SilkVulkan
 
             Buffer buffer = _activeFrame.VertexBuffer.Buffer;
             _vk.CmdBindVertexBuffers(_activeCommandBuffer, 0, 1, in buffer, in offset);
+            RenderDiagnostics.Count(RenderDiagnostics.Counter.SpriteSubmissions);
+            RenderDiagnostics.Count(RenderDiagnostics.Counter.SpritesSubmitted);
             _vk.CmdDraw(_activeCommandBuffer, 6, 1, 0, 0);
         }
 
@@ -2681,6 +2696,8 @@ namespace Shared.Rendering.SilkVulkan
 
             Buffer buffer = _activeFrame.VertexBuffer.Buffer;
             _vk.CmdBindVertexBuffers(_activeCommandBuffer, 0, 1, in buffer, in _spriteBatchOffset);
+            RenderDiagnostics.Count(RenderDiagnostics.Counter.SpriteSubmissions);
+            RenderDiagnostics.Count(RenderDiagnostics.Counter.SpritesSubmitted, _spriteBatchInstanceCount);
             _vk.CmdDraw(_activeCommandBuffer, 6, _spriteBatchInstanceCount, 0, 0);
             ResetSpriteBatch();
         }
@@ -2945,6 +2962,7 @@ namespace Shared.Rendering.SilkVulkan
 
         private void RecreateSwapchain()
         {
+            RenderingPipelineManager.InvalidateUICacheGeneration();
             if (_device.Handle == IntPtr.Zero)
                 return;
 
@@ -2981,7 +2999,7 @@ namespace Shared.Rendering.SilkVulkan
 
         private TextureFilterMode GetAppliedTextureFilter(bool forcePointSampling = false)
         {
-            return !forcePointSampling && (_textureFilter == TextureFilterMode.Linear || UsesFractionalBackBufferScale(_currentTarget) || RenderingPipelineManager.UsesFractionalUIScale)
+            return !forcePointSampling && (_textureFilter == TextureFilterMode.Linear || UsesFractionalBackBufferScale(_currentTarget) || RenderingPipelineManager.CacheUsesFractionalScale || RenderingPipelineManager.UsesFractionalUIScale)
                 ? TextureFilterMode.Linear
                 : TextureFilterMode.Point;
         }
