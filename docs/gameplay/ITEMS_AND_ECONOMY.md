@@ -22,6 +22,16 @@ Boundary guides, only as needed: [NETWORKING](../NETWORKING.md), [DATA_MODEL](..
 
 ## Inventory, equipment and storage
 
+### Usually required
+
+* **Definition property:** `LibraryCore/SystemModels/ItemInfo.cs`, actual rule consumers, `Server/Views/ItemInfoView.cs` / `.Designer.cs` if editable and updated System.db distribution; `GameScene.CreateItemLabel` if shown in the tooltip.
+* **Per-instance property:** `ServerLibrary/DBModels/UserItem.cs` and its mutation sites. For client-visible values, follow `UserItem.ToClientInfo` → `LibraryCore/Globals.cs: ClientUserItem` (and copies) → initial/runtime updates in CConnection; inspect relevant display code.
+
+### Usually NOT required
+
+* Definition-only changes need neither new `UserItem` fields nor new item-instance packet fields: `ClientUserItem.Complete` resolves `InfoIndex` against shared definitions.
+* Instance-only changes need no `ItemInfo`/definition-editor changes unless adding a shared default/rule too. Server-private values need no transfer/display changes; unrelated trade, shop and loot-box dialogs need inspection only if they consume the new value.
+
 * **Purpose / definitions:** item ownership, slots, use and equipment; Defs `ItemInfo.cs`, `ItemInfoStat.cs`, `SetInfo.cs`; `LibraryCore/Enum.cs` GridType, EquipmentSlot, ItemType.
 * **Server / persistence:** P `Items` region: `ItemMove`, `ItemUse`, `CanWearItem`, `CanGainItems`, `GainItem`, `ParseLinks`; DB `UserItem.cs`, `UserItemStat.cs`, `UserItemSocket.cs`, CharacterInfo/AccountInfo ownership.
 * **Client / UI:** `Client/Controls/DXItemCell.cs`, DXItemGrid; Views `InventoryDialog.cs`, `CharacterDialog.cs`, `StorageDialog.cs`; `GameScene.CreateItemLabel` owns the common tooltip.

@@ -84,6 +84,16 @@ Most systems still live in the main file. Do not invent `PlayerObject.Inventory.
 
 ## Monster extension pattern
 
+### Usually required
+
+* For **server-only monster AI**, inspect `ServerLibrary/Models/MonsterObject.cs` and the subclass selected by `GetMonster`, including its base class (for example OmaMage → SkeletonAxeThrower). Follow only the changed search, target, attack or timing hooks.
+* For targeting/aggro, inspect `ProcessSearch`, `ProperSearch`, `ProcessTarget`, `ShouldAttackTarget` and `CanAttackTarget`; for movement or delayed execution, follow the called pathing/`ProcessAction` implementation.
+
+### Usually NOT required
+
+* Client MonsterObject, UI, RenderingCore and packet definitions while reusing existing action semantics. New visible attack stages, projectiles or state require client action handling and an assessment of existing S action payloads.
+* `SEnvir` startup, Server/ServerCore hosts, MirDB and definition editors unless scheduling, lifecycle, persistence or configurable content actually changes. A target-choice adjustment does not require reading the whole environment loop.
+
 `MonsterObject.GetMonster(MonsterInfo)` switches on **MonsterInfo.AI**, the integer behavior selector; MonsterInfo.Image is a separate visual identity. Read the selected subclass before altering base targeting. Base hooks: `ProcessAI`, `ProcessSearch`, `ProperSearch`, `ProcessRoam`, `ProcessTarget`, `ShouldAttackTarget`, `CanAttackTarget`, `Attack`, `Walk`, `Die`, `Drop`. Search deadlines, pet modes and target validity constrain these paths. Base ProcessSearch considers eligible players and their pets within ViewRange, keeps the closest candidates and randomly selects among tied candidates; pets use ProperSearch instead.
 
 * Small attack variation: `Models/Monsters/OmaMage.cs` extends SkeletonAxeThrower and chooses existing AttackMagic/AttackAoE actions.

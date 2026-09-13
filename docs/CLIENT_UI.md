@@ -18,6 +18,15 @@ Exact controls live in `Client/Controls`: DXListBox, DXTreeControl, DXTabControl
 
 ## Ownership, state and input
 
+### Usually required
+
+* For an **existing dialog layout change**, start in its `Client/Scenes/Views` file (for example `InventoryDialog.cs`) and the DX controls already used there. Inspect `DXControl` parenting, clipping and cache invalidation when affected by the layout.
+
+### Usually NOT required
+
+* `ServerLibrary` and `LibraryCore/Network` unless the changed interaction performs a different gameplay action; `RenderingCore` unless drawing primitives/resources change.
+* GameScene construction, `WindowSetting.WindowType` and key bindings when only moving/resizing existing children. Open those integration points when adding a window or changing its lifetime/opening behavior.
+
 `DXControl.Parent` calls `OnParentChanged`, removes the control from the old Controls list, adds it to the new one, recalculates visibility/enabled/display area, and invalidates both parents' child caches. Assign Parent through the property; avoid maintaining Controls separately.
 
 Visible/Enabled are local flags; IsVisible/IsEnabled reflect ancestry. Location/Size feed DisplayArea and ClipArea; coordinates are parent-relative. BringToFront/SendToBack reorder the parent's list. Disposal recursively disposes children and releases resources/events; derived controls must preserve base cleanup and release their additional references/subscriptions.

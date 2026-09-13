@@ -61,6 +61,16 @@ SystemDBSync's caller is **`Server/Views/SyncForm.cs`**, which posts the editor 
 
 ## Adding a client action
 
+### Usually required
+
+* For a **packet change**, inspect its definition in `LibraryCore/Network`, concrete sender, receiving public `Process(T)` handler in SConnection or CConnection, and the feature state they read/write. If the feature has a response/update, trace that direction too.
+* Inspect reflected payload compatibility in `Packet.cs`, including changed nested transfer structures. The existing `C.CraftingStart` → `SConnection.Process` → `PlayerObject.StartCrafting` → `S.CraftingStarted` → `CConnection.Process` flow is a bounded example; compatible client/server builds are required.
+
+### Usually NOT required
+
+* Unrelated Views dialogs or DBModels: open only the UI consuming/triggering the changed feature and persistence actually storing its state.
+* `BaseConnection` transport, WebServer HTTP paths or an invented opcode registry for an ordinary supported packet property. Inspect transport/serialization implementation changes only if the requested wire behavior or property type requires them.
+
 1. Add a direct Packet subclass with supported public properties to ClientPackets.
 2. Follow the closest client send site through `CEnvir.Enqueue`.
 3. Add `public void Process(C.NewAction p)` to SConnection; follow stage, observer and player validation from the adjacent feature.

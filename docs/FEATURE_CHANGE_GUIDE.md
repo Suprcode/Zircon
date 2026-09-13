@@ -19,6 +19,16 @@ Use [GAMEPLAY_SYSTEMS](GAMEPLAY_SYSTEMS.md) to select a family section and its s
 
 ## Item property → inventory tooltip
 
+### Usually required
+
+* **ItemInfo definition property:** `LibraryCore/SystemModels/ItemInfo.cs` and its actual rule consumers; `Server/Views/ItemInfoView.cs` / `.Designer.cs` if editable, and `Client/Scenes/GameScene.cs: CreateItemLabel` if displayed. Distribute updated System.db definitions.
+* **Per-instance UserItem property:** `ServerLibrary/DBModels/UserItem.cs` and the code mutating that value. If exposed to the client, inspect `ToClientInfo`, `LibraryCore/Globals.cs: ClientUserItem` (including copies), initial transfer and runtime item updates in `Client/Envir/CConnection.cs`; inspect the display only if relevant.
+
+### Usually NOT required
+
+* Definition-only fields do not normally need `UserItem` persistence fields or new item-instance packet properties: `ClientUserItem.Complete` resolves `InfoIndex` to the shared definition.
+* Instance-only fields do not normally need `ItemInfo` or its editor unless the design also adds a definition-level default/rule. Server-private instance values do not need client transfer fields.
+
 1. Definition property: `LibraryCore/SystemModels/ItemInfo.cs` (or ItemInfoStat/Stat for an actual stat). Copy MirDB setter/attributes. Instance property: `ServerLibrary/DBModels/UserItem.cs` instead; do not put one item's roll into the shared definition.
 2. Rule consumers: `ServerLibrary/Models/PlayerObject.cs: ItemUse, CanUseItem, CanWearItem, RefreshStats`; `SEnvir.CreateFreshItem` if initialization changes.
 3. Synchronization: `UserItem.ToClientInfo → LibraryCore/Globals.cs: ClientUserItem → CConnection item handlers`. Definition-only values are resolved by InfoIndex in the client's System.db. Per-instance values need explicit conversion/structure updates; audit Packet serialization and all full/incremental updates.
@@ -36,6 +46,16 @@ Use [GAMEPLAY_SYSTEMS](GAMEPLAY_SYSTEMS.md) to select a family section and its s
 6. `Views/MagicDialog.cs`, MagicBarDialog and `Server/Views/MagicInfoView.cs`; author/inspect the icon/effect library in LibraryEditor and distribute assets/System.db.
 
 ## Monster change
+
+### Usually required
+
+* **Targeting / aggro:** `ServerLibrary/Models/MonsterObject.cs` search/target/eligibility hooks and the subclass selected by `GetMonster`, including inherited overrides.
+* **Server-only AI:** the selected `Models/Monsters` behavior and base hooks it calls; follow server attack/delayed-action or movement code only when those semantics change.
+
+### Usually NOT required
+
+* `Client/Models/MonsterObject.cs`, UI dialogs, `RenderingCore` and packet definitions for choosing among existing targets/actions. Expand to client presentation and action payloads only for new visible state, animation or action semantics.
+* `MonsterInfo`, respawn editors and `Map.SpawnInfo` for a behavior-only adjustment unless configuration or spawning itself changes.
 
 Target selection: `ServerLibrary/Models/MonsterObject.cs: GetMonster → selected Models/Monsters subclass → ProcessAI/ProcessSearch/ProperSearch/ProcessTarget/ShouldAttackTarget/CanAttackTarget`. Check subclass overrides first. Small attack example: OmaMage; complex targeting/spawn example: ZumaKing (inherits ZumaGuardian).
 
@@ -60,6 +80,15 @@ Packet IDs/properties are reflective. There is no central opcode enum or manual 
 
 ## Dialog/button
 
+### Usually required
+
+* **Existing dialog layout:** the owning `Client/Scenes/Views` file and the existing `Client/Controls` types used by its nearby controls; preserve parenting, clipping and cache invalidation.
+
+### Usually NOT required
+
+* `ServerLibrary` or packet definitions unless the interaction changes gameplay; `RenderingCore` unless an existing DX control cannot supply the required drawing primitive/resource behavior.
+* GameScene registration, `WindowType` and key bindings for repositioning existing children; inspect these only when window integration changes.
+
 Use [CLIENT_UI](CLIENT_UI.md). Start with the owning Views file, GameScene construction/fields and DXButton/DXControl. Copy a nearby Parent/event/image-state pattern. New windows may require `Client/UserModels/WindowSetting.cs: WindowType`, `KeyBindInfo.cs: KeyBindAction`, CEnvir key setup, MenuDialog and scene key handling. Check DXWindow settings/lifetime; not every view derives from DXWindow.
 
 Keep a purely local button local. A gameplay request follows the packet/server path above. Verify hover/pressed state, clipping, scale, cached-child invalidation and disposal.
@@ -71,6 +100,15 @@ Use [DATA_MODEL](DATA_MODEL.md). Inspect DBMapping/DBValue support, Session asse
 Canonical linked data: `ServerLibrary/DBModels/UserItem.cs` with owner/stat/socket relationships; shared recipe/ingredient data: `LibraryCore/SystemModels/CraftingInfo.cs`. Test representative save/load/delete/migration behavior when implementation changes warrant it; old deployed data needs its own verification.
 
 ## Image or effect
+
+### Usually required
+
+* **Client-only visual effect:** the owning client model/effect (for example `Client/Models/MonsterObject.cs` and its `MirEffect`/`MirProjectile` construction), exact library/image/frame references, and `LibraryCore/Libraries.cs` mapping if adding a library.
+
+### Usually NOT required
+
+* Server damage logic, MirDB or packet changes when existing action state already drives the effect. Expand to sender/receiver and server actions only when authoritative timing or state changes; a local frame-duration adjustment alone does not require that expansion.
+* RenderingCore or image-library writers when reusing existing effects and supported assets; open them only for rendering/format changes.
 
 Use [RENDERING_AND_ASSETS](RENDERING_AND_ASSETS.md). Existing library: inspect the exact image and surrounding frame/direction layout, then change the owning DXImageControl/model effect. New library: LibraryFile + Libraries.LibraryList + asset distribution. Format change: pair RenderingCore reader/metadata with LibraryEditor writer. Low-level rendering change: check PipelineFactories/IRenderingPipeline, backend implementation, cache/resource lifecycle and graphics verification.
 

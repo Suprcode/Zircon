@@ -40,6 +40,16 @@ Boundary guides, only as needed: [NETWORKING](../NETWORKING.md), [DATA_MODEL](..
 
 ## Monsters and spawning
 
+### Usually required
+
+* **Targeting / aggro:** `ServerLibrary/Models/MonsterObject.cs: ProcessSearch/ProperSearch/ProcessTarget/ShouldAttackTarget/CanAttackTarget` and relevant overrides in the subclass selected by `GetMonster` (including inherited hooks).
+* **Server-only AI:** selected subclass execution and the server base hooks it calls; inspect spawn/delayed-action paths only if the behavior changes them.
+
+### Usually NOT required
+
+* `Client/Models/MonsterObject.cs`, UI dialogs, RenderingCore and packet definitions for a server choice among existing targets/actions. New visible state or animation/action semantics require tracing the client representation and existing S action payloads.
+* MonsterInfo/RespawnInfo editors for targeting code alone; expand to definitions when configurable rules or spawn content change.
+
 * **Definitions:** Defs MonsterInfo.cs/MonsterInfoStat.cs, RespawnInfo.cs, DropInfo.cs; Enum.cs MonsterImage.
 * **Server:** Models MonsterObject.GetMonster, ProcessAI/Search/Target/ShouldAttackTarget; Models/Monsters specialization; Map.cs SpawnInfo.DoSpawn.
 * **Client:** Models MonsterObject.cs and FrameSet; represented by S.ObjectMonster/ObjectMove/ObjectAttack/ObjectMagic/ObjectDied/ObjectRemove, without a client spawn request.
