@@ -2,6 +2,78 @@
 
 Use [GAMEPLAY_SYSTEMS](GAMEPLAY_SYSTEMS.md) to select a family section and its source entry points, then this guide to identify boundaries. Follow actual dependencies; a new dialog is not automatically a new server feature.
 
+## Change decision trees
+
+Choose the branch matching the requested behavior before opening source. Follow more than one branch only when the change crosses those boundaries; the leaves link to the existing detailed guides. Client and server classes with the same name are separate owners.
+
+### Item change
+
+* Is the change only presentation derived from data the client already has?
+  * Yes → `Client/Scenes/GameScene.cs: CreateItemLabel` or the owning dialog/`DXItemCell`; keep display-only state client-side. [Client UI](CLIENT_UI.md).
+  * No → Is the value shared by every item of this definition?
+    * Yes → `LibraryCore/SystemModels/ItemInfo.cs` and System.db. [Definition data](DATA_MODEL.md).
+      * Must be editable? → `Server/Views/ItemInfoView.cs` / `.Designer.cs`. [Content editors](CONTENT_AND_EDITORS.md).
+      * Must be displayed? → UI reads `ClientUserItem.Info`, resolved by `ClientUserItem.Complete`. [Items and economy](gameplay/ITEMS_AND_ECONOMY.md).
+    * No → What lifetime does the instance value need?
+      * Persist across reloads → `ServerLibrary/DBModels/UserItem.cs` with MirDB setters. [Persistence](DATA_MODEL.md).
+      * Live only on the server → owning `ServerLibrary/Models/PlayerObject.cs` or ground `ItemObject.cs` runtime state, according to its lifetime. [Server runtime](SERVER_RUNTIME.md).
+    * Must instance state also reach the client? → For UserItem values, `UserItem.ToClientInfo` → `Globals.cs: ClientUserItem`; trace initial and incremental updates through CConnection. For other runtime state, follow its owning feature's payload. [Networking](NETWORKING.md).
+
+### Monster change
+
+* Is the request about configured content rather than live execution?
+  * Monster attributes/AI selector/image identity → `LibraryCore/SystemModels/MonsterInfo.cs`, `MonsterInfoStat.cs`, `Server/Views/MonsterInfoView.cs`. [Content editors](CONTENT_AND_EDITORS.md).
+  * Spawn or drop definitions → `RespawnInfo.cs` / `DropInfo.cs`; follow `Map.cs: SpawnInfo.DoSpawn` or server `MonsterObject.Drop` only if execution changes. [Monsters and spawning](gameplay/COMBAT_AND_MAGIC.md#monsters-and-spawning).
+* Is it live targeting/combat/AI?
+  * Shared behavior → `ServerLibrary/Models/MonsterObject.cs: ProcessSearch/ProcessTarget/ShouldAttackTarget/CanAttackTarget`. [Monster runtime](SERVER_RUNTIME.md#monster-extension-pattern).
+  * One specialization → subclass selected by `MonsterObject.GetMonster(MonsterInfo.AI)` and its inherited hooks, such as `Monsters/ZumaKing.cs` → ZumaGuardian. [Monster runtime](SERVER_RUNTIME.md#monster-extension-pattern).
+* Is it only appearance/animation/effects? → `Client/Models/MonsterObject.cs`, FrameSet and effect/library references; new action state also needs its S packet path. [Rendering and assets](RENDERING_AND_ASSETS.md), [networking](NETWORKING.md).
+
+### Magic/spell change
+
+* Is it data rather than execution?
+  * Shared spell definition → `LibraryCore/SystemModels/MagicInfo.cs`, `Server/Views/MagicInfoView.cs`. [Content editors](CONTENT_AND_EDITORS.md).
+  * Learned level/experience → `ServerLibrary/DBModels/UserMagic.cs`; if exposed, `ToClientInfo` → `Globals.cs: ClientUserMagic` and learned-state updates. [Spells and learned magic](gameplay/COMBAT_AND_MAGIC.md#spells-and-learned-magic).
+* Is it server behavior?
+  * Spell-specific cast/completion/damage → `ServerLibrary/Models/MagicObject.cs` and selected `Models/Magics` class; `Wizard/FireBall.cs: MagicCast/MagicComplete` is an example. [Combat and magic](gameplay/COMBAT_AND_MAGIC.md).
+  * Player cast dispatch, setup or learned-spell handling → server `PlayerObject.SetupMagic/Magic/MagicToggle/LevelMagic`. [Spells and learned magic](gameplay/COMBAT_AND_MAGIC.md#spells-and-learned-magic).
+* Is it client presentation?
+  * Animation/effect → `Client/Models/PlayerObject.cs`, `MirEffect`/`MirProjectile`/`SpellObject`; check the action payload only if existing state is insufficient. [Rendering and assets](RENDERING_AND_ASSETS.md).
+  * Skill UI/icon → `Client/Scenes/Views/MagicDialog.cs` / `MagicBarDialog.cs`, `LibraryFile.MagicIcon` for icon images. [Client UI](CLIENT_UI.md), [asset identity](RENDERING_AND_ASSETS.md#library-and-image-identity).
+
+### Map/world change
+
+* Is it configured world data? → `LibraryCore/SystemModels/MapInfo.cs`, MapRegion/MovementInfo/SafeZoneInfo and their Server/Views editors. [World and movement](gameplay/WORLD_AND_MOVEMENT.md).
+* Is it live server behavior?
+  * Cells, occupancy or object lifecycle → `ServerLibrary/Models/Map.cs: Map/Cell`, `MapObject.CurrentCell/Spawn/Despawn`. [Server runtime](SERVER_RUNTIME.md#object-hierarchy-and-lifetime).
+  * Movement/teleport rules → server `PlayerObject.Move/Teleport` and SConnection validation; follow client `UserObject` prediction/CConnection reconciliation when movement semantics change. [Movement flow](gameplay/WORLD_AND_MOVEMENT.md#movement-maps-and-teleportation).
+* Is it client drawing or asset content?
+  * Draw ordering/overlays → owning `Client/Scenes/Views/MapControl` partial. [Rendering ownership](RENDERING_AND_ASSETS.md).
+  * Map file/cell content → `MapInfo.FileName` and server `Map.Load`, plus client map loading; map cells can affect collision as well as appearance. [World and movement](gameplay/WORLD_AND_MOVEMENT.md).
+  * Tile/object image only → exact library/image references used by MapControl and the ZL asset; inspect LibraryEditor if authoring images. [Asset formats](RENDERING_AND_ASSETS.md#formats-and-authoring-tools).
+
+### UI change
+
+* Does the request stay local to the client?
+  * Layout/display → owning `Client/Scenes/Views` file and existing DX controls. [Client UI](CLIENT_UI.md).
+  * Remember window/preference state → `Client/UserModels/WindowSetting.cs` / `KeyBindInfo.cs`, DXWindow and `CEnvir.LoadDatabase` as applicable. [Client preference persistence](DATA_MODEL.md).
+  * Change backend drawing/resource behavior → `RenderingCore/Rendering/IRenderingPipeline.cs` and RenderingPipelineManager; ordinary dialog layout stays in DX controls. [Rendering backend](RENDERING_AND_ASSETS.md).
+* Does it cross the server boundary?
+  * Perform gameplay action → existing or new `LibraryCore/Network/ClientPackets.cs` request via `CEnvir.Enqueue` → `SConnection.Process` → feature owner. [Networking](NETWORKING.md).
+  * Display server-owned state → existing client model and `CConnection.Process(S.Type)` → owning dialog; extend the server sender/S payload only if required state is absent. [Networking](NETWORKING.md).
+
+### Persistence change
+
+* Must the value survive reloads?
+  * Yes → Which owner stores it?
+    * Shared definition → `LibraryCore/SystemModels` in System.db, edited through the System-mode `Server/SMain.cs` session. [Definition ownership](DATA_MODEL.md).
+    * Server user state → `ServerLibrary/DBModels` in Users.db through `SEnvir.Session`. [MirDB mechanics](DATA_MODEL.md#mirdb-mechanics).
+    * Client MirDB preference → `Client/UserModels` through `CEnvir.LoadDatabase`'s Users-mode session under Data; this is separate from server Users.db. [Client session](DATA_MODEL.md#global-registries-and-load-ownership).
+  * No → What owns the value?
+    * Server runtime only → owning `ServerLibrary/Models` object/feature and its cleanup, such as PlayerObject's active crafting timer. [Server runtime](SERVER_RUNTIME.md).
+    * Local presentation only → owning client model/dialog; no MirDB property required. [Client UI](CLIENT_UI.md).
+    * Network representation only → packet properties or transfer structures such as `LibraryCore/Globals.cs: ClientUserItem`; serialization does not make a field persistent. [Networking](NETWORKING.md#wire-compatibility).
+
 ## Dependency matrix
 
 `Check` means conditional on the changed semantics, not mandatory edits.
