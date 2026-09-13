@@ -48,6 +48,7 @@ Exact project references and test projects: [PROJECT_MAP](docs/PROJECT_MAP.md).
 
 ## Critical rules
 
+* After implementation, use [VERIFICATION](docs/VERIFICATION.md) to choose the smallest relevant build/test/manual validation path. Do not claim unrelated checks validate the change.
 * Packet dispatch is `public Process(ConcretePacket p)` discovered by reflection, not a central opcode switch. Packet IDs and property order are derived by reflection; changes require compatible client/server builds. See [NETWORKING](docs/NETWORKING.md).
 * Receive callbacks queue packets; the environment's processing loop invokes gameplay handlers. Preserve that ownership for mutable game objects. Startup/loading also uses background work; do not infer that every method is thread-safe.
 * Use MirDB collection creation and model setters calling `OnChanged`. Relationship setters maintain inverse links; aggregate deletion can delete related objects. A collection's integer indexer is a list position, not a DBObject identity lookup. See [DATA_MODEL](docs/DATA_MODEL.md).
@@ -84,6 +85,8 @@ Documentation is a navigation index, not a second copy of the source. Keep featu
 * A one-off bug fix leaves documented architecture and flows unchanged.
 
 ### Documentation validation
+
+Run the [documentation reference check](docs/VERIFICATION.md#documentation-reference-check) after moving/renaming documented files or headings.
 
 When modifying a documented subsystem:
 
