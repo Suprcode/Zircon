@@ -16,7 +16,7 @@
 | Companions/castles/events | `Server/Views/CompanionInfoView.cs`, `CastleInfoView.cs`, `EventInfoView.cs` | corresponding SystemModels |
 | Accounts/characters | `Server/Views/AccountView.cs`, `CharacterView.cs` | ServerLibrary DBModels; inspect user-session handling |
 
-Canonical `ItemInfoView` binds `SMain.Session.GetCollection<ItemInfo>().Binding`, configures enum/lookups and invokes `Session.Save(true)`. Designer files define visible columns and editors, so adding a model property does not prove it is editable. `CraftingInfoView` also validates ingredient-row limits/duplicates and imports/exports recipe or level data according to the selected tab.
+Canonical example: [ItemInfoView](CANONICAL_EXAMPLES.md#systemmodel-editor). It binds `SMain.Session.GetCollection<ItemInfo>().Binding`, configures enum/lookups and invokes `Session.Save(true)`. Designer files define visible columns and editors, so adding a model property does not prove it is editable. `CraftingInfoView` also validates ingredient-row limits/duplicates and imports/exports recipe or level data according to the selected tab.
 
 `Server/Helpers/JsonImporter.cs` and `Server/Helpers/JsonExporter.cs` support content import/export. Follow existing model associations and lookup rules; JSON exports are not the network format. SMain's insertion helpers can shift identities and mark references modified; do not assume definition indices are stable after content restructuring.
 

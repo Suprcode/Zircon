@@ -12,6 +12,10 @@
 
 `Info` is a clue, not a universal classification: `ItemInfo` is a shared definition, but `CharacterInfo` and `MailInfo` are server user data. Check inheritance/attributes and consumers.
 
+### Usually NOT required
+
+For a model-property change, skip MirDB engine internals when existing setters/types/associations suffice. Skip packets/client UI for server-private state; definition editing does not imply new user-instance fields.
+
 ## Canonical examples
 
 Use [data model examples](CANONICAL_EXAMPLES.md#data-models): CurrencyInfo for scalar definitions, crafting ingredients for associations, UserCurrency for persisted user state, UserItem/socket links for children and MagicInfo.LegacyClass specifically for migration.

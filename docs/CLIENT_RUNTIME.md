@@ -27,6 +27,8 @@ CEnvir.GameLoop
 | `Models/SpellObject` persistent world spell processing | `Models/SpellObject` visual spell actor | S.ObjectSpell, S.ObjectSpellChanged, S.ObjectRemove |
 | `Models/Map` server movement cells/population | `Scenes/Views/MapControl` map rendering/input/object list | S.MapChanged plus object packets; not equivalent classes |
 
+Canonical actor/effect references: [ItemObject and MirEffect](CANONICAL_EXAMPLES.md#client-visuals-and-assets).
+
 ## Object and animation lifecycle
 
 `Client/Envir/CConnection.cs: Process(S.ObjectPlayer/ObjectMonster/ObjectNPC/ObjectItem/ObjectSpell)` constructs the corresponding model using packet data. The models register with `GameScene.Game.MapControl.Objects`. `Process(S.ObjectRemove)` finds the object by ObjectID and calls `Remove`, including selection/display cleanup. Map changes and scene disposal are larger cleanup boundaries; inspect those when retaining references.

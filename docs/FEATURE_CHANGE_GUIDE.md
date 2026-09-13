@@ -1,6 +1,6 @@
 # Feature change guide
 
-Use [GAMEPLAY_SYSTEMS](GAMEPLAY_SYSTEMS.md) to select a family section and its source entry points, then this guide to identify boundaries. Follow actual dependencies; a new dialog is not automatically a new server feature.
+Use this guide when change scope is unclear or crosses owners; otherwise go directly from [TASK_ROUTER](TASK_ROUTER.md) or [GAMEPLAY_SYSTEMS](GAMEPLAY_SYSTEMS.md) to the feature. Read one decision tree or matrix row, then the relevant checklist—not this entire file.
 
 ## Canonical examples
 
@@ -30,7 +30,7 @@ Choose the branch matching the requested behavior before opening source. Follow 
   * Spawn or drop definitions → `RespawnInfo.cs` / `DropInfo.cs`; follow `Map.cs: SpawnInfo.DoSpawn` or server `MonsterObject.Drop` only if execution changes. [Monsters and spawning](gameplay/COMBAT_AND_MAGIC.md#monsters-and-spawning).
 * Is it live targeting/combat/AI?
   * Shared behavior → `ServerLibrary/Models/MonsterObject.cs: ProcessSearch/ProcessTarget/ShouldAttackTarget/CanAttackTarget`. [Monster runtime](SERVER_RUNTIME.md#monster-extension-pattern).
-  * One specialization → subclass selected by `MonsterObject.GetMonster(MonsterInfo.AI)` and its inherited hooks, such as `Monsters/ZumaKing.cs` → ZumaGuardian. [Monster runtime](SERVER_RUNTIME.md#monster-extension-pattern).
+  * One specialization → subclass selected by `MonsterObject.GetMonster(MonsterInfo)` (switches on `AI`) and its inherited hooks, such as `Monsters/ZumaKing.cs` → ZumaGuardian. [Monster runtime](SERVER_RUNTIME.md#monster-extension-pattern).
 * Is it only appearance/animation/effects? → `Client/Models/MonsterObject.cs`, FrameSet and effect/library references; new action state also needs its S packet path. [Rendering and assets](RENDERING_AND_ASSETS.md), [networking](NETWORKING.md).
 
 ### Magic/spell change
@@ -80,30 +80,56 @@ Choose the branch matching the requested behavior before opening source. Follow 
 
 ## Dependency matrix
 
-`Check` means conditional on the changed semantics, not mandatory edits.
+Inspection hints, not mandatory edits: **Yes** = direct owner; **Usually** = normal consumer/path; **Maybe** = only under the stated condition; **No** = skip for this scope. Verify source before expanding. Packet inspection includes existing send/receive paths and transfer structures, not necessarily new fields. Shared definition means SystemModels, not every shared enum. MirDB user state includes client preferences; Editor includes content and image tools. UI includes MapControl; Assets includes rendering/library code.
 
-| Change | Shared | Server | Network | Client | UI | Editor/content |
-| --- | --- | --- | --- | --- | --- | --- |
-| Item definition property shown in tooltip | ItemInfo | Check rule users | Check; definition normally System.db | definition lookup | GameScene tooltip | ItemInfoView + System.db |
-| Per-instance item property | ClientUserItem if exposed | UserItem + rule users | conversion/payload | instance state | Check | user-data tooling if editable |
-| Spell with new visuals | MagicInfo/MagicType | MagicObject registration/execution | existing action payload or extension | PlayerObject/effects | icons/learned skill | MagicInfoView/assets |
-| Monster target algorithm | none normally | base/subclass hooks | Check new observable action | Check new action only | none normally | Check changed configuration |
-| Button on existing dialog | none normally | Check action | Check action | event | owning dialog | existing asset or new image |
-| New client action | packet and any structures | SConnection + behavior | both endpoints | send/response | Check | Check definitions |
-| Recipe behavior | CraftingInfo if rule data changes | crafting partial | Check state payload | CConnection/UserObject | CraftingDialogs | CraftingInfoView |
-| New image codec | ZL format metadata | none normally | none normally | reader via RenderingCore | Check preview | LibraryEditor writer |
+### Items, monsters and magic
+
+Source routes: [items](gameplay/ITEMS_AND_ECONOMY.md), [combat/magic](gameplay/COMBAT_AND_MAGIC.md).
+
+| Change type | Shared definition | Server runtime | MirDB user state | Packet | Client model | UI | Assets | Editor |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| ItemInfo property | Yes | Maybe: rule consumer | No | No: System.db | Maybe: lookup use | Maybe: displayed | Maybe: appearance | Usually |
+| UserItem per-instance property | No | Usually | Yes | Maybe: exposed | Maybe: exposed | Maybe: displayed | No | Maybe: user tooling |
+| Item movement rule | Maybe: eligibility data | Yes | Usually: ownership/slot | Usually | Usually: grid state | Usually: cells/locks | No | Maybe: definition field |
+| Monster targeting rule | Maybe: configurable | Yes | No | Maybe: new action state | Maybe: new action | No | Maybe: new animation | Maybe: configurable |
+| MonsterInfo content property | Yes | Usually | No | Maybe: visible runtime state | Maybe: visible state | No | Maybe: appearance | Usually |
+| New monster visual | Maybe: image selection | Maybe: new action | No | Maybe: new action state | Yes | No | Yes | Maybe: selection/authoring |
+| Spell damage rule | Maybe: configured power | Yes | No | Usually: existing results | Maybe: changed result handling | Maybe: damage hint | No | Maybe: power field |
+| New MagicInfo property | Yes | Maybe: rule consumer | No | No: System.db | Maybe: consumer | Maybe: displayed | Maybe: presentation | Usually |
+| Learned magic state | No | Yes | Yes: UserMagic | Usually | Usually: ClientUserMagic | Usually: skill display | No | Maybe: user tooling |
+| Client-only spell effect | No | No | No | No: existing action | Yes | No | Usually | Maybe: image authoring |
+
+### Progression, world and integration
+
+Source routes: [quests](gameplay/QUESTS_AND_PROGRESSION.md), [crafting](gameplay/CRAFTING_COMPANIONS_AND_ACTIVITIES.md), [world](gameplay/WORLD_AND_MOVEMENT.md); UI, persistence, networking and asset owners are linked in the decision trees above.
+
+| Change type | Shared definition | Server runtime | MirDB user state | Packet | Client model | UI | Assets | Editor |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Quest definition | Yes | Usually: checks/rewards | Maybe: progress compatibility | Maybe: new progress payload | Usually: definition use | Usually: quest display | No | Usually |
+| Quest progress state | No | Yes | Yes: UserQuest | Usually | Usually | Usually: tracker | No | Maybe: user tooling |
+| Crafting rule | Maybe: configured rule | Yes | Maybe: progression/items | Usually | Maybe: mirrored eligibility | Usually: craftability | No | Maybe: rule field |
+| New crafting definition | Yes | Usually | Maybe: favourite/progression | Maybe: new state | Usually | Usually | Maybe: new icon | Yes |
+| UI-only dialog change | No | No | No | No | No | Yes | Maybe: image/primitive | Maybe: image authoring |
+| New gameplay button | Maybe: action data | Yes: action owner | Maybe: saved outcome | Yes: existing/new request | Maybe: result state | Yes | Maybe: image | Maybe: action data |
+| Map definition | Yes | Usually | Maybe: saved location compatibility | Maybe: new map state | Maybe: client map data | Usually: MapControl | Maybe: map file/image | Usually |
+| Map rendering change | No | No | No | No: existing state | Maybe: actor drawing | Yes: MapControl | Usually | Maybe: image authoring |
+| Packet-only protocol addition | No | Yes: server endpoint | No | Yes | Maybe: transfer consumer | No | No | No |
+| Client preference/window setting | No | No | Yes: Client/UserModels | No | No | Yes: setting consumer | No | No |
+| New image library | No | No | No | No | Maybe: model draw site | Maybe: control draw site | Yes: Libraries/reader | Usually: LibraryEditor |
+| New image codec | No | No | No | No | No | Maybe: preview options | Yes: ZL reader/metadata | Yes: paired writer |
+| Editor-only presentation change | No | No | No | No | No | No: game UI | No | Yes: Server/Views |
+
+Definition-only rows assume distribution through System.db; if a value becomes per-instance or needs a new runtime payload, also follow that state/packet row. Pure presentation rows assume existing authoritative timing/state; gameplay changes require the corresponding server row.
 
 ## Item property → inventory tooltip
 
 ### Usually required
 
-* **ItemInfo definition property:** `LibraryCore/SystemModels/ItemInfo.cs` and its actual rule consumers; `Server/Views/ItemInfoView.cs` / `.Designer.cs` if editable, and `Client/Scenes/GameScene.cs: CreateItemLabel` if displayed. Distribute updated System.db definitions.
-* **Per-instance UserItem property:** `ServerLibrary/DBModels/UserItem.cs` and the code mutating that value. If exposed to the client, inspect `ToClientInfo`, `LibraryCore/Globals.cs: ClientUserItem` (including copies), initial transfer and runtime item updates in `Client/Envir/CConnection.cs`; inspect the display only if relevant.
+* Select definition versus instance state with the [item tree](#item-change); inspect its consumer, conversion/display and editor only as applicable.
 
 ### Usually NOT required
 
-* Definition-only fields do not normally need `UserItem` persistence fields or new item-instance packet properties: `ClientUserItem.Complete` resolves `InfoIndex` to the shared definition.
-* Instance-only fields do not normally need `ItemInfo` or its editor unless the design also adds a definition-level default/rule. Server-private instance values do not need client transfer fields.
+* Definition-only fields need no new UserItem/instance-packet fields; instance-only fields need no ItemInfo change. [Item ownership and source anchors](gameplay/ITEMS_AND_ECONOMY.md#inventory-equipment-and-storage).
 
 1. Follow [MirDB rules](DATA_MODEL.md#mirdb-mechanics) for the selected definition/instance model; use ItemInfoStat/Stat for an actual stat.
 2. Inspect affected rule consumers: `PlayerObject.ItemUse/CanUseItem/CanWearItem/RefreshStats`, and `SEnvir.CreateFreshItem` for initialization.
@@ -125,13 +151,11 @@ Choose the branch matching the requested behavior before opening source. Follow 
 
 ### Usually required
 
-* **Targeting / aggro:** `ServerLibrary/Models/MonsterObject.cs` search/target/eligibility hooks and the subclass selected by `GetMonster`, including inherited overrides.
-* **Server-only AI:** the selected `Models/Monsters` behavior and base hooks it calls; follow server attack/delayed-action or movement code only when those semantics change.
+* Server MonsterObject and the selected subclass for targeting/AI; use the [monster decision tree](#monster-change).
 
 ### Usually NOT required
 
-* `Client/Models/MonsterObject.cs`, UI dialogs, `RenderingCore` and packet definitions for choosing among existing targets/actions. Expand to client presentation and action payloads only for new visible state, animation or action semantics.
-* `MonsterInfo`, respawn editors and `Map.SpawnInfo` for a behavior-only adjustment unless configuration or spawning itself changes.
+* Client, UI, assets or packets for choosing among existing actions; definition/spawn editing unless configured content changes.
 
 For definition/spawn/drop and packet entry points use [monsters and spawning](gameplay/COMBAT_AND_MAGIC.md#monsters-and-spawning); for targeting hooks and factory selection use [monster runtime](SERVER_RUNTIME.md#monster-extension-pattern). A new attack stage/projectile/death appearance needs its client counterpart even when server damage already works.
 
@@ -196,4 +220,4 @@ Follow [asset identity, paired format readers/writers and resource rules](RENDER
 
 ## Navigation review
 
-The five target tasks resolve without a repository-wide scan: item/tooltip → first section; spell/effect → spell section; monster targeting → monster section; dialog button → dialog section; client action → networking checklist. Follow those narrow entry points and only expand when an implementation calls a direct dependency not already mapped.
+Use [TASK_ROUTER](TASK_ROUTER.md) for the first owner and [CANONICAL_EXAMPLES](CANONICAL_EXAMPLES.md) for one representative implementation. Expand only along affected dependencies; source counts are not a reason to omit a necessary boundary.

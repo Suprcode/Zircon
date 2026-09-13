@@ -10,23 +10,16 @@ Legend of Mir 3 client, server simulation, shared game definitions/MirDB, graphi
 4. Do not preload every file in `/docs` "for context" or perform repository-wide searches when documentation already identifies likely source files.
 5. Prefer canonical examples and directly referenced dependencies over broad discovery searches.
 
-### Monster targeting change
+If the starting subsystem is unclear, use [TASK_ROUTER](docs/TASK_ROUTER.md) to map request terms and intent to one guide and source area.
 
-`AGENTS.md` → monster entry in [COMBAT_AND_MAGIC](docs/gameplay/COMBAT_AND_MAGIC.md#monsters-and-spawning) → `ServerLibrary/Models/MonsterObject.cs` → relevant monster subclass if required.
-Initially skip `CLIENT_UI.md`, `DATA_MODEL.md`, `RENDERING_AND_ASSETS.md` and unrelated packet files; expand only if the change affects those areas.
+Normal route: `AGENTS.md` → [TASK_ROUTER](docs/TASK_ROUTER.md) or [GAMEPLAY_SYSTEMS](docs/GAMEPLAY_SYSTEMS.md) → one relevant detailed section → initially 2–6 source files. This is a starting budget, not a limit when direct dependencies require more. Skip the router when the owner is already clear; never preload all docs.
 
-### UI-only layout change
-
-`AGENTS.md` → [CLIENT_UI](docs/CLIENT_UI.md) → owning file under `Client/Scenes/Views`.
-Initially skip `SERVER_RUNTIME.md`, `NETWORKING.md` and `ServerLibrary` unless the UI change performs a gameplay action.
-
-### Packet/client-server change
-
-`AGENTS.md` → [NETWORKING](docs/NETWORKING.md) → concrete send/receive sites → affected feature code.
-
-### Persisted property change
-
-`AGENTS.md` → [DATA_MODEL](docs/DATA_MODEL.md) → concrete model under `LibraryCore/SystemModels` or `ServerLibrary/DBModels` → editor/network/client areas only if the property crosses those boundaries.
+| Known task | Detailed entry → source | Usually skip initially |
+| --- | --- | --- |
+| Monster targeting | [COMBAT_AND_MAGIC](docs/gameplay/COMBAT_AND_MAGIC.md#monsters-and-spawning) → server MonsterObject and relevant subclass | Client UI/rendering and packets unless visible state changes |
+| Dialog layout | [CLIENT_UI](docs/CLIENT_UI.md) → owning Client/Scenes/Views file | ServerLibrary and networking unless gameplay changes |
+| Packet/client-server | [NETWORKING](docs/NETWORKING.md) → concrete sender/receiver | Unrelated UI and persistence |
+| Persisted property | [DATA_MODEL](docs/DATA_MODEL.md) → concrete SystemModel/DBModel | Editor/network/client unless the property crosses those boundaries |
 
 ## Repository map
 
@@ -73,8 +66,29 @@ For runtime or partial-class navigation, choose [SERVER_RUNTIME](docs/SERVER_RUN
 
 For a representative implementation, use [CANONICAL_EXAMPLES](docs/CANONICAL_EXAMPLES.md) and open the selected method first. It covers UI, packet flow, models, player/monster behavior, visuals and editor integration; do not read every example for one task.
 
-When making a change, update documentation only when the change affects how future developers or AI agents need to understand, locate or extend the system.
+Documentation is a navigation index, not a second copy of the source. Keep feature-specific guidance concise.
 
-Update documentation when a feature moves; a client/server flow changes; packets are added or removed from an important flow; a major model relationship changes; a new extension pattern or significant subsystem is introduced; a canonical example is removed; or an important invariant changes.
+### Update docs when
 
-Do not update documentation for trivial implementation changes. Keep feature-specific documentation concise.
+* A feature moves to another file/project or a project dependency changes.
+* A significant packet flow changes, including a new major ClientPacket/ServerPacket in a documented feature.
+* A new PlayerObject partial or major GameScene partial is introduced.
+* A canonical example disappears or stops being representative.
+* A new SystemModel/DBModel pattern or major relationship changes how future features should be implemented.
+* A major rendering/backend/library mechanism changes or a documented invariant stops being true.
+
+### Do not update docs when
+
+* A local implementation detail or method body changes without changing navigation or feature boundaries.
+* A minor helper, balance value or monster-specific constant changes.
+* A one-off bug fix leaves documented architecture and flows unchanged.
+
+### Documentation validation
+
+When modifying a documented subsystem:
+
+1. Check that its referenced paths and method names still exist.
+2. Check that its documented “Start here” files remain representative.
+3. Update only affected documentation; do not regenerate every document.
+
+Never automatically rewrite the entire documentation set after every feature change.

@@ -6,6 +6,8 @@
 
 Start low-level work at `Rendering/IRenderingPipeline.cs`, `RenderingPipelineManager.cs`, `RenderingPipelineContext.cs` and `RenderTexture.cs`. The manager's **PipelineFactories** currently registers Silk D3D11 and Silk Vulkan, with D3D11 as default. `RenderingPipelineIds.cs` also names OpenGL; a constant alone is not proof of a registered runtime backend. SharpDX D3D9/D3D11 source directories exist; inspect factory registration before claiming they are selectable. Vulkan's implementation file is named `Rendering/SilkVulkan/SilkVulcanRenderingPipeline.cs` (filename spelling differs from class spelling).
 
+Canonical references: [MirEffect and DXImageControl](CANONICAL_EXAMPLES.md#client-visuals-and-assets).
+
 ## Library and image identity
 
 RenderingPipelineManager is partial: `RenderingPipelineManager.cs` owns selection/common operations; `UIBorderRendering.cs` border primitives; `UICacheContext.cs` presentation coordinate/cache context; `UICacheKey.cs` cache identity; `UICacheTargetPool.cs` pooled UI targets. These all live under `RenderingCore/Rendering/`.

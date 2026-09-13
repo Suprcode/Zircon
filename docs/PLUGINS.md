@@ -34,6 +34,6 @@ SMain constructs/initializes editor Session and subscribes loader events
 
 `PluginGridActionBinder.Attach` enumerates current plugins, asks eligible providers for actions for a row type, and attaches them to a supported grid. Concrete consumers are `Server/Views/MonsterInfoView.cs` and `Server/Views/DungeonInfoView.cs`. Do not assume every grid offers the hook. Setup order matters because it enumerates loaded plugin instances.
 
-`Server/SMain.cs` forwards loader Log/View/MapViewer to the application. This is the canonical integrated host example. `PluginStandalone/Program.cs` is the canonical alternate host: reads App.config's `Plugin` key, loads that file, requires IPluginForm with standalone support, and runs its returned Form. It calls LoadPlugin directly, so it does not perform integrated Session assignment/menu setup.
+The [integrated host example](CANONICAL_EXAMPLES.md#plugin-host-integration) is `Server/SMain.cs`. `PluginStandalone/Program.cs` is the canonical alternate host: reads App.config's `Plugin` key, loads that file, requires IPluginForm with standalone support, and runs its returned Form. It calls LoadPlugin directly, so it does not perform integrated Session assignment/menu setup.
 
 Needs verification: no concrete `Plugin.*` extension implementation is included in the main solution. Validate a third-party plugin's naming, runtime/dependency compatibility, standalone initialization and cleanup from its own source before using it as a canonical implementation.

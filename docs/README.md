@@ -1,9 +1,10 @@
 # AI source navigation
 
-Read [../AGENTS.md](../AGENTS.md) first. Paths in these guides are repository-relative; `File.cs: Method` names a search anchor rather than a line number. Source wins over documentation.
+Read [AGENTS](../AGENTS.md) first, then one router → one detailed section → initially 2–6 source files. This table is a menu, not a reading list. Paths are repository-relative; `File.cs: Method` is a search anchor. Source wins.
 
 | Need | Read |
 | --- | --- |
+| Where to start from a request | [TASK_ROUTER](TASK_ROUTER.md) |
 | Project / dependency | [PROJECT_MAP](PROJECT_MAP.md) |
 | Gameplay feature | [GAMEPLAY_SYSTEMS](GAMEPLAY_SYSTEMS.md) → one of six family guides |
 | Cross-project change | [FEATURE_CHANGE_GUIDE](FEATURE_CHANGE_GUIDE.md) |
