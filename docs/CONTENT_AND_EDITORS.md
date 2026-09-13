@@ -24,7 +24,7 @@ Canonical `ItemInfoView` binds `SMain.Session.GetCollection<ItemInfo>().Binding`
 
 Editor save → MirDB System.db. `Server/Views/ConfigView.cs: SyncronizeLocalButton_Click` explicitly saves the editor Session and copies System.db to `Config.ClientPath/Data`. `Client/Envir/CEnvir.LoadDatabase` populates Globals from that client database. `GeneralPackets.GoodVersion` carries a system-database version; `Client/Scenes/LoginScene.cs: UpdateSystemDatabaseVersionLabel` compares/displays it. This is not automatic replacement of definitions through the game connection. Distribution can use the patching path below.
 
-For remote **server** content upload, `Server/Views/SyncForm.cs` posts System.db to `ServerLibrary/Envir/WebServer.cs: SystemDBSync`. It writes the remote file after enabled/key/size checks; the handler does not reload existing runtime collections. Keep on-disk version/file changes distinct from in-memory simulation content. See [NETWORKING](NETWORKING.md).
+For remote **server** content upload, start at `Server/Views/SyncForm.cs`; [NETWORKING](NETWORKING.md#separate-http-paths) owns endpoint validation and reload boundaries. Uploading System.db does not reload live collections.
 
 ## Image tools and supporting binaries
 
@@ -39,7 +39,7 @@ Use [RENDERING_AND_ASSETS](RENDERING_AND_ASSETS.md) for format and cache authori
 
 `PatchManager/PMain.cs` produces `PList.Bin`, gzipped payloads and uploads. `PatchManager/PatchInformation.cs` computes MD5 checksums and writes file metadata. `Launcher/LMain.cs` consumes the list, compares/downloads payloads, maintains Version.bin and launches Zircon.exe. Both use path flattening (`\\` replaced by `-`) for compressed web filenames.
 
-`Launcher/PatchInformation.cs` reads the binary metadata in the writer's order; change these paired definitions together. Check gzip, filename handling and hash/length semantics at both ends before altering the manifest. Launcher compiles linked ConfigReader/Time sources rather than referencing all LibraryCore.
+`Launcher/PatchInformation.cs` reads the binary metadata in the writer's order; change these paired definitions together. Check gzip, filename handling and hash/length semantics at both ends before altering the manifest. Project/source references are listed in [PROJECT_MAP](PROJECT_MAP.md).
 
 `Patcher/Program.cs` stores two command-line arguments. `Patcher/PMain.cs` waits for the launcher to exit, replaces the destination with the supplied temporary file, then starts it. It is a launcher-update helper, not the game-data patch generator.
 

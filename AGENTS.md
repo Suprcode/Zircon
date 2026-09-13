@@ -71,6 +71,8 @@ For runtime or partial-class navigation, choose [SERVER_RUNTIME](docs/SERVER_RUN
 
 ## Documentation maintenance
 
+For a representative implementation, use [CANONICAL_EXAMPLES](docs/CANONICAL_EXAMPLES.md) and open the selected method first. It covers UI, packet flow, models, player/monster behavior, visuals and editor integration; do not read every example for one task.
+
 When making a change, update documentation only when the change affects how future developers or AI agents need to understand, locate or extend the system.
 
 Update documentation when a feature moves; a client/server flow changes; packets are added or removed from an important flow; a major model relationship changes; a new extension pattern or significant subsystem is introduced; a canonical example is removed; or an important invariant changes.

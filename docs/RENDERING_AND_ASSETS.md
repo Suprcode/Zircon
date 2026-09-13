@@ -39,10 +39,8 @@ Client `Program.InvalidateRenderCaches/InvalidateUiRenderCaches` handles backend
 
 ## Migration context and checks
 
-Keep [vortice-migration.md](vortice-migration.md) as the existing historical migration proposal. It is not a description of the current selectable pipelines: source now contains a shared pipeline manager and Silk implementations. Consult current project files/factories first and do not reproduce the proposal's package assumptions as current facts.
+The historical `vortice-migration.md` proposal is absent from this checkout. Current backend authority is the project files and registered pipeline factories above, not historical package assumptions.
 
-`Tools/RenderingCacheChecks` is the focused cache-check executable. `Tests/GroundLootChecks` checks linked client ground-loot/effect helpers. Neither substitutes for exercising the actual graphical client.
-
-`Tools/LabelRenderingChecks` references Client for graphical label checks. World-name overlays have their own cache/lifetime implementation in `Client/Scenes/Views/MapControl.Names.cs`; inspect it together with DXLabel for name-scaling changes.
+Check project paths/scopes are in [PROJECT_MAP](PROJECT_MAP.md#supporting-folders-and-checks); automated checks do not replace exercising the graphical client. For world-name scaling, inspect `Client/Scenes/Views/MapControl.Names.cs` with DXLabel because the overlay has its own cache/lifetime.
 
 Needs verification: exact image contents/index availability in deployed ZL libraries and backend/device visual parity require the actual assets and graphics runs; this documentation does not certify either.

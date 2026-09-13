@@ -17,6 +17,10 @@ Start with `ServerLibrary/Envir/SEnvir.cs`, `SConnection.cs`, `ServerLibrary/Mod
 | Spell registration | `MagicTypes` |
 | Scheduled world state | `ConquestWars`, `EventHandler`, `StartConquest` |
 
+## Canonical examples
+
+Use [server behavior examples](CANONICAL_EXAMPLES.md#server-behavior): crafting favourite selection for a small player feature, the crafting partial for timed work, OmaMage for a single monster override and ZumaKing only for multiple coordinated hooks.
+
 ## Processing and timing
 
 The loop refreshes `SEnvir.Now`, admits queued connections and processes connections, then calls every player's `StartProcess`. Non-player ActiveObjects are processed in a rolling, approximately one-millisecond work window. Timed branches process maps/instances, wars, events, WebServer and saving. This is not a fixed tick that necessarily visits every monster every iteration.
@@ -96,8 +100,7 @@ Most systems still live in the main file. Do not invent `PlayerObject.Inventory.
 
 `MonsterObject.GetMonster(MonsterInfo)` switches on **MonsterInfo.AI**, the integer behavior selector; MonsterInfo.Image is a separate visual identity. Read the selected subclass before altering base targeting. Base hooks: `ProcessAI`, `ProcessSearch`, `ProperSearch`, `ProcessRoam`, `ProcessTarget`, `ShouldAttackTarget`, `CanAttackTarget`, `Attack`, `Walk`, `Die`, `Drop`. Search deadlines, pet modes and target validity constrain these paths. Base ProcessSearch considers eligible players and their pets within ViewRange, keeps the closest candidates and randomly selects among tied candidates; pets use ProperSearch instead.
 
-* Small attack variation: `Models/Monsters/OmaMage.cs` extends SkeletonAxeThrower and chooses existing AttackMagic/AttackAoE actions.
-* Complex example: `Models/Monsters/ZumaKing.cs` extends ZumaGuardian, overrides spawn/process/target hooks, and summons minions at health stages. Copy only relevant hooks, not boss-specific state.
+Use the [simple and complex monster examples](CANONICAL_EXAMPLES.md#simple-monster-subclass) for bounded implementations.
 * `Models/AutoPath/MonsterObject.AutoPath.cs` supplies monster pathing behavior; it is another partial of MonsterObject, not a second monster class.
 
 A target-selection-only change usually stays here. New action/projectile/appearance semantics require [CLIENT_RUNTIME](CLIENT_RUNTIME.md), the S object-action packets and the client MonsterObject image/animation cases.

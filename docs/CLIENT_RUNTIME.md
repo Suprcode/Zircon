@@ -64,4 +64,4 @@ Main GameScene file entry points:
 | Cooldowns | server action/magic deadlines | UserObject presentation/input gating; S.MagicCooldown and object-action timing |
 | UI layout/keys | no server ownership implied | client UserModels and CEnvir.Session |
 
-Canonical feature: crafting's server partial, `CConnection.Process(S.CraftingState/Started/Ended)`, UserObject crafting fields and `Views/CraftingDialogs.cs`. It demonstrates shared definition lookup, server validation and UI progress without moving game rules into the dialog.
+Canonical reference: [crafting packet flow](CANONICAL_EXAMPLES.md#packet-flow); [activity ownership and rules](gameplay/CRAFTING_COMPANIONS_AND_ACTIVITIES.md#recipe-crafting).

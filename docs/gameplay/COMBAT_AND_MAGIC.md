@@ -4,15 +4,9 @@
 
 ## Reading this guide
 
-Paths are repository-relative. To avoid repeating long paths in every entry:
+Paths are repository-relative: **P** = `ServerLibrary/Models/PlayerObject.cs`; **Defs** = `LibraryCore/SystemModels/`; **DB** = `ServerLibrary/DBModels/`; **Views** = `Client/Scenes/Views/`.
 
-* **P** = `ServerLibrary/Models/PlayerObject.cs`; partial paths are written explicitly. Regions/methods are mapped in [SERVER_RUNTIME](../SERVER_RUNTIME.md).
-* **Defs** = `LibraryCore/SystemModels/`; **DB** = `ServerLibrary/DBModels/`; **Views** = `Client/Scenes/Views/`.
-* C packets are in `LibraryCore/Network/ClientPackets.cs`, handled by `ServerLibrary/Envir/SConnection.cs: Process(C.Type)`; S packets are in ServerPackets.cs, handled by `Client/Envir/CConnection.cs: Process(S.Type)`. [NETWORKING](../NETWORKING.md) traces dispatch and complete examples.
-* Packet lists are significant entry points, not exhaustive protocols. Shared transfer structures (`ClientUserItem`, etc.) are in `LibraryCore/Globals.cs`.
-* **Start here** names the first 2–5 files/anchors; inspect the listed definition/DB/packet counterparts when their boundary changes. Editor counterparts are in [CONTENT_AND_EDITORS](../CONTENT_AND_EDITORS.md).
-
-Boundary guides, only as needed: [NETWORKING](../NETWORKING.md), [DATA_MODEL](../DATA_MODEL.md), [SERVER_RUNTIME](../SERVER_RUNTIME.md), [CLIENT_RUNTIME](../CLIENT_RUNTIME.md), [CLIENT_UI](../CLIENT_UI.md), [RENDERING_AND_ASSETS](../RENDERING_AND_ASSETS.md).
+Start at the selected feature's anchors; packet lists are entry points, not exhaustive protocols. C/S denote client/server senders; dispatch and transfer structures: [NETWORKING](../NETWORKING.md). Follow other boundaries only as needed via the [guide index](../README.md); editor counterparts: [CONTENT_AND_EDITORS](../CONTENT_AND_EDITORS.md).
 
 ## Change boundaries
 
@@ -35,7 +29,7 @@ Boundary guides, only as needed: [NETWORKING](../NETWORKING.md), [DATA_MODEL](..
 * **Server:** P SetupMagic/Magic/MagicToggle/LevelMagic; SEnvir.MagicTypes; `Models/MagicObject.cs`; implementations in `Models/Magics` class folders.
 * **Client / UI:** Models PlayerObject.cs magic/effect cases, UserObject.cs action input; Views MagicDialog.cs/MagicBarDialog.cs; FrameSet and Libraries.
 * **Packets / flow:** C.Magic/MagicToggle/MagicKey → execution/learned-state handling; S.ObjectMagic/ObjectProjectile/NewMagic/MagicLeveled/MagicCooldown.
-* **Important:** server implementation registration uses MagicTypeAttribute, while visual cases are separate. `Models/Magics/Wizard/FireBall.cs` is a canonical targeted delayed hit: MagicCast schedules DelayMagic; MagicComplete applies damage.
+* **Important:** `SEnvir.CreateMagic` discovers non-abstract direct subclasses of MagicObject carrying MagicTypeAttribute; indirectly derived classes do not register automatically. Match the constructor used by `PlayerObject.SetupMagic`. Client visual cases are separate. `Models/Magics/Wizard/FireBall.cs` is a canonical targeted delayed hit: MagicCast schedules DelayMagic; MagicComplete applies damage.
 * **Start here:** MagicInfo.cs; FireBall.cs or the relevant spell; P SetupMagic/Magic; client PlayerObject.cs; MagicDialog.cs.
 
 ## Monsters and spawning

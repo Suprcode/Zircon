@@ -2,6 +2,10 @@
 
 Use [GAMEPLAY_SYSTEMS](GAMEPLAY_SYSTEMS.md) to select a family section and its source entry points, then this guide to identify boundaries. Follow actual dependencies; a new dialog is not automatically a new server feature.
 
+## Canonical examples
+
+After choosing a boundary, select one reference from [CANONICAL_EXAMPLES](CANONICAL_EXAMPLES.md); its bounded entry points cover all families below. Reuse the crafting example for a complete packet flow.
+
 ## Change decision trees
 
 Choose the branch matching the requested behavior before opening source. Follow more than one branch only when the change crosses those boundaries; the leaves link to the existing detailed guides. Client and server classes with the same name are separate owners.
@@ -101,17 +105,17 @@ Choose the branch matching the requested behavior before opening source. Follow 
 * Definition-only fields do not normally need `UserItem` persistence fields or new item-instance packet properties: `ClientUserItem.Complete` resolves `InfoIndex` to the shared definition.
 * Instance-only fields do not normally need `ItemInfo` or its editor unless the design also adds a definition-level default/rule. Server-private instance values do not need client transfer fields.
 
-1. Definition property: `LibraryCore/SystemModels/ItemInfo.cs` (or ItemInfoStat/Stat for an actual stat). Copy MirDB setter/attributes. Instance property: `ServerLibrary/DBModels/UserItem.cs` instead; do not put one item's roll into the shared definition.
-2. Rule consumers: `ServerLibrary/Models/PlayerObject.cs: ItemUse, CanUseItem, CanWearItem, RefreshStats`; `SEnvir.CreateFreshItem` if initialization changes.
-3. Synchronization: `UserItem.ToClientInfo → LibraryCore/Globals.cs: ClientUserItem → CConnection item handlers`. Definition-only values are resolved by InfoIndex in the client's System.db. Per-instance values need explicit conversion/structure updates; audit Packet serialization and all full/incremental updates.
-4. UI: `Client/Scenes/GameScene.cs: CreateItemLabel`, GetItemLabelDisplayInfo, AddItemLabelMetadata/AddEquipmentItemInfo/AddItemLabelDescription. InventoryDialog/DXItemCell set the hovered item but do not own all tooltip formatting.
-5. Editor: `Server/Views/ItemInfoView.cs` and `.Designer.cs`, stat view/lookups as needed; Helpers/JsonImporter/JsonExporter and definition distribution. **LibraryEditor is for image assets.**
-6. Verify persistence load/save and lookup against compatible system data; check hover for inventory/equipment/storage because the tooltip is shared.
+1. Follow [MirDB rules](DATA_MODEL.md#mirdb-mechanics) for the selected definition/instance model; use ItemInfoStat/Stat for an actual stat.
+2. Inspect affected rule consumers: `PlayerObject.ItemUse/CanUseItem/CanWearItem/RefreshStats`, and `SEnvir.CreateFreshItem` for initialization.
+3. Audit initial/incremental transfers and copies for client-visible instance state; follow [network compatibility](NETWORKING.md#wire-compatibility).
+4. Follow [tooltip anchors](CLIENT_RUNTIME.md#gamescene-and-other-partials) and [editor/distribution paths](CONTENT_AND_EDITORS.md); LibraryEditor edits images.
+5. Verify relevant save/load and definition lookup; check shared tooltips in inventory/equipment/storage.
 
 ## New spell with visual effect
 
 1. `LibraryCore/SystemModels/MagicInfo.cs`, `LibraryCore/Enum.cs: MagicType`; preserve numeric compatibility and inspect shared frame/action/stat effects.
-2. `ServerLibrary/Models/Magics/...`: use the closest existing spell. Canonical targeted delayed spell: `Wizard/FireBall.cs`; base `Models/MagicObject.cs` defines casting/completion hooks. Add the matching MagicTypeAttribute and constructor shape used by `PlayerObject.SetupMagic`; `SEnvir.CreateMagic` currently discovers non-abstract **direct subclasses** of MagicObject carrying the attribute. An indirectly derived class will not automatically register.
+2. Use the selected spell and [registration/execution rules](gameplay/COMBAT_AND_MAGIC.md#spells-and-learned-magic); `Wizard/FireBall.cs` is the targeted delayed-hit reference.
+
 3. `PlayerObject.Magic`, learned `DBModels/UserMagic.cs`, cooldown/resource validation and delayed actions. Do not apply damage in the client effect callback.
 4. `C.Magic → SConnection.Process → PlayerObject.Magic → S.ObjectMagic/ObjectProjectile` and `CConnection.Process` handlers. Add fields only if existing action data cannot express the feature; then audit serialization on both ends.
 5. `Client/Models/PlayerObject.cs` magic cases and `MirEffect/MirProjectile/SpellObject`, plus `LibraryCore/FrameSet.cs`, Libraries.cs image mapping and `Client/Envir/DXSoundManager.cs` if audio changes.
@@ -129,11 +133,7 @@ Choose the branch matching the requested behavior before opening source. Follow 
 * `Client/Models/MonsterObject.cs`, UI dialogs, `RenderingCore` and packet definitions for choosing among existing targets/actions. Expand to client presentation and action payloads only for new visible state, animation or action semantics.
 * `MonsterInfo`, respawn editors and `Map.SpawnInfo` for a behavior-only adjustment unless configuration or spawning itself changes.
 
-Target selection: `ServerLibrary/Models/MonsterObject.cs: GetMonster → selected Models/Monsters subclass → ProcessAI/ProcessSearch/ProperSearch/ProcessTarget/ShouldAttackTarget/CanAttackTarget`. Check subclass overrides first. Small attack example: OmaMage; complex targeting/spawn example: ZumaKing (inherits ZumaGuardian).
-
-New monster definition/behavior: `LibraryCore/SystemModels/MonsterInfo.cs`, `MonsterInfoStat.cs`, `RespawnInfo.cs`; `Map.cs: SpawnInfo.DoSpawn`; MonsterObject.GetMonster factory mapping. New image/action: `LibraryCore/Enum.cs: MonsterImage/MirAnimation`, `Client/Models/MonsterObject.cs`, FrameSet, Libraries and sound mappings. S.ObjectMonster and object action packets carry presentation state. Editors: Server/Views/MonsterInfoView, RespawnInfoView and DropInfoView.
-
-A changed server choice among existing targets/actions usually needs no UI edit. A new attack stage/projectile/death appearance requires its client counterpart even if damage already works.
+For definition/spawn/drop and packet entry points use [monsters and spawning](gameplay/COMBAT_AND_MAGIC.md#monsters-and-spawning); for targeting hooks and factory selection use [monster runtime](SERVER_RUNTIME.md#monster-extension-pattern). A new attack stage/projectile/death appearance needs its client counterpart even when server damage already works.
 
 ## New client action or gameplay feature
 
@@ -148,7 +148,7 @@ Check these questions against the nearest complete feature (recipe crafting is a
 * Assets/audio, editor fields, definition distribution, localization or user preferences?
 * Do death/logout/despawn, cancellation, repeated request and late response leave state consistent?
 
-Packet IDs/properties are reflective. There is no central opcode enum or manual handler registration to update; use the concrete Process signature and compatible builds.
+Packets use reflection; preserve compatible builds and follow [dispatch/wire rules](NETWORKING.md).
 
 ## Dialog/button
 
@@ -161,15 +161,11 @@ Packet IDs/properties are reflective. There is no central opcode enum or manual 
 * `ServerLibrary` or packet definitions unless the interaction changes gameplay; `RenderingCore` unless an existing DX control cannot supply the required drawing primitive/resource behavior.
 * GameScene registration, `WindowType` and key bindings for repositioning existing children; inspect these only when window integration changes.
 
-Use [CLIENT_UI](CLIENT_UI.md). Start with the owning Views file, GameScene construction/fields and DXButton/DXControl. Copy a nearby Parent/event/image-state pattern. New windows may require `Client/UserModels/WindowSetting.cs: WindowType`, `KeyBindInfo.cs: KeyBindAction`, CEnvir key setup, MenuDialog and scene key handling. Check DXWindow settings/lifetime; not every view derives from DXWindow.
-
-Keep a purely local button local. A gameplay request follows the packet/server path above. Verify hover/pressed state, clipping, scale, cached-child invalidation and disposal.
+Follow the [dialog integration checklist](CLIENT_UI.md#add-a-button-or-dialog) and DX ownership/cache rules. Keep local actions local; gameplay requests follow the packet/server checklist above.
 
 ## Persisted data
 
-Use [DATA_MODEL](DATA_MODEL.md). Inspect DBMapping/DBValue support, Session assembly discovery and mode, UserObject/IgnoreProperty/Association/MigrationProperty metadata, defaults and setter OnChanged. Use collection CreateNewObject and relationship setters. Check aggregate deletion and the difference between DB identity and Binding position. Review initial/full transfer and incremental packets only for state actually sent to the client.
-
-Canonical linked data: `ServerLibrary/DBModels/UserItem.cs` with owner/stat/socket relationships; shared recipe/ingredient data: `LibraryCore/SystemModels/CraftingInfo.cs`. Test representative save/load/delete/migration behavior when implementation changes warrant it; old deployed data needs its own verification.
+Follow [MirDB change/relationship rules](DATA_MODEL.md#mirdb-mechanics) and select a [model example](CANONICAL_EXAMPLES.md#data-models). Review transfers only for client-visible state; verify representative save/load/delete/migration behavior, including deployed data when relevant.
 
 ## Image or effect
 
@@ -182,7 +178,7 @@ Canonical linked data: `ServerLibrary/DBModels/UserItem.cs` with owner/stat/sock
 * Server damage logic, MirDB or packet changes when existing action state already drives the effect. Expand to sender/receiver and server actions only when authoritative timing or state changes; a local frame-duration adjustment alone does not require that expansion.
 * RenderingCore or image-library writers when reusing existing effects and supported assets; open them only for rendering/format changes.
 
-Use [RENDERING_AND_ASSETS](RENDERING_AND_ASSETS.md). Existing library: inspect the exact image and surrounding frame/direction layout, then change the owning DXImageControl/model effect. New library: LibraryFile + Libraries.LibraryList + asset distribution. Format change: pair RenderingCore reader/metadata with LibraryEditor writer. Low-level rendering change: check PipelineFactories/IRenderingPipeline, backend implementation, cache/resource lifecycle and graphics verification.
+Follow [asset identity, paired format readers/writers and resource rules](RENDERING_AND_ASSETS.md). Verify the selected image/frame layout for asset edits and graphics/cache behavior for low-level rendering changes.
 
 ## Cross-project fan-out reminders
 

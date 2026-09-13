@@ -12,6 +12,10 @@
 
 `Info` is a clue, not a universal classification: `ItemInfo` is a shared definition, but `CharacterInfo` and `MailInfo` are server user data. Check inheritance/attributes and consumers.
 
+## Canonical examples
+
+Use [data model examples](CANONICAL_EXAMPLES.md#data-models): CurrencyInfo for scalar definitions, crafting ingredients for associations, UserCurrency for persisted user state, UserItem/socket links for children and MagicInfo.LegacyClass specifically for migration.
+
 ## MirDB mechanics
 
 Authority: `LibraryCore/MirDB/{DBObject,ADBCollection,DBCollection,Session,DBMapping,DBValue,DBRelationship,DBBindingList,Attributes}.cs`.
@@ -57,7 +61,7 @@ All paths below are under `LibraryCore/SystemModels/`; several files contain mul
 | CraftingRecipeInfo | CharacterInfo crafting level/experience/favourite; PlayerObject active timer is runtime state | UserObject crafting fields and CraftingDialogs |
 | No shared CharacterInfo | `DBModels/CharacterInfo.cs` persistent character → `Models/PlayerObject.cs` live session | `Client/Models/UserObject.cs` local user and PlayerObject for actors |
 
-`UserItem.ToClientInfo` and `ClientUserItem.InfoIndex/Info` are the critical item boundary: the `[CompleteObject]` method `ClientUserItem.Complete` resolves Info against `Globals.ItemInfoList` after packet reading. A new definition-only property can arrive through updated System.db without adding an instance packet field. A new per-instance property needs conversion and packet-structure consideration.
+`UserItem.ToClientInfo` and `ClientUserItem.InfoIndex/Info` are the critical item boundary: the `[CompleteObject]` method `ClientUserItem.Complete` resolves Info against `Globals.ItemInfoList` after packet reading. Completion also completes socket gems; copying properties without completion does not produce a fully usable client item. Definition-only additions use updated System.db; per-instance additions need conversion/packet consideration.
 
 ## Global registries and load ownership
 

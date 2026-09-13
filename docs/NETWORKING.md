@@ -4,7 +4,11 @@
 
 `LibraryCore/Network/Packet.cs` defines the wire format; `BaseConnection.cs` owns TCP queues and dispatch. Definitions are `ClientPackets.cs`, `ServerPackets.cs`, `GeneralPackets.cs` in that directory. Endpoints are `Client/Envir/CConnection.cs` and `ServerLibrary/Envir/SConnection.cs`.
 
-**Direction is verified by send sites and handlers:** client UI calls `CEnvir.Enqueue(new C.CraftingStart ...)`; SConnection has `Process(C.CraftingStart)` and forwards to PlayerObject. PlayerObject enqueues `S.CraftingStarted`; CConnection has `Process(S.CraftingStarted)`. C and S name the sending side. G packets are exchanged during connection management.
+C and S name the sending side; G packets handle connection management. Verify direction at the concrete send site and Process handler.
+
+## Canonical examples
+
+Follow the [four crafting packet steps](CANONICAL_EXAMPLES.md#packet-flow) for client send, server Process handler, server response and client Process handler. Start at those named methods before inspecting other packet implementations.
 
 ## Transport and dispatch
 
@@ -22,14 +26,13 @@ Server: `SEnvir` drains `NewConnections`, calls each connection's `Process`, the
 
 ## Representative complete flows
 
-| Trigger | Request → server state | Response → client state |
-| --- | --- | --- |
-| Craft recipe | `Client/Scenes/Views/CraftingDialogs.cs` sends `C.CraftingStart`; `SConnection.Process(C.CraftingStart)` → `PlayerObject.StartCrafting` in `PlayerObject.Crafting.cs` | `S.CraftingStarted` sets client crafting presentation; server `ProcessCrafting` revalidates, consumes materials/gold and grants result; `S.CraftingEnded` / `S.CraftingState` handlers update `GameScene.Game.User` and crafting dialogs |
-| Move | `Client/Models/UserObject.cs` issues `C.Move`; `SConnection.Process(C.Move)` applies game-stage/action checks → `PlayerObject.Move` | `S.ObjectMove` in CConnection reconciles the local user or queues another object's `ObjectAction`; `S.UserLocation` handles location correction |
-| Item transfer | `Client/Controls/DXItemCell.cs` sends `C.ItemMove`; `SConnection.Process(C.ItemMove)` → `PlayerObject.ItemMove` validates source/destination and updates `UserItem` ownership/slot | `S.ItemMove` handler selects grids by `GridType`, releases client cell locks, and applies the result; definition is still resolved from client system data |
-| Object enters/leaves view | `PlayerObject.AddObject` / visibility machinery uses server object's `GetInfoPacket`; no client spawn authority | `S.ObjectPlayer`, `S.ObjectMonster`, `S.ObjectNPC`, `S.ObjectItem`, `S.ObjectSpell` handlers construct representations; `S.ObjectRemove` calls `Remove` |
+Use the [canonical crafting packet flow](CANONICAL_EXAMPLES.md#packet-flow) for request/response structure. Feature-specific flows live with their owners:
 
-The compact [GAMEPLAY_SYSTEMS](GAMEPLAY_SYSTEMS.md) router links to detailed family guides. Treat listed packets as entry points, not a claim that every feature fits request/reply: spawns, damage, buffs and visibility updates can be unsolicited broadcasts.
+* [Movement](gameplay/WORLD_AND_MOVEMENT.md#movement-maps-and-teleportation): C.Move, S.ObjectMove/UserLocation; [client reconciliation](CLIENT_RUNTIME.md#object-and-animation-lifecycle).
+* [Item transfer](gameplay/ITEMS_AND_ECONOMY.md#inventory-equipment-and-storage): C/S.ItemMove, ownership/slot changes and grid locks.
+* [Visibility](SERVER_RUNTIME.md#maps-and-broadcasts) and [client object lifecycle](CLIENT_RUNTIME.md#object-and-animation-lifecycle): object creation/removal is server-driven.
+
+Spawns, damage, buffs and visibility updates can be unsolicited broadcasts; not every feature is request/reply.
 
 ## Wire compatibility
 
@@ -39,7 +42,7 @@ Authority: `Packet` static constructor, `GetPacketBytes`, `ReceivePacket`, `Writ
 * Frame: four-byte total length, two-byte packet ID, reflected property payload. Receive waits for the full declared length. No explicit maximum packet size is enforced in `ReceivePacket`; do not equate the socket buffer with a validated limit.
 * Public properties are walked with `GetProperties()` without a separately declared serialization order. `[IgnorePropertyPacket]` skips a property; fields such as `ObserverPacket` are not part of that property walk.
 * Explicit primitive readers/writers include numeric types, bool, char, string, byte array, Color, Point, Size, DateTime and TimeSpan. Enums use their underlying type. Recursive handling includes objects, `List<>`, `Dictionary<,>` and `SortedDictionary<,>`; inspect both read/write branches before introducing another type. Null class markers, list counts, and dictionary entries are part of the format; strings normalize null to empty.
-* `ReadObject` invokes methods marked `[CompleteObject]` after populating properties. `Globals.cs: ClientUserItem.Complete` resolves its non-serialized Info field from InfoIndex and completes sockets. Copying the properties without this completion step does not produce a fully usable client item. In the recursive object-list reader, a null element marker is skipped rather than added as a null list slot; do not use that encoding to preserve positional holes.
+* `ReadObject` invokes methods marked `[CompleteObject]` after populating properties. For item completion/definition lookup, see [DATA_MODEL](DATA_MODEL.md#definition--instance--representation). In the recursive object-list reader, a null element marker is skipped rather than added as a null list slot; do not use that encoding to preserve positional holes.
 * This is not a schema-negotiated protocol. Deploy matching packet/property/enum definitions. The handshake's version check is not a serializer migration mechanism.
 * BaseConnection's shown game-packet path directly sends serialized bytes: it does not wrap them in transport encryption or compression. Database encryption and patch gzip are separate boundaries.
 
@@ -64,7 +67,7 @@ SystemDBSync's caller is **`Server/Views/SyncForm.cs`**, which posts the editor 
 ### Usually required
 
 * For a **packet change**, inspect its definition in `LibraryCore/Network`, concrete sender, receiving public `Process(T)` handler in SConnection or CConnection, and the feature state they read/write. If the feature has a response/update, trace that direction too.
-* Inspect reflected payload compatibility in `Packet.cs`, including changed nested transfer structures. The existing `C.CraftingStart` → `SConnection.Process` → `PlayerObject.StartCrafting` → `S.CraftingStarted` → `CConnection.Process` flow is a bounded example; compatible client/server builds are required.
+* Inspect reflected payload compatibility in `Packet.cs`, including nested transfer structures; use the canonical flow above and compatible client/server builds.
 
 ### Usually NOT required
 
