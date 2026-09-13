@@ -2,6 +2,32 @@
 
 Legend of Mir 3 client, server simulation, shared game definitions/MirDB, graphics, and Windows content tools. Source is authoritative; these documents are navigation aids. Inspect the referenced implementation before changing behavior. Preserve the existing architecture and distinguish the identically named client/server types.
 
+## Context-efficiency rules
+
+1. Read `/AGENTS.md` first and identify the subsystem involved.
+2. Read only the single most relevant documentation file initially, then open its referenced source files.
+3. Read additional documentation only when the source change demonstrably crosses another subsystem boundary.
+4. Do not preload every file in `/docs` "for context" or perform repository-wide searches when documentation already identifies likely source files.
+5. Prefer canonical examples and directly referenced dependencies over broad discovery searches.
+
+### Monster targeting change
+
+`AGENTS.md` → monster entry in [COMBAT_AND_MAGIC](docs/gameplay/COMBAT_AND_MAGIC.md#monsters-and-spawning) → `ServerLibrary/Models/MonsterObject.cs` → relevant monster subclass if required.
+Initially skip `CLIENT_UI.md`, `DATA_MODEL.md`, `RENDERING_AND_ASSETS.md` and unrelated packet files; expand only if the change affects those areas.
+
+### UI-only layout change
+
+`AGENTS.md` → [CLIENT_UI](docs/CLIENT_UI.md) → owning file under `Client/Scenes/Views`.
+Initially skip `SERVER_RUNTIME.md`, `NETWORKING.md` and `ServerLibrary` unless the UI change performs a gameplay action.
+
+### Packet/client-server change
+
+`AGENTS.md` → [NETWORKING](docs/NETWORKING.md) → concrete send/receive sites → affected feature code.
+
+### Persisted property change
+
+`AGENTS.md` → [DATA_MODEL](docs/DATA_MODEL.md) → concrete model under `LibraryCore/SystemModels` or `ServerLibrary/DBModels` → editor/network/client areas only if the property crosses those boundaries.
+
 ## Repository map
 
 | Area | Responsibility / main interaction |
@@ -23,17 +49,9 @@ Exact project references and test projects: [PROJECT_MAP](docs/PROJECT_MAP.md).
 
 ## Client / server / shared distinction
 
-* `LibraryCore/SystemModels/ItemInfo.cs` defines an item. `ServerLibrary/DBModels/UserItem.cs` persists an instance; `PlayerObject.ItemMove` validates moves. `S.ItemMove` reaches `Client/Envir/CConnection.cs`, which updates client grids. `LibraryCore/Globals.cs: ClientUserItem.Info` resolves a definition from the client's system database.
+* `LibraryCore/SystemModels/ItemInfo.cs` defines an item; `ServerLibrary/DBModels/UserItem.cs` persists an instance; `LibraryCore/Globals.cs: ClientUserItem` represents it on the client. Item flows are mapped in [GAMEPLAY_SYSTEMS](docs/GAMEPLAY_SYSTEMS.md).
 * `ServerLibrary/Models/MonsterObject.cs` selects targets and executes combat. `Client/Models/MonsterObject.cs` selects image frames/effects. Changing one does not change the other.
 * Local movement has client prediction and server reconciliation; do not mistake client coordinates or animation for the authoritative server cell. See [CLIENT_RUNTIME](docs/CLIENT_RUNTIME.md).
-
-## Where to start for a change
-
-1. Find the feature in [GAMEPLAY_SYSTEMS](docs/GAMEPLAY_SYSTEMS.md).
-2. Read its dependency pattern in [FEATURE_CHANGE_GUIDE](docs/FEATURE_CHANGE_GUIDE.md).
-3. Decide which boundaries change: shared definition, server, packet, client representation, UI, graphics/assets, MirDB, editor.
-4. Open those referenced files/methods first. Expand searches only for direct dependencies.
-5. For large partial classes, use the maps in [SERVER_RUNTIME](docs/SERVER_RUNTIME.md) and [CLIENT_RUNTIME](docs/CLIENT_RUNTIME.md).
 
 ## Critical rules
 
@@ -45,18 +63,11 @@ Exact project references and test projects: [PROJECT_MAP](docs/PROJECT_MAP.md).
 * DX controls own children and cached graphics. Preserve parent assignment, invalidation and disposal; see [CLIENT_UI](docs/CLIENT_UI.md).
 * System definitions are edited in `Server/Views`, distributed to the client's `Data/System.db`, and resolved by index. An instance packet is not automatically a definition update.
 
-## Naming aliases and core files
+## Naming aliases and specialist routes
 
-`C = Library.Network.ClientPackets` means client → server; `S = Library.Network.ServerPackets` means server → client; `G = Library.Network.GeneralPackets` supplies handshake/ping/disconnect. `Frame = Library.Frame` appears in client models. Project folder and namespace names differ: ServerLibrary uses `Server`, LibraryCore uses `Library` and `MirDB`, RenderingCore uses `Shared`.
+`C = Library.Network.ClientPackets` means client → server; `S = Library.Network.ServerPackets` means server → client; `G = Library.Network.GeneralPackets` supplies handshake/ping/disconnect. `Frame = Library.Frame` appears in client models. Project folders and namespaces differ; see the repository map above.
 
-| Start | Files |
-| --- | --- |
-| Networking | `LibraryCore/Network/{Packet,BaseConnection,ClientPackets,ServerPackets}.cs`; `Client/Envir/CConnection.cs`; `ServerLibrary/Envir/SConnection.cs` |
-| Server | `ServerLibrary/Envir/SEnvir.cs`; `ServerLibrary/Models/{Map,MapObject,PlayerObject,MonsterObject}.cs` |
-| Client | `Client/Program.cs`; `Client/Envir/CEnvir.cs`; `Client/Scenes/GameScene.cs`; `Client/Models/UserObject.cs` |
-| Shared data | `LibraryCore/Globals.cs`, `Enum.cs`, `Stat.cs`, `SystemModels` |
-| Database | `LibraryCore/MirDB/{Session,DBObject,DBCollection,DBMapping}.cs` |
-| UI / graphics | `Client/Controls/DXControl.cs`; `RenderingCore/Rendering/RenderingPipelineManager.cs`; `RenderingCore/Library/MirLibrary.cs` |
+For runtime or partial-class navigation, choose [SERVER_RUNTIME](docs/SERVER_RUNTIME.md) or [CLIENT_RUNTIME](docs/CLIENT_RUNTIME.md) as the initial guide when relevant. For a change already known to span subsystems, start with [FEATURE_CHANGE_GUIDE](docs/FEATURE_CHANGE_GUIDE.md). These are alternative routes, not a required reading list.
 
 ## Documentation maintenance
 

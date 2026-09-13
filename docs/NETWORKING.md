@@ -29,7 +29,7 @@ Server: `SEnvir` drains `NewConnections`, calls each connection's `Process`, the
 | Item transfer | `Client/Controls/DXItemCell.cs` sends `C.ItemMove`; `SConnection.Process(C.ItemMove)` → `PlayerObject.ItemMove` validates source/destination and updates `UserItem` ownership/slot | `S.ItemMove` handler selects grids by `GridType`, releases client cell locks, and applies the result; definition is still resolved from client system data |
 | Object enters/leaves view | `PlayerObject.AddObject` / visibility machinery uses server object's `GetInfoPacket`; no client spawn authority | `S.ObjectPlayer`, `S.ObjectMonster`, `S.ObjectNPC`, `S.ObjectItem`, `S.ObjectSpell` handlers construct representations; `S.ObjectRemove` calls `Remove` |
 
-The detailed feature index is [GAMEPLAY_SYSTEMS](GAMEPLAY_SYSTEMS.md). Treat listed packets as entry points, not a claim that every feature fits request/reply: spawns, damage, buffs and visibility updates can be unsolicited broadcasts.
+The compact [GAMEPLAY_SYSTEMS](GAMEPLAY_SYSTEMS.md) router links to detailed family guides. Treat listed packets as entry points, not a claim that every feature fits request/reply: spawns, damage, buffs and visibility updates can be unsolicited broadcasts.
 
 ## Wire compatibility
 

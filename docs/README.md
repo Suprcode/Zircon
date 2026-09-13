@@ -5,7 +5,7 @@ Read [../AGENTS.md](../AGENTS.md) first. Paths in these guides are repository-re
 | Need | Read |
 | --- | --- |
 | Project / dependency | [PROJECT_MAP](PROJECT_MAP.md) |
-| Gameplay feature | [GAMEPLAY_SYSTEMS](GAMEPLAY_SYSTEMS.md) |
+| Gameplay feature | [GAMEPLAY_SYSTEMS](GAMEPLAY_SYSTEMS.md) → one of six family guides |
 | Cross-project change | [FEATURE_CHANGE_GUIDE](FEATURE_CHANGE_GUIDE.md) |
 | Packets | [NETWORKING](NETWORKING.md) |
 | Definitions / MirDB | [DATA_MODEL](DATA_MODEL.md) |

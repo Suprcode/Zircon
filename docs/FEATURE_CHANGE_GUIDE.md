@@ -1,6 +1,6 @@
 # Feature change guide
 
-Use [GAMEPLAY_SYSTEMS](GAMEPLAY_SYSTEMS.md) to select files, then this guide to identify boundaries. Follow actual dependencies; a new dialog is not automatically a new server feature.
+Use [GAMEPLAY_SYSTEMS](GAMEPLAY_SYSTEMS.md) to select a family section and its source entry points, then this guide to identify boundaries. Follow actual dependencies; a new dialog is not automatically a new server feature.
 
 ## Dependency matrix
 
