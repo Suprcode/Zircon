@@ -152,6 +152,7 @@ namespace Client.Scenes.Views
 
         private void ClearLootCaches()
         {
+            ReleaseWorldNames();
             objectRows.Clear();
             effectRows.Clear();
             lootPiles.Clear();

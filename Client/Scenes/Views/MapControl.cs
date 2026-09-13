@@ -204,6 +204,7 @@ namespace Client.Scenes.Views
 
         protected override void OnClearTexture()
         {
+            worldNamesValid = false;
             base.OnClearTexture();
 
             if (!Visible) return;
@@ -267,31 +268,7 @@ namespace Client.Scenes.Views
             RenderingPipelineManager.PushUIScale(GameScene.Game.UIScale);
             try
             {
-                foreach (MapObject ob in HasGroundItems ? nameOverlayObjects : Objects)
-                {
-                    if (ob.Dead) continue;
-
-                    switch (ob.Race)
-                    {
-                        case ObjectType.Player:
-                            if (!Config.ShowPlayerNames) continue;
-                            break;
-                        case ObjectType.Item:
-                            if (!Config.ShowItemNames || ob.CurrentLocation == MapLocation) continue;
-                            break;
-                        case ObjectType.NPC:
-                            if (!Config.ShowNPCNames) continue;
-                            break;
-                        case ObjectType.Spell:
-                            break;
-                        case ObjectType.Monster:
-                            if (!Config.ShowMonsterNames) continue;
-                            break;
-                    }
-
-                    SetWorldOverlayScaleOrigin(ob);
-                    ob.DrawName();
-                }
+                DrawWorldNames();
 
                 if (MapObject.MouseObject != null && MapObject.MouseObject.Race != ObjectType.Item)
                 {
@@ -1562,6 +1539,7 @@ namespace Client.Scenes.Views
 
         protected override void Dispose(bool disposing)
         {
+            ReleaseWorldNames();
             base.Dispose(disposing);
 
             if (disposing)
