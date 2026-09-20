@@ -323,33 +323,45 @@ namespace Client.Controls
         private void SynchronizeNativeBounds()
         {
             if (TextBox == null || CEnvir.Target == null) return;
-            UpdateNativeFont();
-            float scale = CEnvir.Target.TextRasterScale;
-            int left = (int)Math.Round(DisplayArea.Left * scale);
-            int top = (int)Math.Round(DisplayArea.Top * scale);
-            int right = Border
-                ? (int)Math.Floor(DisplayArea.Right * scale)
-                : (int)Math.Round(DisplayArea.Right * scale);
-            int bottom = Border
-                ? (int)Math.Floor(DisplayArea.Bottom * scale)
-                : (int)Math.Round(DisplayArea.Bottom * scale);
 
-            // A live WinForms text box is composited above the rendered UI. Keep its trailing
-            // edges inside a bordered DXTextBox so it cannot cover the border at fractional DPI.
+            UpdateNativeFont();
+
+            Size logicalSize = SceneLayoutSize;
+            Size clientSize = CEnvir.Target.ClientSize;
+
+            float scaleX = logicalSize.Width > 0 ? clientSize.Width / (float)logicalSize.Width : 1F;
+            float scaleY = logicalSize.Height > 0 ? clientSize.Height / (float)logicalSize.Height : 1F;
+
+            int left = (int)Math.Round(DisplayArea.Left * scaleX);
+            int top = (int)Math.Round(DisplayArea.Top * scaleY);
+            int right = Border
+                ? (int)Math.Floor(DisplayArea.Right * scaleX)
+                : (int)Math.Round(DisplayArea.Right * scaleX);
+            int bottom = Border
+                ? (int)Math.Floor(DisplayArea.Bottom * scaleY)
+                : (int)Math.Round(DisplayArea.Bottom * scaleY);
+
             Rectangle bounds = Rectangle.FromLTRB(
                 left,
                 top,
                 Math.Max(left + 1, right),
                 Math.Max(top + 1, bottom));
+
             if (TextBox.Bounds != bounds)
                 TextBox.Bounds = bounds;
         }
 
         private int NativeMouseLocation(MouseEventArgs e)
         {
-            float scale = CEnvir.Target?.TextRasterScale ?? 1F;
-            int x = (int)Math.Round((e.X - DisplayArea.X) * scale);
-            int y = (int)Math.Round((e.Y - DisplayArea.Y) * scale);
+            Size logicalSize = SceneLayoutSize;
+            Size clientSize = CEnvir.Target?.ClientSize ?? logicalSize;
+
+            float scaleX = logicalSize.Width > 0 ? clientSize.Width / (float)logicalSize.Width : 1F;
+            float scaleY = logicalSize.Height > 0 ? clientSize.Height / (float)logicalSize.Height : 1F;
+
+            int x = (int)Math.Round((e.X - DisplayArea.X) * scaleX);
+            int y = (int)Math.Round((e.Y - DisplayArea.Y) * scaleY);
+
             return (x & 0xffff) | (y & 0xffff) << 16;
         }
 

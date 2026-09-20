@@ -15,6 +15,7 @@ internal static class Program
     private static int Main(string[] args)
     {
         Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+        if (args.Contains("--switch")) return CheckPipelineSwitch();
         string backend = args.Contains("--vulkan") ? RenderingPipelineIds.SilkVulkan : RenderingPipelineIds.SilkDXD3D11;
         foreach (float windowScale in new[] { 1F, 1.25F, 1.5F, 1.75F, 2F })
         {
@@ -134,9 +135,83 @@ internal static class Program
                 throw new Exception("Resize retained cache targets");
             R.ReleaseTexture(_art);
             R.ReleaseTexture(_text);
+            CheckSceneResolutionTransitions(settings, form, windowScale);
         }
         Console.WriteLine($"Failures={_failures}");
         return _failures == 0 ? 0 : 1;
+    }
+
+    private static int CheckPipelineSwitch()
+    {
+        using Form form = new() { ShowInTaskbar = false, ClientSize = new Size(1024, 768) };
+        var settings = new RenderingHostSettings
+        {
+            GameSize = form.ClientSize, GetActiveSceneSize = () => form.ClientSize,
+            VSync = true, SaveException = ex => throw new Exception("Switch render failed", ex)
+        };
+        R.Initialize(RenderingPipelineIds.SilkVulkan, new RenderingPipelineContext(form, settings));
+        try
+        {
+            R.RunMessageLoop(form, () =>
+            {
+            foreach (string backend in new[] { RenderingPipelineIds.SilkDXD3D11, RenderingPipelineIds.SilkVulkan, RenderingPipelineIds.SilkDXD3D11 })
+            {
+                RenderTexture texture = MakeTexture(93, 21, true);
+                RenderTargetResource cache = R.RentUICacheTarget(new Size(128, 128));
+                for (int frame = 0; frame < 3; frame++)
+                    if (!R.RenderFrame(() =>
+                    {
+                        using (R.PushUICacheTarget(cache.Surface, new Rectangle(0, 0, 128, 128)))
+                        {
+                            R.Clear(RenderClearFlags.Target, Color.Transparent, 0, 0);
+                            R.DrawTexture(texture, new Rectangle(0, 0, 93, 21), new RectangleF(10, 10, 93, 21), Color.White);
+                        }
+                        R.PresentUICache(cache.Texture, new Rectangle(0, 0, 128, 128), new Rectangle(0, 0, 128, 128));
+                    }))
+                        throw new Exception("Frame failed before switch");
+                R.ReleaseTexture(texture);
+                R.ReturnUICacheTarget(cache);
+                Console.WriteLine($"Switching {R.ActivePipelineId} to {backend}");
+                R.RequestSwitchPipeline(backend);
+                if (!R.ApplyPendingPipelineSwitch() || R.ActivePipelineId != backend)
+                    throw new Exception("Requested backend was not activated");
+                if (!R.RenderFrame(() => R.FillRectangle(new Rectangle(10, 10, 100, 100), Color.White)))
+                    throw new Exception("Frame failed after switch");
+                Console.WriteLine($"Switched to {backend} and rendered");
+            }
+            form.Close();
+            Application.ExitThread();
+            });
+        }
+        finally { R.Shutdown(); }
+        return 0;
+    }
+
+    private static void CheckSceneResolutionTransitions(RenderingHostSettings settings, Form form, float windowScale)
+    {
+        Size fixedSceneSize = settings.ActiveSceneSize;
+        foreach (Size gameSize in R.GetSupportedResolutions())
+        foreach (bool extended in new[] { false, true })
+        {
+            Size introSize = extended ? gameSize : fixedSceneSize;
+            settings.GetActiveSceneSize = () => gameSize;
+            R.SetResolution(gameSize);
+            if (!R.RenderFrame(() => { })) throw new Exception("Game resolution failed");
+
+            // DXScene preserves the player's game resolution after requesting the intro size.
+            R.SetResolution(introSize);
+            settings.GameSize = gameSize;
+            settings.GetActiveSceneSize = () => introSize;
+            Size expected = form.ClientSize;
+            for (int frame = 0; frame < 3; frame++)
+            {
+                if (!R.RenderFrame(() => { })) throw new Exception("Intro resolution failed");
+                if (form.ClientSize != expected || R.GetBackBufferSize() != expected)
+                    throw new Exception($"Scene {introSize} after {gameSize}, extended={extended}, scale={windowScale}: expected {expected}, window {form.ClientSize}, buffer {R.GetBackBufferSize()}");
+                if (settings.GameSize != gameSize) throw new Exception("Intro overwrote saved game resolution");
+            }
+        }
+        Console.WriteLine($"Fixed and extended scene resolution transitions passed at window scale {windowScale}");
     }
 
     private static void DrawContent(bool lines)

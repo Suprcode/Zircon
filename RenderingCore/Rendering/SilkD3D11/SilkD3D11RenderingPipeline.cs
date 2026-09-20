@@ -102,7 +102,6 @@ namespace Shared.Rendering.SilkD3D11
         private float _lineWidth = 1F;
         private TextureFilterMode _textureFilter = TextureFilterMode.Point;
         private bool _resetRequested;
-        private Size _pendingResetSize;
         private readonly DisplayModeManager _displayMode = new DisplayModeManager();
 
         private ComPtr<ID3D11VertexShader> _vertexShader;
@@ -170,7 +169,7 @@ namespace Shared.Rendering.SilkD3D11
 
                 ApplyWindowStyle();
                 ApplyWindowBounds(true);
-                RequestReset(RenderingPipelineManager.HostSettings.ActiveSceneSize);
+                RequestReset();
 
                 RenderingPipelineManager.HostSettings.GameSize = configuredGameSize;
             }
@@ -1095,13 +1094,11 @@ namespace Shared.Rendering.SilkD3D11
             if (!force && size == _backBufferSize)
                 return;
 
-            RecreateSwapChain(size);
+            RecreateSwapChain();
         }
 
-        private void RequestReset(Size? requestedSize = null)
+        private void RequestReset()
         {
-            Size logicalSize = requestedSize ?? RenderingPipelineManager.HostSettings.GameSize;
-            _pendingResetSize = RenderingPipelineManager.HostSettings.ScaleToPhysical(logicalSize, RenderingPipelineManager.GetSelectedScreen());
             _resetRequested = true;
         }
 
@@ -1111,10 +1108,10 @@ namespace Shared.Rendering.SilkD3D11
                 return;
 
             _resetRequested = false;
-            RecreateSwapChain(_pendingResetSize);
+            RecreateSwapChain();
         }
 
-        private void RecreateSwapChain(Size size)
+        private void RecreateSwapChain()
         {
             EndSpriteBatch();
             FlushLines();
@@ -1124,12 +1121,8 @@ namespace Shared.Rendering.SilkD3D11
             if (IsSwapChainFullscreen())
                 Check(_swapChain.SetFullscreenState(new Bool32(false), (IDXGIOutput*)null), "exit D3D11 fullscreen before resize");
 
-            ApplyWindowStyle();
-            ApplyWindowBounds(RenderingPipelineManager.HostSettings.FullScreen);
-
-            Size physicalSize = RenderingPipelineManager.HostSettings.ScaleToPhysical(RenderingPipelineManager.HostSettings.GameSize, RenderingPipelineManager.GetSelectedScreen());
-            if (!RenderingPipelineManager.HostSettings.FullScreen && _context.RenderTarget != null && _context.RenderTarget.ClientSize != physicalSize)
-                _context.RenderTarget.ClientSize = physicalSize;
+            // Window sizing belongs to the caller. Rebuild resources for the current
+            // target without reapplying the saved game resolution.
 
             _swapChain.Dispose();
             _swapChain = default;
