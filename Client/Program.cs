@@ -83,6 +83,7 @@ namespace Client
                 Now = () => CEnvir.Now,
                 SaveException = CEnvir.SaveException,
                 InvalidateRenderCaches = InvalidateRenderCaches,
+                RecreateRenderTarget = CEnvir.Target.RecreateRenderTarget,
                 FullScreenChanged = fullScreen =>
                 {
                     if (DXConfigWindow.ActiveConfig?.FullScreenCheckBox != null)

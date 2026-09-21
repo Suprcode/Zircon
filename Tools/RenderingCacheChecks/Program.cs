@@ -141,11 +141,25 @@ internal static class Program
         return _failures == 0 ? 0 : 1;
     }
 
+    private sealed class SwitchTestForm : Form
+    {
+        public void RenewRenderTarget() => RecreateHandle();
+    }
+
     private static int CheckPipelineSwitch()
     {
-        using Form form = new() { ShowInTaskbar = false, ClientSize = new Size(1024, 768) };
+        using SwitchTestForm form = new() { ShowInTaskbar = false, ClientSize = new Size(1024, 768) };
+        using TextBox input = new() { Text = "Preserved native input" };
+        form.Controls.Add(input);
+        int renewals = 0;
         var settings = new RenderingHostSettings
         {
+            RecreateRenderTarget = () =>
+            {
+                if (R.ActivePipelineId != null) throw new Exception("Window renewed before renderer shutdown");
+                form.RenewRenderTarget();
+                renewals++;
+            },
             GameSize = form.ClientSize, GetActiveSceneSize = () => form.ClientSize,
             VSync = true, SaveException = ex => throw new Exception("Switch render failed", ex)
         };
@@ -154,33 +168,36 @@ internal static class Program
         {
             R.RunMessageLoop(form, () =>
             {
-            foreach (string backend in new[] { RenderingPipelineIds.SilkDXD3D11, RenderingPipelineIds.SilkVulkan, RenderingPipelineIds.SilkDXD3D11 })
-            {
-                RenderTexture texture = MakeTexture(93, 21, true);
-                RenderTargetResource cache = R.RentUICacheTarget(new Size(128, 128));
-                for (int frame = 0; frame < 3; frame++)
-                    if (!R.RenderFrame(() =>
-                    {
-                        using (R.PushUICacheTarget(cache.Surface, new Rectangle(0, 0, 128, 128)))
+                foreach (string backend in new[] { RenderingPipelineIds.SilkDXD3D11, RenderingPipelineIds.SilkVulkan, RenderingPipelineIds.SilkDXD3D11 })
+                {
+                    RenderTexture texture = MakeTexture(93, 21, true);
+                    RenderTargetResource cache = R.RentUICacheTarget(new Size(128, 128));
+                    for (int frame = 0; frame < 3; frame++)
+                        if (!R.RenderFrame(() =>
                         {
-                            R.Clear(RenderClearFlags.Target, Color.Transparent, 0, 0);
-                            R.DrawTexture(texture, new Rectangle(0, 0, 93, 21), new RectangleF(10, 10, 93, 21), Color.White);
-                        }
-                        R.PresentUICache(cache.Texture, new Rectangle(0, 0, 128, 128), new Rectangle(0, 0, 128, 128));
-                    }))
-                        throw new Exception("Frame failed before switch");
-                R.ReleaseTexture(texture);
-                R.ReturnUICacheTarget(cache);
-                Console.WriteLine($"Switching {R.ActivePipelineId} to {backend}");
-                R.RequestSwitchPipeline(backend);
-                if (!R.ApplyPendingPipelineSwitch() || R.ActivePipelineId != backend)
-                    throw new Exception("Requested backend was not activated");
-                if (!R.RenderFrame(() => R.FillRectangle(new Rectangle(10, 10, 100, 100), Color.White)))
-                    throw new Exception("Frame failed after switch");
-                Console.WriteLine($"Switched to {backend} and rendered");
-            }
-            form.Close();
-            Application.ExitThread();
+                            using (R.PushUICacheTarget(cache.Surface, new Rectangle(0, 0, 128, 128)))
+                            {
+                                R.Clear(RenderClearFlags.Target, Color.Transparent, 0, 0);
+                                R.DrawTexture(texture, new Rectangle(0, 0, 93, 21), new RectangleF(10, 10, 93, 21), Color.White);
+                            }
+                            R.PresentUICache(cache.Texture, new Rectangle(0, 0, 128, 128), new Rectangle(0, 0, 128, 128));
+                        }))
+                            throw new Exception("Frame failed before switch");
+                    R.ReleaseTexture(texture);
+                    R.ReturnUICacheTarget(cache);
+                    Console.WriteLine($"Switching {R.ActivePipelineId} to {backend}");
+                    int previousRenewals = renewals;
+                    R.RequestSwitchPipeline(backend);
+                    if (!R.ApplyPendingPipelineSwitch() || R.ActivePipelineId != backend)
+                        throw new Exception("Requested backend was not activated");
+                    if (renewals != previousRenewals + 1 || input.Parent != form || input.Text != "Preserved native input" || !input.IsHandleCreated)
+                        throw new Exception("Window handover did not preserve the native input control");
+                    if (!R.RenderFrame(() => R.FillRectangle(new Rectangle(10, 10, 100, 100), Color.White)))
+                        throw new Exception("Frame failed after switch");
+                    Console.WriteLine($"Switched to {backend} and rendered");
+                }
+                form.Close();
+                Application.ExitThread();
             });
         }
         finally { R.Shutdown(); }

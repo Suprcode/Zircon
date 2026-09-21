@@ -6,6 +6,8 @@
 
 Start low-level work at `Rendering/IRenderingPipeline.cs`, `RenderingPipelineManager.cs`, `RenderingPipelineContext.cs` and `RenderTexture.cs`. The manager's **PipelineFactories** currently registers Silk D3D11 and Silk Vulkan, with D3D11 as default. `RenderingPipelineIds.cs` also names OpenGL; a constant alone is not proof of a registered runtime backend. SharpDX D3D9/D3D11 source directories exist; inspect factory registration before claiming they are selectable. Vulkan's implementation file is named `Rendering/SilkVulkan/SilkVulcanRenderingPipeline.cs` (filename spelling differs from class spelling).
 
+Hosts offering runtime backend switching supply `RenderingHostSettings.RecreateRenderTarget`. The manager calls it after shutting down the old renderer and before initializing the replacement. The client uses `TargetForm.RecreateRenderTarget` to renew the native HWND while preserving managed controls; reusing a window after Vulkan FIFO presentation can leave DirectX 11's blt output hidden behind the last Vulkan frame.
+
 Canonical references: [MirEffect and DXImageControl](CANONICAL_EXAMPLES.md#client-visuals-and-assets).
 
 ## Library and image identity

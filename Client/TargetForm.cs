@@ -53,6 +53,13 @@ namespace Client
             MaximizeBox = false;
         }
 
+        internal void RecreateRenderTarget()
+        {
+            // A Vulkan FIFO presentation surface can outlive its swapchain on the
+            // HWND. DirectX's blt swapchain needs a fresh HWND to become visible.
+            RecreateHandle();
+        }
+
         public void SetLogicalClientSize(Size size)
         {
             ClientSize = new Size(

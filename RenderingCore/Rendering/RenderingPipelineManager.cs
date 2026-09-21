@@ -465,6 +465,7 @@ namespace Shared.Rendering
 
             InvalidateAllControlTextures();
             Shutdown();
+            context.Settings.RecreateRenderTarget?.Invoke();
 
             InitializeWithFallback(pipelineId, context);
         }
@@ -496,6 +497,7 @@ namespace Shared.Rendering
             {
                 InvalidateAllControlTextures();
                 Shutdown();
+                settings.RecreateRenderTarget?.Invoke();
 
                 string activePipelineId = InitializeWithFallback(pipelineId, context);
                 settings.RenderingPipeline = activePipelineId;

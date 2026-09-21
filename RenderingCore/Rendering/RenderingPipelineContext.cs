@@ -21,6 +21,9 @@ namespace Shared.Rendering
         public Func<DateTime> Now { get; set; } = () => DateTime.Now;
         public Action<Exception> SaveException { get; set; }
         public Action InvalidateRenderCaches { get; set; }
+        // Hosts that switch graphics APIs renew the native window after the old
+        // pipeline releases it, before the new pipeline creates its presentation surface.
+        public Action RecreateRenderTarget { get; set; }
         public Action<bool> FullScreenChanged { get; set; }
         public Func<Size> GetActiveSceneSize { get; set; }
         public Func<float> GetWindowScale { get; set; }
