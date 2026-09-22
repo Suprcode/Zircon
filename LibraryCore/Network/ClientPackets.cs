@@ -232,7 +232,10 @@ namespace Library.Network.ClientPackets
         public bool Enabled { get; set; }
     }
 
-    public sealed class PickUp : Packet { }
+    public sealed class PickUp : Packet
+    {
+        public uint ObjectID { get; set; }
+    }
 
     public sealed class Chat : Packet
     {

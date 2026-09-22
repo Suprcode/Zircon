@@ -8530,7 +8530,7 @@ namespace Server.Models
             AutoPotions.Add(aLink);
             AutoPotions.Sort((x1, x2) => x1.Slot.CompareTo(x2.Slot));
         }
-        public void PickUp()
+        public void PickUp(uint objectID = 0)
         {
             if (Dead) return;
 
@@ -8557,6 +8557,7 @@ namespace Server.Models
                             if (cellObject.Race != ObjectType.Item) continue;
 
                             ItemObject item = (ItemObject)cellObject;
+                            if (objectID != 0 && item.ObjectID != objectID) continue;
 
                             if (item.PickUpItem(this)) return;
                         }

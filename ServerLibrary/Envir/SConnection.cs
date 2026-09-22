@@ -566,7 +566,7 @@ namespace Server.Envir
         {
             if (Stage != GameStage.Game) return;
 
-            Player.PickUp();
+            Player.PickUp(p.ObjectID);
         }
         public void Process(C.CurrencyDrop p)
         {

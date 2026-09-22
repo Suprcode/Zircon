@@ -1,9 +1,12 @@
 using Client.Controls;
 using Client.Envir;
 using Client.Models;
+using Library;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Windows.Forms;
+using C = Library.Network.ClientPackets;
 
 namespace Client.Scenes.Views
 {
@@ -25,6 +28,7 @@ namespace Client.Scenes.Views
         private Cell focusCell;
         private int focusVersion = -1;
         private int focusOffset;
+        private int selectedLootIndex;
         private bool denseLoot;
         private DXLabel lootPageLabel;
         private int lastPageOffset = -1, lastPageCount, lastPageTotal;
@@ -41,6 +45,7 @@ namespace Client.Scenes.Views
                 denseLoot = Config.DenseLoot;
                 TextureValid = false;
                 focusOffset = 0;
+                selectedLootIndex = 0;
             }
             if (denseLoot)
                 foreach (MapObject ob in Objects)
@@ -70,12 +75,14 @@ namespace Client.Scenes.Views
             {
                 focusTile = MapLocation;
                 focusOffset = 0;
+                selectedLootIndex = 0;
             }
             focusCell = cell;
             focusVersion = cell.ObjectVersion;
             if (cell.Objects == null) return;
             for (int i = cell.Objects.Count - 1; i >= 0; i--)
                 if (cell.Objects[i] is ItemObject item) focusedLoot.Add(item);
+            selectedLootIndex = Math.Clamp(selectedLootIndex, 0, Math.Max(0, focusedLoot.Count - 1));
         }
 
         private int LootRowHeight => focusedLoot.Count > 0 ? focusedLoot[0].FocusHeight : 16;
@@ -83,11 +90,48 @@ namespace Client.Scenes.Views
 
         public bool ScrollLoot(int delta)
         {
-            if (!HasGroundItems || !Config.DenseLoot || delta == 0 ||
+            if (!HasGroundItems || delta == 0 ||
                 MapLocation.X < 0 || MapLocation.Y < 0 || MapLocation.X >= Width || MapLocation.Y >= Height) return false;
             CollectFocusedLoot(Cells[MapLocation.X, MapLocation.Y]);
-            if (focusedLoot.Count <= LootPageSize) return false;
-            focusOffset = Math.Clamp(focusOffset - Math.Sign(delta) * LootPageSize, 0, focusedLoot.Count - LootPageSize);
+            if (focusedLoot.Count <= 1) return false;
+
+            if (CEnvir.Ctrl)
+            {
+                selectedLootIndex = Math.Clamp(selectedLootIndex - Math.Sign(delta), 0, focusedLoot.Count - 1);
+                int pageSize = Math.Min(LootPageSize, focusedLoot.Count);
+                if (selectedLootIndex < focusOffset)
+                    focusOffset = selectedLootIndex;
+                else if (selectedLootIndex >= focusOffset + pageSize)
+                    focusOffset = selectedLootIndex - pageSize + 1;
+            }
+            else
+            {
+                if (focusedLoot.Count <= LootPageSize) return false;
+                focusOffset = Math.Clamp(focusOffset - Math.Sign(delta) * LootPageSize, 0, focusedLoot.Count - LootPageSize);
+                selectedLootIndex = focusOffset;
+            }
+            return true;
+        }
+
+        internal ItemObject GetSelectedLoot(ItemObject fallback)
+        {
+            if (!CEnvir.Ctrl || MapLocation.X < 0 || MapLocation.Y < 0 ||
+                MapLocation.X >= Width || MapLocation.Y >= Height) return fallback;
+
+            CollectFocusedLoot(Cells[MapLocation.X, MapLocation.Y]);
+            return focusedLoot.Count == 0 ? fallback : focusedLoot[selectedLootIndex];
+        }
+
+        private bool TryPickUpSelectedLoot()
+        {
+            if (!CEnvir.Ctrl || MapObject.MouseObject is not ItemObject item ||
+                !Functions.InRange(item.CurrentLocation, User.CurrentLocation, User.Stats[Stat.PickUpRadius])) return false;
+
+            MapButtons &= ~MouseButtons.Left;
+            if (CEnvir.Now <= GameScene.Game.PickUpTime) return true;
+
+            CEnvir.Enqueue(new C.PickUp { ObjectID = item.ObjectID });
+            GameScene.Game.PickUpTime = CEnvir.Now.AddMilliseconds(250);
             return true;
         }
 
@@ -95,15 +139,6 @@ namespace Client.Scenes.Views
         {
             CollectFocusedLoot(cell);
             if (focusedLoot.Count == 0) return;
-
-            if (!Config.DenseLoot)
-            {
-                focusOffset = 0;
-                for (int i = 0; i < focusedLoot.Count; i++)
-                    focusedLoot[i].DrawFocus(i);
-
-                return;
-            }
 
             int count = Math.Min(LootPageSize, focusedLoot.Count);
             focusOffset = Math.Clamp(focusOffset, 0, focusedLoot.Count - count);
@@ -114,7 +149,10 @@ namespace Client.Scenes.Views
                 Math.Max(0, Size.Height - listHeight - LootFooterHeight));
 
             for (int i = 0; i < count; i++)
-                focusedLoot[focusOffset + i].DrawFocusAt(top + i * rowHeight);
+            {
+                int itemIndex = focusOffset + i;
+                focusedLoot[itemIndex].DrawFocusAt(top + i * rowHeight, CEnvir.Ctrl && itemIndex == selectedLootIndex);
+            }
 
             DrawLootSummary(first.DrawX, top + listHeight, count);
         }
@@ -162,6 +200,7 @@ namespace Client.Scenes.Views
             focusCell = null;
             focusVersion = -1;
             focusOffset = 0;
+            selectedLootIndex = 0;
         }
 
         private void DisposeLoot()
