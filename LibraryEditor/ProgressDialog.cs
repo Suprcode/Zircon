@@ -18,12 +18,47 @@ namespace LibraryEditor
             Text = title;
         }
 
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+            EnsureScaledContentFits();
+        }
+
         protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
             _stopwatch.Start();
             _timer.Start();
             UpdateTimeLabel();
+        }
+
+        protected override void OnDpiChanged(DpiChangedEventArgs e)
+        {
+            base.OnDpiChanged(e);
+            EnsureScaledContentFits();
+        }
+
+        private void EnsureScaledContentFits()
+        {
+            int horizontalMargin = ScaleLogicalPixels(16);
+            int verticalMargin = ScaleLogicalPixels(22);
+            int contentRight = 0;
+            int contentBottom = 0;
+
+            foreach (Control control in Controls)
+            {
+                contentRight = Math.Max(contentRight, control.Right);
+                contentBottom = Math.Max(contentBottom, control.Bottom);
+            }
+
+            ClientSize = new System.Drawing.Size(
+                Math.Max(ClientSize.Width, contentRight + horizontalMargin),
+                Math.Max(ClientSize.Height, contentBottom + verticalMargin));
+        }
+
+        private int ScaleLogicalPixels(int value)
+        {
+            return (int)Math.Ceiling(value * DeviceDpi / 96F);
         }
 
         private void CancelButton_Click(object sender, EventArgs e)
