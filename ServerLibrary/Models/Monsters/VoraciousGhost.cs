@@ -12,6 +12,7 @@ namespace Server.Models.Monsters
         public DateTime ReviveTime;
 
         public override decimal Experience => base.Experience / (decimal)Math.Pow(2, ReviveCount);
+        protected override bool CanDropRewards => ReviveCount == 0;
 
         public VoraciousGhost()
         {
@@ -33,14 +34,6 @@ namespace Server.Models.Monsters
             SetHP((int)(Stats[Stat.Health] / Math.Pow(2, DeathCount)));
             ReviveCount--;
         }
-
-        public override void Drop(PlayerObject owner, int players, decimal rate)
-        {
-            if (ReviveCount != 0) return;
-
-            base.Drop(owner, players, rate);
-        }
-
         public override void Die()
         {
             base.Die();

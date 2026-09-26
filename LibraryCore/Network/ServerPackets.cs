@@ -758,6 +758,26 @@ namespace Library.Network.ServerPackets
         public ClientLookingForGroup Group { get; set; }
     }
 
+    public sealed class GroupLootUpdate : Packet
+    {
+        public ClientGroupLootInfo Loot { get; set; }
+    }
+
+    public sealed class GroupLootVotePrompt : Packet
+    {
+        public ClientUserItem Item { get; set; }
+        public TimeSpan Duration { get; set; }
+        public bool CanNeed { get; set; }
+    }
+
+    public sealed class GroupLootResult : Packet
+    {
+        public int ItemIndex { get; set; }
+        public string ItemName { get; set; }
+        public string Winner { get; set; }
+        public GroupLootVote Vote { get; set; }
+    }
+
     public sealed class BuffAdd : Packet
     {
         public ClientBuffInfo Buff { get; set; }

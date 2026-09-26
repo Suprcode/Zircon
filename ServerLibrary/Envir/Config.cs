@@ -112,6 +112,7 @@ namespace Server.Envir
         public static TimeSpan RankChangeResetDelay { get; set; } = TimeSpan.FromHours(24);
         public static bool EnableStruck { get; set; } = false;
         public static bool EnableHermit { get; set; } = false;
+        public static bool EnableGroupLoot { get; set; } = false;
 
         [ConfigSection("Monsters")]
         public static TimeSpan DeadDuration { get; set; } = TimeSpan.FromMinutes(1);

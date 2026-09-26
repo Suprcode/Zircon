@@ -198,16 +198,7 @@ namespace Server.Models.Monsters
 
                 ItemObject item = (ItemObject)ob;
 
-                if (item.Account != CompanionOwner.Character.Account || !item.MonsterDrop) continue;
-
-                long amount = 0;
-
-                if (item.Item.Info == SEnvir.GoldInfo && item.Account.GuildMember != null && item.Account.GuildMember.Guild.GuildTax > 0)
-                    amount = (long)Math.Ceiling(item.Item.Count * item.Account.GuildMember.Guild.GuildTax);
-
-                ItemCheck check = new ItemCheck(item.Item, item.Item.Count - amount, item.Item.Flags, item.Item.ExpireTime);
-
-                if (!CanGainItems(true, check)) continue;
+                if (!item.MonsterDrop || !item.CanPickUpItem(this)) continue;
 
                 if (distance != bestDistance) closest.Clear();
 

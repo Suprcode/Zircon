@@ -780,6 +780,7 @@ namespace Server.Envir
             if (p.Receive)
             {
                 Player.SendLFGList();
+                Player.SendGroupLootUpdate();
             }
         }
 
@@ -795,6 +796,34 @@ namespace Server.Envir
             if (Stage != GameStage.Game) return;
 
             Player.LFGUpdate(p);
+        }
+
+        public void Process(C.GroupLootSettings p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.SetGroupLootSettings(p);
+        }
+
+        public void Process(C.GroupLootShare p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.StartGroupLootShare();
+        }
+
+        public void Process(C.GroupLootTake p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.TakeGroupLoot(p.ItemIndex);
+        }
+
+        public void Process(C.GroupLootVote p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.SubmitGroupLootVote(p.ItemIndex, p.Vote);
         }
 
         public void Process(C.Inspect p)

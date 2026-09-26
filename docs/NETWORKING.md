@@ -30,6 +30,7 @@ Use the [canonical crafting packet flow](CANONICAL_EXAMPLES.md#packet-flow) for 
 
 * [Movement](gameplay/WORLD_AND_MOVEMENT.md#movement-maps-and-teleportation): C.Move, S.ObjectMove/UserLocation; [client reconciliation](CLIENT_RUNTIME.md#object-and-animation-lifecycle).
 * [Item transfer](gameplay/ITEMS_AND_ECONOMY.md#inventory-equipment-and-storage): C/S.ItemMove, ownership/slot changes and grid locks.
+* [Group loot](gameplay/SOCIAL_AND_GROUPS.md#groups-and-looking-for-group): ClientUser carries the server-wide availability flag; C.GroupLootSettings/Share/Take/Vote, S.GroupLootUpdate/VotePrompt/Result and the runtime owner in PlayerObject.GroupLoot.cs handle active settings, bag state, manual claims and distribution.
 * [Visibility](SERVER_RUNTIME.md#maps-and-broadcasts) and [client object lifecycle](CLIENT_RUNTIME.md#object-and-animation-lifecycle): object creation/removal is server-driven.
 
 Spawns, damage, buffs and visibility updates can be unsolicited broadcasts; not every feature is request/reply.

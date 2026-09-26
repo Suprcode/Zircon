@@ -7,7 +7,7 @@ using System.Windows.Forms;
 //Cleaned
 namespace Client.Controls
 {
-    public sealed class DXComboBox : DXControl
+    public class DXComboBox : DXControl
     {
         #region Properties
         public static List<DXComboBox> ComboBoxes = new List<DXComboBox>();
@@ -146,6 +146,16 @@ namespace Client.Controls
             if (Showing)
                 ListBox.Size = new Size(Size.Width, Size.Height - NormalHeight - 2);
 
+            ListBox.UpdateClipAreaTree();
+        }
+
+        public override void OnDisplayAreaChanged(Rectangle oValue, Rectangle nValue)
+        {
+            base.OnDisplayAreaChanged(oValue, nValue);
+
+            if (SelectedLabel == null || ListBox == null) return;
+
+            ListBox.Location = new Point(DisplayArea.Location.X + SelectedLabel.Location.X, DisplayArea.Location.Y + NormalHeight + 2);
             ListBox.UpdateClipAreaTree();
         }
 

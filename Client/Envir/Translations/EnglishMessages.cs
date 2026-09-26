@@ -101,7 +101,7 @@ namespace Client.Envir.Translations
         public override string GroupMemberLimit { get; set; } = "Group member limit has been reached";
         public override string GroupNotLeader { get; set; } = "You are not the leader of your group.";
         public override string GroupAlreadyGrouped { get; set; } = "You are already in a group.";
-        public override string GroupSelf { get; set; } = "You cannot group with yourself";
+        public override string GroupSelf { get; set; } = "You cannot group with yourself.";
         public override string GroupLFGRequestDelay { get; set; } = "Cannot request to join group for another {0} seconds.";
         public override string GroupLFGRequestSent { get; set; } = "Request to join group has been sent.";
         public override string GroupDialogNotAllowingGroupMessage { get; set; } = "You are not currently allowing group.";
@@ -131,6 +131,8 @@ namespace Client.Envir.Translations
         public override string CommonControlApply { get; set; } = "Apply";
         public override string CommonControlCancel { get; set; } = "Cancel";
         public override string CommonControlClose { get; set; } = "Close";
+        public override string CommonControlNoneSelected { get; set; } = "None selected";
+        public override string CommonControlSelectedCount { get; set; } = "{0} selected";
         public override string CommonControlMiniMapSizeHint { get; set; } = "Toggle Size";
         public override string CommonControlMiniMapTransparencyHint { get; set; } = "Toggle Transparency";
         public override string CommonControlMiniMapBigMapHint { get; set; } = "Toggle Big Map";
@@ -502,7 +504,7 @@ namespace Client.Envir.Translations
 
         public override string FilterDialogTitle { get; set; } = "Filter Drop";
         public override string FilterDialogFilterLabel { get; set; } = "Item #{0}";
-        public override string FilterDialogSaveButtonLabel { get; set; } = "Save settings";
+        public override string FilterDialogSaveButtonLabel { get; set; } = "Save Settings";
 
         public override string FishingCatchDialogAutoCast { get; set; } = "Auto Cast:";
 
@@ -531,6 +533,24 @@ namespace Client.Envir.Translations
         public override string GroupDialogAddButtonConfirmCaption { get; set; } = "Invite Group Member";
         public override string GroupDialogAddButtonHint { get; set; } = "Add Member";
         public override string GroupDialogRemoveButtonHint { get; set; } = "Remove Member";
+        public override string GroupLootTitle { get; set; } = "Group Loot";
+        public override string GroupLootSettingsTitle { get; set; } = "Group Loot Settings";
+        public override string GroupLootSettingsHint { get; set; } = "Group Loot Settings";
+        public override string GroupLootMode { get; set; } = "Mode";
+        public override string GroupLootBagEnabled { get; set; } = "Enable Bag";
+        public override string GroupLootFilters { get; set; } = "Filters";
+        public override string GroupLootItemTypes { get; set; } = "Item Types";
+        public override string GroupLootRarities { get; set; } = "Rarities";
+        public override string GroupLootNeedRestrictions { get; set; } = "Restrict Need to equippable items";
+        public override string GroupLootAllowManualTaking { get; set; } = "Allow manual item taking";
+        public override string GroupLootShare { get; set; } = "Share";
+        public override string GroupLootNeed { get; set; } = "Need";
+        public override string GroupLootGreed { get; set; } = "Greed";
+        public override string GroupLootPass { get; set; } = "Pass";
+        public override string GroupLootVoteTitle { get; set; } = "Group Loot";
+        public override string GroupLootVoteTime { get; set; } = "Choose for {0} ({1}s)";
+        public override string GroupLootWon { get; set; } = "{0} received {1}.";
+        public override string GroupLootNoWinner { get; set; } = "No one received {0}.";
 
         public override string GuildDialogTitle { get; set; } = "Guild";
         public override string GuildDialogCreateTabLabel { get; set; } = "Create";

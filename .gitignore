@@ -14,3 +14,5 @@ licenses.licx
 /Exports/*
 /artifacts
 /docs/changes
+/.build
+/.codex-build

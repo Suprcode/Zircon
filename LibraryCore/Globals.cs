@@ -446,6 +446,7 @@ namespace Library
         //Server settings
         public bool StruckEnabled { get; set; }
         public bool HermitEnabled { get; set; }
+        public bool GroupLootEnabled { get; set; }
         public int MaxGemPurity { get; set; }
 
         [CompleteObject]
@@ -1267,6 +1268,20 @@ namespace Library
         public List<string> MemberInfo { get; set; } = new List<string>();
         public int MaxCount { get; set; }
         public bool Enabled { get; set; }
+    }
+
+    public class ClientGroupLootInfo
+    {
+        public GroupLootMode Mode { get; set; }
+        public bool BagEnabled { get; set; }
+        public bool NeedRestrictions { get; set; }
+        public bool AllowManualTaking { get; set; }
+        public List<ItemType> ItemTypes { get; set; } = new List<ItemType>();
+        public List<Rarity> Rarities { get; set; } = new List<Rarity>();
+        public List<ClientUserItem> Items { get; set; } = new List<ClientUserItem>();
+        public int Weight { get; set; }
+        public int Capacity { get; set; }
+        public bool Sharing { get; set; }
     }
 
     public class ClientUserMilestone

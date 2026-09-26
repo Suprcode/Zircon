@@ -269,6 +269,8 @@ namespace Client.Scenes
         public BigMapDialog BigMapBox;
         public MagicDialog MagicBox;
         public GroupDialog GroupBox;
+        public GroupBagDialog GroupBagBox;
+        public GroupLootVoteDialog GroupLootVoteBox;
         public GroupHealthDialog GroupHealthBox;
         public BuffDialog BuffBox;
         public StorageDialog StorageBox;
@@ -438,6 +440,33 @@ namespace Client.Scenes
             }
         }
         private bool _HermitEnabled;
+
+        public bool GroupLootEnabled
+        {
+            get => _GroupLootEnabled;
+            set
+            {
+                _GroupLootEnabled = value;
+                GroupBox?.RefreshGroupLootAvailability();
+
+                if (GroupBagBox != null)
+                {
+                    bool showGroupBag = GroupBox?.ShouldShowGroupBag == true;
+
+                    if (showGroupBag)
+                        GroupBox.AnchorGroupBag();
+
+                    GroupBagBox.Visible = showGroupBag;
+
+                    if (showGroupBag)
+                    {
+                        GroupBagBox.BringToFront();
+                        GroupBox.BringToFront();
+                    }
+                }
+            }
+        }
+        private bool _GroupLootEnabled;
 
         public static float ShadowOpacity => Math.Clamp(Config.ShadowOpacity, 0.2F, 0.8F);
 
@@ -657,6 +686,11 @@ namespace Client.Scenes
                 Visible = false,
             };
             GroupBox = new GroupDialog()
+            {
+                Parent = this,
+                Visible = false,
+            };
+            GroupBagBox = new GroupBagDialog()
             {
                 Parent = this,
                 Visible = false,
@@ -1013,7 +1047,8 @@ namespace Client.Scenes
 
             MagicBox.Location = new Point(uiSize.Width - MagicBox.Size.Width, 0);
 
-            GroupBox.Location = new Point((uiSize.Width - GroupBox.Size.Width) / 2, (uiSize.Height - GroupBox.Size.Height) / 2);
+            GroupBox.Location = new Point((uiSize.Width - GroupBox.Size.Width - GroupBagBox.Size.Width - 4) / 2, (uiSize.Height - Math.Max(GroupBox.Size.Height, GroupBagBox.Size.Height)) / 2);
+            GroupBox.AnchorGroupBag();
 
             StorageBox.Location = new Point(uiSize.Width - StorageBox.Size.Width - InventoryBox.Size.Width, 0);
 
@@ -5029,6 +5064,22 @@ namespace Client.Scenes
                         GroupBox.Dispose();
 
                     GroupBox = null;
+                }
+
+                if (GroupBagBox != null)
+                {
+                    if (!GroupBagBox.IsDisposed)
+                        GroupBagBox.Dispose();
+
+                    GroupBagBox = null;
+                }
+
+                if (GroupLootVoteBox != null)
+                {
+                    if (!GroupLootVoteBox.IsDisposed)
+                        GroupLootVoteBox.CancelWithoutVote();
+
+                    GroupLootVoteBox = null;
                 }
 
                 if (GroupHealthBox != null)

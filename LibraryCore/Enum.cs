@@ -45,6 +45,25 @@ namespace Library
         None = 4,
     }
 
+    public enum GroupLootMode : byte
+    {
+        [Description("Free For All")]
+        FreeForAll,
+        [Description("Random")]
+        Random,
+        [Description("Need / Greed")]
+        NeedGreed,
+        [Description("Round Robin")]
+        RoundRobin,
+    }
+
+    public enum GroupLootVote : byte
+    {
+        Pass,
+        Greed,
+        Need,
+    }
+
     public enum MirDirection : byte
     {
         Up = 0,
@@ -219,7 +238,8 @@ namespace Library
         SocketCombine1,
         SocketCombine2,
         SocketCombine3,
-        SocketCombineResult
+        SocketCombineResult,
+        GroupLoot
     }
 
     public enum InventoryMode

@@ -61,6 +61,7 @@ All paths are relative to `ServerLibrary/Models/`:
 | File | Responsibility / first methods |
 | --- | --- |
 | `PlayerObject.cs` | Core lifecycle plus most feature families; use region map below |
+| `PlayerObject.GroupLoot.cs` | Server-configured group-loot availability, persisted leader mode/filter/bag preferences, combined capacity, balanced shared-bag weight allocation, immediate bagless awards, automatic distribution and Need/Greed voting |
 | `PlayerObject.Crafting.cs` | Recipe validation, start/completion/cancellation, material aggregation, favourite and crafting progression: `StartCrafting`, `ProcessCrafting`, `CanCraft` |
 | `PlayerObject.Milestone.cs` | Event logging, eligibility, active milestone and reward claim: `LogMilestone`, `CheckMilestones`, `MilestoneClaim` |
 | `Players/PlayerObject.AutoPath.cs` | Player AutoPathState and forwarding methods to AutoPathService; planning/execution is in `AutoPath/AutoPathService.cs` and `AutoPathRoutePlanner.cs` |

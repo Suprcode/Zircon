@@ -149,6 +149,7 @@ namespace Server.Views
             AutoReviveDelayEdit.EditValue = Config.AutoReviveDelay;
             EnableStruckEdit.EditValue = Config.EnableStruck;
             EnableHermitEdit.EditValue = Config.EnableHermit;
+            EnableGroupLootEdit.EditValue = Config.EnableGroupLoot;
             EnableFortuneEdit.EditValue = Config.EnableFortune;
             AdminGamemasterStartEdit.EditValue = Config.AdminStartInGamemasterMode;
             AdminObserverStartEdit.EditValue = Config.AdminStartInObserverMode;
@@ -166,6 +167,7 @@ namespace Server.Views
             DropDurationEdit.EditValue = Config.DropDuration;
             DropDistanceEdit.EditValue = Config.DropDistance;
             DropLayersEdit.EditValue = Config.DropLayers;
+            DropVisibleOtherPlayersEdit.EditValue = Config.DropVisibleOtherPlayers;
             TorchRateEdit.EditValue = Config.TorchRate;
             MaxGemPurityEdit.EditValue = Config.MaxGemPurity;
             SpecialRepairDelayEdit.EditValue = Config.SpecialRepairDelay;
@@ -272,6 +274,7 @@ namespace Server.Views
             Config.AutoReviveDelay = (TimeSpan)AutoReviveDelayEdit.EditValue;
             Config.EnableStruck = (bool)EnableStruckEdit.EditValue;
             Config.EnableHermit = (bool)EnableHermitEdit.EditValue;
+            Config.EnableGroupLoot = (bool)EnableGroupLootEdit.EditValue;
             Config.EnableFortune = (bool)EnableFortuneEdit.EditValue;
             Config.AdminStartInGamemasterMode = (bool)AdminGamemasterStartEdit.EditValue;
             Config.AdminStartInObserverMode = (bool)AdminObserverStartEdit.EditValue;
@@ -287,6 +290,7 @@ namespace Server.Views
             Config.DropDuration = (TimeSpan)DropDurationEdit.EditValue;
             Config.DropDistance = (int)DropDistanceEdit.EditValue;
             Config.DropLayers = (int)DropLayersEdit.EditValue;
+            Config.DropVisibleOtherPlayers = (bool)DropVisibleOtherPlayersEdit.EditValue;
             Config.TorchRate = (int)TorchRateEdit.EditValue;
             Config.MaxGemPurity = (int)MaxGemPurityEdit.EditValue;
             Config.SpecialRepairDelay = (TimeSpan)SpecialRepairDelayEdit.EditValue;

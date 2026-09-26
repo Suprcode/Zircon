@@ -398,6 +398,31 @@ namespace Library.Network.ClientPackets
         public bool Receive { get; set; }
     }
 
+    public sealed class GroupLootSettings : Packet
+    {
+        public GroupLootMode Mode { get; set; }
+        public bool BagEnabled { get; set; }
+        public bool NeedRestrictions { get; set; }
+        public bool AllowManualTaking { get; set; }
+        public List<ItemType> ItemTypes { get; set; }
+        public List<Rarity> Rarities { get; set; }
+    }
+
+    public sealed class GroupLootShare : Packet
+    {
+    }
+
+    public sealed class GroupLootTake : Packet
+    {
+        public int ItemIndex { get; set; }
+    }
+
+    public sealed class GroupLootVote : Packet
+    {
+        public int ItemIndex { get; set; }
+        public Library.GroupLootVote Vote { get; set; }
+    }
+
     public sealed class Inspect : Packet
     {
         public int Index { get; set; }

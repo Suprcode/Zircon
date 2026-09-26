@@ -132,6 +132,8 @@ namespace Client.Envir.Translations
         public override string CommonControlApply { get; set; } = "应用";
         public override string CommonControlCancel { get; set; } = "取消";
         public override string CommonControlClose { get; set; } = "关闭";
+        public override string CommonControlNoneSelected { get; set; } = "未选择";
+        public override string CommonControlSelectedCount { get; set; } = "已选择 {0} 项";
         public override string CommonControlMiniMapSizeHint { get; set; } = "切换小地图大小";
         public override string CommonControlMiniMapTransparencyHint { get; set; } = "切换小地图透明度";
         public override string CommonControlMiniMapBigMapHint { get; set; } = "打开或关闭大地图";
@@ -530,6 +532,24 @@ namespace Client.Envir.Translations
         public override string GroupDialogAddButtonConfirmCaption { get; set; } = "邀请编组成员";
         public override string GroupDialogAddButtonHint { get; set; } = "添加成员";
         public override string GroupDialogRemoveButtonHint { get; set; } = "移除成员";
+        public override string GroupLootTitle { get; set; } = "队伍背包";
+        public override string GroupLootSettingsTitle { get; set; } = "队伍战利品设置";
+        public override string GroupLootSettingsHint { get; set; } = "队伍战利品设置";
+        public override string GroupLootMode { get; set; } = "分配模式";
+        public override string GroupLootBagEnabled { get; set; } = "启用队伍背包";
+        public override string GroupLootFilters { get; set; } = "战利品筛选";
+        public override string GroupLootItemTypes { get; set; } = "物品类型";
+        public override string GroupLootRarities { get; set; } = "稀有度";
+        public override string GroupLootNeedRestrictions { get; set; } = "仅允许需求可装备的物品";
+        public override string GroupLootAllowManualTaking { get; set; } = "允许手动取出物品";
+        public override string GroupLootShare { get; set; } = "分配";
+        public override string GroupLootNeed { get; set; } = "需求";
+        public override string GroupLootGreed { get; set; } = "贪婪";
+        public override string GroupLootPass { get; set; } = "放弃";
+        public override string GroupLootVoteTitle { get; set; } = "队伍战利品";
+        public override string GroupLootVoteTime { get; set; } = "选择 {0}（{1}秒）";
+        public override string GroupLootWon { get; set; } = "{0}获得了{1}。";
+        public override string GroupLootNoWinner { get; set; } = "无人获得{0}。";
 
         public override string GuildDialogTitle { get; set; } = "行会";
         public override string GuildDialogCreateTabLabel { get; set; } = "创建";

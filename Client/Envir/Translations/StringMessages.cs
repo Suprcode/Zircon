@@ -131,6 +131,8 @@ namespace Client.Envir.Translations
         public abstract string CommonControlApply { get; set; }
         public abstract string CommonControlCancel { get; set; }
         public abstract string CommonControlClose { get; set; }
+        public abstract string CommonControlNoneSelected { get; set; }
+        public abstract string CommonControlSelectedCount { get; set; }
         public abstract string CommonControlMiniMapSizeHint { get; set; }
         public abstract string CommonControlMiniMapTransparencyHint { get; set; }
         public abstract string CommonControlMiniMapBigMapHint { get; set; }
@@ -528,6 +530,24 @@ namespace Client.Envir.Translations
         public abstract string GroupDialogAddButtonConfirmCaption { get; set; }
         public abstract string GroupDialogAddButtonHint { get; set; }
         public abstract string GroupDialogRemoveButtonHint { get; set; }
+        public abstract string GroupLootTitle { get; set; }
+        public abstract string GroupLootSettingsTitle { get; set; }
+        public abstract string GroupLootSettingsHint { get; set; }
+        public abstract string GroupLootMode { get; set; }
+        public abstract string GroupLootBagEnabled { get; set; }
+        public abstract string GroupLootFilters { get; set; }
+        public abstract string GroupLootItemTypes { get; set; }
+        public abstract string GroupLootRarities { get; set; }
+        public abstract string GroupLootNeedRestrictions { get; set; }
+        public abstract string GroupLootAllowManualTaking { get; set; }
+        public abstract string GroupLootShare { get; set; }
+        public abstract string GroupLootNeed { get; set; }
+        public abstract string GroupLootGreed { get; set; }
+        public abstract string GroupLootPass { get; set; }
+        public abstract string GroupLootVoteTitle { get; set; }
+        public abstract string GroupLootVoteTime { get; set; }
+        public abstract string GroupLootWon { get; set; }
+        public abstract string GroupLootNoWinner { get; set; }
 
         public abstract string GuildDialogTitle { get; set; }
         public abstract string GuildDialogCreateTabLabel { get; set; }

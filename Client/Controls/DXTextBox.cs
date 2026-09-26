@@ -332,13 +332,19 @@ namespace Client.Controls
             float scaleX = logicalSize.Width > 0 ? clientSize.Width / (float)logicalSize.Width : 1F;
             float scaleY = logicalSize.Height > 0 ? clientSize.Height / (float)logicalSize.Height : 1F;
 
-            int left = (int)Math.Round(DisplayArea.Left * scaleX);
-            int top = (int)Math.Round(DisplayArea.Top * scaleY);
+            bool insetBorder = Border && TextBox.Visible;
+            int borderInset = insetBorder ? Math.Max(1, (int)Math.Ceiling(BorderSize)) : 0;
+            int left = insetBorder
+                ? (int)Math.Floor(DisplayArea.Left * scaleX) + borderInset
+                : (int)Math.Round(DisplayArea.Left * scaleX);
+            int top = insetBorder
+                ? (int)Math.Floor(DisplayArea.Top * scaleY) + borderInset
+                : (int)Math.Round(DisplayArea.Top * scaleY);
             int right = Border
-                ? (int)Math.Floor(DisplayArea.Right * scaleX)
+                ? (int)Math.Floor(DisplayArea.Right * scaleX) - borderInset
                 : (int)Math.Round(DisplayArea.Right * scaleX);
             int bottom = Border
-                ? (int)Math.Floor(DisplayArea.Bottom * scaleY)
+                ? (int)Math.Floor(DisplayArea.Bottom * scaleY) - borderInset
                 : (int)Math.Round(DisplayArea.Bottom * scaleY);
 
             Rectangle bounds = Rectangle.FromLTRB(
@@ -359,8 +365,8 @@ namespace Client.Controls
             float scaleX = logicalSize.Width > 0 ? clientSize.Width / (float)logicalSize.Width : 1F;
             float scaleY = logicalSize.Height > 0 ? clientSize.Height / (float)logicalSize.Height : 1F;
 
-            int x = (int)Math.Round((e.X - DisplayArea.X) * scaleX);
-            int y = (int)Math.Round((e.Y - DisplayArea.Y) * scaleY);
+            int x = (int)Math.Round(e.X * scaleX) - TextBox.Left;
+            int y = (int)Math.Round(e.Y * scaleY) - TextBox.Top;
 
             return (x & 0xffff) | (y & 0xffff) << 16;
         }
@@ -399,9 +405,10 @@ namespace Client.Controls
         }
         public virtual void OnActivated()
         {
-            SynchronizeNativeBounds();
             if (TextBox.Visible != Editable)
                 TextBox.Visible = Editable;
+
+            SynchronizeNativeBounds();
 
             if (TextBox.Visible && CEnvir.Target.ActiveControl != TextBox)
                 CEnvir.Target.ActiveControl = TextBox;
@@ -415,6 +422,7 @@ namespace Client.Controls
             }
 
             TextBox.Visible = false;
+            SynchronizeNativeBounds();
             CEnvir.Target.ActiveControl = null;
         }
 
