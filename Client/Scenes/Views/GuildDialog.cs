@@ -634,6 +634,7 @@ namespace Client.Scenes.Views
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
+                AutoSize = false,
                 Size = new Size(CreateTab.Size.Width, 22),
                 DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
                 Location = new Point(0, 20)
@@ -668,6 +669,7 @@ namespace Client.Scenes.Views
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
+                AutoSize = false,
                 Size = new Size(CreateTab.Size.Width, 22),
                 DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
                 Location = new Point(0, label.Location.Y + 50)
@@ -713,6 +715,7 @@ namespace Client.Scenes.Views
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
+                AutoSize = false,
                 Size = new Size(CreateTab.Size.Width, 22),
                 DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
                 Location = new Point(0, HornCheckBox.Location.Y + 50)
@@ -793,6 +796,7 @@ namespace Client.Scenes.Views
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
+                AutoSize = false,
                 Size = new Size(CreateTab.Size.Width, 22),
                 DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
                 Location = new Point(0, StorageTextBox.Location.Y + 50)
