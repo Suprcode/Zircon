@@ -383,8 +383,10 @@ namespace Server.Models
             UserItem item = GroupLoot.Items.FirstOrDefault(x => x.Index == itemIndex);
             if (!CanReceiveGroupLoot(this, item) || !GroupLoot.Items.Remove(item)) return;
 
+            int resultItemIndex = item.Index;
+            string itemName = item.Info.ItemName;
             GainItem(item);
-            BroadcastGroupLootResult(item, this, GroupLootVote.Pass);
+            BroadcastGroupLootResult(resultItemIndex, itemName, Name, GroupLootVote.Pass);
         }
 
         private void AwardAutomaticGroupLoot(UserItem item)
@@ -394,8 +396,10 @@ namespace Server.Models
             {
                 if (GroupLoot.Share.Instant)
                 {
+                    int itemIndex = item.Index;
+                    string itemName = item.Info.ItemName;
                     ReturnInstantGroupLoot(item);
-                    BroadcastGroupLootResult(item, null, GroupLootVote.Pass);
+                    BroadcastGroupLootResult(itemIndex, itemName, null, GroupLootVote.Pass);
                 }
 
                 return;
@@ -476,10 +480,13 @@ namespace Server.Models
                 AwardGroupLoot(item, candidates[SEnvir.Random.Next(candidates.Count)], winningVote);
             else
             {
+                int itemIndex = item.Index;
+                string itemName = item.Info.ItemName;
+
                 if (GroupLoot.Share.Instant)
                     ReturnInstantGroupLoot(item);
 
-                BroadcastGroupLootResult(item, null, GroupLootVote.Pass);
+                BroadcastGroupLootResult(itemIndex, itemName, null, GroupLootVote.Pass);
             }
 
             GroupLoot.Share.Position++;
@@ -490,15 +497,18 @@ namespace Server.Models
         {
             if (!GroupLoot.Share.Instant && !GroupLoot.Items.Remove(item)) return;
 
+            int itemIndex = item.Index;
+            string itemName = item.Info.ItemName;
+            string winnerName = winner.Name;
             GroupLoot.Share.AwardedWeight[winner.ObjectID] += item.Weight;
             winner.GainItem(item);
-            BroadcastGroupLootResult(item, winner, vote);
+            BroadcastGroupLootResult(itemIndex, itemName, winnerName, vote);
         }
 
-        private void BroadcastGroupLootResult(UserItem item, PlayerObject winner, GroupLootVote vote)
+        private void BroadcastGroupLootResult(int itemIndex, string itemName, string winnerName, GroupLootVote vote)
         {
             foreach (PlayerObject member in GroupMembers)
-                member.Enqueue(new S.GroupLootResult { ItemIndex = item.Index, ItemName = item.Info.ItemName, Winner = winner?.Name, Vote = vote });
+                member.Enqueue(new S.GroupLootResult { ItemIndex = itemIndex, ItemName = itemName, Winner = winnerName, Vote = vote });
 
             BroadcastGroupLootUpdate();
         }
