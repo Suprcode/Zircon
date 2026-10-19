@@ -15,12 +15,12 @@ namespace Server.Envir.Events.Actions
     {
         public void Act(PlayerObject triggerPlayer, EventLog log, PlayerEventAction action)
         {
-            GiveItem(action, log.MonsterEvent.TrackingType, triggerPlayer);
+            GiveItem(action, log.PlayerEvent.TrackingType, triggerPlayer);
         }
 
         public void Act(PlayerObject triggerPlayer, EventLog log, MonsterEventAction action)
         {
-            GiveItem(action, log.PlayerEvent.TrackingType, triggerPlayer);
+            GiveItem(action, log.MonsterEvent.TrackingType, triggerPlayer);
         }
 
         public void Act(EventLog log, WorldEventAction action)

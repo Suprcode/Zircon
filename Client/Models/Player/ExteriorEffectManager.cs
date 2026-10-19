@@ -436,7 +436,7 @@ namespace Client.Models.Player
                 case MirAnimation.Combat3:
                 case MirAnimation.TamingCast:
                 case MirAnimation.TamingWait:
-                    return indexStart + 722 + GameScene.Game.MapControl.Animation / animationSpeed % 4 + (int)direction * 10;
+                    return indexStart + 720 + GameScene.Game.MapControl.Animation / animationSpeed % 6 + (int)direction * 10;
                 case MirAnimation.Combat4:
                     return indexStart + 800 + GameScene.Game.MapControl.Animation / animationSpeed % 6 + (int)direction * 10;
                 case MirAnimation.Combat5:
