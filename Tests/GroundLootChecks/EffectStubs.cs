@@ -11,10 +11,11 @@ namespace Library
     {
         public MirImage[] Images = new MirImage[130];
         public int SizeReads;
+        public readonly List<(int Frame, int X, int Y)> Draws = new();
         public Size GetSize(int index) { SizeReads++; return new Size(16, 16); }
         public Point GetOffSet(int index) => Point.Empty;
-        public void DrawBlend(int frame, int x, int y, Color colour, bool offset, float rate, ImageType type) { }
-        public void Draw(int frame, int x, int y, Color colour, bool offset, float opacity, ImageType type) { }
+        public void DrawBlend(int frame, int x, int y, Color colour, bool offset, float rate, ImageType type) => Draws.Add((frame, x, y));
+        public void Draw(int frame, int x, int y, Color colour, bool offset, float opacity, ImageType type) => Draws.Add((frame, x, y));
     }
 }
 

@@ -99,6 +99,28 @@ Client.Envir.CEnvir.LibraryList.Add(Library.LibraryFile.ProgUse, effectLibrary);
 DateTime effectStart = Client.Envir.CEnvir.Now;
 var normal = new MirEffect(10, 2, TimeSpan.FromMilliseconds(100), Library.LibraryFile.ProgUse, 10, 20, Color.White);
 var otherNormal = new MirEffect(10, 2, TimeSpan.FromMilliseconds(100), Library.LibraryFile.ProgUse, 10, 20, Color.White);
+// Packets and chained-effect callbacks can add effects after the simulation's
+// effect pass. Rendering before the next pass must not show image zero at (0,0).
+foreach (bool blend in new[] { false, true })
+{
+    var pending = new MirEffect(50, 2, TimeSpan.FromMilliseconds(100), Library.LibraryFile.ProgUse, 10, 20, Color.White)
+    {
+        Blend = blend,
+        Target = new MapObject { DrawX = 240, DrawY = 180 },
+        AdditionalOffSet = new Point(7, -3),
+        Direction = (Library.MirDirection)1
+    };
+    effectLibrary.Draws.Clear();
+    pending.Draw();
+    Require(effectLibrary.Draws.Count == 0 && pending.FrameLight == 0,
+        "Unprocessed effect drew image zero or emitted light at the origin.");
+    pending.Process();
+    pending.Draw();
+    Require(effectLibrary.Draws.SequenceEqual(new[] { (60, 247, 177) }) && pending.FrameLight == 10,
+        "Processed effect did not draw its configured frame, direction and target position.");
+    pending.Remove();
+}
+Console.WriteLine("PASS: pending blended and ordinary effects remain invisible until their first update.");
 Require(!ReferenceEquals(normal.Delays, otherNormal.Delays) && !ReferenceEquals(normal.LightColours, otherNormal.LightColours),
     "Ordinary effects must own their animation arrays.");
 Require(normal.Delays.All(delay => delay == TimeSpan.FromMilliseconds(100)) && normal.LightColours.All(colour => colour == Color.White),
