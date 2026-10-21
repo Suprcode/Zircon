@@ -247,7 +247,15 @@ internal static class Program
                 PointF a = points[side], b = points[(side + 1) % 4];
                 // DXControl emits the bottom and left in the same direction as top and right.
                 if (side >= 2) (a, b) = (b, a);
-                if (lines) R.DrawLine(new[] { new LinePoint(a.X, a.Y), new LinePoint(b.X, b.Y) }, Color.Gold);
+                if (lines)
+                {
+                    // The line rasterizer excludes its last endpoint. Include the final
+                    // physical pixel in the reference border, including bottom-right.
+                    SizeF pixel = R.GetBackBufferPixelSize();
+                    if (side % 2 == 0) b.X += pixel.Width;
+                    else b.Y += pixel.Height;
+                    R.DrawLine(new[] { new LinePoint(a.X, a.Y), new LinePoint(b.X, b.Y) }, Color.Gold);
+                }
                 else R.DrawBorderStroke(a, b, 1F, Color.Gold);
             }
         }
