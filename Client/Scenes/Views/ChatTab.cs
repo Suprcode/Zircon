@@ -55,6 +55,7 @@ namespace Client.Scenes.Views
             if (!HideChat)
             {
                 chatFade = 1F;
+                TextPanel.IsControl = true;
 
                 foreach (var item in History)
                 {
@@ -183,6 +184,7 @@ namespace Client.Scenes.Views
                 chatFade -= 0.2F;
 
                 chatFade = Math.Max(0F, chatFade);
+                TextPanel.IsControl = chatFade > 0F;
 
                 foreach (var item in History)
                 {
