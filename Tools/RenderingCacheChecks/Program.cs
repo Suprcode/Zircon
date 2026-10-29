@@ -16,7 +16,8 @@ internal static class Program
     {
         Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
         if (args.Contains("--switch")) return CheckPipelineSwitch();
-        string backend = args.Contains("--vulkan") ? RenderingPipelineIds.SilkVulkan : RenderingPipelineIds.SilkDXD3D11;
+        bool scratchCheck = args.Contains("--vulkan-scratch");
+        string backend = args.Contains("--vulkan") || scratchCheck ? RenderingPipelineIds.SilkVulkan : RenderingPipelineIds.SilkDXD3D11;
         foreach (float windowScale in new[] { 1F, 1.25F, 1.5F, 1.75F, 2F })
         {
             using Form form = new() { ShowInTaskbar = false, ClientSize = new Size(1024, 768) };
@@ -29,6 +30,13 @@ internal static class Program
             using var session = R.CreateSession(backend, new RenderingPipelineContext(form, settings));
             _art = MakeTexture(17, 19, false);
             _text = MakeTexture(93, 21, true);
+            if (scratchCheck)
+            {
+                CheckVulkanScratchReuse();
+                R.ReleaseTexture(_art);
+                R.ReleaseTexture(_text);
+                return 0;
+            }
             foreach (float uiScale in new[] { 1F, 1.25F, 1.5F, 1.75F, 2F })
             {
                 byte[] direct = null, cached = null, lines = null;
@@ -139,6 +147,37 @@ internal static class Program
         }
         Console.WriteLine($"Failures={_failures}");
         return _failures == 0 ? 0 : 1;
+    }
+
+    private static void CheckVulkanScratchReuse()
+    {
+        TextureFilterMode previousFilter = R.GetTextureFilter();
+        try
+        {
+            for (int frame = 0; frame < 32; frame++)
+            {
+                if (!R.RenderFrame(() =>
+                {
+                    RenderSurface screen = R.GetCurrentSurface();
+                    for (int player = 0; player < 32; player++)
+                    {
+                        R.SetSurface(R.GetScratchSurface());
+                        R.Clear(RenderClearFlags.Target, Color.Transparent, 0, 0);
+                        // Reuse the same texture with both samplers within one command buffer.
+                        foreach (TextureFilterMode filter in new[] { TextureFilterMode.Point, TextureFilterMode.Linear })
+                        {
+                            R.SetTextureFilter(filter);
+                            R.DrawTexture(_art, new Rectangle(0, 0, 17, 19), new RectangleF(0, 0, 34, 38), Color.White);
+                        }
+                        R.SetSurface(screen);
+                        R.DrawTexture(R.GetScratchTexture(), new Rectangle(0, 0, 34, 38),
+                            new RectangleF(player % 8 * 40, player / 8 * 40, 34, 38), Color.White);
+                    }
+                })) throw new Exception("Vulkan scratch reuse frame failed");
+            }
+            Console.WriteLine("Vulkan scratch reuse / sampler switching: 32 frames x 32 composites passed (no GPU readback)");
+        }
+        finally { R.SetTextureFilter(previousFilter); }
     }
 
     private sealed class SwitchTestForm : Form

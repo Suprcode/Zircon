@@ -100,7 +100,8 @@ namespace Shared.Rendering.SilkVulkan
         public byte[] Data => _data ??= new byte[Size.Width * Size.Height * 4];
         public VkImageLayout Layout { get; set; }
         public bool FlipVerticallyWhenSampling { get; }
-        public TextureFilterMode AppliedFilter { get; set; }
+        public DescriptorSet LinearDescriptorSet { get; set; }
+        public DescriptorPool LinearDescriptorPool { get; set; }
 
         public void ReleaseCpuDataIfUnused()
         {
@@ -121,6 +122,14 @@ namespace Shared.Rendering.SilkVulkan
                 _vk.FreeDescriptorSets(_device, DescriptorPool, 1, in descriptorSet);
                 DescriptorSet = default;
                 DescriptorPool = default;
+            }
+
+            if (LinearDescriptorSet.Handle != 0 && LinearDescriptorPool.Handle != 0)
+            {
+                DescriptorSet descriptorSet = LinearDescriptorSet;
+                _vk.FreeDescriptorSets(_device, LinearDescriptorPool, 1, in descriptorSet);
+                LinearDescriptorSet = default;
+                LinearDescriptorPool = default;
             }
 
             if (ImageView.Handle != 0)

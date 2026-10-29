@@ -2281,6 +2281,15 @@ namespace Shared.Rendering.SilkVulkan
 
         private void AllocateTextureDescriptor(SilkVulkanTextureResource resource)
         {
+            // A descriptor referenced by recorded or pending draws must stay immutable.
+            (resource.DescriptorSet, resource.DescriptorPool) = AllocateTextureDescriptorSet();
+            UpdateTextureDescriptor(resource, resource.DescriptorSet, TextureFilterMode.Point);
+            (resource.LinearDescriptorSet, resource.LinearDescriptorPool) = AllocateTextureDescriptorSet();
+            UpdateTextureDescriptor(resource, resource.LinearDescriptorSet, TextureFilterMode.Linear);
+        }
+
+        private (DescriptorSet, DescriptorPool) AllocateTextureDescriptorSet()
+        {
             DescriptorSetLayout layout = _textureDescriptorSetLayout;
 
             foreach (DescriptorPool descriptorPool in _descriptorPools)
@@ -2288,10 +2297,7 @@ namespace Shared.Rendering.SilkVulkan
                 Result result = TryAllocateDescriptorSet(descriptorPool, layout, out DescriptorSet allocatedDescriptorSet);
                 if (result == Result.Success)
                 {
-                    resource.DescriptorSet = allocatedDescriptorSet;
-                    resource.DescriptorPool = descriptorPool;
-                    UpdateTextureDescriptor(resource);
-                    return;
+                    return (allocatedDescriptorSet, descriptorPool);
                 }
 
                 if (!IsDescriptorPoolExhausted(result))
@@ -2302,10 +2308,7 @@ namespace Shared.Rendering.SilkVulkan
             _descriptorPools.Add(_descriptorPool);
 
             Check(TryAllocateDescriptorSet(_descriptorPool, layout, out DescriptorSet newDescriptorSet), "allocate Vulkan texture descriptor");
-            DescriptorSet descriptorSet = newDescriptorSet;
-            resource.DescriptorSet = descriptorSet;
-            resource.DescriptorPool = _descriptorPool;
-            UpdateTextureDescriptor(resource);
+            return (newDescriptorSet, _descriptorPool);
         }
 
         private Result TryAllocateDescriptorSet(DescriptorPool descriptorPool, DescriptorSetLayout layout, out DescriptorSet descriptorSet)
@@ -2327,9 +2330,8 @@ namespace Shared.Rendering.SilkVulkan
                    result == Result.ErrorFragmentedPool;
         }
 
-        private void UpdateTextureDescriptor(SilkVulkanTextureResource resource, bool forcePointSampling = false)
+        private void UpdateTextureDescriptor(SilkVulkanTextureResource resource, DescriptorSet descriptorSet, TextureFilterMode appliedFilter)
         {
-            TextureFilterMode appliedFilter = GetAppliedTextureFilter(forcePointSampling);
             DescriptorImageInfo imageInfo = new DescriptorImageInfo
             {
                 Sampler = appliedFilter == TextureFilterMode.Linear ? _linearSampler : _pointSampler,
@@ -2340,14 +2342,13 @@ namespace Shared.Rendering.SilkVulkan
             WriteDescriptorSet write = new WriteDescriptorSet
             {
                 SType = StructureType.WriteDescriptorSet,
-                DstSet = resource.DescriptorSet,
+                DstSet = descriptorSet,
                 DstBinding = 0,
                 DescriptorCount = 1,
                 DescriptorType = DescriptorType.CombinedImageSampler,
                 PImageInfo = &imageInfo
             };
             _vk.UpdateDescriptorSets(_device, 1, in write, 0, (CopyDescriptorSet*)null);
-            resource.AppliedFilter = appliedFilter;
         }
 
         private void UploadTexture(SilkVulkanTextureResource resource)
@@ -2478,7 +2479,16 @@ namespace Shared.Rendering.SilkVulkan
                 return;
 
             EndRenderPass();
-            TransitionTarget(target, VkImageLayout.ColorAttachmentOptimal, 0, AccessFlags.ColorAttachmentWriteBit, PipelineStageFlags.TopOfPipeBit, PipelineStageFlags.ColorAttachmentOutputBit);
+            // Wait for earlier sampling before reusing the shared scratch target.
+            // Resumed attachment passes also need earlier attachment writes to be visible.
+            bool wasAttachment = target.Layout == VkImageLayout.ColorAttachmentOptimal;
+            PipelineStageFlags sourceStage = target.Layout == VkImageLayout.ShaderReadOnlyOptimal
+                ? PipelineStageFlags.FragmentShaderBit
+                : wasAttachment ? PipelineStageFlags.ColorAttachmentOutputBit : PipelineStageFlags.TopOfPipeBit;
+            TransitionTarget(target, VkImageLayout.ColorAttachmentOptimal,
+                wasAttachment ? AccessFlags.ColorAttachmentWriteBit : 0,
+                AccessFlags.ColorAttachmentReadBit | AccessFlags.ColorAttachmentWriteBit,
+                sourceStage, PipelineStageFlags.ColorAttachmentOutputBit);
 
             ClearValue clearValue = CreateClearValue(0F, 0F, 0F, 0F);
             RenderPassBeginInfo beginInfo = new RenderPassBeginInfo
@@ -2523,7 +2533,7 @@ namespace Shared.Rendering.SilkVulkan
 
         private void TransitionTarget(SilkVulkanRenderTarget target, VkImageLayout newLayout, AccessFlags srcAccess, AccessFlags dstAccess, PipelineStageFlags srcStage, PipelineStageFlags dstStage)
         {
-            if (target == null || target.Layout == newLayout)
+            if (target == null || (target.Layout == newLayout && newLayout != VkImageLayout.ColorAttachmentOptimal))
                 return;
 
             ImageMemoryBarrier barrier = CreateImageBarrier(target.Image, target.Layout, newLayout, srcAccess, dstAccess);
@@ -2770,13 +2780,12 @@ namespace Shared.Rendering.SilkVulkan
 
         private void BindTexture(SilkVulkanTextureResource resource, bool forcePointSampling = false)
         {
-            if (resource.AppliedFilter != GetAppliedTextureFilter(forcePointSampling))
-                UpdateTextureDescriptor(resource, forcePointSampling);
-
-            if (_boundDescriptorSet.Handle == resource.DescriptorSet.Handle)
+            DescriptorSet set = GetAppliedTextureFilter(forcePointSampling) == TextureFilterMode.Linear
+                ? resource.LinearDescriptorSet
+                : resource.DescriptorSet;
+            if (_boundDescriptorSet.Handle == set.Handle)
                 return;
 
-            DescriptorSet set = resource.DescriptorSet;
             _vk.CmdBindDescriptorSets(_activeCommandBuffer, PipelineBindPoint.Graphics, _texturePipelineLayout, 0, 1, in set, 0, null);
             _boundDescriptorSet = set;
         }
