@@ -231,7 +231,7 @@ namespace Client.Scenes.Views
 
             DrawObjects();
 
-            if (MapObject.MouseObject != null) // && MapObject.MouseObject != MapObject.TargetObject)
+            if (MapObject.MouseObject != null && !MapObject.MouseObject.Dead) // && MapObject.MouseObject != MapObject.TargetObject)
                 MapObject.MouseObject.DrawBlend();
 
             if (Config.DrawEffects)
@@ -467,6 +467,24 @@ namespace Client.Scenes.Views
                     }
             }
 
+            // Corpses form a ground layer so large sprites cannot cover living actors in earlier rows.
+            RenderingPipelineManager.DisableSpriteShaderEffect();
+            for (int y = minY; y <= maxY; y++)
+            {
+                if (useLootRows)
+                {
+                    foreach (MapObject ob in objectRows[y])
+                        if (ob.Dead)
+                            ob.Draw();
+                }
+                else
+                {
+                    foreach (MapObject ob in Objects)
+                        if (ob.Dead && ob.RenderY == y)
+                            ob.Draw();
+                }
+            }
+
             for (int y = minY; y <= maxY; y++)
             {
                 int drawY = (y - User.CurrentLocation.Y + OffSetY + 1) * CellHeight + PixelOffsetY - User.MovingOffSet.Y - User.ShakeScreenOffset.Y;
@@ -560,7 +578,8 @@ namespace Client.Scenes.Views
                 if (useLootRows)
                 {
                     foreach (MapObject ob in objectRows[y])
-                        ob.Draw();
+                        if (!ob.Dead)
+                            ob.Draw();
                     if (Config.DrawEffects)
                         foreach (MirEffect ob in effectRows[y])
                             ob.Draw();
@@ -569,7 +588,7 @@ namespace Client.Scenes.Views
                 {
                     // Keep the original small-scene path free of loot preparation.
                     foreach (MapObject ob in Objects)
-                        if (ob.RenderY == y)
+                        if (!ob.Dead && ob.RenderY == y)
                             ob.Draw();
                     if (Config.DrawEffects)
                         foreach (MirEffect ob in Effects)
@@ -587,7 +606,7 @@ namespace Client.Scenes.Views
 
             }
 
-            if (User.Opacity == 1f)
+            if (!User.Dead && User.Opacity == 1f)
             {
                 float oldOpacity = MapObject.User.Opacity;
                 MapObject.User.Opacity = 0.65F;
