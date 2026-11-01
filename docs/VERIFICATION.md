@@ -1,6 +1,6 @@
 # Verification routing
 
-Choose the smallest build/check/manual path that exercises the changed boundary. Authority: [project map](PROJECT_MAP.md), the actual `.csproj` files, and the source/check entry points linked below. `Zircon Server.sln` contains the application projects; the three focused check executables below are outside it.
+Choose the smallest build/check/manual path that exercises the changed boundary. Authority: [project map](PROJECT_MAP.md), the actual `.csproj` files, and the source/check entry points linked below. `Zircon Server.sln` contains the application projects; the focused check executables below are outside it.
 
 ## Verification principles
 
@@ -18,6 +18,7 @@ Project names below mean their same-named `.csproj` in that project directory. A
 | --- | --- | --- |
 | Shared `SystemModel` | Build LibraryCore and affected definition consumers: Client, ServerLibrary and Server (editor). ServerCore validates console-host integration when affected. Other direct LibraryCore consumers are PluginCore and PatchManager; compile them when the changed API reaches them. | Load an existing System.db copy; edit/save/reopen exposed fields in Server. Verify definition distribution to client `Data/System.db` and index resolution when definitions change. See [data model](DATA_MODEL.md). |
 | Server gameplay only: targeting, combat, movement | Build ServerLibrary. Build ServerCore or Server when the host boundary changes or preparing the relevant runtime. No general server gameplay check project was found. Client build is needed only if shared types, packets or client code also change. | Reproduce the rule in a test server with representative targets, timing, movement and boundary cases; confirm authoritative state and visible outcomes. |
+| Server item transactions | Build ServerLibrary and run ItemPacketChecks for its specific transaction invariants. | Exercise live trades, guild/companion transfers, NPC transactions, rewards and reconnects with representative database copies; see the check's README for coverage limits. |
 | Client gameplay | Build Client; use GroundLootChecks only for its linked helpers, LabelRenderingChecks only for label presentation, or RenderingCacheChecks for relevant cache behavior. | Exercise changed input, prediction/animation and reconciliation in the client; reconnect/change maps when state lifetime changes. |
 | Packet/network | Build LibraryCore packet definitions, ServerLibrary and Client against the same definitions; include the affected server host for integration. | [Packet.cs](../LibraryCore/Network/Packet.cs) discovers packet types and serializes properties reflectively. Exercise sender, receiver and concrete `Process` dispatch; verify compatible versions, payload fields and round trips. Two successful builds alone do not establish interoperability. |
 | MirDB / System.db | Build LibraryCore and affected model consumers (Client, ServerLibrary, Server/editor). For shared MirDB changes also exercise user-data paths. | With database copies, initialize, change, save and reload representative records; verify defaults, indices, inverse relationships/deletion and applicable migration. Check editor support and definition distribution. Source inspection alone cannot prove compatibility with deployed `.db` files. |
@@ -38,10 +39,11 @@ These are executable checks, not a discovered unit-test suite; run them with `do
 | Check and source | Actual coverage | Does not prove |
 | --- | --- | --- |
 | [GroundLootChecks](../Tests/GroundLootChecks/Program.cs), [README](../Tests/GroundLootChecks/README.md) | Links production render rows, piles, highlights, label cache and MirEffect/LootEffect against headless substitutes. Checks ordered row equivalence, empty/reset cases, deterministic pile replacement, warmed allocations, label reference ownership/colour separation and effect timing/bounds/data ownership. | GPU disposal, actual layout, whole-client integration, server pickup or game FPS. |
+| [ItemPacketChecks](../Tests/ItemPacketChecks/Program.cs), [README](../Tests/ItemPacketChecks/README.md) | Production item packet handlers and disposable MirDB objects: quantity fuzzing, transaction capacity, funds, refinement inputs, confirmation/roll sequencing and ownership save/reload. | Wire decoding, full world/stats simulation, live multi-client timing, custom scripts, external payment paths or absence of all exploits. |
 | [LabelRenderingChecks](../Tools/LabelRenderingChecks/Program.cs), [README](../Tools/LabelRenderingChecks/README.md) | Real Client labels in a hidden 1024×768 DirectX 11 host at 100% scaling; 2,000 overlapping/clipped draws versus a layer refreshed every 16 frames. Compares first-frame pixels per mode and reports warmed timings/rebuild counts. | Live world-name invalidation, other scales/backends, moving scenes or predicted game FPS. |
 | [RenderingCacheChecks](../Tools/RenderingCacheChecks/Program.cs) | Synthetic window/UI scales 1–2, direct/cached/border pixel comparisons on DirectX 11, nested surface restoration through exceptions, pool reuse/cap and resize invalidation; counters/timings. `--vulkan` selects Vulkan draw/context/cache smoke checks without GPU readback. | Vulkan pixel equivalence, all graphics features, real asset correctness or full device-loss recovery. |
 
-Repository inventory found these three check projects and no additional test project. `Tools/convert_audio_to_ogg.cmd` is a conversion utility, not a correctness check. Runtime/editor executables and their entry points are indexed in [PROJECT_MAP](PROJECT_MAP.md#projects-and-entry-points); generated/output directories are not additional verification suites.
+These focused executables cover separate rendering and item-transaction boundaries. `Tools/convert_audio_to_ogg.cmd` is a conversion utility, not a correctness check. Runtime/editor executables and their entry points are indexed in [PROJECT_MAP](PROJECT_MAP.md#projects-and-entry-points); generated/output directories are not additional verification suites.
 
 ## Commands
 
@@ -62,6 +64,7 @@ dotnet build PatchManager/PatchManager.csproj
 dotnet build PluginCore/PluginCore.csproj
 dotnet build PluginStandalone/PluginStandalone.csproj
 dotnet run --project Tests/GroundLootChecks/GroundLootChecks.csproj -c Release
+dotnet run --project Tests/ItemPacketChecks/ItemPacketChecks.csproj -p:BuildInParallel=false
 dotnet run --project Tools/LabelRenderingChecks/LabelRenderingChecks.csproj
 dotnet run --project Tools/RenderingCacheChecks/RenderingCacheChecks.csproj
 dotnet run --project Tools/RenderingCacheChecks/RenderingCacheChecks.csproj -- --vulkan

@@ -17,6 +17,7 @@ LibraryEditor ---> RenderingCore
 PatchManager ----> LibraryCore
 RenderingCacheChecks -> RenderingCore
 LabelRenderingChecks -> Client
+ItemPacketChecks -> ServerLibrary
 LibraryCore, RenderingCore, ImageManager, Launcher, Patcher: no ProjectReference
 ```
 
@@ -48,6 +49,7 @@ Launcher compiles linked `LibraryCore/ConfigReader.cs` and `LibraryCore/Time.cs`
 * `Tools/RenderingCacheChecks/RenderingCacheChecks.csproj`: standalone graphics/cache check executable, outside the main solution's project list.
 * `Tools/LabelRenderingChecks/LabelRenderingChecks.csproj`: Windows executable referencing Client; `Program.Main` initializes client controls and a rendering session for label checks. It is outside the main solution.
 * `Tests/GroundLootChecks/GroundLootChecks.csproj`: standalone linked-source checks for ground loot/render helpers; its README describes execution/scope.
+* `Tests/ItemPacketChecks/ItemPacketChecks.csproj`: standalone item transaction checks using ServerLibrary and disposable MirDB data; its README describes execution/scope.
 * `Tools/convert_audio_to_ogg.cmd`: audio conversion utility.
 * `SharedRendering` is not a project in the current solution/reference graph. Start graphics work in RenderingCore; do not select a similarly named output directory as authority.
 * `ServerLibrary.Tests`, `BuildChecks`, `.build`, `tmp`, `artifacts` are not additional projects in the main solution. Temporary/generated content is not a canonical runtime extension point.
