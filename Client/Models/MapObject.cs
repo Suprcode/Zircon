@@ -5526,7 +5526,8 @@ namespace Client.Models
                     y -= 13;
 
                 NameLabel.Location = new Point(x, y);
-                if (highlightSettings != Config.HighlightedItems || highlightName != Name)
+                // Item highlighting must not overwrite NPCs' separate name and title colours.
+                if (Race == ObjectType.Item && (highlightSettings != Config.HighlightedItems || highlightName != Name))
                 {
                     highlightSettings = Config.HighlightedItems;
                     highlightName = Name;

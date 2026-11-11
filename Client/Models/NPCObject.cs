@@ -125,7 +125,9 @@ namespace Client.Models
                 if (!NameLabels.TryGetValue(Name, out List<DXLabel> names))
                     NameLabels[Name] = names = new List<DXLabel>();
 
-                NameLabel = names.FirstOrDefault(x => x.ForeColour == NameColour && x.BackColour == Color.Empty);
+                // Match the displayed row colour so shared labels keep their own colour.
+                Color nameColour = string.IsNullOrEmpty(Title) ? NameColour : Color.White;
+                NameLabel = names.FirstOrDefault(x => x.ForeColour == nameColour && x.BackColour == Color.Empty);
 
                 if (NameLabel == null)
                 {
@@ -139,11 +141,11 @@ namespace Client.Models
                         IsVisible = true,
                     };
 
-                    NameLabel.Disposing += (o, e) => names.Remove(NameLabel);
+                    NameLabel.Disposing += (o, e) => names.Remove((DXLabel)o);
                     names.Add(NameLabel);
                 }
 
-                NameLabel.ForeColour = string.IsNullOrEmpty(Title) ? NameColour : Color.White;
+                NameLabel.ForeColour = nameColour;
             }
 
             if (string.IsNullOrEmpty(Title))
@@ -171,7 +173,7 @@ namespace Client.Models
                         IsVisible = true,
                     };
 
-                    TitleNameLabel.Disposing += (o, e) => titles.Remove(TitleNameLabel);
+                    TitleNameLabel.Disposing += (o, e) => titles.Remove((DXLabel)o);
                     titles.Add(TitleNameLabel);
                 }
 
