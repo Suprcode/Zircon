@@ -6,10 +6,16 @@ namespace LibraryEditor
     public partial class ConversionOptionsDialog : Form
     {
         public LibraryConversionOptions Options { get; private set; }
+        private readonly CheckBox includeReport = new CheckBox { Text = "Include report file" };
 
         public ConversionOptionsDialog()
         {
             InitializeComponent();
+            // Match the designer's font scaling for this additional option.
+            includeReport.AutoSize = true;
+            includeReport.Location = new System.Drawing.Point(
+                _buildAtlasCheckBox.Left, _okButton.Top - _okButton.Height - 6);
+            Controls.Add(includeReport);
             SelectDefaultOptions();
             UpdateAtlasControls();
             UpdateSummary();
@@ -64,6 +70,7 @@ namespace LibraryEditor
             Options = new LibraryConversionOptions
             {
                 FileNames = fileNames,
+                IncludeReport = includeReport.Checked,
                 BuildAtlasMetadata = _buildAtlasCheckBox.Checked,
                 BuildShadowAtlasMetadata = _buildAtlasCheckBox.Checked && _buildShadowAtlasCheckBox.Checked,
                 BuildOverlayAtlasMetadata = _buildAtlasCheckBox.Checked && _buildOverlayAtlasCheckBox.Checked,

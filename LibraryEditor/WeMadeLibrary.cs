@@ -24,7 +24,7 @@ namespace LibraryEditor
         private readonly string _fileName;
 
         private int[] _palette;
-        private List<int> _indexList;
+        private List<long> _indexList;
         private int _version = 0;
 
         private BinaryReader _bReader;
@@ -118,7 +118,7 @@ namespace LibraryEditor
 
         private void LoadIndexFile()
         {
-            _indexList = new List<int>();
+            _indexList = new List<long>();
             FileStream stream = null;
 
             try
@@ -150,7 +150,7 @@ namespace LibraryEditor
 
                     stream = null;
                     while (reader.BaseStream.Position <= reader.BaseStream.Length - 4)
-                        _indexList.Add(reader.ReadInt32());
+                        _indexList.Add(reader.ReadUInt32());
                 }
             }
             finally
@@ -242,7 +242,7 @@ namespace LibraryEditor
                     CountText = "Writing compressed ZL v2 container",
                     GroupText = "Saving and compressing payloads"
                 });
-                library.Save(fileName);
+                library.Save(fileName, conversionOptions.IncludeReport);
             }
 
             // Operation finished.
@@ -511,15 +511,20 @@ namespace LibraryEditor
                 }
 
                 int* scan0 = (int*)data.Scan0;
+                // Shanda images use zero as the transparent colour/index; they have no alpha channel.
+                bool shandaTransparency = nType == 1 || nType == 4;
                 {
                     for (int y = Height - 1; y >= 0; y--)
                     {
                         for (int x = 0; x < Width; x++)
                         {
                             if (bo16bit)
-                                  scan0[y * Width + x] = convert16bitTo32bit(bytes[index++] + (bytes[index++] << 8), nType == 3);
+                                scan0[y * Width + x] = convert16bitTo32bit(bytes[index++] + (bytes[index++] << 8), nType == 3 || shandaTransparency);
                             else
-                                scan0[y * Width + x] = palette[bytes[index++]];
+                            {
+                                byte colourIndex = bytes[index++];
+                                scan0[y * Width + x] = shandaTransparency && colourIndex == 0 ? 0 : palette[colourIndex];
+                            }
                         }
                         if (((nType == 1) || (nType == 4)) & (Width % 4 > 0))
                             index += WidthBytes(bo16bit ? 16 : 8, Width) - (Width * (bo16bit ? 2 : 1));

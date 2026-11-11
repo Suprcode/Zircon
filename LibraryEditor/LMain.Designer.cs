@@ -57,6 +57,8 @@ namespace LibraryEditor
             InsertBlankButton = new System.Windows.Forms.Button();
             AddBlankButton = new System.Windows.Forms.Button();
             nudJump = new System.Windows.Forms.NumericUpDown();
+            navigationStep = new System.Windows.Forms.NumericUpDown();
+            navigationStepLabel = new System.Windows.Forms.Label();
             checkBoxPreventAntiAliasing = new System.Windows.Forms.CheckBox();
             checkBoxQuality = new System.Windows.Forms.CheckBox();
             buttonSkipPrevious = new System.Windows.Forms.Button();
@@ -104,6 +106,7 @@ namespace LibraryEditor
             splitContainer2.Panel2.SuspendLayout();
             splitContainer2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)nudJump).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)navigationStep).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)ZoomTrackBar).BeginInit();
             panel.SuspendLayout();
@@ -294,6 +297,8 @@ namespace LibraryEditor
             splitContainer2.Panel1.Controls.Add(InsertBlankButton);
             splitContainer2.Panel1.Controls.Add(AddBlankButton);
             splitContainer2.Panel1.Controls.Add(nudJump);
+            splitContainer2.Panel1.Controls.Add(navigationStep);
+            splitContainer2.Panel1.Controls.Add(navigationStepLabel);
             splitContainer2.Panel1.Controls.Add(checkBoxPreventAntiAliasing);
             splitContainer2.Panel1.Controls.Add(checkBoxQuality);
             splitContainer2.Panel1.Controls.Add(buttonSkipPrevious);
@@ -433,11 +438,31 @@ namespace LibraryEditor
             nudJump.TabIndex = 21;
             nudJump.ValueChanged += nudJump_ValueChanged;
             nudJump.KeyDown += nudJump_KeyDown;
+            //
+            // navigationStep
+            //
+            navigationStep.Location = new System.Drawing.Point(141, 382);
+            navigationStep.Maximum = int.MaxValue;
+            navigationStep.Minimum = 1;
+            navigationStep.Name = "navigationStep";
+            navigationStep.Size = new System.Drawing.Size(122, 23);
+            navigationStep.TabIndex = 31;
+            navigationStep.Value = 1;
+            toolTip.SetToolTip(navigationStep, "Number of frames to move with the previous and next buttons.");
+            //
+            // navigationStepLabel
+            //
+            navigationStepLabel.AutoSize = true;
+            navigationStepLabel.Location = new System.Drawing.Point(48, 385);
+            navigationStepLabel.Name = "navigationStepLabel";
+            navigationStepLabel.Size = new System.Drawing.Size(62, 15);
+            navigationStepLabel.TabIndex = 32;
+            navigationStepLabel.Text = "Frame step:";
             // 
             // checkBoxPreventAntiAliasing
             // 
             checkBoxPreventAntiAliasing.AutoSize = true;
-            checkBoxPreventAntiAliasing.Location = new System.Drawing.Point(110, 440);
+            checkBoxPreventAntiAliasing.Location = new System.Drawing.Point(110, 476);
             checkBoxPreventAntiAliasing.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             checkBoxPreventAntiAliasing.Name = "checkBoxPreventAntiAliasing";
             checkBoxPreventAntiAliasing.Size = new System.Drawing.Size(112, 19);
@@ -449,7 +474,7 @@ namespace LibraryEditor
             // checkBoxQuality
             // 
             checkBoxQuality.AutoSize = true;
-            checkBoxQuality.Location = new System.Drawing.Point(12, 440);
+            checkBoxQuality.Location = new System.Drawing.Point(12, 476);
             checkBoxQuality.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             checkBoxQuality.Name = "checkBoxQuality";
             checkBoxQuality.Size = new System.Drawing.Size(87, 19);
@@ -518,7 +543,7 @@ namespace LibraryEditor
             // ZoomTrackBar
             // 
             ZoomTrackBar.LargeChange = 1;
-            ZoomTrackBar.Location = new System.Drawing.Point(48, 381);
+            ZoomTrackBar.Location = new System.Drawing.Point(48, 417);
             ZoomTrackBar.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             ZoomTrackBar.Minimum = 1;
             ZoomTrackBar.Name = "ZoomTrackBar";
@@ -872,6 +897,7 @@ namespace LibraryEditor
             ((System.ComponentModel.ISupportInitialize)splitContainer2).EndInit();
             splitContainer2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)nudJump).EndInit();
+            ((System.ComponentModel.ISupportInitialize)navigationStep).EndInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox).EndInit();
             ((System.ComponentModel.ISupportInitialize)ZoomTrackBar).EndInit();
             panel.ResumeLayout(false);
@@ -939,6 +965,8 @@ namespace LibraryEditor
         private System.Windows.Forms.CheckBox checkBoxQuality;
         private System.Windows.Forms.CheckBox checkBoxPreventAntiAliasing;
         private System.Windows.Forms.NumericUpDown nudJump;
+        private System.Windows.Forms.NumericUpDown navigationStep;
+        private System.Windows.Forms.Label navigationStepLabel;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.RadioButton radioButtonOverlay;
         private System.Windows.Forms.RadioButton radioButtonShadow;

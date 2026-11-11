@@ -192,6 +192,13 @@ namespace Client.Models
         {
             BodyLibrary.Draw(BodyFrame, DrawX, DrawY, Color.White, true, ObjectShadowOpacity, ImageType.Shadow);
         }
+        public override void DrawOutline()
+        {
+            if (BodyLibrary == null || !Config.ShowTargetOutline) return;
+
+            DrawBody(true);
+        }
+
         private void DrawBody(bool mouseOver = false)
         {
             bool outlineEnabled = false;
@@ -202,10 +209,13 @@ namespace Client.Models
 
                 if (result != Color.FromArgb(0, 0, 0, 0))
                 {
-                    RenderingPipelineManager.EnableOutlineEffect(result, 2f);
+                    RenderingPipelineManager.EnableOutlineEffect(result, 2f, outlineOnly: true);
                     outlineEnabled = true;
                 }
             }
+
+            // A disabled outline colour must not redraw the body in the overlay pass.
+            if (mouseOver && !outlineEnabled) return;
 
             BodyLibrary.Draw(BodyFrame, DrawX, DrawY, DrawColour, true, 1F, ImageType.Image);
 
@@ -223,7 +233,7 @@ namespace Client.Models
             if (BodyLibrary == null) return;
 
             RenderingPipelineManager.SetBlend(true, 0.20F, BlendMode.HIGHLIGHT);//0.60F
-            DrawBody(true);
+            DrawBody();
             RenderingPipelineManager.SetBlend(false);
         }
 

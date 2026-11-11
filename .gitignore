@@ -16,3 +16,5 @@ licenses.licx
 /docs/changes
 /.build
 /.codex-build
+/.artifacts/*
+/.codex-tmp

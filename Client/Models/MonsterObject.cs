@@ -2601,7 +2601,7 @@ namespace Client.Models
 
             DrawShadow(DrawX, y);
 
-            DrawBody(DrawX, y, MouseObject == this);
+            DrawBody(DrawX, y);
         }
 
         private int GetBodyDrawY()
@@ -2647,6 +2647,13 @@ namespace Client.Models
             }
         }
 
+        public override void DrawOutline()
+        {
+            if (BodyLibrary == null || !Visible || !Config.ShowTargetOutline) return;
+
+            DrawBody(DrawX, GetBodyDrawY(), true);
+        }
+
         public void DrawBody(int x, int y, bool mouseOver = false)
         {
             bool outlineEnabled = false;
@@ -2673,10 +2680,13 @@ namespace Client.Models
 
                 if (result != Color.FromArgb(0, 0, 0, 0))
                 {
-                    RenderingPipelineManager.EnableOutlineEffect(result, 2f);
+                    RenderingPipelineManager.EnableOutlineEffect(result, 2f, outlineOnly: true);
                     outlineEnabled = true;
                 }
             }
+
+            // A disabled outline colour must not redraw the body in the overlay pass.
+            if (mouseOver && !outlineEnabled) return;
 
             switch (Image)
             {

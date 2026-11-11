@@ -38,6 +38,9 @@ namespace LibraryEditor
             this.DragEnter += new DragEventHandler(Form1_DragEnter);
             this.DragDrop += new DragEventHandler(Form1_DragDrop);
             AddAtlasMenuItems();
+            functionsToolStripMenuItem.DropDownItems.Add(new ToolStripSeparator());
+            functionsToolStripMenuItem.DropDownItems.Add("Batch Split ZL Files...", null, (_, _) => OpenBatchDialog(true));
+            functionsToolStripMenuItem.DropDownItems.Add("Batch Export ZL Frames...", null, (_, _) => OpenBatchDialog(false));
 
             if (Program.openFileWith.Length > 0 &&
                 File.Exists(Program.openFileWith))
@@ -65,6 +68,12 @@ namespace LibraryEditor
         {
             base.OnDpiChanged(e);
             ConfigurePreviewListViewForDpi();
+        }
+
+        private void OpenBatchDialog(bool split)
+        {
+            using (var dialog = new BatchLibraryDialog(split))
+                dialog.ShowDialog(this);
         }
 
         private void ConfigurePreviewListViewForDpi()
@@ -1452,12 +1461,34 @@ namespace LibraryEditor
 
         private void buttonSkipNext_Click(object sender, EventArgs e)
         {
+            if (navigationStep.Value > 1)
+            {
+                MoveByFrameStep(1);
+                return;
+            }
             nextImageToolStripMenuItem_Click(null, null);
         }
 
         private void buttonSkipPrevious_Click(object sender, EventArgs e)
         {
+            if (navigationStep.Value > 1)
+            {
+                MoveByFrameStep(-1);
+                return;
+            }
             previousImageToolStripMenuItem_Click(null, null);
+        }
+
+        private void MoveByFrameStep(int direction)
+        {
+            int count = PreviewListView.Items.Count;
+            if (!PreviewListView.Visible || count == 0) return;
+            int current = PreviewListView.SelectedIndices.Count > 0 ? PreviewListView.SelectedIndices[0] : 0;
+            long target = (current + direction * (long)navigationStep.Value) % count;
+            if (target < 0) target += count;
+            PreviewListView.SelectedIndices.Clear();
+            PreviewListView.Items[(int)target].Selected = true;
+            PreviewListView.Items[(int)target].EnsureVisible();
         }
 
         private void checkBoxQuality_CheckedChanged(object sender, EventArgs e)

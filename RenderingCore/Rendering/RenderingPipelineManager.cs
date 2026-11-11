@@ -771,9 +771,9 @@ namespace Shared.Rendering
             _fallbackLineWidth = width;
         }
 
-        public static void EnableOutlineEffect(Color colour, float thickness)
+        public static void EnableOutlineEffect(Color colour, float thickness, bool outlineOnly = false)
         {
-            _spriteShaderEffect = new SpriteShaderEffectRequest(new OutlineEffectSettings(colour, thickness));
+            _spriteShaderEffect = new SpriteShaderEffectRequest(new OutlineEffectSettings(colour, thickness, outlineOnly));
         }
 
         public static void EnableGrayscaleEffect()
@@ -1395,11 +1395,14 @@ namespace Shared.Rendering
         {
             public Color Colour { get; }
             public float Thickness { get; }
+            // Overlay passes emit only the border, preserving map occlusion of the sprite.
+            public bool OutlineOnly { get; }
 
-            public OutlineEffectSettings(Color colour, float thickness)
+            public OutlineEffectSettings(Color colour, float thickness, bool outlineOnly)
             {
                 Colour = colour;
                 Thickness = thickness;
+                OutlineOnly = outlineOnly;
             }
         }
 

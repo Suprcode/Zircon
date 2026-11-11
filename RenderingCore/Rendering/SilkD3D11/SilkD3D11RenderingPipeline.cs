@@ -776,6 +776,8 @@ namespace Shared.Rendering.SilkD3D11
                     case RenderingPipelineManager.SpriteShaderEffectKind.Outline:
                         EndSpriteBatch();
                         DrawSprite(CreateSpriteBatchItem(resource, source, destination, transform, request.Value.Outline.Colour, 1F, new SpriteEffect(SpriteEffectMode.Outline, request.Value.Outline.Thickness, resource.Size, ToSourceUv(source, resource.Size), null, request.Value.Outline.Thickness, true), BlendMode.NONE, 1F));
+                        // Skip the base sprite when drawing the world outline overlay.
+                        if (request.Value.Outline.OutlineOnly) return;
                         break;
                     case RenderingPipelineManager.SpriteShaderEffectKind.Grayscale:
                         effect = new SpriteEffect(SpriteEffectMode.Grayscale, 0, resource.Size, Vector4.Zero, null);

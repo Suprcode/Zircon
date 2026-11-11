@@ -170,7 +170,7 @@ namespace LibraryEditor
                     CountText = "Writing compressed ZL v2 container",
                     GroupText = "Saving and compressing payloads"
                 });
-                library.Save(fileName);
+                library.Save(fileName, conversionOptions.IncludeReport);
             }
 
             // Operation finished.

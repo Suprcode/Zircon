@@ -33,6 +33,12 @@
     <None Remove="Resources\**" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="BatchLibraryDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="BatchLibraryDialog.Designer.cs">
+      <DependentUpon>BatchLibraryDialog.cs</DependentUpon>
+    </Compile>
     <Compile Update="ConversionOptionsDialog.cs" />
     <Compile Update="ConversionOptionsDialog.Designer.cs">
       <DependentUpon>ConversionOptionsDialog.cs</DependentUpon>
@@ -54,6 +60,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Update="BatchLibraryDialog.resx">
+      <DependentUpon>BatchLibraryDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Update="ConversionOptionsDialog.resx">
       <DependentUpon>ConversionOptionsDialog.cs</DependentUpon>
     </EmbeddedResource>

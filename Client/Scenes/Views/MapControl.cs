@@ -231,6 +231,10 @@ namespace Client.Scenes.Views
 
             DrawObjects();
 
+            // Draw only the hover border above all foreground map tiles.
+            if (MapObject.MouseObject != null && !MapObject.MouseObject.Dead)
+                MapObject.MouseObject.DrawOutline();
+
             if (MapObject.MouseObject != null && !MapObject.MouseObject.Dead) // && MapObject.MouseObject != MapObject.TargetObject)
                 MapObject.MouseObject.DrawBlend();
 

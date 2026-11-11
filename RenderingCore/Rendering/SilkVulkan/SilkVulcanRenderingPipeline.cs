@@ -1140,6 +1140,8 @@ namespace Shared.Rendering.SilkVulkan
                         // The Direct3D pipelines render this pass at full strength as well.
                         DrawSpriteImmediate(resource, ClientBlendMode.NONE, 1F, op0, op1, op2, op3, ou0, ou1, ov0, ov1, Vector4.One,
                             CreateTexturePushConstants(SpriteEffectMode.Outline, sourceUv, outlineVector, thickness, resource.Size), forcePointSampling);
+                        // Skip the base sprite when drawing the world outline overlay.
+                        if (outline.OutlineOnly) return;
                         break;
                     case SpriteShaderEffectKind.DropShadow:
                         DropShadowEffectSettings dropShadow = effect.Value.DropShadow;

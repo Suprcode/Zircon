@@ -4280,6 +4280,8 @@ namespace Client.Scenes.Views
 
         public void RefreshUnlockButton()
         {
+            if (SelectedCompanionInfo == null) return;
+
             UnlockButton.Visible = !SelectedCompanionInfo.Available && !AvailableCompanions.Contains(SelectedCompanionInfo);
 
             if (GameScene.Game.User == null || SelectedCompanionInfo == null || SelectedCompanionInfo.Price <= GameScene.Game.User.Gold.Amount)

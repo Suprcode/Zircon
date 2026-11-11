@@ -5380,6 +5380,9 @@ namespace Client.Models
 
         }
 
+        // Drawn after the map foreground so only the hover border remains visible through it.
+        public virtual void DrawOutline() { }
+
         public virtual void DrawBlend()
         {
 

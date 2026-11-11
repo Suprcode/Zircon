@@ -9,6 +9,7 @@ namespace LibraryEditor
         public bool BuildShadowAtlasMetadata { get; set; }
         public bool BuildOverlayAtlasMetadata { get; set; }
         public bool StorePngSourceImages { get; set; }
+        public bool IncludeReport { get; set; }
         public int AtlasGroupImageCount { get; set; }
         public int AtlasPageSize { get; set; } = 2048;
         public ZlRuntimeTexturePreference IndividualRuntimePreference { get; set; } = ZlRuntimeTexturePreference.Bgra32;

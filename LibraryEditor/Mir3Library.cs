@@ -381,11 +381,11 @@ namespace LibraryEditor
             Images.Insert(index, mImage);
         }
 
-        public void Save(string path)
+        public void Save(string path, bool includeReport = true)
         {
             if (Version >= COMPRESSED_LIBRARY_VERSION)
             {
-                SaveCompressedContainer(path, ContainerCompression);
+                SaveCompressedContainer(path, ContainerCompression, includeReport);
                 return;
             }
 
@@ -438,7 +438,7 @@ namespace LibraryEditor
             }
         }
 
-        private void SaveCompressedContainer(string path, ZlContainerCompression compression)
+        private void SaveCompressedContainer(string path, ZlContainerCompression compression, bool includeReport)
         {
             int oldVersion = Version;
             Version = COMPRESSED_LIBRARY_VERSION;
@@ -559,7 +559,7 @@ namespace LibraryEditor
             }
 
             LastCompressionReport = BuildCompressionReport(path, compression, stats);
-            WriteCompressionReport(path);
+            if (includeReport) WriteCompressionReport(path);
             Version = oldVersion;
         }
 

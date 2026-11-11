@@ -993,7 +993,7 @@ namespace Client.Models
         public override void Draw()
         {
             if (BodyLibrary == null) return;
-            DrawPlayer(true, MouseObject == this && MouseObject != User);
+            DrawPlayer(true);
         }
 
         public void DrawPlayer(bool shadow = false, bool allowOutline = false)
@@ -1003,6 +1003,14 @@ namespace Client.Models
             DrawBody(shadow, allowOutline);
 
             ExteriorEffectManager.DrawExteriorEffects(this, false);
+        }
+
+        public override void DrawOutline()
+        {
+            if (BodyLibrary == null || this == User || !Config.ShowTargetOutline) return;
+
+            // Compose the equipped body without redrawing its exterior effects.
+            DrawBody(false, true);
         }
 
         public override void DrawBlend()
@@ -1291,7 +1299,7 @@ namespace Client.Models
             if (allowOutline && Config.ShowTargetOutline)
             {
                 var isFriendly = GameScene.Game.GroupBox.Members.Any(x => x.ObjectID == ObjectID);
-                RenderingPipelineManager.EnableOutlineEffect(isFriendly ? Config.TargetPlayerFriendlyColour : Config.TargetPlayerEnemyColour, 2f);
+                RenderingPipelineManager.EnableOutlineEffect(isFriendly ? Config.TargetPlayerFriendlyColour : Config.TargetPlayerEnemyColour, 2f, outlineOnly: true);
                 outlineEnabled = true;
             }
 
