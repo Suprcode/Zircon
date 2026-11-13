@@ -394,6 +394,26 @@ namespace Shared.Rendering.SilkD3D11
             float x2 = Snap(b.X * scaleX);
             float y2 = Snap(b.Y * scaleY);
 
+            if (x1 != x2 && y1 != y2)
+            {
+                // Build a stroke perpendicular to the segment in framebuffer space.
+                // Axis-aligned rectangles lose one endpoint coordinate on diagonal lines.
+                float dx = x2 - x1, dy = y2 - y1;
+                float length = MathF.Sqrt(dx * dx + dy * dy);
+                float normalX = -dy / length * half, normalY = dx / length * half;
+                Matrix3x2 transform = new(
+                    dx / scaleX, dy / scaleY,
+                    normalX * 2F / scaleX, normalY * 2F / scaleY,
+                    (x1 - normalX) / scaleX, (y1 - normalY) / scaleY);
+
+                EnsureSolidTexture();
+                RenderDiagnostics.Count(RenderDiagnostics.Counter.LineVertices, 6);
+                DrawSprite(CreateSpriteBatchItem(_solidWhiteTexture, new Rectangle(0, 0, 1, 1),
+                    new RectangleF(0, 0, 1, 1), transform, colour, opacity, null, BlendMode.NONE, 1F));
+                return;
+            }
+
+            // Retain pixel-aligned UI border rendering for horizontal and vertical lines.
             RectangleF physicalRectangle;
             if (Math.Abs(x2 - x1) >= Math.Abs(y2 - y1))
             {

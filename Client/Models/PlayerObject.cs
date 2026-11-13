@@ -928,18 +928,26 @@ namespace Client.Models
                             break;
                         case MirAnimation.FishingWait:
                             {
+                                MirEffect bobber;
                                 if (FishFound)
                                 {
                                     Effects.Add(new MirEffect(1400, 6, TimeSpan.FromMilliseconds(120), LibraryFile.MagicEx5, 0, 0, Globals.NoneColour) { MapTarget = FloatLocation, Blend = true });
-                                    Effects.Add(new MirEffect(1410, 6, TimeSpan.FromMilliseconds(120), LibraryFile.MagicEx5, 0, 0, Globals.NoneColour) { MapTarget = FloatLocation, Blend = false });
+                                    Effects.Add(bobber = new MirEffect(1410, 6, TimeSpan.FromMilliseconds(120), LibraryFile.MagicEx5, 0, 0, Globals.NoneColour) { MapTarget = FloatLocation, Blend = false });
 
                                     DXSoundManager.Play(SoundIndex.FishingBob);
                                 }
                                 else
                                 {
                                     Effects.Add(new MirEffect(1420, 6, TimeSpan.FromMilliseconds(120), LibraryFile.MagicEx5, 0, 0, Globals.NoneColour) { MapTarget = FloatLocation, Blend = true });
-                                    Effects.Add(new MirEffect(1430, 6, TimeSpan.FromMilliseconds(120), LibraryFile.MagicEx5, 0, 0, Globals.NoneColour) { MapTarget = FloatLocation, Blend = false });
+                                    Effects.Add(bobber = new MirEffect(1430, 6, TimeSpan.FromMilliseconds(120), LibraryFile.MagicEx5, 0, 0, Globals.NoneColour) { MapTarget = FloatLocation, Blend = false });
                                 }
+
+                                // Keep the line alive across gaps between successive bobber animations.
+                                var fishingLine = Effects.OfType<MirFishingLineEffect>().FirstOrDefault();
+                                if (fishingLine == null)
+                                    Effects.Add(new MirFishingLineEffect(this, bobber));
+                                else
+                                    fishingLine.SetBobber(bobber);
                             }
                             break;
                         case MirAnimation.FishingReel:

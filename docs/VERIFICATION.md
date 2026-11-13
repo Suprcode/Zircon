@@ -67,6 +67,7 @@ dotnet run --project Tests/GroundLootChecks/GroundLootChecks.csproj -c Release
 dotnet run --project Tests/ItemPacketChecks/ItemPacketChecks.csproj -p:BuildInParallel=false
 dotnet run --project Tools/LabelRenderingChecks/LabelRenderingChecks.csproj
 dotnet run --project Tools/RenderingCacheChecks/RenderingCacheChecks.csproj
+dotnet run --project Tools/RenderingCacheChecks/RenderingCacheChecks.csproj -- --lines
 dotnet run --project Tools/RenderingCacheChecks/RenderingCacheChecks.csproj -- --vulkan
 dotnet run --project Tools/RenderingCacheChecks/RenderingCacheChecks.csproj -- --player-overlay
 dotnet run --project Tools/RenderingCacheChecks/RenderingCacheChecks.csproj -- --player-overlay --vulkan

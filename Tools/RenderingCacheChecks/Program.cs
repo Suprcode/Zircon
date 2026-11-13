@@ -30,6 +30,11 @@ internal static class Program
                 GetMonitorScale = _ => windowScale, VSync = false, SaveException = ex => renderError = ex
             };
             using var session = R.CreateSession(backend, new RenderingPipelineContext(form, settings));
+            if (args.Contains("--lines"))
+            {
+                CheckDiagonalLines(backend, windowScale);
+                continue;
+            }
             _art = MakeTexture(17, 19, false);
             _text = MakeTexture(93, 21, true);
             if (scratchCheck)
@@ -149,6 +154,53 @@ internal static class Program
         }
         Console.WriteLine($"Failures={_failures}");
         return _failures == 0 ? 0 : 1;
+    }
+
+    private static void CheckDiagonalLines(string backend, float windowScale)
+    {
+        // Shallow/steep segments in both directions catch either discarded endpoint axis.
+        (LinePoint Start, LinePoint End)[] segments =
+        [
+            (new(80, 80), new(300, 220)), (new(400, 80), new(480, 300)),
+            (new(300, 400), new(80, 540)), (new(700, 540), new(780, 320)),
+        ];
+        foreach (float width in new[] { 1F, 3F })
+        {
+            byte[] pixels = null;
+            if (!R.RenderFrame(() =>
+            {
+                R.Clear(RenderClearFlags.Target, Color.Black, 0, 0);
+                R.SetLineWidth(width);
+                foreach (var segment in segments)
+                    R.DrawLine(new[] { segment.Start, segment.End }, Color.White);
+                if (backend == RenderingPipelineIds.SilkDXD3D11) pixels = ReadBackBuffer();
+            })) throw new Exception("Diagonal line rendering failed");
+            if (pixels == null) continue;
+
+            Size size = R.GetBackBufferSize();
+            bool HasStroke(float x, float y)
+            {
+                // Allow pixel-centre snapping while still rejecting the former straight-axis stroke.
+                int px = (int)(x * size.Width / 1024F), py = (int)(y * size.Height / 768F);
+                for (int iy = py - 2; iy <= py + 2; iy++)
+                    for (int ix = px - 2; ix <= px + 2; ix++)
+                        if (ix >= 0 && iy >= 0 && ix < size.Width && iy < size.Height &&
+                            pixels[(iy * size.Width + ix) * 4] > 100) return true;
+                return false;
+            }
+            foreach (var (start, end) in segments)
+            {
+                foreach (float t in new[] { 0.02F, 0.5F, 0.98F })
+                    if (!HasStroke(start.X + (end.X - start.X) * t, start.Y + (end.Y - start.Y) * t))
+                        throw new Exception($"Diagonal line missed its path: {start} -> {end}, t={t}");
+                if (HasStroke((start.X + end.X) / 2F, start.Y) ||
+                    HasStroke(start.X, (start.Y + end.Y) / 2F))
+                    throw new Exception("Diagonal line retained an axis-aligned stroke");
+            }
+        }
+        R.SetLineWidth(1F);
+        Console.WriteLine($"{backend} window={windowScale}: diagonal lines passed" +
+            (backend == RenderingPipelineIds.SilkDXD3D11 ? " (GPU pixel readback)" : " (draw smoke only)"));
     }
 
     private static void CheckVulkanScratchReuse()
