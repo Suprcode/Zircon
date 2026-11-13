@@ -58,36 +58,36 @@ namespace Client.Scenes.Views.Character
         {
             return item.Info.Image switch
             {
-                //LightArmour
+                //11CommonArmour / Light Armour
                 942 => effectLibrary.CreateImage(700, ImageType.Image),
                 952 => effectLibrary.CreateImage(720, ImageType.Image),
-                //WyvernArmour
+                //51WizRobe / Wyvern Armour Of Protection
                 961 => effectLibrary.CreateImage(1600, ImageType.Image),
                 971 => effectLibrary.CreateImage(1620, ImageType.Image),
-                //38WarArmour
+                //38WarArmour / Enchanted Iron Plate Armour
                 982 => effectLibrary.CreateImage(800, ImageType.Image),
                 992 => effectLibrary.CreateImage(820, ImageType.Image),
-                //44WarRobe
+                //44WarArmour / Armour Of Condemned
                 983 => effectLibrary.CreateImage(1200, ImageType.Image),
                 993 => effectLibrary.CreateImage(1220, ImageType.Image),
-                //GhostArmour
+                //48WizRobe / Ghost Armour
                 984 => effectLibrary.CreateImage(1100, ImageType.Image),
                 994 => effectLibrary.CreateImage(1120, ImageType.Image),
-                //38WizRobe
+                //38WizRobe / Robe Of Conjurer
                 1022 => effectLibrary.CreateImage(900, ImageType.Image),
                 1032 => effectLibrary.CreateImage(920, ImageType.Image),
-                //44WizRobe
+                //44WizRobe / Raiment Of Arch Mage
                 1023 => effectLibrary.CreateImage(1300, ImageType.Image),
                 1033 => effectLibrary.CreateImage(1320, ImageType.Image),
-                //38TaoRobe
+                //38TaoRobe / Robe Of Preserver
                 1002 => effectLibrary.CreateImage(1000, ImageType.Image),
                 1012 => effectLibrary.CreateImage(1020, ImageType.Image),
-                //44TaoRobe
+                //44TaoRobe / Raiment Of High Priest
                 1003 => effectLibrary.CreateImage(1400, ImageType.Image),
                 1013 => effectLibrary.CreateImage(1420, ImageType.Image),
                 //DivineRobe
-                //? => effectLibrary.CreateImage(1500, ImageType.Image),
-                //? => effectLibrary.CreateImage(1520, ImageType.Image),
+                985 => effectLibrary.CreateImage(1500, ImageType.Image),
+                995 => effectLibrary.CreateImage(1520, ImageType.Image),
                 //Other
                 _ => null
             };

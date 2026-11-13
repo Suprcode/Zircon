@@ -68,7 +68,11 @@ dotnet run --project Tests/ItemPacketChecks/ItemPacketChecks.csproj -p:BuildInPa
 dotnet run --project Tools/LabelRenderingChecks/LabelRenderingChecks.csproj
 dotnet run --project Tools/RenderingCacheChecks/RenderingCacheChecks.csproj
 dotnet run --project Tools/RenderingCacheChecks/RenderingCacheChecks.csproj -- --vulkan
+dotnet run --project Tools/RenderingCacheChecks/RenderingCacheChecks.csproj -- --player-overlay
+dotnet run --project Tools/RenderingCacheChecks/RenderingCacheChecks.csproj -- --player-overlay --vulkan
 ```
+
+`--player-overlay` runs the production DrawOccludedComposite through `Tools/RenderingCacheChecks/PlayerOverlayChecks.cs`: rear-layer occlusion, screen-blended wings with opaque black backing over light/dark roofs, shadow-only coverage exclusion, unchanged world alpha/uncovered pixels, opaque/partial/overlapping foreground coverage and target-pool reuse. It also checks every pixel outside the player silhouette, identical capture state, and caller-state restoration after callback errors. Pass `--map-library "path/to/Housesc.Zl"` to include actual map-library image draws. DirectX 11 checks pixel values; Vulkan checks drawing and resource reuse without GPU readback. Live player assets, directions, mounts and map rendering still require in-game verification.
 
 Paths, SDK project structure and check arguments were inspected; these commands were not executed for this documentation-only change. Use .NET 10; Windows applications/rendering target `net10.0-windows8.0`. Graphics checks require Windows and an available matching graphics backend. DevExpress package access and native dependencies (including authoring-tool Squish references) can prevent a clean generic CLI build. Inspect configuration/platform and output paths first: several projects write to sibling Debug/Release directories outside the source tree. Use `--no-restore` only with an applicable completed restore.
 

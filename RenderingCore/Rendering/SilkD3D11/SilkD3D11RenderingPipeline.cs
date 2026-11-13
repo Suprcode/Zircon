@@ -765,7 +765,7 @@ namespace Shared.Rendering.SilkD3D11
 
             FlushLinesIfNeeded();
 
-            SpriteEffect? effect = RenderingPipelineManager.PresentingUICache
+            SpriteEffect? effect = RenderingPipelineManager.DrawingPremultipliedTexture
                 ? new SpriteEffect(SpriteEffectMode.PremultipliedCache, 0, resource.Size, Vector4.Zero, null)
                 : null;
             RenderingPipelineManager.SpriteShaderEffectRequest? request = RenderingPipelineManager.GetSpriteShaderEffect();
@@ -1481,15 +1481,19 @@ namespace Shared.Rendering.SilkD3D11
             CreateBlendState(BlendMode.EFFECTMASK, D3DBlend.DestAlpha, D3DBlend.One, D3DBlend.DestAlpha, D3DBlend.One);
             CreateBlendState(BlendMode.HIGHLIGHT, D3DBlend.BlendFactor, D3DBlend.One, D3DBlend.BlendFactor, D3DBlend.One);
             CreateBlendState(BlendMode.LIGHTMAP, D3DBlend.Zero, D3DBlend.SrcColor, D3DBlend.Zero, D3DBlend.SrcAlpha);
+            // Preserve world alpha while resolving colour-specific glow transmission.
+            CreateBlendState(BlendMode.SUBTRACT_COLOUR, D3DBlend.One, D3DBlend.One, D3DBlend.Zero, D3DBlend.One, BlendOp.RevSubtract);
+            CreateBlendState(BlendMode.ADD_COLOUR, D3DBlend.One, D3DBlend.One, D3DBlend.Zero, D3DBlend.One);
+            CreateBlendState(BlendMode.ERASE_COLOUR, D3DBlend.Zero, D3DBlend.InvSrcColor, D3DBlend.Zero, D3DBlend.One);
         }
 
-        private void CreateBlendState(BlendMode mode, D3DBlend source, D3DBlend destination, D3DBlend sourceAlpha, D3DBlend destinationAlpha)
+        private void CreateBlendState(BlendMode mode, D3DBlend source, D3DBlend destination, D3DBlend sourceAlpha, D3DBlend destinationAlpha, BlendOp colourOperation = BlendOp.Add)
         {
             BlendDesc desc = default;
             desc.RenderTarget[0].BlendEnable = new Bool32(true);
             desc.RenderTarget[0].SrcBlend = source;
             desc.RenderTarget[0].DestBlend = destination;
-            desc.RenderTarget[0].BlendOp = BlendOp.Add;
+            desc.RenderTarget[0].BlendOp = colourOperation;
             desc.RenderTarget[0].SrcBlendAlpha = sourceAlpha;
             desc.RenderTarget[0].DestBlendAlpha = destinationAlpha;
             desc.RenderTarget[0].BlendOpAlpha = BlendOp.Add;

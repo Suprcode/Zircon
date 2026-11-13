@@ -15,6 +15,8 @@ internal static class Program
     private static int Main(string[] args)
     {
         Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+        if (args.Contains("--player-overlay")) return PlayerOverlayChecks.Run(args.Contains("--vulkan"),
+            args.SkipWhile(arg => arg != "--map-library").Skip(1).FirstOrDefault());
         if (args.Contains("--switch")) return CheckPipelineSwitch();
         bool scratchCheck = args.Contains("--vulkan-scratch");
         string backend = args.Contains("--vulkan") || scratchCheck ? RenderingPipelineIds.SilkVulkan : RenderingPipelineIds.SilkDXD3D11;

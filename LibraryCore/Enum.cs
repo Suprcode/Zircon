@@ -1758,7 +1758,7 @@ namespace Library
         //EquipEffect_Item [180~199]
         //Reserved
 
-        //MonMagicEx26 [200~250] 
+        //MonMagicEx26 [200~249] 
         E_RedEyeRing = 200,
         E_BlueEyeRing = 201,
         E_GreenSpiralRing = 202,

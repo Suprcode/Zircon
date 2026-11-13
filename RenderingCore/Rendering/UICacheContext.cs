@@ -7,9 +7,7 @@ namespace Shared.Rendering
     public static partial class RenderingPipelineManager
     {
         private static UICacheContext _uiCacheContext;
-        private static bool _presentingUICache;
-        internal static bool PresentingUICache => _presentingUICache;
-        internal static bool ForcePointSampling => DrawingDpiText || _presentingUICache;
+        internal static bool ForcePointSampling => DrawingDpiText || DrawingPremultipliedTexture;
         internal static bool IsUICacheSurface => _uiCacheContext != null &&
             ReferenceEquals(_uiCacheContext.Surface.NativeHandle, _activePipeline?.GetCurrentSurface().NativeHandle);
         public static bool CanCacheUI => SupportsCachedRenderTargets &&
@@ -107,10 +105,10 @@ namespace Shared.Rendering
                 pixels.Y * (float)logical.Height / physical.Height,
                 pixels.Width * (float)logical.Width / physical.Width,
                 pixels.Height * (float)logical.Height / physical.Height);
-            bool previous = _presentingUICache;
-            _presentingUICache = true;
+            bool previous = _drawingPremultipliedTexture;
+            _drawingPremultipliedTexture = true;
             try { _activePipeline.DrawTexture(texture, source, destination, Color.White); }
-            finally { _presentingUICache = previous; }
+            finally { _drawingPremultipliedTexture = previous; }
         }
     }
 }

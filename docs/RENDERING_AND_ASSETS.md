@@ -14,6 +14,8 @@ Canonical references: [MirEffect and DXImageControl](CANONICAL_EXAMPLES.md#clien
 
 RenderingPipelineManager is partial: `RenderingPipelineManager.cs` owns selection/common operations; `UIBorderRendering.cs` border primitives; `UICacheContext.cs` presentation coordinate/cache context; `UICacheKey.cs` cache identity; `UICacheTargetPool.cs` pooled UI targets. These all live under `RenderingCore/Rendering/`.
 
+`RenderingCore/Rendering/OccludedComposite.cs: DrawOccludedComposite` preserves alpha and screen-blended actor layers using black/white captures to recover emitted colour and per-channel background transmission. It masks both to foreground coverage and preserves world alpha. `Client/Scenes/Views/MapControl.cs: DrawOccludedPlayer` supplies the local player and tiles drawn after its row; the existing solid-shadow classifier excludes cast shadows from that mask. Callbacks must replay the same frame without advancing animation; the actor may use the shared scratch surface, so the compositor borrows independent pooled targets.
+
 `LibraryCore/Libraries.cs` contains both `LibraryFile` and `Libraries.LibraryList`, the actual enum → relative filename map. Examples: GameInter → `Data/GameInter.Zl`, Interface → `Data/Interface.Zl`, MagicIcon → `Data/MIcon.Zl`, MiniMapIcon → `Data/MiniMapIcon.Zl`.
 
 `Client/Program.cs` creates `Shared.Rendering.MirLibrary` entries in `CEnvir.LibraryList` for available mapped files. `RenderingCore/Library/MirLibrary.cs` owns streams, lazy library/image reading and texture creation. `Client/Controls/DXImageControl.cs` resolves LibraryFile and Index; game models combine library, base index, animation frame and direction. An image number has meaning only within its library and layout.

@@ -419,8 +419,15 @@ namespace Client.Scenes.Views
             PresentTexture(texture, sourceRectangle, Parent, DisplayArea, Color.White, this, 0, 0, 1F);
         }
 
+        private readonly List<(MirLibrary Library, int Index, float X, float Y, float Opacity)> playerOccluders = new();
+        private bool capturePlayerOccluders;
+
         private void DrawMapImage(MirLibrary library, int index, float x, float y, float opacity = 1F)
         {
+            // Only tiles drawn after the user's row can obscure the normal player image.
+            if (capturePlayerOccluders)
+                playerOccluders.Add((library, index, x, y, opacity));
+
             if (!ShadowPixelShaderEnabled)
             {
                 library.Draw(index, x, y, Color.White, false, opacity, ImageType.Image);
@@ -443,8 +450,35 @@ namespace Client.Scenes.Views
             library.DrawBlend(index, x, y, Color.White, false, rate, ImageType.Image);
         }
 
+        private void DrawOccludedPlayer()
+        {
+            if (User.Dead || User.Opacity != 1F || playerOccluders.Count == 0)
+                return;
+
+            try
+            {
+                // Preserve wing screen blending as well as the body's rear-layer occlusion.
+                RenderingPipelineManager.DrawOccludedComposite(TextureSize,
+                    () => User.DrawPlayer(false, false), DrawPlayerOccluders, 0.65F);
+            }
+            finally
+            {
+                playerOccluders.Clear();
+            }
+        }
+
+        private void DrawPlayerOccluders()
+        {
+            // Cast shadows shade the normal player and must not trigger another glow pass.
+            RenderingPipelineManager.EnableSolidShadowFillEffect(0F);
+            foreach (var tile in playerOccluders)
+                tile.Library.Draw(tile.Index, tile.X, tile.Y, Color.White, false, tile.Opacity, ImageType.Image);
+        }
+
         private void DrawObjects()
         {
+            playerOccluders.Clear();
+            capturePlayerOccluders = false;
             int minX = Math.Max(0, User.CurrentLocation.X - OffSetX - 4), maxX = Math.Min(Width - 1, User.CurrentLocation.X + OffSetX + 4);
             int minY = Math.Max(0, User.CurrentLocation.Y - OffSetY - 4), maxY = Math.Min(Height - 1, User.CurrentLocation.Y + OffSetY + 25);
 
@@ -492,6 +526,8 @@ namespace Client.Scenes.Views
             for (int y = minY; y <= maxY; y++)
             {
                 int drawY = (y - User.CurrentLocation.Y + OffSetY + 1) * CellHeight + PixelOffsetY - User.MovingOffSet.Y - User.ShakeScreenOffset.Y;
+
+                capturePlayerOccluders = !User.Dead && User.Opacity == 1F && y > User.RenderY;
 
                 for (int x = minX; x <= maxX; x++)
                 {
@@ -610,15 +646,8 @@ namespace Client.Scenes.Views
 
             }
 
-            if (!User.Dead && User.Opacity == 1f)
-            {
-                float oldOpacity = MapObject.User.Opacity;
-                MapObject.User.Opacity = 0.65F;
-
-                MapObject.User.DrawPlayer(false, false);
-
-                MapObject.User.Opacity = oldOpacity;
-            }
+            capturePlayerOccluders = false;
+            DrawOccludedPlayer();
 
             if (Config.DrawEffects)
             {

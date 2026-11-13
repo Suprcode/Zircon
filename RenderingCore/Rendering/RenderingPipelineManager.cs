@@ -876,6 +876,18 @@ namespace Shared.Rendering
             }
         }
 
+        private static bool _drawingPremultipliedTexture;
+        internal static bool DrawingPremultipliedTexture => _drawingPremultipliedTexture;
+
+        /// <summary>Draws composited pixels without multiplying their colour by alpha a second time.</summary>
+        private static void DrawPremultipliedTexture(RenderTexture texture, Rectangle source, RectangleF destination, Color colour)
+        {
+            bool previous = _drawingPremultipliedTexture;
+            _drawingPremultipliedTexture = true;
+            try { DrawTexture(texture, source, destination, colour); }
+            finally { _drawingPremultipliedTexture = previous; }
+        }
+
         public static void DrawTexture(RenderTexture texture, Rectangle sourceRectangle, RectangleF destinationRectangle, Color colour)
         {
             if (!texture.IsValid)

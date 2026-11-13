@@ -1855,6 +1855,9 @@ namespace Shared.Rendering.SilkVulkan
                 _texturePipelines[ClientBlendMode.MASK] = CreateTexturePipeline(textureVertexModule, textureFragmentModule, ClientBlendMode.MASK);
                 _texturePipelines[ClientBlendMode.LIGHTMAP] = CreateTexturePipeline(textureVertexModule, textureFragmentModule, ClientBlendMode.LIGHTMAP);
                 _texturePipelines[ClientBlendMode.INVLIGHT] = CreateTexturePipeline(textureVertexModule, textureFragmentModule, ClientBlendMode.INVLIGHT);
+                _texturePipelines[ClientBlendMode.SUBTRACT_COLOUR] = CreateTexturePipeline(textureVertexModule, textureFragmentModule, ClientBlendMode.SUBTRACT_COLOUR);
+                _texturePipelines[ClientBlendMode.ADD_COLOUR] = CreateTexturePipeline(textureVertexModule, textureFragmentModule, ClientBlendMode.ADD_COLOUR);
+                _texturePipelines[ClientBlendMode.ERASE_COLOUR] = CreateTexturePipeline(textureVertexModule, textureFragmentModule, ClientBlendMode.ERASE_COLOUR);
                 _linePipeline = CreateLinePipeline(lineVertexModule, lineFragmentModule);
             }
             finally
@@ -2094,6 +2097,21 @@ namespace Shared.Rendering.SilkVulkan
 
             switch (blendMode)
             {
+                // These operations compose RGB without making the world target transparent.
+                case ClientBlendMode.SUBTRACT_COLOUR:
+                case ClientBlendMode.ADD_COLOUR:
+                    attachment.ColorBlendOp = blendMode == ClientBlendMode.SUBTRACT_COLOUR ? BlendOp.ReverseSubtract : BlendOp.Add;
+                    attachment.SrcColorBlendFactor = BlendFactor.One;
+                    attachment.DstColorBlendFactor = BlendFactor.One;
+                    attachment.SrcAlphaBlendFactor = BlendFactor.Zero;
+                    attachment.DstAlphaBlendFactor = BlendFactor.One;
+                    break;
+                case ClientBlendMode.ERASE_COLOUR:
+                    attachment.SrcColorBlendFactor = BlendFactor.Zero;
+                    attachment.DstColorBlendFactor = BlendFactor.OneMinusSrcColor;
+                    attachment.SrcAlphaBlendFactor = BlendFactor.Zero;
+                    attachment.DstAlphaBlendFactor = BlendFactor.One;
+                    break;
                 case ClientBlendMode.NONE:
                     attachment.SrcColorBlendFactor = BlendFactor.One;
                     attachment.DstColorBlendFactor = BlendFactor.OneMinusSrcAlpha;

@@ -15,5 +15,9 @@ public enum BlendMode : sbyte
     MASK = 9,
     HIGHLIGHT = 10,
     EFFECTMASK = 11,
-    LIGHTMAP = 12
+    LIGHTMAP = 12,
+    // Compositor arithmetic affects RGB only; the destination alpha stays intact.
+    SUBTRACT_COLOUR = 13,
+    ADD_COLOUR = 14,
+    ERASE_COLOUR = 15
 }
