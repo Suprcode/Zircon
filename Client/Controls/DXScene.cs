@@ -86,6 +86,9 @@ namespace Client.Controls
 
             foreach (DXComboBox box in DXComboBox.ComboBoxes)
             {
+                // Let the arrow's click handler toggle its own dropdown without closing it first.
+                if (MouseControl == box.DownArrow) continue;
+
                 if (box.ListBox != listbox)
                     box.Showing = false;
             }
