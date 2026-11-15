@@ -11,12 +11,17 @@ using R = Shared.Rendering.RenderingPipelineManager;
 internal static class Program
 {
     [STAThread]
-    private static void Main()
+    private static void Main(string[] args)
     {
         Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
         ConfigReader.ConfigObjects[typeof(EnglishMessages)] = new EnglishMessages();
         ConfigReader.ConfigObjects[typeof(ChineseMessages)] = new ChineseMessages();
         Config.WindowScalePercent = Config.UIScalePercent = 100;
+        if (args.Contains("--cache-invalidation"))
+        {
+            CacheInvalidationChecks.Run();
+            return;
+        }
         using var form = new TargetForm { ShowInTaskbar = false, ClientSize = new Size(1024, 768) };
         CEnvir.Target = form;
         using var session = R.CreateSession(RenderingPipelineIds.SilkDXD3D11,

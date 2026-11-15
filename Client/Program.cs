@@ -143,7 +143,8 @@ namespace Client
 
         private static void InvalidateControlTree(DXControl control, HashSet<DXControl> visited, bool skipWorld)
         {
-            if (control == null || !visited.Add(control))
+            // Detached overlays can still reference disposed controls whose child list has been cleared.
+            if (control == null || control.IsDisposed || !visited.Add(control))
                 return;
 
             if (skipWorld && control is MapControl)
