@@ -6129,7 +6129,7 @@ namespace Server.Models
             var currencyGains = new Dictionary<UserCurrency, long>();
             foreach (ItemCheck check in checks)
             {
-                if (check?.Info == null || check.Count <= 0 || check.Info.StackSize <= 0) return false;
+                if (check?.Info == null || check.Count <= 0) return false;
 
                 if ((check.Flags & UserItemFlags.QuestItem) == UserItemFlags.QuestItem) continue;
 
@@ -6143,6 +6143,9 @@ namespace Server.Models
                     currencyGains[currency] = gain + check.Count;
                     continue;
                 }
+
+                // Only inventory items need a positive stack size; currency and experience bypass stacks.
+                if (check.Info.StackSize <= 0) return false;
 
                 long count = check.Count;
 
@@ -11455,9 +11458,10 @@ namespace Server.Models
             }
             if (p.OreTarget.Slot < 0 || p.OreTarget.Slot >= targetOreArray.Length) return;
             UserItem oretargetItem = targetOreArray[p.OreTarget.Slot];
+            // Random.Next(0) is valid: purity 100 guarantees success and the extra stat point.
             if (oretargetItem == null || oretargetItem.Count != 1 || oretargetItem.Info.ItemEffect != ItemEffect.Corundum ||
                 (oretargetItem.Flags & (UserItemFlags.NonRefinable | UserItemFlags.Marriage)) != 0 ||
-                oretargetItem.CurrentDurability < 0 || oretargetItem.CurrentDurability >= 100000) return;
+                oretargetItem.CurrentDurability < 0 || oretargetItem.CurrentDurability / 1000 > 100) return;
 
             S.ItemsChanged result = new S.ItemsChanged { Links = new List<CellLinkInfo>(), Success = true };
             Enqueue(result);

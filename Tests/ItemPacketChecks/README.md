@@ -10,6 +10,8 @@ The executable calls production `SConnection.Process` and `PlayerObject` methods
 
 Coverage includes duplicate-link arithmetic against `BigInteger`, 5,000 seeded random cases, invalid move/split requests, whole-transaction stack capacity, cumulative currency limits, crafting authorization and affordability, invalid accessory refinement, confirmed trade mutations, marketplace cost overflow, cash-shop charges exceeding `int.MaxValue`, NPC roll sequencing, and exclusive item ownership through swap/save/reload. Random checks target quantity arithmetic and rejected move/split requests; they are not full wire-format fuzzing.
 
+Reward regression checks cover zero-stack experience/currency capacity and packet-dispatched quest completion with currency rewards, a full inventory and replay protection. Refinement boundary checks cover purity 100 success and rejection above 100 before consuming materials.
+
 ## Source review scope
 
 Entry points are `LibraryCore/Network/ClientPackets.cs` and the concrete `Process(C.*)` methods in `ServerLibrary/Envir/SConnection.cs`. Item operations remain synchronous on the environment processing loop. Packet definitions and wire IDs are unchanged.

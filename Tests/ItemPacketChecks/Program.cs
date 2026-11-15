@@ -23,7 +23,7 @@ SEnvir.Session = session;
 SEnvir.Random = new Random(20261101);
 Globals.CurrencyInfoList = SEnvir.CurrencyInfoList;
 
-var goldItem = Definition(ItemType.Nothing, 1);
+var goldItem = Definition(ItemType.Nothing, 0);
 var goldInfo = SEnvir.CurrencyInfoList.CreateNewObject();
 goldInfo.Type = CurrencyType.Gold;
 goldInfo.DropItem = goldItem;
@@ -107,6 +107,36 @@ player.Gold.Amount = long.MaxValue - 1;
 Check(!player.CanGainItems(false, new ItemCheck(goldItem, 2, 0, TimeSpan.Zero)), "Currency balance overflow rejected");
 Check(!player.CanGainItems(false, new ItemCheck(goldItem, 1, 0, TimeSpan.Zero), new ItemCheck(goldItem, 1, 0, TimeSpan.Zero)), "Combined currency overflow rejected");
 
+// Non-inventory rewards must ignore stack size without bypassing quantity or currency overflow checks.
+var experience = Definition(ItemType.Nothing, 0);
+experience.ItemEffect = ItemEffect.Experience;
+Check(player.CanGainItems(false, new ItemCheck(experience, 100, 0, TimeSpan.Zero)), "Zero-stack experience accepted with full inventory");
+player.Gold.Amount = 0;
+Check(player.CanGainItems(false, new ItemCheck(goldItem, 100, 0, TimeSpan.Zero)), "Zero-stack currency accepted with full inventory");
+Check(!player.CanGainItems(false, new ItemCheck(goldItem, 0, 0, TimeSpan.Zero)), "Zero currency quantity rejected");
+Check(!player.CanGainItems(false, new ItemCheck(experience, -1, 0, TimeSpan.Zero)), "Negative experience rejected");
+Check(!player.CanGainItems(false, new ItemCheck(Definition(ItemType.Ring, 0), 1, 0, TimeSpan.Zero)), "Zero-stack inventory item rejected");
+
+// Complete a real quest through packet dispatch, including reward delivery and replay protection.
+var questPlayer = Player();
+for (int i = 0; i < questPlayer.Inventory.Length; i++) Put(questPlayer, i, ring);
+var questNPC = session.GetCollection<NPCInfo>().CreateNewObject();
+questPlayer.NPC = new NPCObject { NPCInfo = questNPC };
+var questInfo = session.GetCollection<QuestInfo>().CreateNewObject();
+questInfo.FinishNPC = questNPC;
+var questReward = session.GetCollection<QuestReward>().CreateNewObject();
+questReward.Quest = questInfo;
+questReward.Item = goldItem;
+questReward.Amount = 100;
+questReward.Class = RequiredClass.Warrior;
+var userQuest = SEnvir.UserQuestList.CreateNewObject();
+userQuest.Character = questPlayer.Character;
+userQuest.QuestInfo = questInfo;
+questPlayer.Connection.Process(new C.QuestComplete { Index = questInfo.Index });
+Check(userQuest.Completed && questPlayer.Gold.Amount == 100, "Quest currency reward completes with zero stack size and full inventory");
+questPlayer.Connection.Process(new C.QuestComplete { Index = questInfo.Index });
+Check(questPlayer.Gold.Amount == 100, "Completed quest reward cannot be replayed");
+
 player = Player();
 var template = Definition(ItemType.Nothing, 1);
 template.ItemEffect = ItemEffect.WeaponTemplate;
@@ -141,6 +171,16 @@ RejectRefine(new() { Target = Link(0), OreTarget = Link(2), Links = new() { Link
 RejectRefine(new() { Target = Link(0), OreTarget = Link(1), Links = new() { Link(2, long.MaxValue), Link(3) }, RefineType = RefineType.DC }, "Oversized materials rejected");
 player.Inventory[2].Flags = UserItemFlags.Locked;
 RejectRefine(new() { Target = Link(0), OreTarget = Link(1), Links = new() { Link(2), Link(3) }, RefineType = RefineType.DC }, "Invalid material cannot be skipped");
+
+// Purity 100 uses Random.Next(0), which returns zero and is a valid guaranteed refinement.
+player.Inventory[2].Flags = UserItemFlags.None;
+player.Inventory[1].CurrentDurability = 101000;
+RejectRefine(new() { Target = Link(0), OreTarget = Link(1), Links = new() { Link(2), Link(3) }, RefineType = RefineType.DC }, "Purity above 100 rejected before consuming materials");
+player.Inventory[1].CurrentDurability = 100000;
+player.Connection.Process(new C.NPCAccessoryRefine { Target = Link(0), OreTarget = Link(1), Links = new() { Link(2), Link(3) }, RefineType = RefineType.DC });
+Check(player.Inventory[0] == target && target.Stats[Stat.MaxDC] == 2 && player.Gold.Amount == 0 &&
+    player.Inventory[1] == null && player.Inventory[2] == null && player.Inventory[3] == null,
+    "Purity 100 refinement consumes materials and grants two stat points");
 
 var other = Player();
 player.TradePartner = other;
