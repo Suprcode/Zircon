@@ -1048,7 +1048,8 @@ namespace Client.Controls
             {
                 QuickInfo = null;
 
-                GameScene.Game.AutoPotionBox.Rows[toCell.Slot].SendUpdate();
+                // Clear the source potion link; the destination slot belongs to another grid.
+                GameScene.Game.AutoPotionBox.Rows[Slot].SendUpdate();
                 if (Selected) SelectedCell = null;
                 return;
             }
