@@ -422,11 +422,11 @@ namespace Client.Scenes.Views
                     break;
                 case NPCDialogType.Refine:
                     GameScene.Game.NPCRefineBox.Visible = true;
-                    GameScene.Game.NPCRefineBox.Location = new Point(Size.Width - GameScene.Game.NPCRefineBox.Size.Width, Size.Height);
+                    GameScene.Game.NPCRefineBox.Location = new Point(0, Size.Height);
                     break;
                 case NPCDialogType.MasterRefine:
                     GameScene.Game.NPCMasterRefineBox.Visible = true;
-                    GameScene.Game.NPCMasterRefineBox.Location = new Point(Size.Width - GameScene.Game.NPCRefineBox.Size.Width, Size.Height);
+                    GameScene.Game.NPCMasterRefineBox.Location = new Point(0, Size.Height);
                     break;
                 case NPCDialogType.RefineRetrieve:
                     GameScene.Game.NPCRefineRetrieveBox.Location = new Point(0, Size.Height);
@@ -469,7 +469,7 @@ namespace Client.Scenes.Views
                     break;
                 case NPCDialogType.AccessoryRefine:
                     GameScene.Game.NPCAccessoryRefineBox.Visible = true;
-                    GameScene.Game.NPCAccessoryRefineBox.Location = new Point(Size.Width - GameScene.Game.NPCAccessoryRefineBox.Size.Width, Size.Height);
+                    GameScene.Game.NPCAccessoryRefineBox.Location = new Point(0, Size.Height);
                     break;
                 case NPCDialogType.Socketing:
                     GameScene.Game.NPCSocketBox.Visible = true;
