@@ -18,3 +18,6 @@ licenses.licx
 /.codex-build
 /.artifacts/*
 /.codex-tmp
+/.rules
+/knowledge
+/AGENTS.md

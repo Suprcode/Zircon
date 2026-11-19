@@ -630,6 +630,7 @@ namespace Client.Envir.Translations
         public abstract string GuildRepairGuardsConfirmMsg { get; set; }
         public abstract string GuildRepairGuardsConfirmCaption { get; set; }
 
+        public abstract string HorseTameDialogTitle { get; set; }
         public abstract string InventoryDialogTitle { get; set; }
         public abstract string InventoryDialogPrimaryCurrencyTitle { get; set; }
         public abstract string InventoryDialogSecondaryCurrencyTitle { get; set; }

@@ -9,13 +9,13 @@ using C = Library.Network.ClientPackets;
 
 namespace Client.Scenes.Views
 {
-    public sealed class HorseTameDialog : DXControl
+    public sealed class HorseTameDialog : DXImageControl
     {
-        private const int LoopBaseIndex = 7600;
-        private const int ResultBaseIndex = 7610;
-        private const int AngleBaseIndex = 7620;
-        private const int ProgressFillIndex = 7630;
-        private const int ProgressOutlineIndex = 7631;
+        private const int LoopBaseIndex = 7640;
+        private const int ResultBaseIndex = 7650;
+        private const int AngleBaseIndex = 7660;
+        private const int BackgroundIndex = 285;
+        private const int ProgressFillIndex = 7689;
         private const int AngleCount = 10;
         private const int AnimationFrameDuration = 200;
         private const int ResultFrameCount = 2;
@@ -29,9 +29,7 @@ namespace Client.Scenes.Views
         private int _targetAngle;
         private bool _promptVisible;
         private bool _completed;
-        private Size _animationAreaSize;
         private Size _progressSize;
-        private Point _animationAnchor;
         private int _healthBarWidth;
         private Timer _promptTimer, _resultTimer;
         private bool _initialized;
@@ -39,7 +37,7 @@ namespace Client.Scenes.Views
         public DXAnimatedControl LassoAnimation;
         public DXImageControl AngleImage;
         public DXControl ProgressContainer;
-        public DXImageControl ProgressFill, ProgressOutline;
+        public DXImageControl ProgressFill;
         public MonsterObject TamingTarget { get; private set; }
 
         public HorseTameDialog()
@@ -61,21 +59,21 @@ namespace Client.Scenes.Views
 
             Visible = false;
 
-            CEnvir.LibraryList.TryGetValue(LibraryFile.GameInter, out MirLibrary library);
+            LibraryFile = LibraryFile.Interface;
+            Index = BackgroundIndex;
+            PixelDetect = false;
 
-            Rectangle animationBounds = GetImageBounds(library, LoopBaseIndex, AngleBaseIndex + AngleCount - 1);
-            _animationAreaSize = animationBounds.Size;
-            _animationAnchor = new Point(-animationBounds.Left, -animationBounds.Top);
-            _progressSize = library?.GetSize(ProgressOutlineIndex) ?? Size.Empty;
+            // Position the GameInter sprites' shared origin inside the Interface window.
+            Point animationAnchor = new Point(83, 63);
+            CEnvir.LibraryList.TryGetValue(LibraryFile.GameInter, out MirLibrary gameInterLibrary);
+            _progressSize = gameInterLibrary?.GetSize(ProgressFillIndex) ?? Size.Empty;
+            _healthBarWidth = Library?.GetSize(80).Width ?? Size.Width;
 
-            Size = new Size(
-                Math.Max(_animationAreaSize.Width, _progressSize.Width),
-                _animationAreaSize.Height + 2 + _progressSize.Height);
-
-            _healthBarWidth = Size.Width;
-
-            if (CEnvir.LibraryList.TryGetValue(LibraryFile.Interface, out MirLibrary interfaceLibrary))
-                _healthBarWidth = interfaceLibrary.GetSize(80).Width;
+            new DXWindowTitleLabel
+            {
+                Parent = this,
+                Text = CEnvir.Language.HorseTameDialogTitle,
+            };
 
             LassoAnimation = new DXAnimatedControl
             {
@@ -84,7 +82,7 @@ namespace Client.Scenes.Views
                 FrameCount = AngleCount,
                 AnimationDelay = LoopDuration,
                 LibraryFile = LibraryFile.GameInter,
-                Location = _animationAnchor,
+                Location = animationAnchor,
                 Loop = true,
                 Animated = false,
                 Visible = false,
@@ -98,15 +96,11 @@ namespace Client.Scenes.Views
                 Parent = this,
                 Index = AngleBaseIndex,
                 LibraryFile = LibraryFile.GameInter,
-                Location = _animationAnchor,
+                Location = animationAnchor,
                 IsControl = false,
                 Visible = false,
                 UseOffSet = true,
             };
-
-            Point progressLocation = new Point(
-                (Size.Width - _progressSize.Width) / 2,
-                _animationAreaSize.Height + 2);
 
             ProgressContainer = new DXControl
             {
@@ -114,7 +108,7 @@ namespace Client.Scenes.Views
                 BackColour = Color.Empty,
                 Border = false,
                 IsControl = false,
-                Location = progressLocation,
+                Location = new Point(3, 148),
                 Size = new Size(0, _progressSize.Height),
                 Visible = false,
             };
@@ -125,16 +119,6 @@ namespace Client.Scenes.Views
                 Index = ProgressFillIndex,
                 LibraryFile = LibraryFile.GameInter,
                 IsControl = false,
-            };
-
-            ProgressOutline = new DXImageControl
-            {
-                Parent = this,
-                Index = ProgressOutlineIndex,
-                LibraryFile = LibraryFile.GameInter,
-                IsControl = false,
-                Location = progressLocation,
-                Visible = false,
             };
 
             IsControl = false;
@@ -194,7 +178,6 @@ namespace Client.Scenes.Views
             IsControl = true;
             LassoAnimation.Visible = true;
             ProgressContainer.Visible = true;
-            ProgressOutline.Visible = true;
 
             UpdateProgress();
 
@@ -327,31 +310,9 @@ namespace Client.Scenes.Views
             LassoAnimation.Visible = false;
             AngleImage.Visible = false;
             ProgressContainer.Visible = false;
-            ProgressOutline.Visible = false;
 
             UpdateProgress();
             Visible = false;
-        }
-
-        private static Rectangle GetImageBounds(MirLibrary library, int startIndex, int endIndex)
-        {
-            if (library == null)
-                return Rectangle.Empty;
-
-            Rectangle bounds = Rectangle.Empty;
-
-            for (int index = startIndex; index <= endIndex; index++)
-            {
-                Size imageSize = library.GetSize(index);
-
-                if (imageSize.IsEmpty)
-                    continue;
-
-                Rectangle imageBounds = new Rectangle(library.GetOffSet(index), imageSize);
-                bounds = bounds.IsEmpty ? imageBounds : Rectangle.Union(bounds, imageBounds);
-            }
-
-            return bounds;
         }
 
         protected override void Dispose(bool disposing)
@@ -366,9 +327,7 @@ namespace Client.Scenes.Views
             _targetAngle = 0;
             _promptVisible = false;
             _completed = false;
-            _animationAreaSize = Size.Empty;
             _progressSize = Size.Empty;
-            _animationAnchor = Point.Empty;
             _healthBarWidth = 0;
             _initialized = false;
             TamingTarget = null;
@@ -421,14 +380,6 @@ namespace Client.Scenes.Views
                     ProgressContainer.Dispose();
 
                 ProgressContainer = null;
-            }
-
-            if (ProgressOutline != null)
-            {
-                if (!ProgressOutline.IsDisposed)
-                    ProgressOutline.Dispose();
-
-                ProgressOutline = null;
             }
         }
     }

@@ -630,6 +630,7 @@ namespace Client.Envir.Translations
         public override string GuildRepairGuardsConfirmMsg { get; set; } = "Estimated cost to repair guards will be {0:#,##0}. Are you sure?";
         public override string GuildRepairGuardsConfirmCaption { get; set; } = "Repair Guards";
 
+        public override string HorseTameDialogTitle { get; set; } = "Lasso";
         public override string InventoryDialogTitle { get; set; } = "Inventory";
         public override string InventoryDialogPrimaryCurrencyTitle { get; set; } = "Gold";
         public override string InventoryDialogSecondaryCurrencyTitle { get; set; } = "GG";

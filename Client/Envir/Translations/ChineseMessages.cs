@@ -629,6 +629,7 @@ namespace Client.Envir.Translations
         public override string GuildRepairGuardsConfirmMsg { get; set; } = "修复守卫会消耗 {0:#,##0}. 你确定吗?";
         public override string GuildRepairGuardsConfirmCaption { get; set; } = "修复守卫";
 
+        public override string HorseTameDialogTitle { get; set; } = "套索";
         public override string InventoryDialogTitle { get; set; } = "背包";
         public override string InventoryDialogPrimaryCurrencyTitle { get; set; } = "金币";
         public override string InventoryDialogSecondaryCurrencyTitle { get; set; } = "游戏币";
