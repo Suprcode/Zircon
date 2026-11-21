@@ -91,6 +91,23 @@ void Check(bool success, string name)
     checks++;
 }
 
+// An oversized stack is normalized only when the whole split fits.
+var sortPlayer = Player();
+var bundle = Definition(ItemType.Bundle, 1);
+var originalBundle = Put(sortPlayer, 0, bundle, 10);
+for (int i = 1; i < sortPlayer.Inventory.Length - 8; i++) Put(sortPlayer, i, ring);
+sortPlayer.ItemSort(new C.ItemSort { Grid = GridType.Inventory });
+Check(originalBundle.Count == 10 && sortPlayer.Inventory.Count(x => x?.Info == bundle) == 1
+    && sortPlayer.Inventory.Count(x => x?.Info == ring) == sortPlayer.Inventory.Length - 9,
+    "Sort preserves all items when the split would exceed capacity");
+int ringSlot = Array.FindIndex(sortPlayer.Inventory, x => x?.Info == ring);
+sortPlayer.Inventory[ringSlot].Delete();
+sortPlayer.Inventory[ringSlot] = null;
+sortPlayer.ItemSort(new C.ItemSort { Grid = GridType.Inventory });
+var sortedBundles = sortPlayer.Inventory.Where(x => x?.Info == bundle).ToArray();
+Check(sortedBundles.Length == 10 && sortedBundles.All(x => x.Count == 1) && sortedBundles.Contains(originalBundle),
+    "Sort normalizes oversized stack when it fits exactly");
+
 var player = Player();
 Check(!player.ParseLinks(new List<CellLinkInfo> { Link(0, long.MaxValue), Link(0, 1) }, 0, 5), "Duplicate quantity overflow rejected");
 var validLinks = new List<CellLinkInfo> { Link(0, 2), Link(0, 3) };

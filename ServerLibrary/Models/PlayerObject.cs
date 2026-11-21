@@ -8007,9 +8007,7 @@ namespace Server.Models
                 items.Add(item);
 
                 if (item.Info.StackSize <= 1) continue;
-                if (item.Count == item.Info.StackSize) continue;
-
-                var count = item.Count;
+                if (item.Count >= item.Info.StackSize) continue;
 
                 for (int j = i + 1; j < length; j++)
                 {
@@ -8018,6 +8016,7 @@ namespace Server.Models
                     if (otherItem == null) continue;
 
                     if (item.Info != otherItem.Info) continue;
+                    if (otherItem.Count > item.Info.StackSize) continue;
                     if (item.ExpireTime != otherItem.ExpireTime) continue;
 
                     if ((item.Flags & UserItemFlags.Expirable) != (otherItem.Flags & UserItemFlags.Expirable)) continue;
@@ -8026,13 +8025,18 @@ namespace Server.Models
                     if ((item.Flags & UserItemFlags.NonRefinable) != (otherItem.Flags & UserItemFlags.NonRefinable)) continue;
                     if (!item.Stats.Compare(otherItem.Stats)) continue;
 
-                    count += otherItem.Count;
+                    long moved = Math.Min(otherItem.Count, item.Info.StackSize - item.Count);
+                    item.Count += moved;
+                    otherItem.Count -= moved;
 
-                    array[j] = null;
-                    otherItem.Delete();
+                    if (otherItem.Count == 0)
+                    {
+                        array[j] = null;
+                        otherItem.Delete();
+                    }
+
+                    if (item.Count == item.Info.StackSize) break;
                 }
-
-                item.Count = count;
             }
 
             var sorted = items
@@ -8048,6 +8052,7 @@ namespace Server.Models
 
             int index = 0;
             int slot = 0;
+            int freeSlots = length - sorted.Length;
 
             if (p.Grid == GridType.PartsStorage)
             {
@@ -8058,12 +8063,21 @@ namespace Server.Models
             {
                 var item = sorted[i];
 
-                while (item.Count > item.Info.StackSize)
+                int stackSize = item.Info.StackSize;
+                // Reserve one slot for every item and only split a stack if all its pieces fit.
+                long extraSlots = stackSize > 0 && item.Count > stackSize
+                    ? (item.Count - 1) / stackSize
+                    : 0;
+
+                if (extraSlots > freeSlots) extraSlots = 0;
+                freeSlots -= (int)extraSlots;
+
+                for (int split = 0; split < extraSlots; split++)
                 {
                     UserItem newItem = SEnvir.CreateFreshItem(item);
-                    newItem.Count = item.Info.StackSize;
+                    newItem.Count = stackSize;
 
-                    item.Count -= item.Info.StackSize;
+                    item.Count -= stackSize;
 
                     array[index] = newItem;
                     newItem.Slot = slot;
